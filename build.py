@@ -6,7 +6,7 @@ modules/<module>/<chapter>/
     cours/                       the professor's course PDFs
     td/                          the professor's exercise sheets (TD)
 
-Every page gets a "← Hub" bar (plus links to the chapter's course PDFs);
+Every page gets a "← <MODULE>" bar (plus links to the chapter's course PDFs);
 practice pages, and any HTML inside td/, also get the auto-save script.
 Source files are never modified.
 """
@@ -153,10 +153,10 @@ def inject(src, dst, snippet):
 
 
 def nav_bar(module, chapter, depth):
-    """Bottom-left bar: ← Hub, then one link per course PDF of the chapter."""
+    """Bottom-left bar: ← back to the module page, then one link per course PDF of the chapter."""
     e = html.escape
     up = "../" * depth
-    links = [f'<a href="/#{e(module["slug"])}" style="{LINK_STYLE}">&larr; Hub</a>']
+    links = [f'<a href="/{e(module["slug"])}/" style="{LINK_STYLE}">&larr; {e(module["code"])}</a>']
     cours = chapter["docs"]["cours"]
     for i, d in enumerate(cours, 1):
         text = "Cours PDF" if len(cours) == 1 else f"PDF {i}"
@@ -191,60 +191,84 @@ def build_module(module, out_root):
                        (snippet + "\n").encode("utf-8"))
 
 
-def render_chapter(module, ch):
+def resource(href, kind, label, tag, key=None, new_tab=False):
+    e = html.escape
+    attrs = f' data-key="{e(key)}"' if key else ""
+    attrs += ' target="_blank" rel="noopener"' if new_tab else ""
+    badge = '<span class="badge" hidden></span>' if key else ""
+    return (f'<li><a class="res {kind}" href="{e(href)}"{attrs}><span class="ft">{e(tag)}</span>'
+            f'<span>{e(label)}</span>{badge}</a></li>')
+
+
+def render_chapter(module, ch, open_):
     e = html.escape
     base = f"/{module['slug']}/{ch['slug']}/"
-    links = []
-    for p in ch["pages"]:
-        if p["kind"] == "practice":
-            key = f"{module['slug']}/{ch['slug']}/{p['file']}"
-            links.append(f'<a class="pg practice" href="{e(base + p["file"])}" data-key="{e(key)}" title="{e(p["title"])}">'
-                         f'Practice<span class="badge" hidden></span></a>')
-        else:
-            links.append(f'<a class="pg lesson" href="{e(base + p["file"])}" title="{e(p["title"])}">Lesson</a>')
-    groups = []
+    remakes = [
+        resource(base + p["file"], p["kind"], p["kind"].capitalize(), "HTML",
+                 key=f"{module['slug']}/{ch['slug']}/{p['file']}" if p["kind"] == "practice" else None)
+        for p in ch["pages"]
+    ]
+    groups = [("Remakes", remakes)]
     for d, name in (("cours", "Cours"), ("td", "TD")):
-        items = "".join(
-            f'<a class="doc" href="{e(base + d + "/" + x["file"])}" target="_blank" rel="noopener">'
-            f'<span class="ft">{e(x["type"])}</span>{e(x["label"])}</a>'
-            for x in ch["docs"][d]
-        ) or '<span class="none">none yet</span>'
-        groups.append(f'<div class="docs"><span class="dk">{name}</span>{items}</div>')
-    title = f' <span class="ct">{e(ch["title"])}</span>' if ch["title"] else ""
-    return (f'<li class="chapter"><div class="ch-h"><span class="cl">{e(ch["label"])}</span>{title}</div>'
-            f'<div class="pgs">{"".join(links) or "<span class=none>no remake yet</span>"}</div>{"".join(groups)}</li>')
+        groups.append((name, [resource(f"{base}{d}/{x['file']}", "doc", x["label"], x["type"], new_tab=True)
+                              for x in ch["docs"][d]]))
+    body = "".join(
+        f'<div class="group"><h3>{name}</h3><ul>{"".join(items) or "<li class=none>none yet</li>"}</ul></div>'
+        for name, items in groups
+    )
+    title = f'<span class="ct">{e(ch["title"])}</span>' if ch["title"] else ""
+    return (f'<details class="chapter" id="{e(ch["slug"])}"{" open" if open_ else ""}>'
+            f'<summary><span class="cl">{e(ch["label"])}</span>{title}</summary>'
+            f'<div class="groups">{body}</div></details>')
 
 
 def render_card(module):
     e = html.escape
-    title = module["title"] or module["code"]
     blurb = f'<p class="blurb">{e(module["blurb"])}</p>' if module["blurb"] else ""
-    chapters = "".join(render_chapter(module, c) for c in module["chapters"])
-    return (f'<article class="card" id="{e(module["slug"])}">\n'
-            f'  <div class="card-head"><span class="chip">{e(module["code"])}</span><h2>{e(title)}</h2></div>\n'
-            f'  {blurb}\n  <ol class="chapters">{chapters}</ol>\n</article>')
+    return (f'<a class="card" href="/{e(module["slug"])}/"><span class="chip">{e(module["code"])}</span>'
+            f'<h2>{e(module["title"] or module["code"])}</h2>{blurb}</a>')
 
 
 def plural(n, word):
     return f'<span><b>{n}</b> {word}{"" if n == 1 else "s"}</span>'
 
 
-def render_hub(modules):
-    with open(TEMPLATE, encoding="utf-8") as f:
-        tpl = f.read()
+SAVED_STAT = '<span><b id="saved-total">0</b> <span id="saved-word">answers</span> saved</span>'
+
+
+def fill(tpl, **parts):
+    for k, v in parts.items():
+        tpl = tpl.replace(f"%%{k}%%", v)
+    return tpl
+
+
+def render_hub(tpl, modules):
     site = load_json(SITE_JSON)
+    title = html.escape(str(site.get("title") or "Study Hub"))
     chapters = [c for m in modules for c in m["chapters"]]
     n_practice = sum(1 for c in chapters for p in c["pages"] if p["kind"] == "practice")
     n_docs = sum(len(c["docs"][d]) for c in chapters for d in DOC_DIRS)
     stats = (plural(len(modules), "module") + plural(len(chapters), "chapter")
-             + plural(n_practice, "practice sheet") + plural(n_docs, "PDF")
-             + '<span><b id="saved-total">0</b> <span id="saved-word">answers</span> saved</span>')
+             + plural(n_practice, "practice sheet") + plural(n_docs, "PDF") + SAVED_STAT)
     cards = "\n".join(render_card(m) for m in modules) or \
         '<p class="empty">No modules yet. Add <code>modules/&lt;module&gt;/&lt;chapter&gt;/</code> and rebuild.</p>'
-    return (tpl.replace("%%TITLE%%", html.escape(str(site.get("title") or "Study Hub")))
-            .replace("%%SUB%%", html.escape(str(site.get("subtitle") or "Course remakes, practice sheets and the original PDFs")))
-            .replace("%%STATS%%", stats)
-            .replace("%%CARDS%%", cards))
+    return fill(tpl, PAGETITLE=title, BACK="", EYEBROW="Master Big Data Analytics · USTHB", TITLE=title,
+                SUB=html.escape(str(site.get("subtitle") or "Course remakes, practice sheets and the original PDFs")),
+                STATS=stats, MAIN=f'<main class="grid">\n{cards}\n</main>')
+
+
+def render_module_page(tpl, module):
+    e = html.escape
+    chs = module["chapters"]
+    n_practice = sum(1 for c in chs for p in c["pages"] if p["kind"] == "practice")
+    n_docs = sum(len(c["docs"][d]) for c in chs for d in DOC_DIRS)
+    stats = plural(len(chs), "chapter") + plural(n_practice, "practice sheet") + plural(n_docs, "PDF") + SAVED_STAT
+    chapters = "\n".join(render_chapter(module, c, open_=len(chs) == 1) for c in chs)
+    page = fill(tpl, PAGETITLE=f'{e(module["code"])} · {e(module["title"] or module["code"])}',
+                BACK='<a class="back" href="/">&larr; All modules</a>', EYEBROW=e(module["code"]),
+                TITLE=e(module["title"] or module["code"]), SUB=e(module["blurb"]), STATS=stats,
+                MAIN=f'<main class="chapters">\n{chapters}\n</main>')
+    return page.replace("<body>", f'<body data-module="{e(module["slug"])}">', 1)
 
 
 def main():
@@ -266,8 +290,13 @@ def main():
     for m in modules:
         build_module(m, NEW)
 
+    with open(TEMPLATE, encoding="utf-8") as f:
+        tpl = f.read()
     with open(os.path.join(NEW, "index.html"), "w", encoding="utf-8") as f:
-        f.write(render_hub(modules))
+        f.write(render_hub(tpl, modules))
+    for m in modules:
+        with open(os.path.join(NEW, m["slug"], "index.html"), "w", encoding="utf-8") as f:
+            f.write(render_module_page(tpl, m))
 
     if os.path.exists(DIST):
         os.rename(DIST, OLD)

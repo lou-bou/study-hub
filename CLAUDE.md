@@ -22,7 +22,7 @@ modules/<module>/<chapter>/cours/     the professor's course PDFs, named <n>-<to
 modules/<module>/<chapter>/td/        the professor's exercise sheets (keep td/.gitkeep while empty)
 remake_template.html                  the shared remake shell: base CSS, theme toggle, components
 assets/saver.js                       auto-save script for practice pages
-hub_template.html                     hub page template (%%TITLE%% %%SUB%% %%STATS%% %%CARDS%% placeholders)
+hub_template.html                     shell for the hub and module pages (%%PAGETITLE%% %%BACK%% %%EYEBROW%% %%TITLE%% %%SUB%% %%STATS%% %%MAIN%%)
 build.py                              modules/ -> dist/
 server.py                             answers API
 site.json                             optional {"title","subtitle"}
@@ -37,8 +37,8 @@ Naming: module and chapter folders lowercase (`thor`, `ch1`, `ch1-2` for a remak
 - Each folder in `modules/` (skip names starting with `.` or `_`) is a module; each subfolder of a module is a chapter. Modules with no chapters are hidden. Code defaults to the folder name uppercased; chapter label is derived from the folder (`ch1` -> Chapter 1, `ch1-2` -> Chapters 1–2), title from `module.json` `chapters`.
 - Pages: every `*.html` in a chapter, lessons first; `practice` in the filename = practice page. HTML inside `td/` is treated as practice too.
 - Build into `.dist_new/`, then swap into `dist/`. Copy `assets/` and each module folder (minus `module.json` and dotfiles), and generate `index.html` from the template.
-- Inject before the last `</body>` of every page: a fixed bottom-left bar with "← Hub" and links to the chapter's course PDFs. On practice pages also `<script src="/assets/saver.js" data-module="<module>" data-page="<chapter>/<file>"></script>`. Never edit the source HTML.
-- Hub: one card per module (code chip, title, blurb), one row per chapter with Lesson / Practice links and its Cours and TD files (PDFs open in a new tab). Same tokens and fonts as the remakes, light/dark with toggle. Practice links get a badge from `/api/summary` ("N saved").
+- Inject before the last `</body>` of every page: a fixed bottom-left bar with "← <CODE>" (back to the module page) and links to the chapter's course PDFs. On practice pages also `<script src="/assets/saver.js" data-module="<module>" data-page="<chapter>/<file>"></script>`. Never edit the source HTML.
+- Hub (`/`): one clickable card per module with only the code chip, title and blurb. Module page (`/<module>/`, generated `index.html`): one `<details>` dropdown per chapter (open by default when the module has a single chapter), listing Remakes (Lesson, Practice), Cours and TD; PDFs open in a new tab. Both pages use `hub_template.html`, the remakes' tokens and fonts, and a theme toggle. Practice links get a badge from `/api/summary` ("N saved"); the saved total is scoped to the module on module pages.
 
 ## server.py (127.0.0.1:8001, env ANSWERS_DB / ANSWERS_HOST / ANSWERS_PORT)
 Table `answers(module, page, key, value, updated_at, PRIMARY KEY(module,page,key))`, WAL mode. `page` is `<chapter>/<file>`.
