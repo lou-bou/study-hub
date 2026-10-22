@@ -1,0 +1,7 @@
+{
+  "code": "GBD",
+  "title": "Graph Theory for Big Data",
+  "blurb": "Théorie des graphes et Big Data (TGBD).",
+  "order": 1,
+  "chapters": {"ch1": "Fundamental concepts (Concepts fondamentaux)"}
+}

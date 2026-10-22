@@ -1,12 +1,12 @@
 /* Study Hub auto-save for practice pages.
- * Injected by build.py as <script src="/assets/saver.js" data-course=".." data-page="..">.
+ * Injected by build.py as <script src="/assets/saver.js" data-module=".." data-page="<chapter>/<file>">.
  */
 (function () {
   "use strict";
   var me = document.currentScript;
-  var COURSE = me && me.getAttribute("data-course");
+  var MODULE = me && me.getAttribute("data-module");
   var PAGE = me && me.getAttribute("data-page");
-  if (!COURSE || !PAGE) return;
+  if (!MODULE || !PAGE) return;
 
   var API = "/api/answers";
   var SKIP_TYPES = { button: 1, submit: 1, reset: 1, hidden: 1, file: 1, password: 1, image: 1 };
@@ -121,7 +121,7 @@
     return fetch(API, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ course: COURSE, page: PAGE, key: key, value: value }),
+      body: JSON.stringify({ module: MODULE, page: PAGE, key: key, value: value }),
       credentials: "same-origin",
       keepalive: !!keepalive
     }).then(function (r) {
@@ -189,7 +189,7 @@
       pending = {};
       for (var k in timers) clearTimeout(timers[k]);
       timers = {};
-      fetch(API + "?course=" + encodeURIComponent(COURSE) + "&page=" + encodeURIComponent(PAGE), {
+      fetch(API + "?module=" + encodeURIComponent(MODULE) + "&page=" + encodeURIComponent(PAGE), {
         method: "DELETE", credentials: "same-origin"
       }).then(function (r) {
         if (!r.ok) throw new Error("HTTP " + r.status);
@@ -223,7 +223,7 @@
     document.addEventListener("change", onEdit, true);
     window.addEventListener("pagehide", flush);
 
-    fetch(API + "?course=" + encodeURIComponent(COURSE) + "&page=" + encodeURIComponent(PAGE), {
+    fetch(API + "?module=" + encodeURIComponent(MODULE) + "&page=" + encodeURIComponent(PAGE), {
       credentials: "same-origin", cache: "no-store"
     }).then(function (r) {
       if (!r.ok) throw new Error("HTTP " + r.status);
@@ -232,6 +232,8 @@
       saved = data || {};
       var n = restoreInto(allFields());
       setStatus(n ? "restored" : "ready", n);
+      // let page scripts react (e.g. re-check restored answers)
+      document.dispatchEvent(new CustomEvent("studyhub:restored", { detail: { count: n } }));
       new MutationObserver(function (muts) {
         var added = false;
         for (var i = 0; i < muts.length && !added; i++) if (muts[i].addedNodes.length) added = true;

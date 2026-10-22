@@ -1,0 +1,7 @@
+{
+  "code": "THOR",
+  "title": "Scheduling Theory",
+  "blurb": "Théorie de l'ordonnancement.",
+  "order": 3,
+  "chapters": {"ch1": "Introduction"}
+}

@@ -18,7 +18,7 @@ DB_PATH = os.environ.get("ANSWERS_DB", os.path.join(ROOT, "data", "answers.db"))
 HOST = os.environ.get("ANSWERS_HOST", "127.0.0.1")
 PORT = int(os.environ.get("ANSWERS_PORT", "8001"))
 
-NAME_RE = re.compile(r"^[\w.\-]{1,100}$")
+NAME_RE = re.compile(r"^[\w\-][\w.\-]{0,99}$")  # one path segment, no leading dot
 MAX_BODY = 64 * 1024
 MAX_VALUE = 20 * 1024
 MAX_KEY = 200
@@ -36,12 +36,12 @@ def init_db():
         conn.execute("PRAGMA journal_mode=WAL")
         conn.execute(
             """CREATE TABLE IF NOT EXISTS answers(
-                course TEXT NOT NULL,
+                module TEXT NOT NULL,
                 page TEXT NOT NULL,
                 key TEXT NOT NULL,
                 value TEXT NOT NULL,
                 updated_at TEXT NOT NULL,
-                PRIMARY KEY(course, page, key))"""
+                PRIMARY KEY(module, page, key))"""
         )
 
 
@@ -55,6 +55,16 @@ class ApiError(Exception):
 def check_name(value, field):
     if not isinstance(value, str) or not NAME_RE.match(value):
         raise ApiError(400, f"invalid {field}")
+    return value
+
+
+def check_page(value):
+    """A page is a path inside the module, e.g. ch1/practice.html or ch1/td/td1.html."""
+    if not isinstance(value, str) or len(value) > 200:
+        raise ApiError(400, "invalid page")
+    parts = value.split("/")
+    if not 1 <= len(parts) <= 4 or not all(NAME_RE.match(p) for p in parts):
+        raise ApiError(400, "invalid page")
     return value
 
 
@@ -127,18 +137,18 @@ class Handler(BaseHTTPRequestHandler):
         return {"ok": True}
 
     def get_answers(self, q):
-        course = check_name(q.get("course"), "course")
-        page = check_name(q.get("page"), "page")
+        module = check_name(q.get("module"), "module")
+        page = check_page(q.get("page"))
         with connect() as conn:
             rows = conn.execute(
-                "SELECT key, value FROM answers WHERE course=? AND page=?", (course, page)
+                "SELECT key, value FROM answers WHERE module=? AND page=?", (module, page)
             ).fetchall()
         return dict(rows)
 
     def put_answer(self, q):
         data = self.read_json()
-        course = check_name(data.get("course"), "course")
-        page = check_name(data.get("page"), "page")
+        module = check_name(data.get("module"), "module")
+        page = check_page(data.get("page"))
         key = data.get("key")
         value = data.get("value")
         if not isinstance(key, str) or not 1 <= len(key) <= MAX_KEY:
@@ -152,41 +162,41 @@ class Handler(BaseHTTPRequestHandler):
         with connect() as conn:
             if value == "":
                 conn.execute(
-                    "DELETE FROM answers WHERE course=? AND page=? AND key=?", (course, page, key)
+                    "DELETE FROM answers WHERE module=? AND page=? AND key=?", (module, page, key)
                 )
                 return {"ok": True, "deleted": True}
             conn.execute(
-                """INSERT INTO answers(course, page, key, value, updated_at)
+                """INSERT INTO answers(module, page, key, value, updated_at)
                    VALUES(?,?,?,?,?)
-                   ON CONFLICT(course, page, key)
+                   ON CONFLICT(module, page, key)
                    DO UPDATE SET value=excluded.value, updated_at=excluded.updated_at""",
-                (course, page, key, value, time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())),
+                (module, page, key, value, time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())),
             )
         return {"ok": True}
 
     def delete_page(self, q):
-        course = check_name(q.get("course"), "course")
-        page = check_name(q.get("page"), "page")
+        module = check_name(q.get("module"), "module")
+        page = check_page(q.get("page"))
         with connect() as conn:
             n = conn.execute(
-                "DELETE FROM answers WHERE course=? AND page=?", (course, page)
+                "DELETE FROM answers WHERE module=? AND page=?", (module, page)
             ).rowcount
         return {"ok": True, "deleted": n}
 
     def summary(self, q):
         with connect() as conn:
             rows = conn.execute(
-                "SELECT course, page, COUNT(*) FROM answers GROUP BY course, page"
+                "SELECT module, page, COUNT(*) FROM answers GROUP BY module, page"
             ).fetchall()
         return {f"{c}/{p}": n for c, p, n in rows}
 
     def export(self, q):
         with connect() as conn:
             rows = conn.execute(
-                "SELECT course, page, key, value, updated_at FROM answers ORDER BY course, page, key"
+                "SELECT module, page, key, value, updated_at FROM answers ORDER BY module, page, key"
             ).fetchall()
         return [
-            {"course": c, "page": p, "key": k, "value": v, "updated_at": u}
+            {"module": c, "page": p, "key": k, "value": v, "updated_at": u}
             for c, p, k, v, u in rows
         ]
 

@@ -1,0 +1,869 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Linear Programming Primer · OPL Ch 1–2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<script>/* study-hub:theme */(function(){var r=document.documentElement;try{var t=localStorage.getItem("studyhub-theme");if(t)r.setAttribute("data-theme",t);}catch(e){}document.addEventListener("DOMContentLoaded",function(){var b=document.getElementById("theme-toggle");if(b)b.addEventListener("click",function(){var c=r.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");var n=c==="dark"?"light":"dark";r.setAttribute("data-theme",n);try{localStorage.setItem("studyhub-theme",n);}catch(e){}});});})();</script>
+<style>
+/* study-hub:base v1 — shared by every remake; edit here, then copy into pages */
+:root{
+  --bg:#F3F5FB; --surface:#FFFFFF; --ink:#14203B; --muted:#586583; --line:#D9DFEC;
+  --accent:#2B52E6; --accent-soft:#E3E9FF; --hi:#D9481C; --hi-soft:#FFE3D6; --code-bg:#E9EDF8;
+  --ok:#1B7A49; --ok-soft:#E2F4EA;
+  --c1:#8FB0FF; --c2:#FFB877; --c3:#7EDBAA; --c4:#CDAEFF;
+  --f-display:'Bricolage Grotesque',system-ui,sans-serif;
+  --f-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+  --f-math:'Cambria Math','STIX Two Math',Georgia,serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D1426; --surface:#151F38; --ink:#E6EBF8; --muted:#9BA8C7; --line:#28345A;
+    --accent:#8AA5FF; --accent-soft:#1B2958; --hi:#FF8D63; --hi-soft:#47281F; --code-bg:#1C2849;
+    --ok:#5FD394; --ok-soft:#173326;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D1426; --surface:#151F38; --ink:#E6EBF8; --muted:#9BA8C7; --line:#28345A;
+  --accent:#8AA5FF; --accent-soft:#1B2958; --hi:#FF8D63; --hi-soft:#47281F; --code-bg:#1C2849;
+  --ok:#5FD394; --ok-soft:#173326;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg); color:var(--ink); font-family:var(--f-body); font-size:16px; line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:28px 72px; margin:0;
+}
+.wrap{max-width:1040px;margin:0 auto}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px}
+code{font-family:var(--f-mono);font-size:.9em;background:var(--code-bg);padding:1px 6px;border-radius:5px}
+.en{font-weight:600}
+.fr{color:var(--muted);font-style:italic;font-weight:400}
+sub,sup{line-height:0}
+.m{font-family:var(--f-math);font-style:italic}
+.ov{text-decoration:overline}
+.eq{font-family:var(--f-math);font-size:1.05rem;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 16px;margin:12px 0;overflow-x:auto;white-space:pre}
+.res{display:inline-block;background:var(--ok-soft);color:var(--ink);border-radius:6px;padding:1px 8px;font-weight:600}
+.toggle{position:fixed;top:14px;right:max(14px,env(safe-area-inset-right,0px));z-index:20;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 14px;font:500 .8rem var(--f-body);cursor:pointer}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:36px;align-items:center;padding-bottom:36px}
+.hero.solo{grid-template-columns:minmax(0,1fr)}
+.eyebrow{font:600 .75rem/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+h1{font-family:var(--f-display);font-weight:800;font-size:clamp(2.3rem,5.4vw,3.8rem);line-height:1.02;letter-spacing:-.025em;margin:14px 0 16px;text-wrap:balance}
+.lead{font-size:1.1rem;color:var(--muted);max-width:60ch;margin:0 0 22px}
+.how{display:grid;gap:10px;margin:0;padding:0;list-style:none;max-width:52ch}
+.how li{display:flex;gap:12px;align-items:baseline;font-size:.95rem}
+.how .tag{flex:0 0 auto;min-width:9.5em}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin:0}
+.pill{background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:4px 12px;font:500 .8rem var(--f-mono)}
+.herofig{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 16px 12px;min-width:0;overflow-x:auto}
+.herofig svg{display:block;width:100%;height:auto;min-width:var(--minw,0)}
+.herofig figcaption{font-size:.84rem;color:var(--muted);margin-top:8px}
+
+/* contents */
+.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:28px 24px;padding-block:28px 8px;border-top:1px solid var(--line)}
+.part h3{font:600 .72rem/1.3 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.part ul{list-style:none;margin:0;padding:0;display:grid;gap:3px}
+.part a{display:flex;gap:10px;text-decoration:none;color:var(--ink);padding:3px 0;font-size:.95rem}
+.part a:hover{color:var(--accent)}
+.part a small{display:block;color:var(--muted);font-size:.8rem;line-height:1.35}
+.part .n{font:500 .8rem/1.7 var(--f-mono);color:var(--accent);min-width:1.6em}
+.part .sc{margin-left:auto;font:500 .78rem/1.7 var(--f-mono);color:var(--muted);white-space:nowrap}
+
+/* sections */
+.sec{margin-top:56px;padding-top:36px;border-top:1px solid var(--line);scroll-margin-top:12px}
+.sec-h{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
+.num{font:800 2.5rem/1 var(--f-display);color:var(--accent);letter-spacing:-.03em}
+.sec h2{font-family:var(--f-display);font-weight:700;font-size:clamp(1.4rem,3vw,1.9rem);line-height:1.15;margin:0;letter-spacing:-.015em;text-wrap:balance;min-width:0}
+.sec h2 .fr{font-family:var(--f-body);font-size:.62em;font-weight:400}
+.sec h3{font-family:var(--f-display);font-weight:700;font-size:1.15rem;margin:28px 0 8px}
+.sec h3 .fr{font-family:var(--f-body);font-size:.8em}
+.sec>p,.sec>ul,.sec>ol{max-width:78ch}
+.back{margin-left:auto;font-size:.78rem;color:var(--muted);text-decoration:none}
+.back:hover{color:var(--accent)}
+.secscore{font:600 .85rem var(--f-mono);color:var(--accent)}
+.tag{display:inline-block;font:600 .68rem/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;margin-top:20px}
+.plain{margin-top:20px;border-left:3px solid var(--accent);padding:2px 0 2px 16px}
+.intro .plain{margin-top:0}
+.plain p{margin:8px 0 0;font-size:1.05rem;max-width:62ch}
+.defs{list-style:none;margin:20px 0 0;padding:0;display:grid;gap:12px;min-width:0}
+.intro .defs{margin-top:0}
+.defs li{display:grid;gap:1px;font-size:.95rem}
+.defs .mean{color:var(--muted)}
+.defs .eg{color:var(--muted);font-size:.9rem}
+.defs .eg::before{content:"e.g. ";font-weight:600;color:var(--accent)}
+.callout{margin-top:20px;background:var(--surface);border:1px dashed var(--accent);border-radius:12px;padding:14px 20px}
+.callout>b:first-child{color:var(--accent)}
+.callout ol,.callout ul{margin:6px 0 2px;padding-left:22px}
+.callout li{margin:5px 0}
+details.more{margin-top:14px;border:1px dashed var(--line);border-radius:10px;padding:8px 14px;background:var(--surface)}
+details.more summary{cursor:pointer;font-weight:600;color:var(--accent)}
+
+/* figures */
+.figs{display:flex;flex-wrap:wrap;gap:16px;margin-top:24px}
+.figs figure{flex:1 1 250px;max-width:430px;min-width:0;margin:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 14px 12px}
+figure.fig{margin:18px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 14px 12px;overflow-x:auto}
+figure.fig svg{display:block;width:100%;height:auto;min-width:var(--minw,0);max-width:var(--maxw,560px);margin-inline:auto}
+figcaption{font-size:.82rem;color:var(--muted);margin-top:8px;line-height:1.45}
+
+/* worked example */
+.calc{margin-top:22px;background:var(--accent-soft);border-radius:12px;padding:16px 20px 18px}
+.calc>.tag{color:var(--accent)}
+.calc>p{margin:10px 0 0}
+.calc ol{margin:10px 0 0;padding-left:22px}
+.calc li{margin:8px 0}
+.calc code{background:var(--surface)}
+.calc figure.fig,.calc .eq{background:var(--surface)}
+ul.ln{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:7px;font-family:var(--f-mono);font-size:.88rem;line-height:1.55}
+ul.ln li{padding-left:1.1em;text-indent:-1.1em;overflow-wrap:anywhere}
+ul.ln li::before{content:"\203A\00a0";color:var(--accent);font-weight:600}
+
+/* tables */
+.scroll{overflow-x:auto;margin-top:12px;max-width:100%}
+table.t{border-collapse:collapse;font:400 .9rem/1.45 var(--f-body);min-width:260px}
+table.t th{font-weight:600;text-align:left;color:var(--muted)}
+table.t th,table.t td{padding:6px 14px 6px 0;border-bottom:1px solid var(--line);vertical-align:top}
+table.t.mono{font-family:var(--f-mono);font-size:.85rem}
+table.t.mono th,table.t.mono td{white-space:nowrap}
+table.t.grid th,table.t.grid td{padding:6px 10px;border:1px solid var(--line)}
+table.t.grid th{background:var(--accent-soft);color:var(--ink)}
+table.t .c,table.t.center th,table.t.center td{text-align:center}
+table.t.center .l{text-align:left}
+table.t td.ok{color:var(--ok);font-weight:600}
+table.t td.bad,table.t td.x{color:var(--hi);font-weight:600}
+table.t tr.best td{background:var(--ok-soft);font-weight:600}
+
+/* notes and footer */
+.note{margin-top:20px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 20px}
+.note.errata{background:var(--hi-soft);border-color:color-mix(in srgb,var(--hi) 35%,transparent)}
+.note.errata>.tag{color:var(--hi)}
+.note ul,.note ol{margin:8px 0 0;padding-left:1.2em;display:grid;gap:8px;font-size:.95rem}
+.foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);font-size:.82rem;color:var(--muted)}
+
+/* practice */
+.prog{display:flex;align-items:center;gap:14px;max-width:460px;margin-top:22px;font:500 .85rem var(--f-mono);color:var(--muted)}
+.prog .track{flex:1;height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.prog .fill{display:block;height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .25s}
+.legend{display:flex;gap:10px 16px;flex-wrap:wrap;margin-top:16px;font-size:.88rem;color:var(--muted)}
+.setmeta{margin:6px 0 0;color:var(--muted);font-size:.9rem}
+.prob{margin-top:18px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 20px 14px;scroll-margin-top:12px}
+.prob.ok{border-color:var(--ok);box-shadow:0 0 0 1px var(--ok) inset}
+.prob.bad{border-color:var(--hi)}
+.ph{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.pid{font:600 1.05rem var(--f-mono);color:var(--accent)}
+.ph .pt{font:600 1rem/1.35 var(--f-body);margin:0;min-width:0;flex:1 1 16em}
+.lvl{font:600 .66rem/1 var(--f-mono);letter-spacing:.09em;text-transform:uppercase;padding:5px 9px;border-radius:99px}
+.lw{background:var(--accent-soft);color:var(--accent)}
+.ls{background:var(--code-bg);color:var(--ink)}
+.lc{background:var(--hi-soft);color:var(--hi)}
+.done{margin-left:auto;display:flex;align-items:center;gap:7px;font-size:.82rem;color:var(--muted);cursor:pointer}
+.done input{width:17px;height:17px;accent-color:var(--accent);cursor:pointer}
+.pq{margin-top:10px;max-width:78ch}
+.pq>p,.prob>p{margin:10px 0 0}
+.parts{margin:8px 0 0;padding-left:1.4em;display:grid;gap:5px}
+.pfs{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px}
+.pfs figure{flex:1 1 200px;max-width:340px;min-width:0;margin:0;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 10px 8px}
+.prob details{margin-top:14px}
+.prob summary{cursor:pointer;font:600 .82rem var(--f-mono);color:var(--accent);width:max-content;padding:4px 0}
+.sol{margin-top:8px;background:var(--accent-soft);border-radius:10px;padding:6px 18px 12px;font-size:.95rem}
+.sol p{margin:10px 0 0;max-width:78ch}
+.sol .pfs figure,.sol .eq{background:var(--surface)}
+.aid{margin-top:12px;background:var(--bg);border:1px dashed var(--accent);border-radius:10px;padding:8px 14px;font-size:.9rem;line-height:1.55}
+.aid>b:first-child{color:var(--accent)}
+.prob input[type=text]{width:100%;min-width:56px;max-width:90px;font:inherit;text-align:center;padding:5px 6px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.prob textarea{width:100%;font:inherit;padding:8px 10px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.prob select{font:inherit;padding:5px 8px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.prob input:focus,.prob select:focus,.prob textarea:focus{outline:2px solid var(--accent);outline-offset:1px}
+.prob input.ok,.prob select.ok{border-color:var(--ok);background:var(--ok-soft)}
+.prob input.bad,.prob select.bad{border-color:var(--hi);background:var(--hi-soft)}
+table.t.inp td{padding:3px 6px 3px 0}
+.scalars{display:flex;flex-wrap:wrap;gap:12px 20px;margin:12px 0 0}
+label.sc{display:flex;align-items:center;gap:8px}
+label.sc>span{font-weight:600;min-width:34px}
+label.sc small{color:var(--muted);font-size:.75rem}
+.mc{display:grid;gap:7px;margin:12px 0 0}
+label.opt{display:flex;gap:10px;align-items:flex-start;padding:8px 12px;border:1.5px solid var(--line);border-radius:10px;cursor:pointer;background:var(--bg)}
+label.opt:hover{border-color:var(--accent)}
+label.opt.ok{border-color:var(--ok);background:var(--ok-soft)}
+label.opt.bad{border-color:var(--hi);background:var(--hi-soft)}
+label.opt.reveal{border-color:var(--ok)}
+label.opt input{margin-top:5px;accent-color:var(--accent)}
+.chips-set{display:inline-flex;flex-wrap:wrap;gap:6px;vertical-align:middle}
+label.chipbox{position:relative;border:1.5px solid var(--line);border-radius:999px;padding:3px 12px;cursor:pointer;background:var(--bg);font-size:.88rem}
+label.chipbox:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+label.chipbox input{position:absolute;opacity:0;pointer-events:none}
+.chips-set.ok label.chipbox:has(input:checked){border-color:var(--ok);background:var(--ok-soft)}
+.chips-set.bad{outline:2px solid var(--hi);outline-offset:3px;border-radius:12px}
+.actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:14px}
+.b{font:500 .85rem var(--f-body);padding:6px 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.b.chk{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:600}
+.fb{font-size:.88rem;font-weight:600}
+.fb.ok{color:var(--ok)} .fb.bad{color:var(--hi)}
+.solution,.expl{margin-top:12px;border-top:1px dashed var(--line);padding-top:10px;font-size:.95rem}
+.solution>p,.expl>p{margin:6px 0}
+.expl{color:var(--muted)}
+
+@media (max-width:820px){
+  .hero{grid-template-columns:minmax(0,1fr)}
+  .intro{grid-template-columns:minmax(0,1fr)}
+  .how li{flex-direction:column;gap:2px}
+  body{padding-top:56px}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{.toggle{display:none}body{background:#fff}}
+/* /study-hub:base */
+</style>
+<style>
+/* page-specific */
+svg text{font-size:12px;fill:var(--ink);font-family:var(--f-body)}
+svg .ax{stroke:var(--muted);stroke-width:1.4;fill:none}
+svg .dom{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2}
+svg .ln{stroke:var(--muted);stroke-width:1.2;stroke-dasharray:5 4;fill:none}
+svg .obj{stroke:var(--hi);stroke-width:2.6;fill:none}
+svg .objd{stroke:var(--hi);stroke-width:1.6;stroke-dasharray:4 3;fill:none}
+svg .pt{fill:var(--hi);stroke:var(--bg);stroke-width:1.5}
+svg .pt2{fill:var(--accent);stroke:var(--bg);stroke-width:1.5}
+svg text.mu{fill:var(--muted)}
+svg text.ac{fill:var(--hi);font-weight:700}
+svg .halo{paint-order:stroke;stroke:var(--surface);stroke-width:4px}
+svg .node{fill:var(--surface);stroke:var(--accent);stroke-width:1.8}
+svg .used{stroke:var(--accent);stroke-width:3;fill:none}
+svg .unused{stroke:var(--muted);stroke-width:1.2;stroke-dasharray:4 4;fill:none}
+</style>
+</head>
+<body>
+<button class="toggle" id="theme-toggle" type="button" aria-label="Toggle light or dark theme">◐ Theme</button>
+<div class="wrap">
+
+<!-- HERO -->
+<header class="hero" id="top">
+  <div>
+    <div class="eyebrow">OPL · Chapters 1–2 · Lesson</div>
+    <h1>Linear Programming Primer</h1>
+    <p class="lead">From a word problem to canonical form, standard form and the graphical method, with every example worked step by step. <span class="fr">(Programmation linéaire)</span></p>
+  </div>
+  <figure class="herofig">
+    <svg viewBox="0 0 360 280" role="img" aria-label="Feasible polygon with the objective line touching the optimal vertex (3,2)">
+      <polygon class="dom" points="40,240 240,240 190,140 90,90 40,90"/>
+      <line class="ln" x1="240" y1="240" x2="140" y2="40"/>
+      <line class="ln" x1="40" y1="65" x2="290" y2="190"/>
+      <line class="ln" x1="40" y1="90" x2="300" y2="90"/>
+      <line class="obj" x1="115" y1="80" x2="265" y2="200"/>
+      <line class="ax" x1="40" y1="240" x2="335" y2="240"/>
+      <line class="ax" x1="40" y1="240" x2="40" y2="26"/>
+      <circle class="pt" cx="190" cy="140" r="6"/>
+      <text x="338" y="236" class="mu">x<tspan dy="3" font-size="9">A</tspan></text>
+      <text x="46" y="30" class="mu">x<tspan dy="3" font-size="9">B</tspan></text>
+      <text x="146" y="34" class="mu halo">2x<tspan dy="3" font-size="9">A</tspan><tspan dy="-3"> + x</tspan><tspan dy="3" font-size="9">B</tspan><tspan dy="-3"> = 8</tspan></text>
+      <text x="46" y="56" class="mu halo">x<tspan dy="3" font-size="9">A</tspan><tspan dy="-3"> + 2x</tspan><tspan dy="3" font-size="9">B</tspan><tspan dy="-3"> = 7</tspan></text>
+      <text x="304" y="94" class="mu">x<tspan dy="3" font-size="9">B</tspan><tspan dy="-3"> ≤ 3</tspan></text>
+      <text x="268" y="208" class="ac halo">z = 22</text>
+      <text x="204" y="124" class="halo">optimum (3, 2)</text>
+    </svg>
+    <figcaption>The feasible region (<i>domaine</i>) and the best objective line touching it at one vertex.</figcaption>
+  </figure>
+</header>
+
+<div class="callout"><b>The whole chapter in one minute.</b> You can choose a few things (for example, how many of each product to make). You want one total to be as big as possible (profit) or as small as possible (cost). But you have limits (materials, time). If every formula is a straight line, that is a <b>linear program</b>. This page teaches you to (1) write such a problem as formulas, (2) rewrite the formulas in standard shapes, and (3) see the answer on a drawing.</div>
+
+<nav class="toc" aria-label="Contents">
+<div class="part"><h3>A · Setting up</h3><ul><li><a href="#s1"><span class="n">1</span><span>What is a linear program?<small>Definitions and a full first example</small></span></a></li><li><a href="#s2"><span class="n">2</span><span>Modelling<small>Three classic problems</small></span></a></li></ul></div>
+<div class="part"><h3>B · Canonical form and its meaning</h3><ul><li><a href="#s3"><span class="n">3</span><span>Canonical form<small>And how to convert to it</small></span></a></li><li><a href="#s4"><span class="n">4</span><span>Geometric view<small>Half-planes and vertices</small></span></a></li><li><a href="#s5"><span class="n">5</span><span>Economic view<small>What the symbols mean</small></span></a></li><li><a href="#s6"><span class="n">6</span><span>The three assumptions<small>When an LP is valid</small></span></a></li></ul></div>
+<div class="part"><h3>C · Standard form and solving</h3><ul><li><a href="#s7"><span class="n">7</span><span>Standard form<small>Slack variables</small></span></a></li><li><a href="#s8"><span class="n">8</span><span>Matrix form<small>Feasible vs optimal</small></span></a></li><li><a href="#s9"><span class="n">9</span><span>Graphical resolution<small>The workshop problem, solved by drawing</small></span></a></li></ul></div>
+</nav>
+
+<!-- 1 -->
+<section class="sec" id="s1"><div class="sec-h"><span class="num">1</span><h2>What is a linear program? <span class="fr">(programme linéaire)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="plain"><span class="tag">In plain words</span><p>Choose some numbers to make one quantity as large (or small) as possible, while respecting limits. The catch that makes it "linear": every formula involved is a straight-line formula, no products or squares of variables.</p></div>
+  <div class="callout"><b>Everyday picture.</b> You run a small workshop. You get to <i>choose</i> how many of each product to make (the <b>decision variables</b>). You want the biggest possible profit (the <b>objective function</b>). But materials and time are limited (the <b>constraints</b>).<br><b>Why "linear"?</b> Because everything scales in a straight line: make twice as many, earn twice the profit, use twice the material. No discounts, no bonuses, no products of unknowns.</div>
+  <ul class="defs"><li><span class="term"><b class="en">Mathematical program</b> <span class="fr">(programme mathématique)</span></span><span class="mean">Find the extremum (max or min) of a function of several variables, where the variables must satisfy a system of equations and/or inequalities.</span></li><li><span class="term"><b class="en">Linear program, LP</b> <span class="fr">(programme linéaire, PL)</span></span><span class="mean">A mathematical program where every function involved is linear.</span></li><li><span class="term"><b class="en">Linear optimization</b> <span class="fr">(optimisation linéaire, OL)</span></span><span class="mean">Finding the optimum of a linear program.</span></li><li><span class="term"><b class="en">Decision variables</b> <span class="fr">(variables de décision)</span></span><span class="mean">The unknowns <span class="m">x<sub>1</sub>…x<sub>n</sub></span> you get to choose.</span></li><li><span class="term"><b class="en">Objective function</b> <span class="fr">(fonction économique, objectif)</span></span><span class="mean">The linear quantity <span class="m">z</span> you maximise or minimise.</span></li><li><span class="term"><b class="en">Constraints</b> <span class="fr">(contraintes)</span></span><span class="mean">Linear equations or inequalities the variables must obey.</span></li></ul>
+
+  <div class="calc"><span class="tag">Worked example · the first max problem, in full detail</span>
+    <p><b>The problem.</b> <span class="m">max z = 3x + 2y</span> subject to <span class="m">x + y ≤ 4</span>, <span class="m">x ≥ 0</span>, <span class="m">y ≥ 0</span>.</p>
+    <p><b>A story that matches it.</b> You have 4 hours to split between two jobs. Job X pays 3 per hour and job Y pays 2 per hour. Let <i>x</i> = hours spent on X and <i>y</i> = hours spent on Y. How should you split your time to earn the most?</p>
+    <ol>
+      <li><b>Read each piece.</b>
+        <br>• <span class="m">z = 3x + 2y</span> is the <b>objective function</b>: your total pay (3 per hour of X plus 2 per hour of Y).
+        <br>• <span class="m">x + y ≤ 4</span> is the <b>constraint</b>: hours used cannot exceed the 4 you have. It says "≤", not "=", because you are allowed to leave some hours unused.
+        <br>• <span class="m">x ≥ 0, y ≥ 0</span> are the <b>sign constraints</b>: you can't work a negative number of hours.</li>
+      <li><b>Try some plans.</b> A plan is a pair (x, y). It is <b>feasible</b> (<i>réalisable</i>) only if it respects every constraint. Only feasible plans are allowed to compete.
+        <div class="scroll"><table class="t grid">
+          <tr><th>Plan (x, y)</th><th class="c">x + y</th><th class="c">Hours ≤ 4?</th><th class="c">x, y ≥ 0?</th><th class="c">Feasible?</th><th class="c">z = 3x + 2y</th></tr>
+          <tr><td>(1, 1)</td><td class="c">2</td><td class="c ok">yes</td><td class="c ok">yes</td><td class="c ok">yes</td><td class="c">5</td></tr>
+          <tr><td>(2, 2)</td><td class="c">4</td><td class="c ok">yes</td><td class="c ok">yes</td><td class="c ok">yes</td><td class="c">10</td></tr>
+          <tr><td>(3, 1)</td><td class="c">4</td><td class="c ok">yes</td><td class="c ok">yes</td><td class="c ok">yes</td><td class="c">11</td></tr>
+          <tr><td>(0, 4)</td><td class="c">4</td><td class="c ok">yes</td><td class="c ok">yes</td><td class="c ok">yes</td><td class="c">8</td></tr>
+          <tr class="best"><td>(4, 0)</td><td class="c">4</td><td class="c">yes</td><td class="c">yes</td><td class="c">yes</td><td class="c">12</td></tr>
+          <tr><td>(3, 3)</td><td class="c">6</td><td class="c bad">no</td><td class="c ok">yes</td><td class="c bad">no</td><td class="c">(15, but not allowed)</td></tr>
+          <tr><td>(−1, 5)</td><td class="c">4</td><td class="c ok">yes</td><td class="c bad">no</td><td class="c bad">no</td><td class="c">(7, but not allowed)</td></tr>
+        </table></div>
+        The plan (3, 3) looks great on paper (z = 15) but needs 6 hours, so it is out. The best feasible plan so far is (4, 0). But are we sure nothing beats it? That is what the next steps settle.</li>
+      <li><b>Draw all feasible plans.</b> Every plan (x, y) is a point on a plane. The edge <span class="m">x + y = 4</span> is a straight line, and "≤" keeps the side containing the origin. The two sign constraints keep the upper-right quarter. What is left is a triangle with corners (0,0), (4,0) and (0,4). Every feasible plan lies in this triangle, and this triangle is the <b>domain</b>.
+        <figure class="fig">
+          <svg viewBox="0 0 300 290" role="img" aria-label="Triangle of feasible plans with the objective line z=12 touching the corner (4,0)">
+            <polygon class="dom" points="50,250 202,250 50,98"/>
+            <line class="objd" x1="50" y1="136" x2="126" y2="250"/>
+            <line class="obj" x1="50" y1="22" x2="202" y2="250"/>
+            <line class="ax" x1="50" y1="250" x2="285" y2="250"/>
+            <line class="ax" x1="50" y1="250" x2="50" y2="10"/>
+            <circle class="pt" cx="202" cy="250" r="6"/>
+            <circle class="pt2" cx="50" cy="250" r="4"/>
+            <circle class="pt2" cx="50" cy="98" r="4"/>
+            <text x="288" y="254" class="mu">x</text>
+            <text x="56" y="16" class="mu">y</text>
+            <text x="64" y="244" class="halo">(0, 0)</text>
+            <text x="206" y="274" class="ac halo" text-anchor="middle">(4, 0) best</text>
+            <text x="58" y="94" class="halo">(0, 4)</text>
+            <text x="112" y="178" class="mu halo" text-anchor="middle" transform="rotate(45 112 178)">x + y = 4</text>
+            <text x="58" y="34" class="ac halo">z = 12</text>
+            <text x="58" y="152" class="mu halo">z = 6</text>
+          </svg>
+          <figcaption>Blue: all feasible plans. Dashed line: every plan paying 6. Solid orange line: every plan paying 12. It only touches the triangle at the corner (4, 0).</figcaption>
+        </figure></li>
+      <li><b>Why only the corners matter.</b> All plans with the same pay lie on one straight line (for example <span class="m">3x + 2y = 6</span>, the dashed line). Pushing that line up and to the right raises the pay. The last point of the triangle it touches is where pay is highest, and because a triangle has flat sides, that last point is always a corner (or, in a special case, a whole side). So it is enough to check the corners.</li>
+      <li><b>Compute z at each corner.</b>
+        <div class="scroll"><table class="t grid">
+          <tr><th>Corner</th><th class="c">Calculation</th><th class="c">z</th></tr>
+          <tr><td>(0, 0)</td><td class="c">3·0 + 2·0</td><td class="c">0</td></tr>
+          <tr class="best"><td>(4, 0)</td><td class="c">3·4 + 2·0</td><td class="c">12</td></tr>
+          <tr><td>(0, 4)</td><td class="c">3·0 + 2·4</td><td class="c">8</td></tr>
+        </table></div></li>
+      <li><b>Answer.</b> The optimum is <span class="res">x = 4, y = 0, z = 12</span>: all 4 hours go to job X.</li>
+      <li><b>Does it make sense in plain words?</b> Yes. The only limit is the total number of hours, and job X pays more per hour (3 against 2), so every hour should go to X.</li>
+      <li><b>What if the numbers change?</b> Suppose job Y paid 5 per hour: <span class="m">z = 3x + 5y</span>. Now the corners give 0, 12 and 20, so the best corner becomes (0, 4) with z = 20. The best corner depends on the objective, which is exactly why we compare corners instead of guessing.</li>
+    </ol>
+    <p><b>For contrast,</b> <span class="m">max z = xy</span> is <i>not</i> linear: the objective multiplies two variables, so doubling both would quadruple z.</p>
+  </div>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s2"><div class="sec-h"><span class="num">2</span><h2>Modelling <span class="fr">(modélisation)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="plain"><span class="tag">In plain words</span><p>Turning a story into an LP is always the same four steps: name the unknowns, write the objective, write one constraint per limited resource, add <span class="m">x ≥ 0</span>.</p></div>
+
+  <h3>Problem 1: two products, three raw materials</h3>
+  <p>Picture a small workshop. It makes two products, <b>A</b> and <b>B</b>, from three raw materials, <b>M1, M2, M3</b>. The stock is limited: 8 units of M1, 7 of M2, 3 of M3. Each unit of A earns 4 and each unit of B earns 5. Making one unit of A eats 2 units of M1 and 1 of M2 (no M3). Making one unit of B eats 1 unit of M1, 2 of M2 and 1 of M3. How many of each should it make?</p>
+  <p><b>Where the table comes from:</b> it is just the story above written compactly. Each <i>row</i> is a raw material, each <i>column</i> is a product, and the number where they cross is "how much of that material one unit of that product uses". The last column is the stock.</p>
+  <div class="scroll"><table class="t grid">
+    <tr><th></th><th class="c">A</th><th class="c">B</th><th class="c">Stock</th></tr>
+    <tr><td>M1</td><td class="c">2</td><td class="c">1</td><td class="c">8</td></tr>
+    <tr><td>M2</td><td class="c">1</td><td class="c">2</td><td class="c">7</td></tr>
+    <tr><td>M3</td><td class="c">0</td><td class="c">1</td><td class="c">3</td></tr>
+  </table></div>
+  <div class="callout"><b>How to build the model, step by step.</b>
+    <ol>
+      <li><b>Unknowns.</b> What do we choose? How many A and how many B. Call them <span class="m">x<sub>A</sub></span> and <span class="m">x<sub>B</sub></span>.</li>
+      <li><b>Objective.</b> Each A earns 4 and each B earns 5, so the total profit is <span class="m">4x<sub>A</sub> + 5x<sub>B</sub></span>. (Example: 3 A and 2 B give 4·3 + 5·2 = 22.)</li>
+      <li><b>One constraint per material: read one row of the table.</b> M1 row: each A uses 2, each B uses 1, so the total M1 used is <span class="m">2x<sub>A</sub> + 1x<sub>B</sub></span>, and it cannot exceed the stock of 8. The M2 row gives <span class="m">x<sub>A</sub> + 2x<sub>B</sub> ≤ 7</span>. In the M3 row, A uses 0, so only <span class="m">x<sub>B</sub> ≤ 3</span> is left.</li>
+      <li><b>No negative quantities.</b> You can't make −2 units, so <span class="m">x<sub>A</sub>, x<sub>B</sub> ≥ 0</span>.</li>
+    </ol>
+    <b>Quick check</b> with 3 A and 2 B: M1 used 2·3 + 2 = 8 ≤ 8, M2 used 3 + 2·2 = 7 ≤ 7, M3 used 2 ≤ 3. All limits hold, so this plan is <b>feasible</b> (<i>admissible</i>).</div>
+  <div class="eq">max z = 4x_A + 5x_B
+  2x_A +  x_B ≤ 8      (M1)
+   x_A + 2x_B ≤ 7      (M2)
+         x_B ≤ 3      (M3)
+  x_A, x_B ≥ 0</div>
+  <div class="calc"><span class="tag">Worked example · Problem 1 solved, step by step</span>
+    <ol>
+      <li><b>Draw each limit as a line.</b> Replace "≤" by "=". M1: <span class="m">2x<sub>A</sub> + x<sub>B</sub> = 8</span> crosses the axes at (4, 0) and (0, 8). M2: <span class="m">x<sub>A</sub> + 2x<sub>B</sub> = 7</span> crosses at (7, 0) and (0, 3.5). M3: <span class="m">x<sub>B</sub> = 3</span> is a horizontal line. The origin satisfies all three, so the domain is on the origin side of each line (this is the polygon in the figure at the top).</li>
+      <li><b>Find the corners.</b> A corner is where two boundary lines meet <i>and</i> the point still respects every other limit. Checking the meeting points:
+        <div class="scroll"><table class="t grid">
+          <tr><th>Lines that meet</th><th class="c">Point</th><th class="c">Respects all limits?</th><th class="c">z = 4x<sub>A</sub> + 5x<sub>B</sub></th></tr>
+          <tr><td>x<sub>A</sub> = 0 and x<sub>B</sub> = 0</td><td class="c">(0, 0)</td><td class="c ok">yes</td><td class="c">0</td></tr>
+          <tr><td>M1 and x<sub>B</sub> = 0</td><td class="c">(4, 0)</td><td class="c ok">yes</td><td class="c">16</td></tr>
+          <tr class="best"><td>M1 and M2</td><td class="c">(3, 2)</td><td class="c">yes</td><td class="c">22</td></tr>
+          <tr><td>M2 and M3</td><td class="c">(1, 3)</td><td class="c ok">yes</td><td class="c">19</td></tr>
+          <tr><td>M3 and x<sub>A</sub> = 0</td><td class="c">(0, 3)</td><td class="c ok">yes</td><td class="c">15</td></tr>
+          <tr><td>M1 and M3</td><td class="c">(2.5, 3)</td><td class="c bad">no (M2: 2.5 + 6 = 8.5 &gt; 7)</td><td class="c">skip</td></tr>
+          <tr><td>M2 and x<sub>B</sub> = 0</td><td class="c">(7, 0)</td><td class="c bad">no (M1: 14 &gt; 8)</td><td class="c">skip</td></tr>
+        </table></div>
+        Not every meeting of two lines is a corner: the last two rows are outside the domain.</li>
+      <li><b>How (3, 2) was found.</b> Solve the two M-lines together: from M1, <span class="m">x<sub>B</sub> = 8 − 2x<sub>A</sub></span>. Put that into M2: <span class="m">x<sub>A</sub> + 2(8 − 2x<sub>A</sub>) = 7</span>, so <span class="m">16 − 3x<sub>A</sub> = 7</span>, so <span class="m">x<sub>A</sub> = 3</span> and then <span class="m">x<sub>B</sub> = 2</span>.</li>
+      <li><b>Pick the best.</b> The largest z is 22.</li>
+      <li><b>Meaning.</b> Optimum: <span class="res">x<sub>A</sub> = 3, x<sub>B</sub> = 2, z = 22</span>. M1 and M2 are used up completely (6 + 2 = 8 and 3 + 4 = 7): they are the <i>bottlenecks</i>. M3 has 1 unit left over (2 used out of 3).</li>
+    </ol>
+  </div>
+
+  <h3>Problem 2: production programme</h3>
+  <p>A workshop has two machines, M1 (6000 min/month available) and M2 (4000 min/month). Product P1 needs 30 min on M1 and 40 min on M2 and earns 400. Product P2 needs 20 min on M1 and 10 min on M2 and earns 200. <i>(Here M1 and M2 are machines, not the materials of Problem 1.)</i></p>
+  <p><b>Same recipe:</b> the unknowns are how many P1 and P2 to make (<span class="m">x<sub>1</sub>, x<sub>2</sub></span>). The "resource" is machine time. Machine M1 runs <span class="m">30x<sub>1</sub> + 20x<sub>2</sub></span> minutes and only has 6000, which gives the first constraint. The same reasoning on M2 gives the second.</p>
+  <div class="eq">max z = 400x_1 + 200x_2
+  30x_1 + 20x_2 ≤ 6000     (M1)
+  40x_1 + 10x_2 ≤ 4000     (M2)
+  x_1, x_2 ≥ 0</div>
+  <div class="calc"><span class="tag">Worked example · Problem 2 solved, step by step</span>
+    <ol>
+      <li><b>Test two plans to see what "feasible" means.</b> Plan (50, 200): M1 uses 30·50 + 20·200 = 5500 ≤ 6000 and M2 uses 40·50 + 10·200 = 4000 ≤ 4000, so it is allowed, and it earns 400·50 + 200·200 = 60 000. Plan (60, 250) would earn 74 000, which looks better, but M1 would need 30·60 + 20·250 = 6800 &gt; 6000, so it is <i>not allowed</i>.</li>
+      <li><b>Try one product only.</b> Only P2: M1 allows 6000 ÷ 20 = 300 units and M2 allows 4000 ÷ 10 = 400, so the limit is 300, earning 200·300 = 60 000. Only P1: M1 allows 200 and M2 allows 100, so the limit is 100, earning 40 000. Mixing both must do at least as well. Let us find out how much better.</li>
+      <li><b>Find the corners of the domain.</b> The M1 line crosses the axes at (200, 0) and (0, 300); the M2 line at (100, 0) and (0, 400). Only some of these are corners: (0, 300) and (100, 0) respect both limits; (200, 0) breaks M2 (8000 &gt; 4000) and (0, 400) breaks M1 (8000 &gt; 6000). The two lines meet at (40, 240).</li>
+      <li><b>How (40, 240) was found.</b> Multiply the M2 equation by 2: <span class="m">80x<sub>1</sub> + 20x<sub>2</sub> = 8000</span>. Subtract the M1 equation: <span class="m">50x<sub>1</sub> = 2000</span>, so <span class="m">x<sub>1</sub> = 40</span>. Then <span class="m">20x<sub>2</sub> = 6000 − 1200 = 4800</span>, so <span class="m">x<sub>2</sub> = 240</span>.</li>
+      <li><b>Compare the corners.</b>
+        <div class="scroll"><table class="t grid">
+          <tr><th>Corner</th><th class="c">(0, 0)</th><th class="c">(100, 0)</th><th class="c">(40, 240)</th><th class="c">(0, 300)</th></tr>
+          <tr><td>z = 400x<sub>1</sub> + 200x<sub>2</sub></td><td class="c">0</td><td class="c">40 000</td><td class="c"><b>64 000</b></td><td class="c">60 000</td></tr>
+        </table></div></li>
+      <li><b>Meaning.</b> Optimum: <span class="res">x<sub>1</sub> = 40, x<sub>2</sub> = 240, z = 64 000</span>. Both machines are saturated: 1200 + 4800 = 6000 and 1600 + 2400 = 4000. The mix beats the best single product (60 000). Section 9 solves this same problem by drawing.</li>
+    </ol>
+  </div>
+
+  <h3>Problem 3: transport problem <span class="fr">(problème de transport)</span></h3>
+  <p>Ship goods from <i>n</i> depots to <i>m</i> shops. Known: unit cost <span class="m">c<sub>ij</sub></span>, depot stock <span class="m">a<sub>i</sub></span>, shop demand <span class="m">b<sub>j</sub></span>. Unknown: quantity <span class="m">x<sub>ij</sub></span> sent from depot <i>i</i> to shop <i>j</i>.</p>
+  <div class="callout"><b>Reading the notation.</b> Two small numbers under a letter are just an address: <span class="m">x<sub>12</sub></span> = amount sent from depot 1 to shop 2, and <span class="m">c<sub>12</sub></span> = the cost of sending one unit along that route. The symbol <span class="m">Σ</span> means "add up over all values". So the objective reads "cost per unit × units sent, added over every route". The two constraints say, in words: <b>each depot ships out exactly what it has</b> (add up one row of shipments) and <b>each shop receives exactly what it needs</b> (add up one column).</div>
+  <div class="eq">min Z = Σᵢ Σⱼ c_ij x_ij
+  Σⱼ x_ij = a_i      (each depot ships its whole stock)
+  Σᵢ x_ij = b_j      (each shop receives exactly its demand)
+  x_ij ≥ 0</div>
+  <div class="calc"><span class="tag">Worked example · Problem 3 solved, step by step</span>
+    <p>2 depots with stock 30 and 20, 3 shops with demand 10, 25, 15. Costs (rows = depots):</p>
+    <div class="scroll"><table class="t grid">
+      <tr><th></th><th class="c">S1</th><th class="c">S2</th><th class="c">S3</th><th class="c">Stock</th></tr>
+      <tr><td>D1</td><td class="c">4</td><td class="c">6</td><td class="c">9</td><td class="c">30</td></tr>
+      <tr><td>D2</td><td class="c">5</td><td class="c">3</td><td class="c">7</td><td class="c">20</td></tr>
+      <tr><td>Demand</td><td class="c">10</td><td class="c">25</td><td class="c">15</td><td class="c"></td></tr>
+    </table></div>
+    <ol>
+      <li><b>Check the problem is balanced.</b> Total stock 30 + 20 = 50 and total demand 10 + 25 + 15 = 50. Equal, so shipping everything and satisfying everyone is possible.</li>
+      <li><b>Count the unknowns.</b> 2 depots × 3 shops = 6 shipping quantities <span class="m">x<sub>11</sub>…x<sub>23</sub></span>, with 2 + 3 = 5 equations.</li>
+      <li><b>Reason about where D2 should ship.</b> Compare the two depots shop by shop. D2 is cheaper than D1 at S2 (3 against 6, saving 3 per unit) and at S3 (7 against 9, saving 2), but more expensive at S1. D2 has only 20 units, so it should use them where its advantage is biggest: all 20 go to S2. D1 covers the rest: 10 to S1, 5 to S2 (25 − 20) and 15 to S3.</li>
+      <li><b>The plan.</b>
+        <div class="scroll"><table class="t grid">
+          <tr><th></th><th class="c">S1</th><th class="c">S2</th><th class="c">S3</th><th class="c">Row total</th></tr>
+          <tr><td>D1</td><td class="c">10</td><td class="c">5</td><td class="c">15</td><td class="c">30 ✓</td></tr>
+          <tr><td>D2</td><td class="c">0</td><td class="c">20</td><td class="c">0</td><td class="c">20 ✓</td></tr>
+          <tr><td>Column total</td><td class="c">10 ✓</td><td class="c">25 ✓</td><td class="c">15 ✓</td><td class="c"></td></tr>
+        </table></div>
+        <figure>
+          <svg viewBox="0 0 380 240" role="img" aria-label="Optimal transport plan from two depots to three shops">
+            <line class="used" x1="95" y1="70" x2="285" y2="40"/>
+            <line class="used" x1="95" y1="70" x2="285" y2="120"/>
+            <line class="used" x1="95" y1="70" x2="285" y2="200"/>
+            <line class="unused" x1="95" y1="170" x2="285" y2="40"/>
+            <line class="used" x1="95" y1="170" x2="285" y2="120"/>
+            <line class="unused" x1="95" y1="170" x2="285" y2="200"/>
+            <rect class="node" x="25" y="50" width="70" height="40" rx="8"/>
+            <rect class="node" x="25" y="150" width="70" height="40" rx="8"/>
+            <rect class="node" x="285" y="20" width="75" height="40" rx="8"/>
+            <rect class="node" x="285" y="100" width="75" height="40" rx="8"/>
+            <rect class="node" x="285" y="180" width="75" height="40" rx="8"/>
+            <text x="60" y="66" text-anchor="middle">D1</text><text x="60" y="82" text-anchor="middle" class="mu">stock 30</text>
+            <text x="60" y="166" text-anchor="middle">D2</text><text x="60" y="182" text-anchor="middle" class="mu">stock 20</text>
+            <text x="322" y="36" text-anchor="middle">S1</text><text x="322" y="52" text-anchor="middle" class="mu">demand 10</text>
+            <text x="322" y="116" text-anchor="middle">S2</text><text x="322" y="132" text-anchor="middle" class="mu">demand 25</text>
+            <text x="322" y="196" text-anchor="middle">S3</text><text x="322" y="212" text-anchor="middle" class="mu">demand 15</text>
+            <text x="228" y="53" text-anchor="middle" class="halo ac">c4 · 10</text>
+            <text x="228" y="109" text-anchor="middle" class="halo ac">c6 · 5</text>
+            <text x="228" y="165" text-anchor="middle" class="halo ac">c9 · 15</text>
+            <text x="228" y="83" text-anchor="middle" class="halo mu">c5 · 0</text>
+            <text x="228" y="139" text-anchor="middle" class="halo ac">c3 · 20</text>
+            <text x="228" y="195" text-anchor="middle" class="halo mu">c7 · 0</text>
+          </svg>
+          <figcaption>Each line reads "c4 · 10": unit cost 4, 10 units shipped. Dashed lines carry nothing.</figcaption>
+        </figure></li>
+      <li><b>Compute the cost.</b> 10·4 + 5·6 + 15·9 + 20·3 = 40 + 30 + 135 + 60 = <span class="res">265</span>.</li>
+      <li><b>Compare with another valid plan.</b> D1 sends 10, 20, 0 and D2 sends 0, 5, 15. Every total still matches (30, 20 and 10, 25, 15), but the cost is 40 + 120 + 15 + 105 = 280. That is worse than 265, as expected, because D2 spends 15 units on S3 (saving only 2 each) instead of on S2 (saving 3 each).</li>
+    </ol>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s3"><div class="sec-h"><span class="num">3</span><h2>Canonical form <span class="fr">(forme canonique)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="plain"><span class="tag">In plain words</span><p>A standard "shape" that every LP can be forced into: maximise, all constraints are "≤", all variables are "≥ 0". Having one shape means one method can handle everything.</p></div>
+  <div class="eq">max z = Σⱼ c_j x_j                      (objective)
+  Σⱼ a_ij x_j ≤ b_i      i = 1…m           (proper constraints)
+  x_j ≥ 0                j = 1…n           (sign constraints)</div>
+  <ul class="defs"><li><span class="term"><b class="en">Proper constraints</b> <span class="fr">(contraintes propres)</span></span><span class="mean">The inequalities bounding linear expressions by constants.</span></li><li><span class="term"><b class="en">Sign constraints</b> <span class="fr">(contraintes impropres)</span></span><span class="mean">The conditions <span class="m">x<sub>j</sub> ≥ 0</span>.</span></li><li><span class="term"><b class="en">Feasible (admissible) solution</b> <span class="fr">(solution admissible)</span></span><span class="mean">A point satisfying every constraint.</span></li><li><span class="term"><b class="en">Optimal solution</b> <span class="fr">(solution optimale)</span></span><span class="mean">A feasible point where the objective reaches its maximum.</span></li><li><span class="term"><b class="en">Domain</b> <span class="fr">(domaine)</span></span><span class="mean">The set of all feasible solutions.</span></li></ul>
+  <h3>Conversion rules</h3>
+  <div class="scroll"><table class="t grid">
+    <tr><th>You have</th><th>Replace by</th></tr>
+    <tr><td><span class="m">min z</span></td><td><span class="m">max(−z)</span>; the optimal value of the min is minus the optimal value of the max</td></tr>
+    <tr><td><span class="m">Σ a<sub>ij</sub>x<sub>j</sub> ≥ b<sub>i</sub></span></td><td><span class="m">Σ (−a<sub>ij</sub>)x<sub>j</sub> ≤ −b<sub>i</sub></span></td></tr>
+    <tr><td><span class="m">Σ a<sub>ij</sub>x<sub>j</sub> = b<sub>i</sub></span></td><td>both <span class="m">≤ b<sub>i</sub></span> and <span class="m">≥ b<sub>i</sub></span></td></tr>
+    <tr><td><span class="m">x<sub>j</sub> ≤ 0</span></td><td>substitute <span class="m">x<sub>j</sub> = −x'<sub>j</sub></span> with <span class="m">x'<sub>j</sub> ≥ 0</span></td></tr>
+    <tr><td><span class="m">x<sub>j</sub></span> free (any real)</td><td><span class="m">x<sub>j</sub> = x'<sub>j</sub> − x''<sub>j</sub></span> with both <span class="m">≥ 0</span></td></tr>
+  </table></div>
+  <div class="callout"><b>Why each rule is allowed.</b>
+    <ul>
+      <li><b>min → max(−z).</b> The smallest number is the one whose negative is the largest. Example: the numbers 3, 5, 8 have minimum 3, and −3, −5, −8 have maximum −3. The same point wins; only the sign of the value flips.</li>
+      <li><b>"≥" → "≤".</b> Multiplying both sides by −1 flips the direction: 5 ≥ 3 becomes −5 ≤ −3.</li>
+      <li><b>"=" → two inequalities.</b> "a equals b" means "a ≤ b and a ≥ b" at the same time.</li>
+      <li><b>x ≤ 0.</b> Just rename: if x = −4, then x′ = 4 is positive. Work with x′ and switch back at the end.</li>
+      <li><b>Free variable.</b> Any real number is a difference of two non-negative numbers: 5 = 5 − 0 and −7 = 0 − 7. So x = x′ − x″.</li>
+    </ul></div>
+
+  <div class="calc"><span class="tag">Worked example · min and "≥"</span>
+    <p><span class="m">min z = 3x<sub>1</sub> + 2x<sub>2</sub></span>, <span class="m">x<sub>1</sub> + x<sub>2</sub> ≥ 4</span>, <span class="m">x<sub>1</sub> ≤ 3</span>, <span class="m">x ≥ 0</span>.</p>
+    <ol>
+      <li><b>Look at the objective.</b> It is a "min", so replace it by <span class="m">max(−z) = −3x<sub>1</sub> − 2x<sub>2</sub></span>.</li>
+      <li><b>Look at each constraint.</b> <span class="m">x<sub>1</sub> + x<sub>2</sub> ≥ 4</span> has the wrong direction: multiply by −1 to get <span class="m">−x<sub>1</sub> − x<sub>2</sub> ≤ −4</span>. <span class="m">x<sub>1</sub> ≤ 3</span> is already "≤", so keep it. The sign conditions are already fine.</li>
+      <li><b>Result.</b>
+        <div class="eq">max (−z) = −3x_1 − 2x_2
+  −x_1 − x_2 ≤ −4
+   x_1       ≤  3
+  x_1, x_2 ≥ 0</div></li>
+      <li><b>Check that the answer is the same.</b> In words: you need a total of at least 4 units, and x<sub>2</sub> costs 2 per unit against 3 for x<sub>1</sub>, so use only x<sub>2</sub>: the plan (0, 4) costs 8. The plan (3, 1) costs 11, worse. In the canonical form the best value of <span class="m">−z</span> is −8 at the same point, and <span class="m">min z = −(−8) = </span><span class="res">8</span>.</li>
+    </ol>
+  </div>
+
+  <div class="calc"><span class="tag">Worked example · an equality</span>
+    <p><span class="m">max z = 3x<sub>1</sub> + 2x<sub>2</sub></span>, <span class="m">x<sub>1</sub> + x<sub>2</sub> = 5</span>, <span class="m">x<sub>1</sub> − x<sub>2</sub> ≥ −1</span>, <span class="m">x ≥ 0</span>.</p>
+    <ol>
+      <li><b>The "=" constraint</b> becomes two: <span class="m">x<sub>1</sub> + x<sub>2</sub> ≤ 5</span> and <span class="m">x<sub>1</sub> + x<sub>2</sub> ≥ 5</span>, which after multiplying by −1 is <span class="m">−x<sub>1</sub> − x<sub>2</sub> ≤ −5</span>.</li>
+      <li><b>The "≥" constraint:</b> <span class="m">x<sub>1</sub> − x<sub>2</sub> ≥ −1</span> becomes <span class="m">−x<sub>1</sub> + x<sub>2</sub> ≤ 1</span>.</li>
+      <li><b>Result.</b>
+        <div class="eq">max 3x_1 + 2x_2
+   x_1 + x_2 ≤ 5
+  −x_1 − x_2 ≤ −5
+  −x_1 + x_2 ≤ 1
+  x_1, x_2 ≥ 0</div></li>
+      <li><b>Check.</b> The total is fixed at 5 and x<sub>1</sub> pays more (3 against 2), so take everything as x<sub>1</sub>: <span class="res">(5, 0), z = 15</span>. Original constraints hold: 5 + 0 = 5, and 5 − 0 = 5 ≥ −1.</li>
+    </ol>
+  </div>
+
+  <div class="calc"><span class="tag">Worked example · a variable ≤ 0</span>
+    <p><span class="m">max z = x<sub>1</sub> − 2x<sub>2</sub></span>, <span class="m">x<sub>1</sub> − x<sub>2</sub> ≤ 4</span>, <span class="m">x<sub>1</sub> ≥ 0</span>, <span class="m">x<sub>2</sub> ≤ 0</span>.</p>
+    <ol>
+      <li><b>Rename.</b> Put <span class="m">x<sub>2</sub> = −y</span> with <span class="m">y ≥ 0</span>.</li>
+      <li><b>Substitute everywhere.</b> The objective <span class="m">x<sub>1</sub> − 2x<sub>2</sub></span> becomes <span class="m">x<sub>1</sub> + 2y</span>. The constraint <span class="m">x<sub>1</sub> − x<sub>2</sub> ≤ 4</span> becomes <span class="m">x<sub>1</sub> + y ≤ 4</span>.</li>
+      <li><b>Result.</b>
+        <div class="eq">max x_1 + 2y
+  x_1 + y ≤ 4
+  x_1, y ≥ 0</div></li>
+      <li><b>Solve and translate back.</b> y pays 2 per unit against 1 for x<sub>1</sub>, so take y = 4, x<sub>1</sub> = 0: z = 8. Going back, <span class="m">x<sub>2</sub> = −y = −4</span>. Check in the original: 0 − (−4) = 4 ≤ 4 and z = 0 − 2·(−4) = <span class="res">8</span>.</li>
+    </ol>
+  </div>
+
+  <div class="calc"><span class="tag">Worked example · a free variable</span>
+    <p><span class="m">max z = x<sub>1</sub> + 3x<sub>2</sub></span>, <span class="m">x<sub>1</sub> + 2x<sub>2</sub> ≤ 4</span>, <span class="m">x<sub>2</sub> ≤ 3</span>, <span class="m">x<sub>2</sub> ≥ 0</span>, with <span class="m">x<sub>1</sub></span> free (it may be negative).</p>
+    <ol>
+      <li><b>Split the free variable.</b> Write <span class="m">x<sub>1</sub> = u − v</span> with <span class="m">u, v ≥ 0</span>.</li>
+      <li><b>Substitute everywhere.</b>
+        <div class="eq">max u − v + 3x_2
+  u − v + 2x_2 ≤ 4
+          x_2 ≤ 3
+  u, v, x_2 ≥ 0</div></li>
+      <li><b>Solve and translate back.</b> The best is u = 0, v = 2, x<sub>2</sub> = 3, so <span class="m">x<sub>1</sub> = u − v = −2</span>. Check: −2 + 2·3 = 4 ≤ 4 and z = −2 + 9 = <span class="res">7</span>.</li>
+      <li><b>Why the freedom mattered.</b> If x<sub>1</sub> had to be ≥ 0, the best plan would be (0, 2) with only z = 6. Also note that u and v are not unique: (u, v) = (1, 3) also gives x<sub>1</sub> = −2. That is harmless; only the difference counts.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s4"><div class="sec-h"><span class="num">4</span><h2>Geometric view <span class="fr">(interprétation géométrique)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="plain"><span class="tag">In plain words</span><p>With two variables, every solution is a point in the plane. Each constraint cuts the plane with a line and keeps one side. What remains is a polygon, and the best point is a corner of it.</p></div>
+  <ul class="defs"><li><span class="term"><b class="en">Half-plane</b> <span class="fr">(demi-plan)</span></span><span class="mean">The set of points satisfying one inequality; its border is the line obtained by turning "≤" into "=".</span></li><li><span class="term"><b class="en">Domain</b></span><span class="mean">The intersection of all the half-planes (3 proper + 2 sign constraints = 5 half-planes in the example below).</span></li><li><span class="term"><b class="en">Vertex</b> <span class="fr">(sommet)</span></span><span class="mean">A corner of the polygon.</span></li></ul>
+  <h3>Method</h3>
+  <p>Draw the lines <span class="m">z = constant</span> (parallel lines, all with the same slope). Slide them in the direction that increases <span class="m">z</span>. The last line still touching the domain gives the optimal solutions.</p>
+  <div class="callout"><b>How to draw one constraint.</b> Turn the "≤" into "=": that gives a straight line (find two points on it, for example where it crosses each axis). The constraint keeps one side of that line, the <b>half-plane</b>. To know which side, test the point (0,0): if it satisfies the inequality, keep the side with the origin, otherwise keep the other side. Do this for every constraint; what is left after all of them is the domain.<br><b>Why the optimum is at a corner.</b> All points with the same <span class="m">z</span> lie on one straight line. Sliding that line changes <span class="m">z</span> steadily. The domain has flat sides, so the last point the line touches is a corner (or a whole flat side if the line is parallel to it). That is why checking the corners is enough.<br>The full method on a real problem is worked out in <a href="#s9">section 9</a>.</div>
+
+  <div class="calc"><span class="tag">Course example, redone step by step</span>
+    <p><span class="m">max z = −x<sub>1</sub> + x<sub>2</sub></span>, <span class="m">−2x<sub>1</sub> + x<sub>2</sub> ≤ 1</span>, <span class="m">x<sub>1</sub> + 3x<sub>2</sub> ≤ 10</span>, <span class="m">x<sub>1</sub> ≤ 4</span>, <span class="m">x ≥ 0</span>.</p>
+    <ol>
+      <li><b>Draw the three lines.</b> <span class="m">−2x<sub>1</sub> + x<sub>2</sub> = 1</span> passes through (0, 1) and rises steeply. <span class="m">x<sub>1</sub> + 3x<sub>2</sub> = 10</span> passes through (10, 0) and (0, 3.33). <span class="m">x<sub>1</sub> = 4</span> is a vertical line.</li>
+      <li><b>Pick the side of each line.</b> Test the origin: 0 ≤ 1, 0 ≤ 10 and 0 ≤ 4 are all true, so keep the origin side of all three.</li>
+      <li><b>Find the corners.</b> Check where lines meet and whether the point respects everything else:
+        <div class="scroll"><table class="t grid">
+          <tr><th>Lines that meet</th><th class="c">Point</th><th class="c">Valid corner?</th><th class="c">z = −x<sub>1</sub> + x<sub>2</sub></th></tr>
+          <tr><td>x<sub>1</sub> = 0 and x<sub>2</sub> = 0</td><td class="c">(0, 0)</td><td class="c ok">yes</td><td class="c">0</td></tr>
+          <tr><td>−2x<sub>1</sub> + x<sub>2</sub> = 1 and x<sub>1</sub> = 0</td><td class="c">(0, 1)</td><td class="c ok">yes</td><td class="c">1</td></tr>
+          <tr class="best"><td>−2x<sub>1</sub> + x<sub>2</sub> = 1 and x<sub>1</sub> + 3x<sub>2</sub> = 10</td><td class="c">(1, 3)</td><td class="c">yes</td><td class="c">2</td></tr>
+          <tr><td>x<sub>1</sub> + 3x<sub>2</sub> = 10 and x<sub>1</sub> = 4</td><td class="c">(4, 2)</td><td class="c ok">yes</td><td class="c">−2</td></tr>
+          <tr><td>x<sub>1</sub> = 4 and x<sub>2</sub> = 0</td><td class="c">(4, 0)</td><td class="c ok">yes</td><td class="c">−4</td></tr>
+          <tr><td>x<sub>1</sub> = 4 and −2x<sub>1</sub> + x<sub>2</sub> = 1</td><td class="c">(4, 9)</td><td class="c bad">no (4 + 27 &gt; 10)</td><td class="c">skip</td></tr>
+          <tr><td>x<sub>1</sub> + 3x<sub>2</sub> = 10 and x<sub>2</sub> = 0</td><td class="c">(10, 0)</td><td class="c bad">no (10 &gt; 4)</td><td class="c">skip</td></tr>
+        </table></div></li>
+      <li><b>How (1, 3) was found.</b> From the first line, <span class="m">x<sub>2</sub> = 1 + 2x<sub>1</sub></span>. Put that into the second: <span class="m">x<sub>1</sub> + 3 + 6x<sub>1</sub> = 10</span>, so <span class="m">x<sub>1</sub> = 1</span> and <span class="m">x<sub>2</sub> = 3</span>.</li>
+      <li><b>Which way does z grow?</b> z gains 1 for each step up in x<sub>2</sub> and loses 1 for each step right in x<sub>1</sub>, so z increases toward the upper left. The corner reached last in that direction is (1, 3).</li>
+    </ol>
+    <figure class="fig">
+      <svg viewBox="0 0 360 280" role="img" aria-label="Domain of the course example with optimum at (1,3)">
+        <defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent2)"/></marker></defs>
+        <polygon class="dom" points="40,240 40,190 90,90 240,140 240,240"/>
+        <line class="ln" x1="40" y1="190" x2="115" y2="40"/>
+        <line class="ln" x1="40" y1="73" x2="290" y2="157"/>
+        <line class="ln" x1="240" y1="240" x2="240" y2="40"/>
+        <line class="obj" x1="40" y1="140" x2="140" y2="40"/>
+        <line class="ax" x1="40" y1="240" x2="335" y2="240"/>
+        <line class="ax" x1="40" y1="240" x2="40" y2="26"/>
+        <line x1="195" y1="215" x2="165" y2="185" stroke="var(--accent2)" stroke-width="2" marker-end="url(#arr)"/>
+        <circle class="pt" cx="90" cy="90" r="6"/>
+        <text x="338" y="236" class="mu">x<tspan dy="3" font-size="9">1</tspan></text>
+        <text x="46" y="30" class="mu">x<tspan dy="3" font-size="9">2</tspan></text>
+        <text x="100" y="66" text-anchor="end" class="mu halo">−2x₁ + x₂ = 1</text>
+        <text x="246" y="170" class="mu halo">x₁ + 3x₂ = 10</text>
+        <text x="246" y="48" class="mu halo">x₁ ≤ 4</text>
+        <text x="146" y="38" class="ac halo">z = 2</text>
+        <text x="100" y="110" class="halo">(1, 3)</text>
+        <text x="170" y="232" class="mu">z increases</text>
+      </svg>
+      <figcaption>Vertices: (0,0), (0,1), (1,3), (4,2), (4,0). The arrow shows the direction in which z grows.</figcaption>
+    </figure>
+    <p>The optimum is unique: <span class="res">(1, 3), z = 2</span>.</p>
+  </div>
+
+  <div class="calc"><span class="tag">Problem 1 on the same picture</span>
+    <p>The three limit lines (see the figure at the top): M1 passes through (4, 0) and (0, 8), M2 through (7, 0) and (0, 3.5), M3 is the horizontal line <span class="m">x<sub>B</sub> = 3</span>. Corners of the domain, with <span class="m">z = 4x<sub>A</sub> + 5x<sub>B</sub></span>: (0,0) → 0, (4,0) → 16, (3,2) → <b>22</b>, (1,3) → 19, (0,3) → 15. The best corner is <span class="res">(3, 2), z = 22</span>. The full corner check (including the meetings that are <i>not</i> corners) is in section 2.</p>
+  </div>
+
+  <h3>Optimum not unique</h3>
+  <p>The optimum is usually one vertex, but not always: if the objective lines are parallel to an edge, the whole edge is optimal.</p>
+  <div class="calc"><span class="tag">Worked example, step by step</span>
+    <p><span class="m">max z = x<sub>1</sub> + x<sub>2</sub></span>, <span class="m">x<sub>1</sub> + x<sub>2</sub> ≤ 4</span>, <span class="m">x<sub>1</sub> ≤ 3</span>, <span class="m">x<sub>2</sub> ≤ 3</span>, <span class="m">x ≥ 0</span>.</p>
+    <ol>
+      <li><b>Corners.</b> (0,0), (3,0), (3,1), (1,3), (0,3). The point (3,1) is where <span class="m">x<sub>1</sub> = 3</span> meets <span class="m">x<sub>1</sub> + x<sub>2</sub> = 4</span>; (1,3) is where <span class="m">x<sub>2</sub> = 3</span> meets it.</li>
+      <li><b>Values of z.</b> (0,0) → 0, (3,0) → 3, (0,3) → 3, (3,1) → 4, (1,3) → 4. Two corners tie at 4.</li>
+      <li><b>Why the tie.</b> The objective lines are <span class="m">x<sub>1</sub> + x<sub>2</sub> = constant</span>, which have exactly the same direction as the edge <span class="m">x<sub>1</sub> + x<sub>2</sub> = 4</span>. When the sliding line reaches the value 4, it lies <i>along</i> that edge instead of touching a single point.</li>
+      <li><b>Consequence.</b> Every point on the edge between (1,3) and (3,1) is feasible and gives z = 4, for example (2,2): 2 + 2 = 4. So there are infinitely many optimal plans, and you can choose among them using any other criterion.</li>
+    </ol>
+    <figure class="fig">
+      <svg viewBox="0 0 360 280" role="img" aria-label="Whole edge optimal">
+        <polygon class="dom" points="40,240 190,240 190,190 90,90 40,90"/>
+        <line class="objd" x1="40" y1="140" x2="140" y2="240"/>
+        <line class="obj" x1="190" y1="190" x2="90" y2="90" style="stroke-width:5"/>
+        <line class="ax" x1="40" y1="240" x2="335" y2="240"/>
+        <line class="ax" x1="40" y1="240" x2="40" y2="26"/>
+        <circle class="pt" cx="90" cy="90" r="5"/><circle class="pt" cx="190" cy="190" r="5"/>
+        <text x="96" y="84" class="halo">(1, 3)</text>
+        <text x="198" y="186" class="halo">(3, 1)</text>
+        <text x="150" y="128" class="ac halo">z = 4 on the whole edge</text>
+        <text x="62" y="164" class="mu halo">z = 2</text>
+        <text x="338" y="236" class="mu">x<tspan dy="3" font-size="9">1</tspan></text>
+        <text x="46" y="30" class="mu">x<tspan dy="3" font-size="9">2</tspan></text>
+      </svg>
+    </figure>
+    <p>Every point from (1,3) to (3,1) gives <span class="res">z = 4</span>, which is the optimum.</p>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s5"><div class="sec-h"><span class="num">5</span><h2>Economic view <span class="fr">(interprétation économique)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="plain"><span class="tag">In plain words</span><p>The same symbols <span class="m">c, a, b, x</span> can always be read as "gains, usage rates, availabilities, activity levels". Two readings cover almost every textbook problem.</p></div>
+  <div class="callout"><b>Don't memorise the table.</b> Just remember the story from Problem 1: <span class="m">c</span> = profit per unit, <span class="m">a</span> = how much one unit uses, <span class="m">b</span> = how much you have, <span class="m">x</span> = how many you make. The table only says the same thing in two different vocabularies.</div>
+  <div class="scroll"><table class="t grid">
+    <tr><th>Symbol</th><th>Reading (a): resources</th><th>Reading (b): capacities</th></tr>
+    <tr><td><span class="m">i</span></td><td>good consumed <span class="fr">(bien consommé)</span></td><td>activity <span class="fr">(activité)</span></td></tr>
+    <tr><td><span class="m">j</span></td><td>activity</td><td>good produced <span class="fr">(bien produit)</span></td></tr>
+    <tr><td><span class="m">b<sub>i</sub></span></td><td>quantity available of good <i>i</i></td><td>maximum capacity of activity <i>i</i></td></tr>
+    <tr><td><span class="m">a<sub>ij</sub></span></td><td>rate at which activity <i>j</i> uses good <i>i</i></td><td>rate at which activity <i>i</i> works per unit of good <i>j</i></td></tr>
+    <tr><td><span class="m">c<sub>j</sub></span></td><td>unit gain of activity <i>j</i></td><td>unit gain of good <i>j</i></td></tr>
+    <tr><td><span class="m">x<sub>j</sub></span></td><td>level of activity <i>j</i></td><td>quantity of good <i>j</i> produced</td></tr>
+  </table></div>
+  <div class="calc"><span class="tag">Reading (a) · Problem 1</span>
+    <ol>
+      <li><b>Fix the indices.</b> <i>i</i> labels the rows of the table = the materials M1, M2, M3. <i>j</i> labels the columns = the products A (<i>j</i> = 1) and B (<i>j</i> = 2).</li>
+      <li><b>Read the vectors off the table.</b> The stock column is <span class="m">b = (8, 7, 3)</span>. The profits are <span class="m">c = (4, 5)</span>. The numbers in the middle form the matrix <span class="m">A</span> with rows (2, 1), (1, 2), (0, 1): <b>A is literally the table of the problem without its headings.</b></li>
+      <li><b>Say one entry aloud.</b> <span class="m">a<sub>11</sub> = 2</span>: "one unit of A (<i>j</i> = 1) uses 2 units of M1 (<i>i</i> = 1)". And <span class="m">a<sub>32</sub> = 1</span>: "one unit of B uses 1 unit of M3".</li>
+      <li><b>Say one constraint aloud.</b> Row <i>i</i> = 1: <span class="m">a<sub>11</sub>x<sub>1</sub> + a<sub>12</sub>x<sub>2</sub> ≤ b<sub>1</sub></span> reads "units of A × 2 plus units of B × 1 cannot exceed the 8 units of M1".</li>
+    </ol>
+  </div>
+  <div class="calc"><span class="tag">Reading (b) · Problem 2</span>
+    <ol>
+      <li><b>Fix the indices.</b> <i>i</i> = machines M1, M2 (the "activities"), <i>j</i> = products P1, P2.</li>
+      <li><b>Read the vectors.</b> <span class="m">b = (6000, 4000)</span> (minutes available), <span class="m">c = (400, 200)</span> (profit per unit), and <span class="m">A</span> has rows (30, 20) and (40, 10).</li>
+      <li><b>Say one entry aloud.</b> <span class="m">a<sub>21</sub> = 40</span>: "one unit of P1 occupies M2 for 40 minutes".</li>
+    </ol>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s6"><div class="sec-h"><span class="num">6</span><h2>The three assumptions <span class="fr">(hypothèses)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="plain"><span class="tag">In plain words</span><p>A real situation can only be modelled as an LP if it behaves in a "straight-line" way. Check these three before trusting the model.</p></div>
+  <ul class="defs"><li><span class="term"><b class="en">1. Independence / additivity</b> <span class="fr">(additivité)</span></span><span class="mean">Activities don't influence each other, so totals are sums. This is what allows sums in the objective and in the constraints. <i>Simple test:</i> the profit of 3 A plus 2 B is just 3 × (profit of A) + 2 × (profit of B), with no bonus or penalty for combining them.</span></li><li><span class="term"><b class="en">2. Proportionality</b> <span class="fr">(proportionnalité)</span></span><span class="mean">Gain and resource use scale directly with the activity level. This keeps the formulas linear. <i>Simple test:</i> double the quantity, and the profit and the materials used both double.</span></li><li><span class="term"><b class="en">3. Divisibility</b> <span class="fr">(divisibilité)</span></span><span class="mean">Variables may take fractional values (you can make 2.5 units). If not, you have an integer linear program <span class="fr">(programmation linéaire en nombres entiers)</span>, much harder to solve.</span></li></ul>
+  <div class="calc"><span class="tag">Example · additivity fails</span>
+    <p>Suppose A earns 4, B earns 5, but making <i>both</i> earns an extra bonus of 3. Then one A and one B earn 4 + 5 + 3 = 12 instead of 4 + 5 = 9. The profit now depends on the combination, so it is no longer a sum of separate pieces. It would need a term like <span class="m">x<sub>A</sub>x<sub>B</sub></span>, which is not linear.</p>
+  </div>
+  <div class="calc"><span class="tag">Example · proportionality fails</span>
+    <p>A supplier charges 10 per unit for the first 100 units and 8 for the next ones. 100 units cost 1000, but 200 units cost 1000 + 800 = 1800, not 2000. Doubling the quantity did not double the cost, so cost is not a straight line in the quantity.</p>
+  </div>
+  <div class="calc"><span class="tag">Example · divisibility</span>
+    <p><span class="m">max x<sub>1</sub> + x<sub>2</sub></span>, <span class="m">2x<sub>1</sub> + 2x<sub>2</sub> ≤ 5</span>.</p>
+    <ol>
+      <li><b>Simplify.</b> Dividing the constraint by 2: <span class="m">x<sub>1</sub> + x<sub>2</sub> ≤ 2.5</span>.</li>
+      <li><b>With fractions allowed,</b> z can reach 2.5, for example <span class="m">x<sub>1</sub> = 2.5, x<sub>2</sub> = 0</span>.</li>
+      <li><b>With whole numbers only,</b> x<sub>1</sub> + x<sub>2</sub> must be an integer ≤ 2.5, so the best is 2.</li>
+      <li><b>Lesson.</b> The two answers differ (<span class="res">2.5</span> against <span class="res">2</span>), so the integer problem is a different, harder problem. In general you cannot simply round the LP answer: the rounded point may break a constraint or not be the best whole-number plan.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s7"><div class="sec-h"><span class="num">7</span><h2>Standard form <span class="fr">(forme standard)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="plain"><span class="tag">In plain words</span><p>Instead of inequalities, use only equalities (apart from <span class="m">x ≥ 0</span>). To turn an inequality into an equality you add a non-negative "leftover" variable.</p></div>
+  <div class="callout"><b>Why add a variable?</b> Take the M1 constraint of Problem 1: <span class="m">2x<sub>A</sub> + x<sub>B</sub> ≤ 8</span>. There can be a gap between what you use and what you have. Call that gap <span class="m">s<sub>1</sub></span> (the unused M1). Then <span class="m">2x<sub>A</sub> + x<sub>B</sub> + s<sub>1</sub> = 8</span> is an exact equality, and <span class="m">s<sub>1</sub> ≥ 0</span> because you can't use more than you have. Equalities matter because the solving method you will see later (the simplex method) works by solving systems of equations.</div>
+  <ul class="defs"><li><span class="term"><b class="en">Standard form</b> <span class="fr">(forme standard)</span></span><span class="mean">All constraints, except <span class="m">x<sub>j</sub> ≥ 0</span>, are equalities.</span></li><li><span class="term"><b class="en">Slack variable</b> <span class="fr">(variable d'écart)</span></span><span class="mean">A new variable <span class="m">≥ 0</span> measuring the gap in an inequality. For "≤" you add it; for "≥" you subtract it. It has coefficient 0 in the objective.</span></li></ul>
+  <div class="calc"><span class="tag">Course example, redone step by step</span>
+    <p>(P): <span class="m">max f = 5x<sub>1</sub> − 3x<sub>2</sub></span>, <span class="m">2x<sub>1</sub> + 3x<sub>2</sub> ≥ 4</span>, <span class="m">x<sub>1</sub> − x<sub>2</sub> ≤ 2</span>, <span class="m">−x<sub>1</sub> + 6x<sub>2</sub> = 10</span>, <span class="m">x ≥ 0</span>.</p>
+    <ol>
+      <li><b>Go through the constraints one at a time.</b>
+        <br>• <span class="m">2x<sub>1</sub> + 3x<sub>2</sub> ≥ 4</span>: the left side may be bigger than 4, so <i>subtract</i> the extra: <span class="m">2x<sub>1</sub> + 3x<sub>2</sub> − x<sub>3</sub> = 4</span> with <span class="m">x<sub>3</sub> ≥ 0</span>.
+        <br>• <span class="m">x<sub>1</sub> − x<sub>2</sub> ≤ 2</span>: the left side may be smaller than 2, so <i>add</i> the missing part: <span class="m">x<sub>1</sub> − x<sub>2</sub> + x<sub>4</sub> = 2</span> with <span class="m">x<sub>4</sub> ≥ 0</span>.
+        <br>• <span class="m">−x<sub>1</sub> + 6x<sub>2</sub> = 10</span> is already an equality: leave it.</li>
+      <li><b>Objective.</b> The new variables get coefficient 0 because they don't earn anything.</li>
+      <li><b>Result.</b>
+        <div class="eq">(P')  max f = 5x_1 − 3x_2 + 0x_3 + 0x_4
+       2x_1 + 3x_2 − x_3       = 4      (≥ : subtract x_3)
+        x_1 −  x_2       + x_4 = 2      (≤ : add x_4)
+       −x_1 + 6x_2             = 10     (already an equality)
+       x_1, x_2, x_3, x_4 ≥ 0</div></li>
+      <li><b>Find the optimum.</b> The solution makes two constraints "tight" (exactly met): <span class="m">x<sub>1</sub> − x<sub>2</sub> = 2</span> and <span class="m">−x<sub>1</sub> + 6x<sub>2</sub> = 10</span>. Add them: <span class="m">5x<sub>2</sub> = 12</span>, so <span class="m">x<sub>2</sub> = 2.4</span> and <span class="m">x<sub>1</sub> = 4.4</span>. Then <span class="m">f = 5·4.4 − 3·2.4 = 22 − 7.2 = </span><span class="res">14.8</span>.</li>
+      <li><b>Read the extra variables.</b> <span class="m">x<sub>4</sub> = 2 − (4.4 − 2.4) = 0</span>: the "≤" constraint is tight, no gap. <span class="m">x<sub>3</sub> = 2·4.4 + 3·2.4 − 4 = 16 − 4 = 12</span>: the "≥" constraint is satisfied with plenty of room. (P) and (P') have the same optimum.</li>
+    </ol>
+  </div>
+  <div class="calc"><span class="tag">Problem 1 in standard form</span>
+    <div class="eq">max z = 4x_A + 5x_B
+  2x_A +  x_B + s_1           = 8
+   x_A + 2x_B      + s_2      = 7
+         x_B           + s_3 = 3
+  x_A, x_B, s_1, s_2, s_3 ≥ 0</div>
+    <p>One slack per "≤" constraint, so three slacks. At the optimum <span class="m">(x<sub>A</sub>, x<sub>B</sub>) = (3, 2)</span>, each slack is simply "stock minus what was used":</p>
+    <div class="scroll"><table class="t grid">
+      <tr><th>Material</th><th class="c">Used</th><th class="c">Stock</th><th class="c">Slack = stock − used</th></tr>
+      <tr><td>M1</td><td class="c">2·3 + 2 = 8</td><td class="c">8</td><td class="c">s<sub>1</sub> = 0</td></tr>
+      <tr><td>M2</td><td class="c">3 + 2·2 = 7</td><td class="c">7</td><td class="c">s<sub>2</sub> = 0</td></tr>
+      <tr><td>M3</td><td class="c">2</td><td class="c">3</td><td class="c">s<sub>3</sub> = 1</td></tr>
+    </table></div>
+    <p>So <span class="res">s = (0, 0, 1)</span>: M1 and M2 fully used, 1 unit of M3 unused.</p>
+  </div>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s8"><div class="sec-h"><span class="num">8</span><h2>Matrix form <span class="fr">(écriture matricielle)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="plain"><span class="tag">In plain words</span><p>The standard form written compactly with a profit vector, a matrix of coefficients and a right-hand-side vector.</p></div>
+  <div class="callout"><b>How to read it.</b> <span class="m">A</span> is just the table of coefficients of the equations. Each <i>row</i> is one constraint and each <i>column</i> is one variable. <span class="m">Ax = b</span> means "row 1 times the variables equals the first right-hand side, row 2 the second, and so on". <span class="m">c<sup>t</sup>x</span> means "profit of each variable times its value, added up". It is the same model as before, only shorter to write.</div>
+  <div class="eq">max f = cᵗx
+  Ax = b
+  x ≥ 0</div>
+  <ul class="defs"><li><span class="term"><b class="en"><span class="m">c<sup>t</sup></span></b> <span class="fr">(vecteur profit)</span></span><span class="mean">Vector in <span class="m">ℝⁿ</span> of the objective coefficients.</span></li><li><span class="term"><b class="en"><span class="m">A</span></b> <span class="fr">(matrice des contraintes)</span></span><span class="mean"><span class="m">m × n</span> matrix of the <span class="m">a<sub>ij</sub></span>; assumed to have rank <span class="m">m</span>.</span></li><li><span class="term"><b class="en"><span class="m">b</span></b></span><span class="mean">Right-hand-side vector in <span class="m">ℝᵐ</span>.</span></li><li><span class="term"><b class="en">Feasible solution</b> <span class="fr">(solution réalisable)</span></span><span class="mean">Any <span class="m">x</span> with <span class="m">Ax = b</span> and <span class="m">x ≥ 0</span>.</span></li><li><span class="term"><b class="en">Optimal solution</b> <span class="fr">(solution optimale)</span></span><span class="mean">A feasible <span class="m">x*</span> with <span class="m">f(x) ≤ f(x*)</span> for every feasible <span class="m">x</span>.</span></li></ul>
+  <div class="calc"><span class="tag">Problem 1, redone in matrix form</span>
+    <ol>
+      <li><b>List the variables</b> in a fixed order: the 2 decisions then the 3 slacks, so <span class="m">x = (x<sub>A</sub>, x<sub>B</sub>, s<sub>1</sub>, s<sub>2</sub>, s<sub>3</sub>)<sup>t</sup></span>.</li>
+      <li><b>Copy the coefficients</b> of each equation of the standard form into a row, in that order. A missing variable gets 0.
+        <div class="eq">x = (x_A, x_B, s_1, s_2, s_3)ᵗ        c = (4, 5, 0, 0, 0)ᵗ        b = (8, 7, 3)ᵗ
+
+      ⎡ 2  1  1  0  0 ⎤
+  A = ⎢ 1  2  0  1  0 ⎥
+      ⎣ 0  1  0  0  1 ⎦</div></li>
+      <li><b>Size and rank.</b> A has 3 rows (constraints) and 5 columns (variables). Its last three columns form the identity matrix, so its rank is 3 = <i>m</i>, as the course assumes.</li>
+      <li><b>Check the optimum row by row.</b> With <span class="m">x* = (3, 2, 0, 0, 1)</span>:
+        <br>• row 1: 2·3 + 1·2 + 1·0 + 0 + 0 = 8 = b<sub>1</sub>
+        <br>• row 2: 1·3 + 2·2 + 0 + 1·0 + 0 = 7 = b<sub>2</sub>
+        <br>• row 3: 0 + 1·2 + 0 + 0 + 1·1 = 3 = b<sub>3</sub>
+        <br>So <span class="m">Ax* = b</span> and all entries are ≥ 0: <span class="m">x*</span> is feasible.</li>
+      <li><b>Value.</b> <span class="m">c<sup>t</sup>x* = 4·3 + 5·2 + 0 + 0 + 0 = </span><span class="res">22</span>.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- 9 -->
+<section class="sec" id="s9"><div class="sec-h"><span class="num">9</span><h2>Graphical resolution <span class="fr">(résolution graphique)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="plain"><span class="tag">In plain words</span><p>With two unknowns you can solve an LP by drawing it. Draw the region of allowed plans, then slide a line of constant profit across it. The last point it touches is the best plan.</p></div>
+  <ul class="defs"><li><span class="term"><b class="en">Production programme</b> <span class="fr">(programme de production)</span></span><span class="mean">How many units of each product to make per month.</span></li><li><span class="term"><b class="en">Domain D of feasible solutions</b> <span class="fr">(domaine des solutions réalisables)</span></span><span class="mean">The region of all plans that respect every constraint.</span></li><li><span class="term"><b class="en">Vertices, extreme points</b> <span class="fr">(sommets, points extrêmes)</span></span><span class="mean">The corners of D.</span></li><li><span class="term"><b class="en">Convex polytope</b> <span class="fr">(polytope convexe)</span></span><span class="mean">What the course calls D in general. "Convex" means no dents: the straight segment joining any two points of D stays inside D. When D is bounded (its points stay at a finite distance from the origin), the course calls it a convex polyhedron <span class="fr">(polyèdre convexe)</span>.</span></li><li><span class="term"><b class="en">Gradient <span class="m">∇z</span></b> <span class="fr">(gradient)</span></span><span class="mean">The vector of the objective's coefficients. It points in the direction in which <span class="m">z</span> increases fastest.</span></li><li><span class="term"><b class="en">Optimal solution <span class="m">x*</span></b> <span class="fr">(solution optimale)</span></span><span class="mean">The best feasible plan; <span class="m">z*</span> is its value.</span></li></ul>
+
+  <div class="calc"><span class="tag">Course example, step by step · the workshop problem</span>
+    <p>A mechanical workshop has two machines M1 and M2 and makes two products P1 and P2. The table gives, per product, the working time on each machine and the profit per unit, and, per machine, the time available per month (UM = monetary units):</p>
+    <div class="scroll"><table class="t grid">
+      <tr><th></th><th class="c">P1</th><th class="c">P2</th><th class="c">Time available</th></tr>
+      <tr><td>M1</td><td class="c">30 min</td><td class="c">20 min</td><td class="c">6000 min/month</td></tr>
+      <tr><td>M2</td><td class="c">40 min</td><td class="c">10 min</td><td class="c">4000 min/month</td></tr>
+      <tr><td>Unit profit</td><td class="c">400 UM</td><td class="c">200 UM</td><td class="c"></td></tr>
+    </table></div>
+    <p>This is exactly Problem 2 of section 2. The goal is to find the production programme (units of each product per month) that gives the maximum profit, given the machine time.</p>
+    <ol>
+      <li><b>Name the unknowns</b> (the decision variables): <span class="m">x<sub>1</sub></span> and <span class="m">x<sub>2</sub></span>, the monthly quantities of P1 and P2.</li>
+      <li><b>Write the constraints of the problem</b> (the conditions for the production to be possible): <span class="m">30x<sub>1</sub> + 20x<sub>2</sub> ≤ 6000</span> for M1, <span class="m">40x<sub>1</sub> + 10x<sub>2</sub> ≤ 4000</span> for M2, and <span class="m">x<sub>1</sub> ≥ 0, x<sub>2</sub> ≥ 0</span>.</li>
+      <li><b>Write the objective function</b> (also called the economic function): the owner wants maximum profit, <span class="m">z = 400x<sub>1</sub> + 200x<sub>2</sub></span>.</li>
+      <li><b>Put it together:</b> this is the linear program (PL).
+        <div class="eq">(PL)  Max z = 400x_1 + 200x_2
+      30x_1 + 20x_2 ≤ 6000
+      40x_1 + 10x_2 ≤ 4000
+      x_1 ≥ 0,   x_2 ≥ 0</div>
+        The best solution, called the optimal solution <span class="m">x* = (x<sub>1</sub>*, x<sub>2</sub>*)<sup>t</sup></span>, tells you the quantities to make to get the maximum profit <span class="m">z* = 400x<sub>1</sub>* + 200x<sub>2</sub>*</span>.</li>
+      <li><b>Draw the two lines.</b> <span class="m">30x<sub>1</sub> + 20x<sub>2</sub> = 6000</span> crosses the axes at (200, 0) and (0, 300). <span class="m">40x<sub>1</sub> + 10x<sub>2</sub> = 4000</span> crosses at (100, 0) and (0, 400). The origin satisfies both inequalities (0 ≤ 6000 and 0 ≤ 4000), so keep the origin side of both.</li>
+      <li><b>Read the domain D.</b> The points that satisfy all constraints form the quadrilateral <b>OABC</b> (the shaded area). Its corners O, A, B, C are the <i>vertices</i> (extreme points) of D.
+        <figure class="fig">
+          <svg viewBox="0 0 360 330" role="img" aria-label="Domain OABC of the workshop problem, gradient arrow, and objective line through B(40,240)">
+            <defs><marker id="arr2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent2)"/></marker></defs>
+            <polygon class="dom" points="50,300 120,300 78,132 50,90"/>
+            <line class="ln" x1="50" y1="90" x2="190" y2="300"/>
+            <line class="ln" x1="50" y1="20" x2="120" y2="300"/>
+            <line class="objd" x1="50" y1="230" x2="85" y2="300"/>
+            <line class="obj" x1="50" y1="76" x2="162" y2="300"/>
+            <line class="ax" x1="50" y1="300" x2="250" y2="300"/>
+            <line class="ax" x1="50" y1="300" x2="50" y2="8"/>
+            <line x1="50" y1="300" x2="210" y2="220" stroke="var(--accent2)" stroke-width="2" marker-end="url(#arr2)"/>
+            <circle class="pt2" cx="50" cy="300" r="4"/>
+            <circle class="pt2" cx="120" cy="300" r="4"/>
+            <circle class="pt2" cx="50" cy="90" r="4"/>
+            <circle class="pt" cx="78" cy="132" r="6"/>
+            <text x="254" y="304" class="mu">x<tspan dy="3" font-size="9">1</tspan></text>
+            <text x="56" y="14" class="mu">x<tspan dy="3" font-size="9">2</tspan></text>
+            <text x="34" y="316" class="mu">O</text>
+            <text x="108" y="318" class="halo">A (100, 0)</text>
+            <text x="188" y="318" class="mu">200</text>
+            <text x="88" y="124" class="ac halo">B (40, 240)</text>
+            <text x="58" y="84" class="halo">C (0, 300)</text>
+            <text x="14" y="234" class="mu">100</text><text x="14" y="164" class="mu">200</text><text x="14" y="24" class="mu">400</text>
+            <text x="62" y="32" class="mu halo">40x₁ + 10x₂ = 4000</text>
+            <text x="182" y="276" class="mu halo">30x₁ + 20x₂ = 6000</text>
+            <text x="58" y="68" class="ac halo">z = 64 000</text>
+            <text x="58" y="248" class="mu halo">z = 20 000</text>
+            <text x="216" y="224" class="ac halo">∇z = (400, 200)</text>
+            <text x="64" y="200" class="halo">D</text>
+          </svg>
+          <figcaption>Domain D = OABC. Orange arrow: the gradient. Dashed orange line: z = 20 000. Solid orange line: z = 64 000, the last line touching D, at the vertex B. (Axes are not to the same scale on paper, but the shapes match the course figure.)</figcaption>
+        </figure></li>
+      <li><b>Find the coordinates of the vertices.</b>
+        <br>• <b>O = (0, 0)</b>: the two axes meet.
+        <br>• <b>A = (100, 0)</b>: the M2 line meets the x<sub>1</sub>-axis (40x<sub>1</sub> = 4000). Check M1: 30·100 = 3000 ≤ 6000 ✓.
+        <br>• <b>C = (0, 300)</b>: the M1 line meets the x<sub>2</sub>-axis (20x<sub>2</sub> = 6000). Check M2: 10·300 = 3000 ≤ 4000 ✓.
+        <br>• <b>B = (40, 240)</b>: the two lines meet. Multiply the M2 equation by 2 (80x<sub>1</sub> + 20x<sub>2</sub> = 8000) and subtract the M1 equation: 50x<sub>1</sub> = 2000, so x<sub>1</sub> = 40, then 20x<sub>2</sub> = 6000 − 1200, so x<sub>2</sub> = 240.
+        <br>The other axis crossings, (200, 0) and (0, 400), are not vertices: (200, 0) breaks M2 (8000 &gt; 4000) and (0, 400) breaks M1 (8000 &gt; 6000).</li>
+      <li><b>Understand the gradient.</b> The gradient of z is the vector of its coefficients, <span class="m">∇z = (400, 200)</span>. In plain words: one more unit of P1 adds 400, one more unit of P2 adds 200, so profit grows twice as fast along x<sub>1</sub> as along x<sub>2</sub>, which is the direction (2, 1) of the orange arrow. The lines "z = constant" are perpendicular to this arrow. The course states that z increases when you move perpendicularly to those lines in the same direction as the gradient.</li>
+      <li><b>Slide the line.</b> Start with a profit line such as <span class="m">400x<sub>1</sub> + 200x<sub>2</sub> = 20 000</span> (dashed), and push it in the direction of the gradient. The last vertex of D that it meets gives an optimal solution: here that is B.</li>
+      <li><b>Cross-check with the corner values.</b>
+        <div class="scroll"><table class="t grid">
+          <tr><th>Vertex</th><th class="c">O (0, 0)</th><th class="c">A (100, 0)</th><th class="c">B (40, 240)</th><th class="c">C (0, 300)</th></tr>
+          <tr><td>z = 400x<sub>1</sub> + 200x<sub>2</sub></td><td class="c">0</td><td class="c">40 000</td><td class="c"><b>64 000</b></td><td class="c">60 000</td></tr>
+        </table></div></li>
+      <li><b>Answer.</b> There is a unique optimal solution, the point B: <span class="res">x<sub>1</sub>* = 40, x<sub>2</sub>* = 240, z* = 64 000</span>. In words: make 40 units of P1 and 240 units of P2 per month for a monthly profit of 64 000 UM, using both machines to the full.</li>
+    </ol>
+  </div>
+
+  <h3>When the last vertex is not unique</h3>
+  <p>If the line of constant profit ends up lying <i>along</i> an edge of D instead of touching a single corner, every point of that edge is optimal. There are then infinitely many optimal solutions. The course calls this case <i>dégénéré</i> (see the notes at the end for the usual vocabulary).</p>
+  <div class="calc"><span class="tag">Worked example · the workshop with a different profit</span>
+    <p>Keep the same constraints but suppose P1 earns 300 instead of 400: <span class="m">z = 300x<sub>1</sub> + 200x<sub>2</sub></span>.</p>
+    <ol>
+      <li><b>Spot the parallel.</b> Notice that <span class="m">300x<sub>1</sub> + 200x<sub>2</sub> = 10 · (30x<sub>1</sub> + 20x<sub>2</sub>)</span>. So the profit lines have exactly the direction of the M1 line, that is, of the edge CB.</li>
+      <li><b>Read z on that edge.</b> Every point of the edge CB satisfies <span class="m">30x<sub>1</sub> + 20x<sub>2</sub> = 6000</span>, so there <span class="m">z = 10 × 6000 = 60 000</span>. Check: C (0, 300) → 60 000, B (40, 240) → 12 000 + 48 000 = 60 000, and the midpoint (20, 270) → 6000 + 54 000 = 60 000. The vertex A gives only 30 000.</li>
+      <li><b>Answer.</b> Every point of the edge from C to B is optimal, with <span class="res">z* = 60 000</span>. The optimum is not unique.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- NOTES -->
+<section class="sec" id="notes"><div class="note errata"><span class="tag">Notes: errors and loose wording found in the original course</span>
+  <ul>
+    <li><b>Sign error in "min z = max(−z)".</b> The first PDF writes it this way; it is only the <i>solution</i> that is shared. The optimal <i>value</i> flips sign: min z = −max(−z) (the second PDF states it correctly). In section 3's example, min z = 8 while max(−z) = −8.</li>
+    <li><b>"Slack" vs "surplus".</b> In the standard-form example both <span class="m">x<sub>3</sub></span> and <span class="m">x<sub>4</sub></span> are called <i>variables d'écart</i>, but <span class="m">x<sub>3</sub></span> is <i>subtracted</i> (a "≥" constraint). Strictly, that one is a surplus variable (<i>variable d'excédent</i>); only <span class="m">x<sub>4</sub></span> is a slack.</li>
+    <li><b>Transport problem needs a balance condition.</b> With equalities on both sides, the problem has a solution only if total stock equals total demand (<span class="m">Σa<sub>i</sub> = Σb<sub>j</sub></span>). The course never says so.</li>
+    <li><b>Polytope vs polyhedron.</b> The graphical-resolution page says D is a "polytope convexe" in general and a "polyèdre convexe" when bounded. The usual convention is the other way round: a <i>polyhedron</i> is any intersection of half-planes (bounded or not), and a <i>polytope</i> is a bounded polyhedron. Use the course's wording in exams, but know the usual one.</li>
+    <li><b>"Cas dégénéré".</b> The course uses "dégénéré" for the case of infinitely many optimal solutions (a whole edge). The usual name for that is <i>multiple</i> or <i>alternative optima</i>. In the simplex method "degenerate" normally means something else (a vertex where more constraints are tight than necessary). Use the course's word in exams.</li>
+    <li><b>Typos.</b> "Maxixmiser" in the Problem 1 title; "A est le rang m" should read "A est de rang m".</li>
+  </ul>
+</div></section>
+
+<footer class="foot">Based on the OPL course PDFs (Introduction, Programmation linéaire, Résolution graphique). All examples recomputed by program.</footer>
+</div>
+
+</body>
+</html>
