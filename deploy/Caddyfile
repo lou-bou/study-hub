@@ -1,0 +1,17 @@
+{
+	auto_https off
+}
+
+http://localhost:8080 {
+	bind 127.0.0.1
+	root * /srv/studysite/dist
+	encode zstd gzip
+
+	handle /api/* {
+		reverse_proxy 127.0.0.1:8001
+	}
+
+	handle {
+		file_server
+	}
+}

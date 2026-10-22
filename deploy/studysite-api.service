@@ -1,0 +1,26 @@
+# Install: sudo cp deploy/studysite-api.service /etc/systemd/system/
+#          sudo systemctl daemon-reload && sudo systemctl enable --now studysite-api
+# Set User= to your login on the ThinkPad.
+[Unit]
+Description=Study Hub answers API
+After=network.target
+
+[Service]
+Type=simple
+User=lou
+WorkingDirectory=/srv/studysite
+Environment=ANSWERS_DB=/srv/studysite/data/answers.db
+Environment=ANSWERS_HOST=127.0.0.1
+Environment=ANSWERS_PORT=8001
+ExecStart=/usr/bin/python3 /srv/studysite/server.py
+Restart=on-failure
+RestartSec=2
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/srv/studysite/data
+
+[Install]
+WantedBy=multi-user.target

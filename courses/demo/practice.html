@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Demo Practice</title></head>
+<body>
+<h1>Demo Practice</h1>
+<p><label>Q1 text <input id="q1" type="text"></label></p>
+<p>Q2
+  <label><input type="radio" name="q2" value="a"> a</label>
+  <label><input type="radio" name="q2" value="b"> b</label>
+  <label><input type="radio" name="q2" value="c"> c</label>
+</p>
+<p><label><input id="q3" type="checkbox"> Q3 checkbox</label></p>
+<p><label>Q4 notes<br><textarea id="q4" rows="3" cols="40"></textarea></label></p>
+<p data-no-save><label>Scratch (not saved) <input id="scratch" type="text"></label></p>
+<div id="late"></div>
+<script>
+  // Field the page creates later, to exercise the MutationObserver restore.
+  setTimeout(function () {
+    document.getElementById("late").innerHTML = '<label>Q5 late <input id="q5" type="text"></label>';
+  }, 800);
+</script>
+</body>
+</html>

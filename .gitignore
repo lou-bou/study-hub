@@ -1,0 +1,5 @@
+dist/
+.dist_new/
+.dist_old/
+data/*.db*
+__pycache__/
