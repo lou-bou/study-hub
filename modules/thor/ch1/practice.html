@@ -118,13 +118,13 @@ figure.fig svg{display:block;width:100%;height:auto;min-width:var(--minw,0);max-
 figcaption{font-size:.82rem;color:var(--muted);margin-top:8px;line-height:1.45}
 
 /* worked example */
-.calc{margin-top:22px;background:var(--accent-soft);border-radius:12px;padding:16px 20px 18px}
-.calc>.tag{color:var(--accent)}
+.calc{margin-top:22px;background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--ok);border-radius:12px;padding:14px 20px 18px}
+.calc>.tag{color:var(--ok)}
 .calc>p{margin:10px 0 0}
 .calc ol{margin:10px 0 0;padding-left:22px}
 .calc li{margin:8px 0}
-.calc code{background:var(--surface)}
-.calc figure.fig,.calc .eq{background:var(--surface)}
+.calc li>b:first-child{color:var(--accent)}
+.calc figure.fig,.calc .eq{background:var(--bg)}
 ul.ln{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:7px;font-family:var(--f-mono);font-size:.88rem;line-height:1.55}
 ul.ln li{padding-left:1.1em;text-indent:-1.1em;overflow-wrap:anywhere}
 ul.ln li::before{content:"\203A\00a0";color:var(--accent);font-weight:600}
@@ -176,8 +176,9 @@ table.t tr.best td{background:var(--ok-soft);font-weight:600}
 .pfs figure{flex:1 1 200px;max-width:340px;min-width:0;margin:0;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 10px 8px}
 .prob details{margin-top:14px}
 .prob summary{cursor:pointer;font:600 .82rem var(--f-mono);color:var(--accent);width:max-content;padding:4px 0}
-.sol{margin-top:8px;background:var(--accent-soft);border-radius:10px;padding:6px 18px 12px;font-size:.95rem}
+.sol{margin-top:8px;background:var(--bg);border:1px solid var(--line);border-top:4px solid var(--ok);border-radius:10px;padding:6px 18px 12px;font-size:.95rem}
 .sol p{margin:10px 0 0;max-width:78ch}
+.sol li>b:first-child{color:var(--accent)}
 .sol .pfs figure,.sol .eq{background:var(--surface)}
 .aid{margin-top:12px;background:var(--bg);border:1px dashed var(--accent);border-radius:10px;padding:8px 14px;font-size:.9rem;line-height:1.55}
 .aid>b:first-child{color:var(--accent)}
