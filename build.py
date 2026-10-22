@@ -36,16 +36,16 @@ BAR_STYLE = (
     "font:600 13px/1.2 system-ui,-apple-system,'Segoe UI',sans-serif"
 )
 LINK_STYLE = "color:#fff;text-decoration:none;padding:5px 11px;border-radius:999px"
-# The theme toggle and the nav bar follow the viewport until the contents (.toc, else .hero) are scrolled
-# past, then park where they are and scroll away with the page.
+# The theme toggle and the nav bar follow the viewport until they reach the end of the contents
+# (.toc, else .hero), then each parks just above that line and scrolls away with the page.
 PARK_SCRIPT = (
     '(function(){var els=[document.getElementById("theme-toggle"),document.getElementById("studyhub-nav")]'
     '.filter(Boolean),orig=els.map(function(el){return el.style.cssText});'
     'function park(){var a=document.querySelector(".toc")||document.querySelector(".hero");'
-    'if(!a)return;var stop=a.getBoundingClientRect().bottom+scrollY,past=scrollY>stop;els.forEach(function(el,i){'
-    'var s=el.style;s.cssText=orig[i];if(!past)return;'
-    'var top=el.getBoundingClientRect().top;s.setProperty("position","absolute","important");'
-    's.setProperty("top",(stop+top)+"px","important");s.setProperty("bottom","auto","important");});}'
+    'if(!a)return;var line=a.getBoundingClientRect().bottom+scrollY;els.forEach(function(el,i){'
+    'var s=el.style;s.cssText=orig[i];var r=el.getBoundingClientRect();if(scrollY+r.bottom<=line)return;'
+    's.setProperty("position","absolute","important");'
+    's.setProperty("top",(line-r.height)+"px","important");s.setProperty("bottom","auto","important");});}'
     'addEventListener("scroll",park,{passive:true});addEventListener("resize",park);park();})();'
 )
 
