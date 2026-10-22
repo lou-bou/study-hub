@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Modern Symmetric Cryptography Practice · SSAD Ch 3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<script>/* study-hub:theme */(function(){var r=document.documentElement;try{var t=localStorage.getItem("studyhub-theme");if(t)r.setAttribute("data-theme",t);}catch(e){}document.addEventListener("DOMContentLoaded",function(){var b=document.getElementById("theme-toggle");if(b)b.addEventListener("click",function(){var c=r.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");var n=c==="dark"?"light":"dark";r.setAttribute("data-theme",n);try{localStorage.setItem("studyhub-theme",n);}catch(e){}});});})();</script>
+<style>
+/* study-hub:base v1 — shared by every remake; edit here, then copy into pages */
+:root{
+  --bg:#F3F5FB; --surface:#FFFFFF; --ink:#14203B; --muted:#586583; --line:#D9DFEC;
+  --accent:#2B52E6; --accent-soft:#E3E9FF; --hi:#D9481C; --hi-soft:#FFE3D6; --code-bg:#E9EDF8;
+  --ok:#1B7A49; --ok-soft:#E2F4EA;
+  --c1:#8FB0FF; --c2:#FFB877; --c3:#7EDBAA; --c4:#CDAEFF;
+  --f-display:'Bricolage Grotesque',system-ui,sans-serif;
+  --f-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+  --f-math:'Cambria Math','STIX Two Math',Georgia,serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D1426; --surface:#151F38; --ink:#E6EBF8; --muted:#9BA8C7; --line:#28345A;
+    --accent:#8AA5FF; --accent-soft:#1B2958; --hi:#FF8D63; --hi-soft:#47281F; --code-bg:#1C2849;
+    --ok:#5FD394; --ok-soft:#173326;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D1426; --surface:#151F38; --ink:#E6EBF8; --muted:#9BA8C7; --line:#28345A;
+  --accent:#8AA5FF; --accent-soft:#1B2958; --hi:#FF8D63; --hi-soft:#47281F; --code-bg:#1C2849;
+  --ok:#5FD394; --ok-soft:#173326;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg); color:var(--ink); font-family:var(--f-body); font-size:16px; line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:28px 72px; margin:0;
+}
+.wrap{max-width:1040px;margin:0 auto}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px}
+code{font-family:var(--f-mono);font-size:.9em;background:var(--code-bg);padding:1px 6px;border-radius:5px}
+.en{font-weight:600}
+.fr{color:var(--muted);font-style:italic;font-weight:400}
+sub,sup{line-height:0}
+.m{font-family:var(--f-math);font-style:italic}
+.ov{text-decoration:overline}
+.eq{font-family:var(--f-math);font-size:1.05rem;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 16px;margin:12px 0;overflow-x:auto;white-space:pre}
+.res{display:inline-block;background:var(--ok-soft);color:var(--ink);border-radius:6px;padding:1px 8px;font-weight:600}
+.toggle{position:fixed;top:14px;right:max(14px,env(safe-area-inset-right,0px));z-index:20;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 14px;font:500 .8rem var(--f-body);cursor:pointer}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:36px;align-items:center;padding-bottom:36px}
+.hero.solo{grid-template-columns:minmax(0,1fr)}
+.eyebrow{font:600 .75rem/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+h1{font-family:var(--f-display);font-weight:800;font-size:clamp(2.3rem,5.4vw,3.8rem);line-height:1.02;letter-spacing:-.025em;margin:14px 0 16px;text-wrap:balance}
+.lead{font-size:1.1rem;color:var(--muted);max-width:60ch;margin:0 0 22px}
+.how{display:grid;gap:10px;margin:0;padding:0;list-style:none;max-width:52ch}
+.how li{display:flex;gap:12px;align-items:baseline;font-size:.95rem}
+.how .tag{flex:0 0 auto;min-width:9.5em}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin:0}
+.pill{background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:4px 12px;font:500 .8rem var(--f-mono)}
+.herofig{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 16px 12px;min-width:0;overflow-x:auto}
+.herofig svg{display:block;width:100%;height:auto;min-width:var(--minw,0)}
+.herofig figcaption{font-size:.84rem;color:var(--muted);margin-top:8px}
+
+/* contents */
+.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:28px 24px;padding-block:28px 8px;border-top:1px solid var(--line)}
+.part h3{font:600 .72rem/1.3 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.part ul{list-style:none;margin:0;padding:0;display:grid;gap:3px}
+.part a{display:flex;gap:10px;text-decoration:none;color:var(--ink);padding:3px 0;font-size:.95rem}
+.part a:hover{color:var(--accent)}
+.part a small{display:block;color:var(--muted);font-size:.8rem;line-height:1.35}
+.part .n{font:500 .8rem/1.7 var(--f-mono);color:var(--accent);min-width:1.6em}
+.part .sc{margin-left:auto;font:500 .78rem/1.7 var(--f-mono);color:var(--muted);white-space:nowrap}
+
+/* sections */
+.sec{margin-top:56px;padding-top:36px;border-top:1px solid var(--line);scroll-margin-top:12px}
+.sec-h{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
+.num{font:800 2.5rem/1 var(--f-display);color:var(--accent);letter-spacing:-.03em}
+.sec h2{font-family:var(--f-display);font-weight:700;font-size:clamp(1.4rem,3vw,1.9rem);line-height:1.15;margin:0;letter-spacing:-.015em;text-wrap:balance;min-width:0}
+.sec h2 .fr{font-family:var(--f-body);font-size:.62em;font-weight:400}
+.sec h3{font-family:var(--f-display);font-weight:700;font-size:1.15rem;margin:28px 0 8px}
+.sec h3 .fr{font-family:var(--f-body);font-size:.8em}
+.sec>p,.sec>ul,.sec>ol{max-width:78ch}
+.back{margin-left:auto;font-size:.78rem;color:var(--muted);text-decoration:none}
+.back:hover{color:var(--accent)}
+.secscore{font:600 .85rem var(--f-mono);color:var(--accent)}
+.tag{display:inline-block;font:600 .68rem/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;margin-top:20px}
+.plain{margin-top:20px;border-left:3px solid var(--accent);padding:2px 0 2px 16px}
+.intro .plain{margin-top:0}
+.plain p{margin:8px 0 0;font-size:1.05rem;max-width:62ch}
+.defs{list-style:none;margin:20px 0 0;padding:0;display:grid;gap:12px;min-width:0}
+.intro .defs{margin-top:0}
+.defs li{display:grid;gap:1px;font-size:.95rem}
+.defs .mean{color:var(--muted)}
+.defs .eg{color:var(--muted);font-size:.9rem}
+.defs .eg::before{content:"e.g. ";font-weight:600;color:var(--accent)}
+.callout{margin-top:20px;background:var(--surface);border:1px dashed var(--accent);border-radius:12px;padding:14px 20px}
+.callout>b:first-child{color:var(--accent)}
+.callout ol,.callout ul{margin:6px 0 2px;padding-left:22px}
+.callout li{margin:5px 0}
+details.more{margin-top:14px;border:1px dashed var(--line);border-radius:10px;padding:8px 14px;background:var(--surface)}
+details.more summary{cursor:pointer;font-weight:600;color:var(--accent)}
+
+/* figures */
+.figs{display:flex;flex-wrap:wrap;gap:16px;margin-top:24px}
+.figs figure{flex:1 1 250px;max-width:430px;min-width:0;margin:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 14px 12px}
+figure.fig{margin:18px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 14px 12px;overflow-x:auto}
+figure.fig svg{display:block;width:100%;height:auto;min-width:var(--minw,0);max-width:var(--maxw,560px);margin-inline:auto}
+figcaption{font-size:.82rem;color:var(--muted);margin-top:8px;line-height:1.45}
+
+/* worked example */
+.calc{margin-top:22px;background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--ok);border-radius:12px;padding:14px 20px 18px}
+.calc>.tag{color:var(--ok)}
+.calc>p{margin:10px 0 0}
+.calc ol{margin:10px 0 0;padding-left:22px}
+.calc li{margin:8px 0}
+.calc li>b:first-child{color:var(--accent)}
+.calc figure.fig,.calc .eq{background:var(--bg)}
+ul.ln{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:7px;font-family:var(--f-mono);font-size:.88rem;line-height:1.55}
+ul.ln li{padding-left:1.1em;text-indent:-1.1em;overflow-wrap:anywhere}
+ul.ln li::before{content:"\203A\00a0";color:var(--accent);font-weight:600}
+
+/* tables */
+.scroll{overflow-x:auto;margin-top:12px;max-width:100%}
+table.t{border-collapse:collapse;font:400 .9rem/1.45 var(--f-body);min-width:260px}
+table.t th{font-weight:600;text-align:left;color:var(--muted)}
+table.t th,table.t td{padding:6px 14px 6px 0;border-bottom:1px solid var(--line);vertical-align:top}
+table.t.mono{font-family:var(--f-mono);font-size:.85rem}
+table.t.mono th,table.t.mono td{white-space:nowrap}
+table.t.grid th,table.t.grid td{padding:6px 10px;border:1px solid var(--line)}
+table.t.grid th{background:var(--accent-soft);color:var(--ink)}
+table.t .c,table.t.center th,table.t.center td{text-align:center}
+table.t.center .l{text-align:left}
+table.t td.ok{color:var(--ok);font-weight:600}
+table.t td.bad,table.t td.x{color:var(--hi);font-weight:600}
+table.t tr.best td{background:var(--ok-soft);font-weight:600}
+
+/* notes and footer */
+.note{margin-top:20px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 20px}
+.note.errata{background:var(--hi-soft);border-color:color-mix(in srgb,var(--hi) 35%,transparent)}
+.note.errata>.tag{color:var(--hi)}
+.note ul,.note ol{margin:8px 0 0;padding-left:1.2em;display:grid;gap:8px;font-size:.95rem}
+.foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);font-size:.82rem;color:var(--muted)}
+
+/* practice */
+.prog{display:flex;align-items:center;gap:14px;max-width:460px;margin-top:22px;font:500 .85rem var(--f-mono);color:var(--muted)}
+.prog .track{flex:1;height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.prog .fill{display:block;height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .25s}
+.legend{display:flex;gap:10px 16px;flex-wrap:wrap;margin-top:16px;font-size:.88rem;color:var(--muted)}
+.setmeta{margin:6px 0 0;color:var(--muted);font-size:.9rem}
+.prob{margin-top:18px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 20px 14px;scroll-margin-top:12px}
+.prob.ok{border-color:var(--ok);box-shadow:0 0 0 1px var(--ok) inset}
+.prob.bad{border-color:var(--hi)}
+.ph{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.pid{font:600 1.05rem var(--f-mono);color:var(--accent)}
+.ph .pt{font:600 1rem/1.35 var(--f-body);margin:0;min-width:0;flex:1 1 16em}
+.lvl{font:600 .66rem/1 var(--f-mono);letter-spacing:.09em;text-transform:uppercase;padding:5px 9px;border-radius:99px}
+.lw{background:var(--accent-soft);color:var(--accent)}
+.ls{background:var(--code-bg);color:var(--ink)}
+.lc{background:var(--hi-soft);color:var(--hi)}
+.done{margin-left:auto;display:flex;align-items:center;gap:7px;font-size:.82rem;color:var(--muted);cursor:pointer}
+.done input{width:17px;height:17px;accent-color:var(--accent);cursor:pointer}
+.pq{margin-top:10px;max-width:78ch}
+.pq>p,.prob>p{margin:10px 0 0}
+.parts{margin:8px 0 0;padding-left:1.4em;display:grid;gap:5px}
+.pfs{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px}
+.pfs figure{flex:1 1 200px;max-width:340px;min-width:0;margin:0;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 10px 8px}
+.prob details{margin-top:14px}
+.prob summary{cursor:pointer;font:600 .82rem var(--f-mono);color:var(--accent);width:max-content;padding:4px 0}
+.sol{margin-top:8px;background:var(--bg);border:1px solid var(--line);border-top:4px solid var(--ok);border-radius:10px;padding:6px 18px 12px;font-size:.95rem}
+.sol p{margin:10px 0 0;max-width:78ch}
+.sol li>b:first-child{color:var(--accent)}
+.sol .pfs figure,.sol .eq{background:var(--surface)}
+.aid{margin-top:12px;background:var(--bg);border:1px dashed var(--accent);border-radius:10px;padding:8px 14px;font-size:.9rem;line-height:1.55}
+.aid>b:first-child{color:var(--accent)}
+.prob input[type=text]{width:100%;min-width:56px;max-width:90px;font:inherit;text-align:center;padding:5px 6px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.prob textarea{width:100%;font:inherit;padding:8px 10px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.prob select{font:inherit;padding:5px 8px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.prob input:focus,.prob select:focus,.prob textarea:focus{outline:2px solid var(--accent);outline-offset:1px}
+.prob input.ok,.prob select.ok{border-color:var(--ok);background:var(--ok-soft)}
+.prob input.bad,.prob select.bad{border-color:var(--hi);background:var(--hi-soft)}
+table.t.inp td{padding:3px 6px 3px 0}
+.scalars{display:flex;flex-wrap:wrap;gap:12px 20px;margin:12px 0 0}
+label.sc{display:flex;align-items:center;gap:8px}
+label.sc>span{font-weight:600;min-width:34px}
+label.sc small{color:var(--muted);font-size:.75rem}
+.mc{display:grid;gap:7px;margin:12px 0 0}
+label.opt{display:flex;gap:10px;align-items:flex-start;padding:8px 12px;border:1.5px solid var(--line);border-radius:10px;cursor:pointer;background:var(--bg)}
+label.opt:hover{border-color:var(--accent)}
+label.opt.ok{border-color:var(--ok);background:var(--ok-soft)}
+label.opt.bad{border-color:var(--hi);background:var(--hi-soft)}
+label.opt.reveal{border-color:var(--ok)}
+label.opt input{margin-top:5px;accent-color:var(--accent)}
+.chips-set{display:inline-flex;flex-wrap:wrap;gap:6px;vertical-align:middle}
+label.chipbox{position:relative;border:1.5px solid var(--line);border-radius:999px;padding:3px 12px;cursor:pointer;background:var(--bg);font-size:.88rem}
+label.chipbox:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+label.chipbox input{position:absolute;opacity:0;pointer-events:none}
+.chips-set.ok label.chipbox:has(input:checked){border-color:var(--ok);background:var(--ok-soft)}
+.chips-set.bad{outline:2px solid var(--hi);outline-offset:3px;border-radius:12px}
+.actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:14px}
+.b{font:500 .85rem var(--f-body);padding:6px 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.b.chk{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:600}
+.fb{font-size:.88rem;font-weight:600}
+.fb.ok{color:var(--ok)} .fb.bad{color:var(--hi)}
+.solution,.expl{margin-top:12px;border-top:1px dashed var(--line);padding-top:10px;font-size:.95rem}
+.solution>p,.expl>p{margin:6px 0}
+.expl{color:var(--muted)}
+
+@media (max-width:820px){
+  .hero{grid-template-columns:minmax(0,1fr)}
+  .intro{grid-template-columns:minmax(0,1fr)}
+  .how li{flex-direction:column;gap:2px}
+  body{padding-top:56px}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{.toggle{display:none}body{background:#fff}}
+/* /study-hub:base */
+</style>
+<style>
+/* page-specific */
+:root{--l0:#6F90FF;--l1:#97B0FF;--l2:#BACAFF;--l3:#D7E1FF;--l4:#EDF1FF}
+.figs figure.wide{flex:1 1 100%;max-width:none}
+.calc code{background:var(--surface)}
+table.t.wrap td,table.t.wrap th{white-space:normal;vertical-align:top;font-family:var(--f-body);font-size:.92rem}
+ol.tl{list-style:none;margin:14px 0 0;padding:0 0 0 20px;border-left:2px solid var(--line);display:grid;gap:12px}
+ol.tl li{position:relative;font-size:.95rem}
+ol.tl li::before{content:"";position:absolute;left:-27px;top:.55em;width:10px;height:10px;border-radius:50%;background:var(--accent)}
+ol.tl .yr{display:block;font:600 .8rem/1.3 var(--f-mono);color:var(--accent)}
+svg.g{display:block;width:100%;height:auto;max-width:var(--w,400px);margin-inline:auto;overflow:visible}
+svg.g .cell{fill:var(--surface);stroke:var(--ink);stroke-width:1.5}
+svg.g .cell.gh{fill:none;stroke:var(--line);stroke-dasharray:3 3}
+svg.g .cell.c1{fill:var(--c1)}
+svg.g .cell.c2{fill:var(--c2)}
+svg.g .cell.c3{fill:var(--c3)}
+svg.g .cell.c4{fill:var(--c4)}
+svg.g .cell.l0{fill:var(--l0)}
+svg.g .cell.l1{fill:var(--l1)}
+svg.g .cell.l2{fill:var(--l2)}
+svg.g .cell.l3{fill:var(--l3)}
+svg.g .cell.l4{fill:var(--l4)}
+svg.g .cell.ok{fill:var(--c3)}
+svg.g .cell.hi,svg.g .cell.out{fill:var(--hi-soft);stroke:var(--hi);stroke-width:2.4}
+svg.g .cell.ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2.4}
+svg.g .cell.in{stroke:var(--accent);stroke-width:3.4}
+svg.g .dot{stroke:var(--ink);stroke-width:1.5}
+svg.g .dot.c2{fill:var(--c2)}
+svg.g .dot.c3{fill:var(--c3)}
+svg.g .cn{stroke:var(--muted);stroke-width:1.6;fill:none;stroke-linecap:round}
+svg.g .cn.hi{stroke:var(--hi)}
+svg.g .cn.faint{stroke:var(--line);stroke-dasharray:4 4}
+svg.g .bar{fill:var(--l1)}
+svg.g .bar.hi{fill:var(--hi)}
+svg.g text.l{font:500 12.5px var(--f-mono);fill:var(--ink);text-anchor:middle;dominant-baseline:central}
+svg.g text.l.on{fill:#14203B}
+svg.g text.t{font:500 11.5px var(--f-body);fill:var(--muted);text-anchor:middle}
+svg.g text.ts{font:500 11.5px var(--f-body);fill:var(--muted);text-anchor:start}
+.pq code{background:var(--code-bg)}
+.aid .tag{color:var(--accent)}
+.aid .scroll{margin-top:2px}
+.aid svg.g{max-width:340px;margin-inline:0}
+.aid-note{color:var(--muted)}
+.hb{display:inline-block;font:500 .82rem/1.6 var(--f-mono);background:var(--surface);border-radius:6px;padding:0 8px;margin:2px 6px 2px 0;white-space:nowrap}
+.hb b{color:var(--accent);margin-right:4px}
+button{font:600 .85rem var(--f-body);padding:7px 14px;border-radius:8px;border:1px solid var(--accent);background:var(--accent-soft);color:var(--ink);cursor:pointer}
+button:hover{background:var(--accent);color:#fff}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+details{margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
+summary{cursor:pointer;font:600 .85rem var(--f-mono);color:var(--accent);letter-spacing:.02em}
+.fb b{color:var(--ink)}
+.prob .actions input.ans{max-width:320px;text-align:left;font-family:var(--f-mono)}
+</style>
+</head>
+<body>
+<button class="toggle" id="theme-toggle" type="button" aria-label="Toggle light or dark theme">◐ Theme</button>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:var(--muted)"/></marker><marker id="arh" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:var(--hi)"/></marker></defs></svg><div class="wrap"><header class="hero" id="top"><div><div class="eyebrow">SSAD · Chapter 3 · Practice</div><h1>Modern symmetric cryptography, practice time</h1><p class="lead">14 small problems and a 15-question quiz. The goal is to get used to how each algorithm works, not to encrypt by hand: every problem shows the tables you need right under the question.</p><div class="prog" aria-live="polite"><span id="prog-txt">0 / 0 done</span><span class="track"><span class="fill" id="prog-bar"></span></span></div></div><figure class="herofig"><svg class="g" viewBox="0 0 380 188" role="img" aria-label="CBC: each plaintext block is XORed with the previous ciphertext block before encryption" style="--w:440px"><rect class="cell c1" x="50" y="6" width="70" height="24" rx="5"/><text class="l on" x="85.0" y="18.0">m₁</text><line class="cn" x1="85" y1="30" x2="85" y2="48" marker-end="url(#ar)"/><circle class="cell" cx="85" cy="58" r="9"/><line class="cn" x1="79" y1="58" x2="91" y2="58" style="stroke:var(--ink)"/><line class="cn" x1="85" y1="52" x2="85" y2="64" style="stroke:var(--ink)"/><line class="cn" x1="85" y1="67" x2="85" y2="84" marker-end="url(#ar)"/><rect class="cell ac" x="50" y="84" width="70" height="24" rx="5"/><text class="l" x="85.0" y="96.0" style="font-size:12px">E_K</text><line class="cn" x1="85" y1="108" x2="85" y2="128" marker-end="url(#ar)"/><rect class="cell c2" x="50" y="128" width="70" height="24" rx="5"/><text class="l on" x="85.0" y="140.0">c₁</text><rect class="cell c1" x="200" y="6" width="70" height="24" rx="5"/><text class="l on" x="235.0" y="18.0">m₂</text><line class="cn" x1="235" y1="30" x2="235" y2="48" marker-end="url(#ar)"/><circle class="cell" cx="235" cy="58" r="9"/><line class="cn" x1="229" y1="58" x2="241" y2="58" style="stroke:var(--ink)"/><line class="cn" x1="235" y1="52" x2="235" y2="64" style="stroke:var(--ink)"/><line class="cn" x1="235" y1="67" x2="235" y2="84" marker-end="url(#ar)"/><rect class="cell ac" x="200" y="84" width="70" height="24" rx="5"/><text class="l" x="235.0" y="96.0" style="font-size:12px">E_K</text><line class="cn" x1="235" y1="108" x2="235" y2="128" marker-end="url(#ar)"/><rect class="cell c2" x="200" y="128" width="70" height="24" rx="5"/><text class="l on" x="235.0" y="140.0">c₂</text><rect class="cell c4" x="4" y="46" width="32" height="24" rx="5"/><text class="l on" x="20.0" y="58.0" style="font-size:11px">IV</text><line class="cn" x1="36" y1="58" x2="74" y2="58" marker-end="url(#ar)"/><path class="cn hi" d="M120,140 H152 V58 H224" marker-end="url(#arh)"/><path class="cn" d="M270,140 H304" marker-end="url(#ar)"/><text class="t" x="338" y="144">… next</text><text class="t" x="190" y="178">cᵢ = E_K( mᵢ ⊕ cᵢ₋₁ )   with c₀ = IV</text></svg><figcaption>Practice on tiny blocks so the mechanism is the point, not the arithmetic.</figcaption></figure></header><nav class="toc" aria-label="Contents"><div class="part"><h3>A · Problem set</h3><ul><li><a href="#s1"><span class="n">1</span><span>XOR and streams</span></a></li><li><a href="#s2"><span class="n">2</span><span>Modes</span></a></li><li><a href="#s3"><span class="n">3</span><span>Feistel</span></a></li><li><a href="#s4"><span class="n">4</span><span>DES</span></a></li><li><a href="#s5"><span class="n">5</span><span>AES</span></a></li><li><a href="#s6"><span class="n">6</span><span>IDEA</span></a></li></ul></div><div class="part"><h3>B · Interactive quiz</h3><ul><li><a href="#s7"><span class="n">7</span><span>Quiz</span></a></li></ul></div></nav><section class="sec" id="s1"><div class="sec-h"><span class="num">1</span><h2>XOR and stream ciphers <span class="fr">(XOR et chiffrement en continu)</span></h2><a class="back" href="#top">&uarr; contents</a></div><div class="plain"><p>The one operation behind every stream cipher, and why reusing a keystream is fatal.</p></div><article class="prob" id="p-1" data-ans="01001100"><div class="ph"><span class="pid">1</span><span class="lvl lw">warm-up</span><label class="done"><input type="checkbox" id="done-1"><span>done</span></label></div><div class="pq">A stream cipher XORs the message with the keystream. Compute <code>c = m ⊕ s</code> for <code>m = 11010110</code> and <code>s = 10011010</code>.</div><div class="aid"><span class="tag">Aid</span><div><span class="hb">0 ⊕ 0 = 0</span><span class="hb">0 ⊕ 1 = 1</span><span class="hb">1 ⊕ 0 = 1</span><span class="hb">1 ⊕ 1 = 0</span></div><div class="scroll"><table class="t mono"><thead><tr><th>bit</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th></tr></thead><tbody><tr><td>m</td><td>1</td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td></tr><tr><td>s</td><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td>0</td></tr><tr><td>c</td><td>?</td><td>?</td><td>?</td><td>?</td><td>?</td><td>?</td><td>?</td><td>?</td></tr></tbody></table></div></div><div class="actions"><input type="text" id="q-1-1" class="ans" placeholder="8 bits" aria-label="your answer" autocomplete="off" spellcheck="false"><button class="b chk" type="button">Check</button><span class="fb" role="status"></span></div><details><summary>Hint</summary><div class="sol">Go column by column: same bits give 0, different bits give 1.</div></details><details><summary>Answer and steps</summary><div class="sol"><div class="scroll"><table class="t mono"><thead><tr><th>bit</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th></tr></thead><tbody><tr><td>m</td><td>1</td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td></tr><tr><td>s</td><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td>0</td></tr><tr><td>c</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td></tr></tbody></table></div><ul class="ln"><li>Result: <code>01001100</code>. XOR with <code>10011010</code> again returns <code>11010110</code>.</li></ul></div></details></article><article class="prob" id="p-2" data-ans="01000101|E"><div class="ph"><span class="pid">2</span><span class="lvl ls">core</span><label class="done"><input type="checkbox" id="done-2"><span>done</span></label></div><div class="pq">Two messages were encrypted with the <b>same</b> keystream. You know <code>m₁ = 01000001</code> (the letter A) and see <code>c₁ = 11100110</code> and <code>c₂ = 11100010</code>. Find <code>m₂</code>.</div><div class="aid"><span class="tag">Aid</span><div><span class="hb">0 ⊕ 0 = 0</span><span class="hb">0 ⊕ 1 = 1</span><span class="hb">1 ⊕ 0 = 1</span><span class="hb">1 ⊕ 1 = 0</span></div><div><span class="hb">A 01000001</span><span class="hb">B 01000010</span><span class="hb">C 01000011</span><span class="hb">D 01000100</span><span class="hb">E 01000101</span><span class="hb">F 01000110</span></div><div class="aid-note">Idea: c₁ ⊕ c₂ = (m₁ ⊕ s) ⊕ (m₂ ⊕ s) = m₁ ⊕ m₂. The keystream cancels.</div></div><div class="actions"><input type="text" id="q-2-1" class="ans" placeholder="8 bits, or the letter" aria-label="your answer" autocomplete="off" spellcheck="false"><button class="b chk" type="button">Check</button><span class="fb" role="status"></span></div><details><summary>Hint</summary><div class="sol">First compute c₁ ⊕ c₂, then XOR the result with m₁.</div></details><details><summary>Answer and steps</summary><div class="sol"><ul class="ln"><li><code>c₁ ⊕ c₂ = 00000100</code> (this equals m₁ ⊕ m₂).</li><li><code>m₂ = m₁ ⊕ 00000100 = 01000101</code>, which is the letter <code>E</code>.</li></ul></div></details></article></section><section class="sec" id="s2"><div class="sec-h"><span class="num">2</span><h2>Modes of operation <span class="fr">(Modes de chiffrement)</span></h2><a class="back" href="#top">&uarr; contents</a></div><div class="plain"><p>ECB, CBC and OFB on tiny 4-bit blocks, so you can see the mechanism without doing real encryption.</p></div><article class="prob" id="p-3" data-ans="35"><div class="ph"><span class="pid">3</span><span class="lvl lw">warm-up</span><label class="done"><input type="checkbox" id="done-3"><span>done</span></label></div><div class="pq">In ECB mode a message has five blocks: <code>X Y X Z X</code> (equal letters mean equal blocks). Which blocks, other than block 1, have the <b>same ciphertext</b> as block 1? Write their numbers.</div><div class="aid"><span class="tag">Aid</span>ECB: cᵢ = E_K(mᵢ). Each block is encrypted on its own, with nothing mixed in from its neighbours.</div><div class="actions"><input type="text" id="q-3-1" class="ans" placeholder="e.g. 24" aria-label="your answer" autocomplete="off" spellcheck="false"><button class="b chk" type="button">Check</button><span class="fb" role="status"></span></div><details><summary>Hint</summary><div class="sol">Same input block, same key, same function: same output.</div></details><details><summary>Answer and steps</summary><div class="sol"><ul class="ln"><li>Blocks 3 and 5 equal block 1 (all are X), so their ciphertexts are equal too. Blocks 2 (Y) and 4 (Z) differ.</li><li>Answer: <code>35</code>.</li></ul></div></details></article><article class="prob" id="p-4" data-ans="10000111"><div class="ph"><span class="pid">4</span><span class="lvl ls">core</span><label class="done"><input type="checkbox" id="done-4"><span>done</span></label></div><div class="pq">CBC with a toy 4-bit cipher (lookup table below). <code>IV = 0011</code>, <code>m₁ = 1010</code>, <code>m₂ = 0110</code>. Compute <code>c₁</code> and <code>c₂</code> and write them together (8 bits).</div><div class="aid"><span class="tag">Aid</span><div><span class="hb">0 ⊕ 0 = 0</span><span class="hb">0 ⊕ 1 = 1</span><span class="hb">1 ⊕ 0 = 1</span><span class="hb">1 ⊕ 1 = 0</span></div><div class="aid-note">CBC: c₁ = E(m₁ ⊕ IV), c₂ = E(m₂ ⊕ c₁). E is a lookup: find the input in the top row, read the output below.</div><div class="scroll"><table class="t mono"><thead><tr><th>in</th><th>0000</th><th>0001</th><th>0010</th><th>0011</th><th>0100</th><th>0101</th><th>0110</th><th>0111</th><th>1000</th><th>1001</th><th>1010</th><th>1011</th><th>1100</th><th>1101</th><th>1110</th><th>1111</th></tr></thead><tbody><tr><td>out</td><td>0110</td><td>1011</td><td>1110</td><td>0001</td><td>1001</td><td>0011</td><td>1100</td><td>0000</td><td>1111</td><td>1000</td><td>0010</td><td>1101</td><td>0101</td><td>1010</td><td>0111</td><td>0100</td></tr></tbody></table></div></div><div class="actions"><input type="text" id="q-4-1" class="ans" placeholder="8 bits" aria-label="your answer" autocomplete="off" spellcheck="false"><button class="b chk" type="button">Check</button><span class="fb" role="status"></span></div><details><summary>Hint</summary><div class="sol">Do it in four small steps: XOR, look up, XOR, look up.</div></details><details><summary>Answer and steps</summary><div class="sol"><div class="scroll"><table class="t mono"><thead><tr><th>step</th><th>value</th></tr></thead><tbody><tr><td>m₁ ⊕ IV</td><td>1010 ⊕ 0011 = 1001</td></tr><tr><td>c₁ = E(…)</td><td>1000</td></tr><tr><td>m₂ ⊕ c₁</td><td>0110 ⊕ 1000 = 1110</td></tr><tr><td>c₂ = E(…)</td><td>0111</td></tr></tbody></table></div><ul class="ln"><li>Answer: <code>10000111</code>.</li></ul></div></details></article><article class="prob" id="p-5" data-ans="10111101"><div class="ph"><span class="pid">5</span><span class="lvl ls">core</span><label class="done"><input type="checkbox" id="done-5"><span>done</span></label></div><div class="pq">OFB with the same toy cipher, <code>IV = 0011</code>, <code>m₁ = 1010</code>, <code>m₂ = 0110</code>. Compute <code>c₁</code> and <code>c₂</code> (8 bits together).</div><div class="aid"><span class="tag">Aid</span><div><span class="hb">0 ⊕ 0 = 0</span><span class="hb">0 ⊕ 1 = 1</span><span class="hb">1 ⊕ 0 = 1</span><span class="hb">1 ⊕ 1 = 0</span></div><div class="aid-note">OFB: z₁ = E(IV), z₂ = E(z₁), cᵢ = mᵢ ⊕ zᵢ. The message is never fed into E.</div><div class="scroll"><table class="t mono"><thead><tr><th>in</th><th>0000</th><th>0001</th><th>0010</th><th>0011</th><th>0100</th><th>0101</th><th>0110</th><th>0111</th><th>1000</th><th>1001</th><th>1010</th><th>1011</th><th>1100</th><th>1101</th><th>1110</th><th>1111</th></tr></thead><tbody><tr><td>out</td><td>0110</td><td>1011</td><td>1110</td><td>0001</td><td>1001</td><td>0011</td><td>1100</td><td>0000</td><td>1111</td><td>1000</td><td>0010</td><td>1101</td><td>0101</td><td>1010</td><td>0111</td><td>0100</td></tr></tbody></table></div></div><div class="actions"><input type="text" id="q-5-1" class="ans" placeholder="8 bits" aria-label="your answer" autocomplete="off" spellcheck="false"><button class="b chk" type="button">Check</button><span class="fb" role="status"></span></div><details><summary>Hint</summary><div class="sol">First build both key blocks z₁ and z₂ from the IV, then XOR with the message.</div></details><details><summary>Answer and steps</summary><div class="sol"><div class="scroll"><table class="t mono"><thead><tr><th>step</th><th>value</th></tr></thead><tbody><tr><td>z₁ = E(IV)</td><td>0001</td></tr><tr><td>z₂ = E(z₁)</td><td>1011</td></tr><tr><td>c₁ = m₁ ⊕ z₁</td><td>1010 ⊕ 0001 = 1011</td></tr><tr><td>c₂ = m₂ ⊕ z₂</td><td>0110 ⊕ 1011 = 1101</td></tr></tbody></table></div><ul class="ln"><li>Answer: <code>10111101</code>.</li></ul></div></details></article></section><section class="sec" id="s3"><div class="sec-h"><span class="num">3</span><h2>Feistel network <span class="fr">(Réseau de Feistel)</span></h2><a class="back" href="#top">&uarr; contents</a></div><div class="plain"><p>Two rounds forward, then backwards. You only evaluate F, never invert it.</p></div><article class="prob" id="p-6" data-ans="61"><div class="ph"><span class="pid">6</span><span class="lvl ls">core</span><label class="done"><input type="checkbox" id="done-6"><span>done</span></label></div><div class="pq">Toy Feistel network, two rounds. Block = two hex digits <code>L₀ R₀ = 3 C</code>. Subkeys <code>k₁ = 5</code>, <code>k₂ = 9</code>. The round function is <code>F(k, R) = (R² + k) mod 16</code>. Find <code>L₂ R₂</code> (no final swap).</div><div class="aid"><span class="tag">Aid</span>Round rule: L′ = R and R′ = L ⊕ F(k, R). Hex digits are XORed bit by bit.<div class="aid-note">Squares table:</div><div class="scroll"><table class="t mono"><thead><tr><th>R</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr></thead><tbody><tr><td>R² mod 16</td><td>0</td><td>1</td><td>4</td><td>9</td><td>0</td><td>9</td><td>4</td><td>1</td><td>0</td><td>1</td><td>4</td><td>9</td><td>0</td><td>9</td><td>4</td><td>1</td></tr></tbody></table></div><div class="aid-note">Hex ↔ binary:</div><div><span class="hb"><b>0</b> 0000</span><span class="hb"><b>1</b> 0001</span><span class="hb"><b>2</b> 0010</span><span class="hb"><b>3</b> 0011</span><span class="hb"><b>4</b> 0100</span><span class="hb"><b>5</b> 0101</span><span class="hb"><b>6</b> 0110</span><span class="hb"><b>7</b> 0111</span><span class="hb"><b>8</b> 1000</span><span class="hb"><b>9</b> 1001</span><span class="hb"><b>A</b> 1010</span><span class="hb"><b>B</b> 1011</span><span class="hb"><b>C</b> 1100</span><span class="hb"><b>D</b> 1101</span><span class="hb"><b>E</b> 1110</span><span class="hb"><b>F</b> 1111</span></div></div><div class="actions"><input type="text" id="q-6-1" class="ans" placeholder="2 hex digits" aria-label="your answer" autocomplete="off" spellcheck="false"><button class="b chk" type="button">Check</button><span class="fb" role="status"></span></div><details><summary>Hint</summary><div class="sol">Round 1 gives (L₁, R₁) = (R₀, L₀ ⊕ F(5, R₀)). Then repeat with k₂.</div></details><details><summary>Answer and steps</summary><div class="sol"><div class="scroll"><table class="t mono"><thead><tr><th>round</th><th>F(k, R)</th><th>new L</th><th>new R</th></tr></thead><tbody><tr><td>1</td><td>F(5, C) = 0 + 5 = 5</td><td>C</td><td>3 ⊕ 5 = 6</td></tr><tr><td>2</td><td>F(9, 6) = 4 + 9 = D</td><td>6</td><td>C ⊕ D = 1</td></tr></tbody></table></div><ul class="ln"><li>Answer: <code>61</code>.</li></ul></div></details></article><article class="prob" id="p-7" data-ans="3A"><div class="ph"><span class="pid">7</span><span class="lvl lc">challenge</span><label class="done"><input type="checkbox" id="done-7"><span>done</span></label></div><div class="pq">Same toy network and subkeys. You are given the output <code>L₂ R₂ = A 7</code>. Run the rounds <b>backwards</b> to find <code>L₀ R₀</code>.</div><div class="aid"><span class="tag">Aid</span>To undo one round: R₍ᵢ₋₁₎ = Lᵢ and L₍ᵢ₋₁₎ = Rᵢ ⊕ F(kᵢ, Lᵢ). Undo round 2 first (use k₂), then round 1 (use k₁).<div class="scroll"><table class="t mono"><thead><tr><th>R</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr></thead><tbody><tr><td>R² mod 16</td><td>0</td><td>1</td><td>4</td><td>9</td><td>0</td><td>9</td><td>4</td><td>1</td><td>0</td><td>1</td><td>4</td><td>9</td><td>0</td><td>9</td><td>4</td><td>1</td></tr></tbody></table></div><div><span class="hb"><b>0</b> 0000</span><span class="hb"><b>1</b> 0001</span><span class="hb"><b>2</b> 0010</span><span class="hb"><b>3</b> 0011</span><span class="hb"><b>4</b> 0100</span><span class="hb"><b>5</b> 0101</span><span class="hb"><b>6</b> 0110</span><span class="hb"><b>7</b> 0111</span><span class="hb"><b>8</b> 1000</span><span class="hb"><b>9</b> 1001</span><span class="hb"><b>A</b> 1010</span><span class="hb"><b>B</b> 1011</span><span class="hb"><b>C</b> 1100</span><span class="hb"><b>D</b> 1101</span><span class="hb"><b>E</b> 1110</span><span class="hb"><b>F</b> 1111</span></div></div><div class="actions"><input type="text" id="q-7-1" class="ans" placeholder="2 hex digits" aria-label="your answer" autocomplete="off" spellcheck="false"><button class="b chk" type="button">Check</button><span class="fb" role="status"></span></div><details><summary>Hint</summary><div class="sol">You never need to invert F, you only evaluate it.</div></details><details><summary>Answer and steps</summary><div class="sol"><div class="scroll"><table class="t mono"><thead><tr><th>undo</th><th>compute</th><th>result</th></tr></thead><tbody><tr><td>round 2</td><td>R₁ = L₂ = A</td><td></td></tr><tr><td>round 2</td><td>L₁ = R₂ ⊕ F(9, A) = 7 ⊕ D</td><td>A</td></tr><tr><td>round 1</td><td>R₀ = L₁</td><td>A</td></tr><tr><td>round 1</td><td>L₀ = R₁ ⊕ F(5, A) = A ⊕ 9</td><td>3</td></tr></tbody></table></div><ul class="ln"><li>Answer: <code>3A</code>. Forward check: encrypting it gives back <code>A7</code>.</li></ul></div></details></article></section><section class="sec" id="s4"><div class="sec-h"><span class="num">4</span><h2>DES <span class="fr">(DES)</span></h2><a class="back" href="#top">&uarr; contents</a></div><div class="plain"><p>Look-ups only: how an S-box is read, and the bit counts in a round.</p></div><article class="prob" id="p-8" data-ans="3|0011"><div class="ph"><span class="pid">8</span><span class="lvl lw">warm-up</span><label class="done"><input type="checkbox" id="done-8"><span>done</span></label></div><div class="pq">Look up the DES S-box <code>S₁</code> for the 6-bit input <code>110101</code>. Give the output as a number.</div><div class="aid"><span class="tag">Aid</span><div class="aid-note">Row = first bit + last bit (as a 2-bit number). Column = the four middle bits.</div><div class="scroll"><table class="t mono"><thead><tr><th></th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th><th>13</th><th>14</th><th>15</th></tr></thead><tbody><tr><td>row 0</td><td>14</td><td>4</td><td>13</td><td>1</td><td>2</td><td>15</td><td>11</td><td>8</td><td>3</td><td>10</td><td>6</td><td>12</td><td>5</td><td>9</td><td>0</td><td>7</td></tr><tr><td>row 1</td><td>0</td><td>15</td><td>7</td><td>4</td><td>14</td><td>2</td><td>13</td><td>1</td><td>10</td><td>6</td><td>12</td><td>11</td><td>9</td><td>5</td><td>3</td><td>8</td></tr><tr><td>row 2</td><td>4</td><td>1</td><td>14</td><td>8</td><td>13</td><td>6</td><td>2</td><td>11</td><td>15</td><td>12</td><td>9</td><td>7</td><td>3</td><td>10</td><td>5</td><td>0</td></tr><tr><td>row 3</td><td>15</td><td>12</td><td>8</td><td>2</td><td>4</td><td>9</td><td>1</td><td>7</td><td>5</td><td>11</td><td>3</td><td>14</td><td>10</td><td>0</td><td>6</td><td>13</td></tr></tbody></table></div></div><div class="actions"><input type="text" id="q-8-1" class="ans" placeholder="a number 0–15" aria-label="your answer" autocomplete="off" spellcheck="false"><button class="b chk" type="button">Check</button><span class="fb" role="status"></span></div><details><summary>Hint</summary><div class="sol">Write the input as b₁ b₂ b₃ b₄ b₅ b₆. Row = b₁b₆, column = b₂b₃b₄b₅.</div></details><details><summary>Answer and steps</summary><div class="sol"><ul class="ln"><li><code>110101</code>: row = <code>11</code> = 3, column = <code>1010</code> = 10.</li><li>S₁ row 3, column 10 = <code>3</code> = 0011₂.</li></ul></div></details></article><article class="prob" id="p-9" data-ans="8|1000"><div class="ph"><span class="pid">9</span><span class="lvl ls">core</span><label class="done"><input type="checkbox" id="done-9"><span>done</span></label></div><div class="pq">Look up the DES S-box <code>S₁</code> for the 6-bit input <code>001110</code>. Give the output as a number.</div><div class="aid"><span class="tag">Aid</span><div class="aid-note">Row = first bit + last bit (as a 2-bit number). Column = the four middle bits.</div><div class="scroll"><table class="t mono"><thead><tr><th></th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th><th>13</th><th>14</th><th>15</th></tr></thead><tbody><tr><td>row 0</td><td>14</td><td>4</td><td>13</td><td>1</td><td>2</td><td>15</td><td>11</td><td>8</td><td>3</td><td>10</td><td>6</td><td>12</td><td>5</td><td>9</td><td>0</td><td>7</td></tr><tr><td>row 1</td><td>0</td><td>15</td><td>7</td><td>4</td><td>14</td><td>2</td><td>13</td><td>1</td><td>10</td><td>6</td><td>12</td><td>11</td><td>9</td><td>5</td><td>3</td><td>8</td></tr><tr><td>row 2</td><td>4</td><td>1</td><td>14</td><td>8</td><td>13</td><td>6</td><td>2</td><td>11</td><td>15</td><td>12</td><td>9</td><td>7</td><td>3</td><td>10</td><td>5</td><td>0</td></tr><tr><td>row 3</td><td>15</td><td>12</td><td>8</td><td>2</td><td>4</td><td>9</td><td>1</td><td>7</td><td>5</td><td>11</td><td>3</td><td>14</td><td>10</td><td>0</td><td>6</td><td>13</td></tr></tbody></table></div></div><div class="actions"><input type="text" id="q-9-1" class="ans" placeholder="a number 0–15" aria-label="your answer" autocomplete="off" spellcheck="false"><button class="b chk" type="button">Check</button><span class="fb" role="status"></span></div><details><summary>Hint</summary><div class="sol">Write the input as b₁ b₂ b₃ b₄ b₅ b₆. Row = b₁b₆, column = b₂b₃b₄b₅.</div></details><details><summary>Answer and steps</summary><div class="sol"><ul class="ln"><li><code>001110</code>: row = <code>00</code> = 0, column = <code>0111</code> = 7.</li><li>S₁ row 0, column 7 = <code>8</code> = 1000₂.</li></ul></div></details></article><article class="prob" id="p-10" data-ans="4832"><div class="ph"><span class="pid">10</span><span class="lvl lw">warm-up</span><label class="done"><input type="checkbox" id="done-10"><span>done</span></label></div><div class="pq">DES uses 8 S-boxes. Each takes 6 bits and outputs 4. Across all eight, how many bits go <b>in</b> and how many come <b>out</b>? Write the two numbers together (in, then out).</div><div class="aid"><span class="tag">Aid</span>Round function: 32 bits → E → 48 bits → ⊕ key → eight S-boxes → 32 bits → P.</div><div class="actions"><input type="text" id="q-10-1" class="ans" placeholder="two numbers" aria-label="your answer" autocomplete="off" spellcheck="false"><button class="b chk" type="button">Check</button><span class="fb" role="status"></span></div><details><summary>Hint</summary><div class="sol">Multiply: 8 × 6 and 8 × 4.</div></details><details><summary>Answer and steps</summary><div class="sol"><ul class="ln"><li>In: 8 × 6 = 48 bits. Out: 8 × 4 = 32 bits. The 48 → 32 drop is exactly what E (32 → 48) added earlier.</li><li>Answer: <code>4832</code>.</li></ul></div></details></article></section><section class="sec" id="s5"><div class="sec-h"><span class="num">5</span><h2>AES <span class="fr">(AES)</span></h2><a class="back" href="#top">&uarr; contents</a></div><div class="plain"><p>Two of the four AES steps, on real bytes.</p></div><article class="prob" id="p-11" data-ans="99"><div class="ph"><span class="pid">11</span><span class="lvl lw">warm-up</span><label class="done"><input type="checkbox" id="done-11"><span>done</span></label></div><div class="pq">AddRoundKey XORs a state byte with a round-key byte. Compute <code>A5 ⊕ 3C</code> (hex).</div><div class="aid"><span class="tag">Aid</span><div><span class="hb"><b>0</b> 0000</span><span class="hb"><b>1</b> 0001</span><span class="hb"><b>2</b> 0010</span><span class="hb"><b>3</b> 0011</span><span class="hb"><b>4</b> 0100</span><span class="hb"><b>5</b> 0101</span><span class="hb"><b>6</b> 0110</span><span class="hb"><b>7</b> 0111</span><span class="hb"><b>8</b> 1000</span><span class="hb"><b>9</b> 1001</span><span class="hb"><b>A</b> 1010</span><span class="hb"><b>B</b> 1011</span><span class="hb"><b>C</b> 1100</span><span class="hb"><b>D</b> 1101</span><span class="hb"><b>E</b> 1110</span><span class="hb"><b>F</b> 1111</span></div><div><span class="hb">0 ⊕ 0 = 0</span><span class="hb">0 ⊕ 1 = 1</span><span class="hb">1 ⊕ 0 = 1</span><span class="hb">1 ⊕ 1 = 0</span></div></div><div class="actions"><input type="text" id="q-11-1" class="ans" placeholder="2 hex digits" aria-label="your answer" autocomplete="off" spellcheck="false"><button class="b chk" type="button">Check</button><span class="fb" role="status"></span></div><details><summary>Hint</summary><div class="sol">Convert each hex digit to 4 bits, XOR, convert back.</div></details><details><summary>Answer and steps</summary><div class="sol"><div class="scroll"><table class="t mono"><thead><tr><th></th><th>high</th><th>low</th></tr></thead><tbody><tr><td>A5</td><td>1010</td><td>0101</td></tr><tr><td>3C</td><td>0011</td><td>1100</td></tr><tr><td>⊕</td><td>1001</td><td>1001</td></tr></tbody></table></div><ul class="ln"><li>Answer: <code>99</code>.</li></ul></div></details></article><article class="prob" id="p-12" data-ans="8D48E3E2"><div class="ph"><span class="pid">12</span><span class="lvl ls">core</span><label class="done"><input type="checkbox" id="done-12"><span>done</span></label></div><div class="pq">Apply ShiftRows to this AES state. Write the new <code>row 2</code> (four bytes, no spaces).</div><div class="aid"><span class="tag">Aid</span><div class="scroll"><table class="t mono"><thead><tr><th></th><th>c0</th><th>c1</th><th>c2</th><th>c3</th></tr></thead><tbody><tr><td>row 0</td><td>19</td><td>A0</td><td>9A</td><td>E9</td></tr><tr><td>row 1</td><td>3D</td><td>F4</td><td>C6</td><td>F8</td></tr><tr><td>row 2</td><td>E3</td><td>E2</td><td>8D</td><td>48</td></tr><tr><td>row 3</td><td>BE</td><td>2B</td><td>2A</td><td>08</td></tr></tbody></table></div><div class="aid-note">Rule: row r rotates left by r positions. Row 0 stays. Row 1 moves 1. Row 2 moves 2. Row 3 moves 3.</div><svg class="g" viewBox="0 0 310 164" role="img" aria-label="ShiftRows rotates row r of the 4 by 4 state left by r positions" style="--w:420px"><rect class="cell c1" x="10" y="22" width="26" height="26" rx="5"/><text class="l on" x="23.0" y="35.0" style="font-size:11.5px">A</text><rect class="cell c1" x="196" y="22" width="26" height="26" rx="5"/><text class="l on" x="209.0" y="35.0" style="font-size:11.5px">A</text><rect class="cell c2" x="10" y="48" width="26" height="26" rx="5"/><text class="l on" x="23.0" y="61.0" style="font-size:11.5px">B</text><rect class="cell c2" x="196" y="48" width="26" height="26" rx="5"/><text class="l on" x="209.0" y="61.0" style="font-size:11.5px">F</text><rect class="cell c3" x="10" y="74" width="26" height="26" rx="5"/><text class="l on" x="23.0" y="87.0" style="font-size:11.5px">C</text><rect class="cell c3" x="196" y="74" width="26" height="26" rx="5"/><text class="l on" x="209.0" y="87.0" style="font-size:11.5px">K</text><rect class="cell c4" x="10" y="100" width="26" height="26" rx="5"/><text class="l on" x="23.0" y="113.0" style="font-size:11.5px">D</text><rect class="cell c4" x="196" y="100" width="26" height="26" rx="5"/><text class="l on" x="209.0" y="113.0" style="font-size:11.5px">P</text><rect class="cell c1" x="36" y="22" width="26" height="26" rx="5"/><text class="l on" x="49.0" y="35.0" style="font-size:11.5px">E</text><rect class="cell c1" x="222" y="22" width="26" height="26" rx="5"/><text class="l on" x="235.0" y="35.0" style="font-size:11.5px">E</text><rect class="cell c2" x="36" y="48" width="26" height="26" rx="5"/><text class="l on" x="49.0" y="61.0" style="font-size:11.5px">F</text><rect class="cell c2" x="222" y="48" width="26" height="26" rx="5"/><text class="l on" x="235.0" y="61.0" style="font-size:11.5px">J</text><rect class="cell c3" x="36" y="74" width="26" height="26" rx="5"/><text class="l on" x="49.0" y="87.0" style="font-size:11.5px">G</text><rect class="cell c3" x="222" y="74" width="26" height="26" rx="5"/><text class="l on" x="235.0" y="87.0" style="font-size:11.5px">O</text><rect class="cell c4" x="36" y="100" width="26" height="26" rx="5"/><text class="l on" x="49.0" y="113.0" style="font-size:11.5px">H</text><rect class="cell c4" x="222" y="100" width="26" height="26" rx="5"/><text class="l on" x="235.0" y="113.0" style="font-size:11.5px">D</text><rect class="cell c1" x="62" y="22" width="26" height="26" rx="5"/><text class="l on" x="75.0" y="35.0" style="font-size:11.5px">I</text><rect class="cell c1" x="248" y="22" width="26" height="26" rx="5"/><text class="l on" x="261.0" y="35.0" style="font-size:11.5px">I</text><rect class="cell c2" x="62" y="48" width="26" height="26" rx="5"/><text class="l on" x="75.0" y="61.0" style="font-size:11.5px">J</text><rect class="cell c2" x="248" y="48" width="26" height="26" rx="5"/><text class="l on" x="261.0" y="61.0" style="font-size:11.5px">N</text><rect class="cell c3" x="62" y="74" width="26" height="26" rx="5"/><text class="l on" x="75.0" y="87.0" style="font-size:11.5px">K</text><rect class="cell c3" x="248" y="74" width="26" height="26" rx="5"/><text class="l on" x="261.0" y="87.0" style="font-size:11.5px">C</text><rect class="cell c4" x="62" y="100" width="26" height="26" rx="5"/><text class="l on" x="75.0" y="113.0" style="font-size:11.5px">L</text><rect class="cell c4" x="248" y="100" width="26" height="26" rx="5"/><text class="l on" x="261.0" y="113.0" style="font-size:11.5px">H</text><rect class="cell c1" x="88" y="22" width="26" height="26" rx="5"/><text class="l on" x="101.0" y="35.0" style="font-size:11.5px">M</text><rect class="cell c1" x="274" y="22" width="26" height="26" rx="5"/><text class="l on" x="287.0" y="35.0" style="font-size:11.5px">M</text><rect class="cell c2" x="88" y="48" width="26" height="26" rx="5"/><text class="l on" x="101.0" y="61.0" style="font-size:11.5px">N</text><rect class="cell c2" x="274" y="48" width="26" height="26" rx="5"/><text class="l on" x="287.0" y="61.0" style="font-size:11.5px">B</text><rect class="cell c3" x="88" y="74" width="26" height="26" rx="5"/><text class="l on" x="101.0" y="87.0" style="font-size:11.5px">O</text><rect class="cell c3" x="274" y="74" width="26" height="26" rx="5"/><text class="l on" x="287.0" y="87.0" style="font-size:11.5px">G</text><rect class="cell c4" x="88" y="100" width="26" height="26" rx="5"/><text class="l on" x="101.0" y="113.0" style="font-size:11.5px">P</text><rect class="cell c4" x="274" y="100" width="26" height="26" rx="5"/><text class="l on" x="287.0" y="113.0" style="font-size:11.5px">L</text><text class="t" x="62" y="14">state before</text><text class="t" x="248" y="14">state after</text><line class="cn hi" x1="122" y1="74" x2="188" y2="74" marker-end="url(#arh)"/><text class="t" x="155" y="64">ShiftRows</text><text class="t" x="155" y="142">row 0 stays · row 1 moves 1 left</text><text class="t" x="155" y="156">row 2 moves 2 · row 3 moves 3</text></svg></div><div class="actions"><input type="text" id="q-12-1" class="ans" placeholder="8 hex digits" aria-label="your answer" autocomplete="off" spellcheck="false"><button class="b chk" type="button">Check</button><span class="fb" role="status"></span></div><details><summary>Hint</summary><div class="sol">Row 2 is E3 E2 8D 48. Rotate it two places left: the first two bytes go to the back.</div></details><details><summary>Answer and steps</summary><div class="sol"><div class="scroll"><table class="t mono"><thead><tr><th></th><th>before</th><th>after</th></tr></thead><tbody><tr><td>row 0</td><td>19 A0 9A E9</td><td>19 A0 9A E9</td></tr><tr><td>row 1</td><td>3D F4 C6 F8</td><td>F4 C6 F8 3D</td></tr><tr><td>row 2</td><td>E3 E2 8D 48</td><td>8D 48 E3 E2</td></tr><tr><td>row 3</td><td>BE 2B 2A 08</td><td>08 BE 2B 2A</td></tr></tbody></table></div><ul class="ln"><li>Answer for row 2: <code>8D48E3E2</code>.</li></ul></div></details></article></section><section class="sec" id="s6"><div class="sec-h"><span class="num">6</span><h2>IDEA <span class="fr">(IDEA)</span></h2><a class="back" href="#top">&uarr; contents</a></div><div class="plain"><p>The two odd arithmetic operations, with the wrap-around rules written out.</p></div><article class="prob" id="p-13" data-ans="0020|20"><div class="ph"><span class="pid">13</span><span class="lvl lw">warm-up</span><label class="done"><input type="checkbox" id="done-13"><span>done</span></label></div><div class="pq">IDEA addition <code>⊞</code> works modulo 2¹⁶ (16 bits). Compute <code>FFF0 ⊞ 0030</code> in hex.</div><div class="aid"><span class="tag">Aid</span><div class="aid-note">Add normally. If the result needs 17 bits (it reaches hex 10000 or more), drop the leading 1.</div><div><span class="hb"><b>0</b> 0000</span><span class="hb"><b>1</b> 0001</span><span class="hb"><b>2</b> 0010</span><span class="hb"><b>3</b> 0011</span><span class="hb"><b>4</b> 0100</span><span class="hb"><b>5</b> 0101</span><span class="hb"><b>6</b> 0110</span><span class="hb"><b>7</b> 0111</span><span class="hb"><b>8</b> 1000</span><span class="hb"><b>9</b> 1001</span><span class="hb"><b>A</b> 1010</span><span class="hb"><b>B</b> 1011</span><span class="hb"><b>C</b> 1100</span><span class="hb"><b>D</b> 1101</span><span class="hb"><b>E</b> 1110</span><span class="hb"><b>F</b> 1111</span></div></div><div class="actions"><input type="text" id="q-13-1" class="ans" placeholder="4 hex digits" aria-label="your answer" autocomplete="off" spellcheck="false"><button class="b chk" type="button">Check</button><span class="fb" role="status"></span></div><details><summary>Hint</summary><div class="sol">FFF0 + 0030 = 10020 in ordinary hex addition.</div></details><details><summary>Answer and steps</summary><div class="sol"><ul class="ln"><li>FFF0 + 0030 = <code>10020</code>. That is 17 bits, so drop the leading 1: <code>0020</code>.</li></ul></div></details></article><article class="prob" id="p-14" data-ans="FFFC|65532"><div class="ph"><span class="pid">14</span><span class="lvl ls">core</span><label class="done"><input type="checkbox" id="done-14"><span>done</span></label></div><div class="pq">IDEA multiplication <code>⊙</code> works modulo 2¹⁶ + 1 = 65537, and the 16-bit value <code>0000</code> stands for 2¹⁶ = 65536. Compute <code>0000 ⊙ 0005</code> in hex.</div><div class="aid"><span class="tag">Aid</span><div class="aid-note">Shortcut: 2¹⁶ ≡ −1 (mod 65537), so 0000 ⊙ x = −x mod 65537 = 65537 − x.</div><div><span class="hb"><b>0</b> 0000</span><span class="hb"><b>1</b> 0001</span><span class="hb"><b>2</b> 0010</span><span class="hb"><b>3</b> 0011</span><span class="hb"><b>4</b> 0100</span><span class="hb"><b>5</b> 0101</span><span class="hb"><b>6</b> 0110</span><span class="hb"><b>7</b> 0111</span><span class="hb"><b>8</b> 1000</span><span class="hb"><b>9</b> 1001</span><span class="hb"><b>A</b> 1010</span><span class="hb"><b>B</b> 1011</span><span class="hb"><b>C</b> 1100</span><span class="hb"><b>D</b> 1101</span><span class="hb"><b>E</b> 1110</span><span class="hb"><b>F</b> 1111</span></div><div class="aid-note">Decimal to hex: 65532 = 15·4096 + 15·256 + 15·16 + 12.</div></div><div class="actions"><input type="text" id="q-14-1" class="ans" placeholder="4 hex digits" aria-label="your answer" autocomplete="off" spellcheck="false"><button class="b chk" type="button">Check</button><span class="fb" role="status"></span></div><details><summary>Hint</summary><div class="sol">Use the shortcut: the answer is 65537 − 5.</div></details><details><summary>Answer and steps</summary><div class="sol"><ul class="ln"><li>0000 means 65536, and 65536 × 5 mod 65537 = (−1) × 5 = −5 ≡ 65532.</li><li>65532 in hex is <code>FFFC</code> (decimal 65532).</li></ul></div></details></article></section><section class="sec" id="s7"><div class="sec-h"><span class="num">7</span><h2>Interactive quiz <span class="fr">(Quiz)</span></h2><a class="back" href="#top">&uarr; contents</a></div><div class="plain"><p>15 multiple-choice questions on the ideas an exam is likely to ask. Click an answer to see why it is right or wrong.</p></div><div id="quiz"></div><div class="actions"><span id="result" class="fb" hidden></span><button class="b" id="reset" type="button">Clear quiz answers</button></div></section><footer class="foot">Companion to the Modern Symmetric Cryptography Primer. Based on “Support de cours, Sécurité, Chapitre 3” (Prof. H. Nacer, USTHB, 2025/2026). All answers computed by program.</footer></div>
+<script>
+/* study-hub:progress — practice pages: counts ticked .done boxes */
+(function(){
+  var boxes=document.querySelectorAll('.done input'), txt=document.getElementById('prog-txt'), bar=document.getElementById('prog-bar');
+  if(!boxes.length||!txt) return;
+  function upd(){var n=0;boxes.forEach(function(b){if(b.checked)n++;});txt.textContent=n+' / '+boxes.length+' done';bar.style.width=(100*n/boxes.length)+'%';}
+  boxes.forEach(function(b){b.addEventListener('change',upd);});
+  upd();
+})();
+</script>
+<script>
+/* typed answers: Check (or Enter) compares with data-ans; '|' separates accepted answers */
+(function(){
+  var MODE=/[^A-Z0-9]/g;
+  function norm(p,s){return p.dataset.mode==='digits'?s.replace(/\D/g,''):s.toUpperCase().replace(MODE,'');}
+  var cards=document.querySelectorAll('.prob[data-ans]');
+  function check(p){
+    var inp=p.querySelector('input.ans'), fb=p.querySelector('.fb'), v=inp.value.trim();
+    inp.classList.remove('ok','bad'); p.classList.remove('ok');
+    if(!v){fb.textContent='';fb.className='fb';return;}
+    var ok=p.dataset.ans.split('|').some(function(a){return norm(p,a)===norm(p,v);});
+    fb.textContent=ok?'Correct':'Not yet, try again'; fb.className='fb '+(ok?'ok':'bad');
+    inp.classList.add(ok?'ok':'bad'); if(ok) p.classList.add('ok');
+  }
+  cards.forEach(function(p){
+    var inp=p.querySelector('input.ans');
+    p.querySelector('.b.chk').addEventListener('click',function(){check(p);});
+    inp.addEventListener('keydown',function(e){if(e.key==='Enter')check(p);});
+    inp.addEventListener('input',function(){p.querySelector('.fb').textContent='';inp.classList.remove('ok','bad');p.classList.remove('ok');});
+  });
+  document.addEventListener('studyhub:restored',function(){cards.forEach(function(p){if(p.querySelector('input.ans').value.trim())check(p);});});
+})();
+</script>
+<script>
+(function(){
+  var Q=[{"q": "In modern symmetric cryptography, what is kept secret?", "o": ["Neither", "The key", "The algorithm", "Both algorithm and key"], "a": 1, "w": "Algorithms like DES and AES are public. Only the key is secret (clé secrète)."}, {"q": "What is the weakness of ECB mode?", "o": ["Equal plaintext blocks give equal ciphertext blocks", "It needs an IV", "It only works on 8-bit blocks", "It is too slow"], "a": 0, "w": "Each block is encrypted independently, so patterns and repeated blocks show through."}, {"q": "The IV (vecteur d’initialisation) in CBC:", "o": ["must be the same as the key", "must stay secret", "is not needed", "is sent in the clear and should look random"], "a": 3, "w": "The IV only stops identical messages from giving identical ciphertexts. It is not secret."}, {"q": "In CBC, one bit of ciphertext block c₂ is flipped. What is affected on decryption?", "o": ["Nothing", "Every block from m₂ on", "Only m₂", "m₂ fully and one bit of m₃"], "a": 3, "w": "m₂ is garbled and m₃ gets one flipped bit; then decryption recovers. (The course says the whole rest of the text is lost: that is too pessimistic.)"}, {"q": "In OFB, one ciphertext bit is flipped. On decryption:", "o": ["the next block is garbled", "the whole block is garbled", "only the same plaintext bit is flipped", "decryption fails"], "a": 2, "w": "The keystream does not depend on the message or ciphertext, so an error stays on its own bit."}, {"q": "Which operation do OFB and CFB use to <b>decrypt</b>?", "o": ["Neither, they only XOR", "A Feistel inverse", "D_K (block decryption)", "E_K (block encryption)"], "a": 3, "w": "Both generate keystream with E_K and XOR. The same E_K circuit serves both directions."}, {"q": "Two messages are encrypted with the same keystream. An attacker who XORs the two ciphertexts gets:", "o": ["m₁ ⊕ m₂", "the IV", "nothing useful", "the key"], "a": 0, "w": "(m₁ ⊕ s) ⊕ (m₂ ⊕ s) = m₁ ⊕ m₂. The keystream cancels."}, {"q": "DES block size and effective key size are:", "o": ["64 and 64 bits", "56 and 64 bits", "64 and 56 bits", "128 and 128 bits"], "a": 2, "w": "64-bit block, 56-bit key (64 stored, 8 are parity bits)."}, {"q": "In the DES round function, where is the 48-bit subkey XORed?", "o": ["Before the S-boxes, with E(R)", "Into the left half only", "After the S-boxes", "Before the expansion"], "a": 0, "w": "F = P( S( E(R) ⊕ k ) ). The course’s printed formula puts ⊕k outside S, which is a typo."}, {"q": "The one real weakness of DES is:", "o": ["its 56-bit key", "its permutations", "its 16 rounds", "its S-boxes"], "a": 0, "w": "2⁵⁶ keys can be tried by brute force. The S-boxes actually resist differential and linear attacks."}, {"q": "How does a Feistel network decrypt?", "o": ["It needs a second key", "It inverts F", "Same circuit, subkeys in reverse order", "A completely different circuit"], "a": 2, "w": "F never has to be invertible. Reverse the subkey order and run the same rounds."}, {"q": "3DES in encrypt-decrypt-encrypt mode with k₁ = k₂ = k₃ is the same as:", "o": ["2DES", "single DES", "no encryption", "AES"], "a": 1, "w": "The middle decryption cancels the first encryption, leaving one DES."}, {"q": "AES uses a block of 128 bits and 10, 12 or 14 rounds. What decides the number of rounds?", "o": ["The mode of operation", "The key size (128 / 192 / 256 bits)", "The block size", "The message length"], "a": 1, "w": "128-bit key → 10, 192 → 12, 256 → 14 rounds. The block is always 128 bits."}, {"q": "Which AES step is skipped in the last round?", "o": ["ShiftRows", "AddRoundKey", "SubBytes", "MixColumns"], "a": 3, "w": "The last round has no MixColumns. (The course lists six items under “4 transformations”.)"}, {"q": "IDEA gets its strength from mixing which three operations?", "o": ["XOR, addition mod 2¹⁶, multiplication mod 2¹⁶+1", "Substitution, transposition, XOR", "Shifts, rotations, XOR", "S-boxes, permutations, XOR"], "a": 0, "w": "Three operations from different algebraic groups. IDEA has 8 rounds, 64-bit blocks and a 128-bit key."}];
+  var box=document.getElementById('quiz'), res=document.getElementById('result'), rs=document.getElementById('reset');
+  function score(){
+    var done=0, right=0;
+    Q.forEach(function(it,qi){var c=box.querySelector('input[name="Q'+(qi+1)+'"]:checked'); if(c){done++; if(+c.value===it.a) right++;}});
+    res.hidden=done===0; res.textContent='Score: '+right+' / '+done+(done<Q.length?' answered so far':'');
+  }
+  function mark(qi){
+    var it=Q[qi], card=box.children[qi], ch=card.querySelector('input:checked');
+    card.querySelectorAll('label.opt').forEach(function(l){l.classList.remove('ok','bad');});
+    card.querySelectorAll('input').forEach(function(i){i.disabled=!!ch;});
+    card.querySelector('.expl').hidden=!ch;
+    if(ch){
+      card.querySelectorAll('label.opt')[it.a].classList.add('ok');
+      if(+ch.value!==it.a) ch.closest('label').classList.add('bad');
+    }
+    score();
+  }
+  Q.forEach(function(it,qi){
+    var d=document.createElement('div'); d.className='prob'; d.id='p-Q'+(qi+1);
+    var h=document.createElement('div'); h.className='ph';
+    h.innerHTML='<span class="pid">Q'+(qi+1)+'</span>'; var t=document.createElement('h3'); t.className='pt'; t.innerHTML=it.q; h.appendChild(t); d.appendChild(h);
+    var mc=document.createElement('div'); mc.className='mc';
+    it.o.forEach(function(txt,oi){
+      var l=document.createElement('label'); l.className='opt';
+      var r=document.createElement('input'); r.type='radio'; r.name='Q'+(qi+1); r.value=String(oi);
+      r.addEventListener('change',function(){mark(qi);});
+      var s=document.createElement('span'); s.innerHTML=txt; l.appendChild(r); l.appendChild(s); mc.appendChild(l);
+    });
+    d.appendChild(mc);
+    var why=document.createElement('div'); why.className='expl'; why.hidden=true; why.innerHTML=it.w; d.appendChild(why);
+    box.appendChild(d);
+  });
+  rs.addEventListener('click',function(){
+    Q.forEach(function(it,qi){
+      var inputs=box.querySelectorAll('input[name="Q'+(qi+1)+'"]');
+      inputs.forEach(function(i){i.checked=false;i.disabled=false;});
+      inputs[0].dispatchEvent(new Event('change',{bubbles:true}));  // saver stores "" = delete
+    });
+  });
+  score();
+})();
+</script>
+</body>
+</html>

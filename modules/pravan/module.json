@@ -1,0 +1,12 @@
+{
+  "code": "PRAVAN",
+  "title": "Advanced Programming",
+  "blurb": "Programmation avancée: web programming with HTML, CSS and JavaScript.",
+  "order": 5,
+  "chapters": {
+    "ch1": "Introduction",
+    "ch2": "HTML, static site (Site statique)",
+    "ch3": "CSS, static site (Site statique)",
+    "ch4": "JavaScript, interactive site (Site interactif), part 1"
+  }
+}

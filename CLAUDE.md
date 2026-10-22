@@ -5,7 +5,7 @@ Personal, single-user website that hosts my interactive HTML course remakes (THO
 I am a master's student (Big Data Analytics, USTHB) in Algeria. Be short, direct and opinionated. Lead with the answer. When I ask for a decision, give a concrete recommendation.
 
 ## Status
-Built and deployed-ready. Modules in the repo: GBD ch1, OPL ch1-2, THOR ch1 (lesson + practice + course PDFs, all on the shared template). Empty module folders (cpsi, gp, pravan, ssad, vt) exist locally only; git doesn't track empty dirs and the build hides modules without chapters. Do not invent course content.
+Deployed. Modules in the repo: GBD ch1, OPL ch1-2, THOR ch1 (lesson + practice + PDFs, TD sheets in thor/ch1/td), SSAD ch1 (practice only) and ch2-3 (lesson + practice), GP ch1 and PRAVAN ch1-4 (PDFs only, TP sheets in pravan/*/td). Empty module folders (cpsi, vt) exist locally only; git doesn't track empty dirs and the build hides modules without chapters. Do not invent course content.
 
 ## Decisions already made
 - Plain static site, no framework. Remakes are standalone HTML files and stay that way.
@@ -41,7 +41,7 @@ Naming: module and chapter folders lowercase (`thor`, `ch1`, `ch1-2` for a remak
 - Pages: every `*.html` in a chapter, lessons first; `practice` in the filename = practice page. HTML inside `td/` is treated as practice too.
 - Build into `.dist_new/`, then swap into `dist/`. Copy `assets/` and each module folder (minus `module.json` and dotfiles), and generate `index.html` from the template.
 - Lint every page and print warnings (never fail the build): base styles missing or not identical to `remake_template.html`, missing theme script/toggle, `localStorage` use; on practice pages, fields without an id, radios without name/value, duplicate ids.
-- Inject before the last `</body>` of every page: a fixed bottom-left bar with "← <CODE>" (back to the module page) and links to the chapter's course PDFs, plus a script that lets the bar and the theme toggle follow the viewport until each reaches the bottom of `.toc` (else `.hero`), then parks it just above that line so it scrolls away. On practice pages also `<script src="/assets/saver.js" data-module="<module>" data-page="<chapter>/<file>"></script>`. Never edit the source HTML.
+- Inject before the last `</body>` of every page: a fixed bottom-left bar with "← <CODE>" (back to the module page) and links to the chapter's course PDFs, plus a script that lets the bar and the theme toggle follow the viewport until each reaches the bottom of `.toc` (else `.hero`), then parks it just below that line so it scrolls away. On practice pages also `<script src="/assets/saver.js" data-module="<module>" data-page="<chapter>/<file>"></script>`. Never edit the source HTML.
 - Every generated page (hub, module pages, remakes) gets a `<head>` style that zooms it to 125% at >= 1200px and 150% at >= 1500px wide; phones are unchanged.
 - Hub (`/`): one clickable card per module with only the code chip, title and blurb. Module page (`/<module>/`, generated `index.html`): one `<details>` dropdown per chapter (open by default when the module has a single chapter), listing Remakes (Lesson, Practice), Cours and TD; PDFs open in a new tab. Both pages use `hub_template.html`, the remakes' tokens and fonts, and a theme toggle. Practice links get a badge from `/api/summary` ("N saved"); the saved total is scoped to the module on module pages.
 

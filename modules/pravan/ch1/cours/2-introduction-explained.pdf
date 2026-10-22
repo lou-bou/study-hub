@@ -1,0 +1,1692 @@
+%PDF-1.4
+%“Œ‹ž ReportLab Generated PDF document (opensource)
+1 0 obj
+<<
+/F1 2 0 R /F2 3 0 R /F3 4 0 R
+>>
+endobj
+2 0 obj
+<<
+/BaseFont /Helvetica /Encoding /WinAnsiEncoding /Name /F1 /Subtype /Type1 /Type /Font
+>>
+endobj
+3 0 obj
+<<
+/BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding /Name /F2 /Subtype /Type1 /Type /Font
+>>
+endobj
+4 0 obj
+<<
+/BaseFont /Symbol /Name /F3 /Subtype /Type1 /Type /Font
+>>
+endobj
+5 0 obj
+<<
+/Contents 13 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 12 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+6 0 obj
+<<
+/Contents 14 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 12 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+7 0 obj
+<<
+/Contents 15 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 12 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+8 0 obj
+<<
+/Contents 16 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 12 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+9 0 obj
+<<
+/Contents 17 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 12 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+10 0 obj
+<<
+/PageMode /UseNone /Pages 12 0 R /Type /Catalog
+>>
+endobj
+11 0 obj
+<<
+/Author (Claude) /CreationDate (D:20261010231938+00'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20261010231938+00'00') /Producer (ReportLab PDF Library - \(opensource\)) 
+  /Subject (\(unspecified\)) /Title (PRAVAN Chapter 1 - Introduction \(Explained\)) /Trapped /False
+>>
+endobj
+12 0 obj
+<<
+/Count 5 /Kids [ 5 0 R 6 0 R 7 0 R 8 0 R 9 0 R ] /Type /Pages
+>>
+endobj
+13 0 obj
+<<
+/Length 6857
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 1 1 rg
+n 0 0 595.2756 841.8898 re f*
+Q
+q
+BT /F1 8 Tf 9.6 TL ET
+.501961 .501961 .501961 rg
+BT 1 0 0 1 244.2818 34.01575 Tm (PRAVAN - Chapter 1 - page 1) Tj T* ET
+Q
+q
+1 0 0 1 62.69291 778.8661 cm
+Q
+q
+1 0 0 1 62.69291 756.8661 cm
+q
+.121569 .227451 .372549 rg
+BT 1 0 0 1 0 0 Tm /F2 22 Tf 22 TL 57.10788 0 Td (PRAVAN - Chapter 1: Introduction) Tj T* -57.10788 0 Td ET
+Q
+Q
+q
+1 0 0 1 62.69291 738.8661 cm
+q
+.501961 .501961 .501961 rg
+BT 1 0 0 1 0 4 Tm /F1 10 Tf 14 TL 72.09988 0 Td (Fondements du Web \(Web Foundations\) - full lesson explained in English) Tj T* -72.09988 0 Td ET
+Q
+Q
+q
+1 0 0 1 62.69291 706.8661 cm
+q
+.501961 .501961 .501961 rg
+BT 1 0 0 1 0 18 Tm /F1 10 Tf 14 TL .694882 0 Td (Programmation Avanc\351e, Master 1 Informatique \(Big Data\), USTHB - Dr. Boubenia Mohamed - session of) Tj T* 209.23 0 Td (21/10/2021) Tj T* -209.9249 0 Td ET
+Q
+Q
+q
+1 0 0 1 62.69291 694.8661 cm
+Q
+q
+1 0 0 1 62.69291 674.8661 cm
+q
+.878431 .752941 .376471 RG
+.5 w
+1 .972549 .862745 rg
+n -5 -5 479.8898 24 re B*
+Q
+q
+BT 1 0 0 1 0 4 Tm 14 TL /F1 10 Tf 0 0 0 rg (Covers all 48 slides. Anything not on the slides is marked ) Tj /F2 10 Tf (\(added\)) Tj /F1 10 Tf (.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 638.8661 cm
+q
+.121569 .227451 .372549 rg
+BT 1 0 0 1 0 7 Tm /F2 15 Tf 22 TL (Course info) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 618.8661 cm
+q
+BT 1 0 0 1 4 4 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 14 4 Tm 14 TL /F2 10 Tf 0 0 0 rg (Module:) Tj /F1 10 Tf ( Programmation Avanc\351e \(PRAVAN\), Master 1 Informatique \(Big Data\), USTHB.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 588.8661 cm
+q
+BT 1 0 0 1 4 18 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 14 18 Tm 14 TL /F2 10 Tf 0 0 0 rg (Teacher:) Tj /F1 10 Tf ( Dr. Boubenia Mohamed, researcher-lecturer, Laboratoire des Syst\350mes Informatiques,) Tj T* (Computer Science Department.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 558.8661 cm
+q
+BT 1 0 0 1 4 18 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 14 18 Tm 14 TL /F2 10 Tf 0 0 0 rg (Session plan:) Tj /F1 10 Tf ( \(1\) module objective, \(2\) web foundations, \(3\) module content, \(4\) semester plan) Tj T* (\(lectures / labs / evaluation\).) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 552.8661 cm
+Q
+q
+1 0 0 1 62.69291 516.8661 cm
+q
+.121569 .227451 .372549 rg
+BT 1 0 0 1 0 7 Tm /F2 15 Tf 22 TL (1. Module objective) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 488.8661 cm
+q
+.180392 .427451 .643137 rg
+BT 1 0 0 1 0 6 Tm /F2 12 Tf 18 TL (Why a Big Data master has a web course) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 470.8661 cm
+q
+BT 1 0 0 1 4 4 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+0 0 0 rg
+BT 1 0 0 1 14 4 Tm /F1 10 Tf 14 TL (The master trains people to assist company and organization decision-makers.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 440.8661 cm
+q
+BT 1 0 0 1 4 18 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+0 0 0 rg
+BT 1 0 0 1 14 18 Tm /F1 10 Tf 14 TL (It gives a double skill set: computer science plus decision support. That is valuable in the) Tj T* (socio-economic job market and also leads to doctoral studies and research.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 410.8661 cm
+q
+BT 1 0 0 1 4 18 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 14 18 Tm 14 TL /F1 10 Tf 0 0 0 rg (The pipeline: ) Tj /F2 10 Tf (different data sources ) Tj /F3 10 Tf 14 TL (\256) Tj /F2 10 Tf 14 TL ( extraction ) Tj /F3 10 Tf 14 TL (\256) Tj /F2 10 Tf 14 TL ( dynamic web pages \(dashboards\) ) Tj /F3 10 Tf 14 TL (\256) Tj /F2 10 Tf 14 TL T* (presentation and distribution ) Tj /F3 10 Tf 14 TL (\256) Tj /F2 10 Tf 14 TL ( decision-makers.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 404.8661 cm
+Q
+q
+1 0 0 1 62.69291 376.8661 cm
+q
+.180392 .427451 .643137 rg
+BT 1 0 0 1 0 6 Tm /F2 12 Tf 18 TL (PRAVAN's role) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 344.8661 cm
+q
+BT 1 0 0 1 0 18 Tm 14 TL /F1 10 Tf 0 0 0 rg (It covers the ) Tj /F2 10 Tf (dynamic web pages) Tj /F1 10 Tf ( step. Students get familiar with new web technologies: ) Tj /F2 10 Tf (Python,) Tj T* (multimedia web, and web services) Tj /F1 10 Tf (.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 312.8661 cm
+q
+BT 1 0 0 1 0 18 Tm 14 TL /F2 10 Tf 0 0 0 rg (Final goal:) Tj /F1 10 Tf ( design a ) Tj /F2 10 Tf (dynamic website) Tj /F1 10 Tf ( with both ) Tj /F2 10 Tf (client-side and server-side) Tj /F1 10 Tf ( features. In short: web) Tj T* (programming.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 284.8661 cm
+q
+.180392 .427451 .643137 rg
+BT 1 0 0 1 0 6 Tm /F2 12 Tf 18 TL (Prior knowledge) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 252.8661 cm
+q
+BT 1 0 0 1 4 18 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 14 18 Tm 14 TL /F2 10 Tf 0 0 0 rg (L3 Informatique) Tj /F1 10 Tf ( students mostly already did web programming \(web basics, HTML, CSS, dynamic) Tj T* (web\).) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 236.8661 cm
+q
+BT 1 0 0 1 4 4 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 14 4 Tm 14 TL /F2 10 Tf 0 0 0 rg (L3 Math\351matique) Tj /F1 10 Tf ( students did not, so they must review web basics, HTML and CSS.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 220.8661 cm
+q
+BT 1 0 0 1 4 4 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+0 0 0 rg
+BT 1 0 0 1 14 4 Tm /F1 10 Tf 14 TL (It is not just repetition: the course also covers new things such as JavaScript and Python.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 214.8661 cm
+Q
+q
+1 0 0 1 62.69291 178.8661 cm
+q
+.121569 .227451 .372549 rg
+BT 1 0 0 1 0 7 Tm /F2 15 Tf 22 TL (2. Foundations of the Web) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 150.8661 cm
+q
+.180392 .427451 .643137 rg
+BT 1 0 0 1 0 6 Tm /F2 12 Tf 18 TL (Internet ) Tj /F3 12 Tf 18 TL (\271) Tj /F2 12 Tf 18 TL ( Web) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 132.8661 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 4 Tm /F1 10 Tf 14 TL (To understand how they relate, you have to look at how each was invented.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 77.95276 68.86614 cm
+q
+.121569 .227451 .372549 rg
+n 0 60 439.3701 -20 re f*
+.933333 .952941 .976471 rg
+n 0 20 439.3701 -20 re f*
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 56 cm
+Q
+q
+1 0 0 1 105.2126 44 cm
+q
+1 1 1 rg
+BT 1 0 0 1 0 3 Tm /F2 9 Tf 12 TL (Internet) Tj T* ET
+Q
+Q
+q
+1 0 0 1 275.2913 44 cm
+q
+1 1 1 rg
+BT 1 0 0 1 0 3 Tm /F2 9 Tf 12 TL (Web) Tj T* ET
+Q
+Q
+q
+1 0 0 1 6 24 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (When) Tj T* ET
+Q
+Q
+q
+1 0 0 1 105.2126 24 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (1960s) Tj T* ET
+Q
+Q
+q
+1 0 0 1 275.2913 24 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (1989) Tj T* ET
+Q
+Q
+q
+1 0 0 1 6 4 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (Components) Tj T* ET
+Q
+Q
+q
+1 0 0 1 105.2126 4 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (Modem, switch, IP, DNS) Tj T* ET
+Q
+Q
+q
+1 0 0 1 275.2913 4 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (HTML, HTTP, hyperlinks) Tj T* ET
+Q
+Q
+q
+1 J
+1 j
+.690196 .721569 .768627 RG
+.4 w
+n 0 60 m 439.3701 60 l S
+n 0 0 m 439.3701 0 l S
+n 0 0 m 0 60 l S
+n 439.3701 0 m 439.3701 60 l S
+n 0 40 m 439.3701 40 l S
+n 0 20 m 439.3701 20 l S
+n 99.2126 0 m 99.2126 60 l S
+n 269.2913 0 m 269.2913 60 l S
+Q
+Q
+Q
+ 
+endstream
+endobj
+14 0 obj
+<<
+/Length 7367
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 1 1 rg
+n 0 0 595.2756 841.8898 re f*
+Q
+q
+BT /F1 8 Tf 9.6 TL ET
+.501961 .501961 .501961 rg
+BT 1 0 0 1 244.2818 34.01575 Tm (PRAVAN - Chapter 1 - page 2) Tj T* ET
+Q
+q
+1 0 0 1 62.69291 776.8661 cm
+Q
+q
+1 0 0 1 62.69291 762.8661 cm
+q
+BT 1 0 0 1 4 4 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+0 0 0 rg
+BT 1 0 0 1 14 4 Tm /F1 10 Tf 14 TL (The Internet is not "having websites". The Web is all the sites you browse.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 732.8661 cm
+q
+BT 1 0 0 1 4 18 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 14 18 Tm 14 TL /F2 10 Tf 0 0 0 rg (The Web is just one application of the Internet) Tj /F1 10 Tf (, but it is the one that got the general public and) Tj T* (media interested in the Internet.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 726.8661 cm
+Q
+q
+1 0 0 1 62.69291 698.8661 cm
+q
+.180392 .427451 .643137 rg
+BT 1 0 0 1 0 6 Tm /F2 12 Tf 18 TL (The Internet) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 680.8661 cm
+q
+BT 1 0 0 1 0 4 Tm 14 TL /F2 10 Tf 0 0 0 rg (Goal:) Tj /F1 10 Tf ( make several distant machines communicate.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 620.8661 cm
+q
+BT 1 0 0 1 0 46 Tm 14 TL /F2 10 Tf 0 0 0 rg (Origins:) Tj /F1 10 Tf ( J.C.R. Licklider \(director of ARPA's IPTO, 1962-64\), Robert Taylor \(IPTO director, 1966-69\) and) Tj T* (Larry Roberts \(IPTO chief scientist, 1966-73\). Their 1968 paper "The Computer as a Communication) Tj T* (Device" argues we are entering an era where we interact with living information, not passively like with) Tj T* (books and libraries, but as active participants contributing to a continuous process.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 602.8661 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 4 Tm /F2 10 Tf 14 TL (Inventions needed:) Tj T* ET
+Q
+Q
+q
+1 0 0 1 70.86614 414.8661 cm
+q
+.121569 .227451 .372549 rg
+n 0 184 453.5433 -20 re f*
+.933333 .952941 .976471 rg
+n 0 144 453.5433 -32 re f*
+.933333 .952941 .976471 rg
+n 0 56 453.5433 -56 re f*
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 168 cm
+q
+1 1 1 rg
+BT 1 0 0 1 0 3 Tm /F2 9 Tf 12 TL (Invention) Tj T* ET
+Q
+Q
+q
+1 0 0 1 119.3858 168 cm
+q
+1 1 1 rg
+BT 1 0 0 1 0 3 Tm /F2 9 Tf 12 TL (What it is) Tj T* ET
+Q
+Q
+q
+1 0 0 1 6 148 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (Modem) Tj T* ET
+Q
+Q
+q
+1 0 0 1 119.3858 148 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (Device that sends digital data \(0s and 1s\) over a telephone line, which is analog.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 6 128 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (Automatic switching) Tj T* ET
+Q
+Q
+q
+1 0 0 1 119.3858 116 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 15 Tm /F1 9 Tf 12 TL (If A wants to talk to D, the network must find a wired route \(A-B-D or A-C-D\),) Tj T* (intelligently, resiliently and automatically.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 6 96 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (IP addresses) Tj T* ET
+Q
+Q
+q
+1 0 0 1 119.3858 60 cm
+q
+BT 1 0 0 1 0 39 Tm 12 TL /F1 9 Tf 0 0 0 rg (A unique identifier for every machine. Format XXX.XXX.XXX.XXX with each XXX) Tj T* (in [0, 255]. May be followed by a ) Tj /F2 9 Tf (port) Tj /F1 9 Tf (, e.g. 63.255.173.183:8080 \(the slide says) Tj T* (this comes back later\). With 4 computers \(1969\) it was easy; by 1980 the network) Tj T* (was much bigger and needed a smarter strategy.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 6 28 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 15 Tm /F1 9 Tf 12 TL (DNS \(Domain Name) Tj T* (System\)) Tj T* ET
+Q
+Q
+q
+1 0 0 1 119.3858 4 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 39 Tm /F1 9 Tf 12 TL (IP addresses are fine for machines but not for humans. DNS maps a memorable) Tj T* (name to an IP \(www.google.be ) Tj /F3 9 Tf 12 TL (\256) Tj /F1 9 Tf 12 TL ( 172.217.9.131; www.usthb.dz instead of) Tj T* (193.194.89.19\). Humans use domain names, machines use numeric addresses,) Tj T* (and typing the IP directly still works.) Tj T* ET
+Q
+Q
+q
+1 J
+1 j
+.690196 .721569 .768627 RG
+.4 w
+n 0 184 m 453.5433 184 l S
+n 0 0 m 453.5433 0 l S
+n 0 0 m 0 184 l S
+n 453.5433 0 m 453.5433 184 l S
+n 0 164 m 453.5433 164 l S
+n 0 144 m 453.5433 144 l S
+n 0 112 m 453.5433 112 l S
+n 0 56 m 453.5433 56 l S
+n 113.3858 0 m 113.3858 184 l S
+Q
+Q
+Q
+q
+1 0 0 1 62.69291 406.8661 cm
+Q
+q
+1 0 0 1 62.69291 378.8661 cm
+q
+BT 1 0 0 1 0 18 Tm 14 TL /F2 10 Tf 0 0 0 rg (Evolution:) Tj /F1 10 Tf ( today the Internet runs on a worldwide network of submarine cables \(slide shows a world map) Tj T* (plus photos of cable-laying ships and divers\).) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 350.8661 cm
+q
+.180392 .427451 .643137 rg
+BT 1 0 0 1 0 6 Tm /F2 12 Tf 18 TL (The Web) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 318.8661 cm
+q
+BT 1 0 0 1 4 18 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 14 18 Tm 14 TL /F2 10 Tf 0 0 0 rg (WWW) Tj /F1 10 Tf ( = "toile d'araign\351e" \(spider's web\) in French. Invented in ) Tj /F2 10 Tf (1989 at CERN) Tj /F1 10 Tf ( \(European Centre for) Tj T* (Nuclear Research\) by ) Tj /F2 10 Tf (Sir Tim Berners-Lee) Tj /F1 10 Tf (.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 260.8661 cm
+q
+BT 1 0 0 1 4 46 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 14 46 Tm 14 TL /F2 10 Tf 0 0 0 rg (The problem:) Tj /F1 10 Tf ( CERN had physicists from all over the world with different document formats, software) Tj T* (and operating systems. Tim, a software engineer there, was frustrated by this heterogeneous mass of) Tj T* (information and decided to rethink how information is structured and accessed. He built a ) Tj /F2 10 Tf (distributed) Tj T* (hypertext system) Tj /F1 10 Tf ( called World Wide Web.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 244.8661 cm
+q
+BT 1 0 0 1 4 4 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 14 4 Tm 14 TL /F2 10 Tf 0 0 0 rg (First web page:) Tj /F1 10 Tf ( http://info.cern.ch/hypertext/WWW/TheProject.html) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 228.8661 cm
+q
+BT 1 0 0 1 4 4 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 14 4 Tm 14 TL /F1 10 Tf 0 0 0 rg (The 3W project is defined as a ) Tj /F2 10 Tf (hypermedia information-retrieval initiative) Tj /F1 10 Tf (.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 212.8661 cm
+q
+BT 1 0 0 1 4 4 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 14 4 Tm 14 TL /F2 10 Tf 0 0 0 rg (Hypertext:) Tj /F1 10 Tf ( clickable text that lets you navigate from one page to another.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 196.8661 cm
+q
+BT 1 0 0 1 4 4 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 14 4 Tm 14 TL /F2 10 Tf 0 0 0 rg (Hypermedia:) Tj /F1 10 Tf ( hypertext that includes not just text but also images, sound and video inside a web page.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 190.8661 cm
+Q
+q
+1 0 0 1 62.69291 162.8661 cm
+q
+.180392 .427451 .643137 rg
+BT 1 0 0 1 0 6 Tm /F2 12 Tf 18 TL (Web page vs website) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 130.8661 cm
+q
+BT 1 0 0 1 4 18 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 14 18 Tm 14 TL /F2 10 Tf 0 0 0 rg (Web page) Tj /F1 10 Tf ( \(slide example: blender.org\): made of text elements such as a title, a paragraph and a) Tj T* (button.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 86.86614 cm
+q
+BT 1 0 0 1 4 32 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 14 32 Tm 14 TL /F2 10 Tf 0 0 0 rg (Website:) Tj /F1 10 Tf ( a set of web pages stored on a computer. Usually built around a central ) Tj /F2 10 Tf (home page) Tj /F1 10 Tf ( with) Tj T* (links to other pages on the same server \() Tj /F2 10 Tf (internal links) Tj /F1 10 Tf (\), and sometimes ) Tj /F2 10 Tf (external links) Tj /F1 10 Tf ( to pages) Tj T* (hosted on another server.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 80.86614 cm
+Q
+ 
+endstream
+endobj
+15 0 obj
+<<
+/Length 8188
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 1 1 rg
+n 0 0 595.2756 841.8898 re f*
+Q
+q
+BT /F1 8 Tf 9.6 TL ET
+.501961 .501961 .501961 rg
+BT 1 0 0 1 244.2818 34.01575 Tm (PRAVAN - Chapter 1 - page 3) Tj T* ET
+Q
+q
+1 0 0 1 62.69291 766.8661 cm
+q
+.180392 .427451 .643137 rg
+BT 1 0 0 1 0 6 Tm /F2 12 Tf 18 TL (Accessing a website) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 748.8661 cm
+q
+BT 1 0 0 1 4 4 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 14 4 Tm 14 TL /F1 10 Tf 0 0 0 rg (1. Open a web browser \(the ) Tj /F2 10 Tf (web client) Tj /F1 10 Tf (\): Chrome, Firefox, Opera, etc.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 732.8661 cm
+q
+BT 1 0 0 1 4 4 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 14 4 Tm 14 TL /F1 10 Tf 0 0 0 rg (2. Type the site's address, called a ) Tj /F2 10 Tf (URL \(Uniform Resource Locator\)) Tj /F1 10 Tf (, e.g. www.blender.org.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 716.8661 cm
+q
+BT 1 0 0 1 4 4 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+0 0 0 rg
+BT 1 0 0 1 14 4 Tm /F1 10 Tf 14 TL (3. Result: the site opens and you get a web page.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 710.8661 cm
+Q
+q
+1 0 0 1 62.69291 682.8661 cm
+q
+.180392 .427451 .643137 rg
+BT 1 0 0 1 0 6 Tm /F2 12 Tf 18 TL (What happens behind the scenes) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 650.8661 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 18 Tm /F1 10 Tf 14 TL (Between typing the address and seeing the page there are hidden steps. You need to know them at a) Tj T* (minimum to build a website.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 70.86614 534.8661 cm
+q
+.121569 .227451 .372549 rg
+n 0 112 453.5433 -20 re f*
+.933333 .952941 .976471 rg
+n 0 72 453.5433 -20 re f*
+.933333 .952941 .976471 rg
+n 0 32 453.5433 -32 re f*
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 96 cm
+q
+1 1 1 rg
+BT 1 0 0 1 0 3 Tm /F2 9 Tf 12 TL (Step) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 96 cm
+q
+1 1 1 rg
+BT 1 0 0 1 0 3 Tm /F2 9 Tf 12 TL (What happens) Tj T* ET
+Q
+Q
+q
+1 0 0 1 6 76 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (1) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 76 cm
+q
+BT 1 0 0 1 0 3 Tm 12 TL /F1 9 Tf 0 0 0 rg (You type the site address in the ) Tj /F2 9 Tf (browser) Tj /F1 9 Tf (.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 6 56 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (2) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 56 cm
+q
+BT 1 0 0 1 0 3 Tm 12 TL /F1 9 Tf 0 0 0 rg (The browser ) Tj /F2 9 Tf (requests the web page) Tj /F1 9 Tf ( from the ) Tj /F2 9 Tf (web server) Tj /F1 9 Tf (.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 6 36 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (3) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 36 cm
+q
+BT 1 0 0 1 0 3 Tm 12 TL /F1 9 Tf 0 0 0 rg (The server ) Tj /F2 9 Tf (responds by sending the page) Tj /F1 9 Tf (, which is an ) Tj /F2 9 Tf (HTML document) Tj /F1 9 Tf (.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 6 16 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (4) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 4 cm
+q
+BT 1 0 0 1 0 15 Tm 12 TL /F1 9 Tf 0 0 0 rg (The browser ) Tj /F2 9 Tf (reads the HTML and displays the page) Tj /F1 9 Tf (. Press ) Tj /F2 9 Tf (CTRL+U) Tj /F1 9 Tf ( to see the HTML source.) Tj T* (The browser has "interpreted" that code.) Tj T* ET
+Q
+Q
+q
+1 J
+1 j
+.690196 .721569 .768627 RG
+.4 w
+n 0 112 m 453.5433 112 l S
+n 0 0 m 453.5433 0 l S
+n 0 0 m 0 112 l S
+n 453.5433 0 m 453.5433 112 l S
+n 0 92 m 453.5433 92 l S
+n 0 72 m 453.5433 72 l S
+n 0 52 m 453.5433 52 l S
+n 0 32 m 453.5433 32 l S
+n 56.69291 0 m 56.69291 112 l S
+Q
+Q
+Q
+q
+1 0 0 1 62.69291 526.8661 cm
+Q
+q
+1 0 0 1 62.69291 498.8661 cm
+q
+BT 1 0 0 1 0 18 Tm 14 TL /F1 10 Tf 0 0 0 rg (This exchange uses ) Tj /F2 10 Tf (HTTP \(Hypertext Transfer Protocol\)) Tj /F1 10 Tf (, a client-server communication protocol: the) Tj T* (client sends a ) Tj /F2 10 Tf (request) Tj /F1 10 Tf (, the server sends a ) Tj /F2 10 Tf (response) Tj /F1 10 Tf ( \(an HTML document\).) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 478.8661 cm
+q
+.878431 .752941 .376471 RG
+.5 w
+1 .972549 .862745 rg
+n -5 -5 479.8898 24 re B*
+Q
+q
+BT 1 0 0 1 0 4 Tm 14 TL /F2 10 Tf 0 0 0 rg (Elements of the Web \(slide 33\):) Tj /F1 10 Tf ( URL, client \(browser\), HTTP, web server, HTML document.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 450.8661 cm
+q
+.180392 .427451 .643137 rg
+BT 1 0 0 1 0 6 Tm /F2 12 Tf 18 TL (HTML and CSS) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 418.8661 cm
+q
+BT 1 0 0 1 4 18 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 14 18 Tm 14 TL /F2 10 Tf 0 0 0 rg (HTML \(HyperText Markup Language\):) Tj /F1 10 Tf ( to create a web page you must learn to write an HTML) Tj T* (document. It ) Tj /F2 10 Tf (fills and structures the content) Tj /F1 10 Tf (: titles, lists, paragraphs, images, etc.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 402.8661 cm
+q
+BT 1 0 0 1 4 4 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+0 0 0 rg
+BT 1 0 0 1 14 4 Tm /F1 10 Tf 14 TL (Raw HTML alone looks plain, so something else is needed to make it presentable.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 358.8661 cm
+q
+BT 1 0 0 1 4 32 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 14 32 Tm 14 TL /F2 10 Tf 0 0 0 rg (CSS \(Cascading Style Sheets\):) Tj /F1 10 Tf ( a separate CSS document controls presentation: text color, font,) Tj T* (image positioning. The slide shows a styles.css file with rules for h1 and h2 \(font-family, font-size,) Tj T* (font-weight, font-variant, text-align, margins\).) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 352.8661 cm
+Q
+q
+1 0 0 1 62.69291 324.8661 cm
+q
+.180392 .427451 .643137 rg
+BT 1 0 0 1 0 6 Tm /F2 12 Tf 18 TL (Static vs dynamic sites) Tj T* ET
+Q
+Q
+q
+1 0 0 1 70.86614 156.8661 cm
+q
+.121569 .227451 .372549 rg
+n 0 164 453.5433 -20 re f*
+.933333 .952941 .976471 rg
+n 0 112 453.5433 -44 re f*
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 148 cm
+q
+1 1 1 rg
+BT 1 0 0 1 0 3 Tm /F2 9 Tf 12 TL (Type) Tj T* ET
+Q
+Q
+q
+1 0 0 1 133.5591 148 cm
+q
+1 1 1 rg
+BT 1 0 0 1 0 3 Tm /F2 9 Tf 12 TL (How it works) Tj T* ET
+Q
+Q
+q
+1 0 0 1 6 128 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (Static \(HTML + CSS\)) Tj T* ET
+Q
+Q
+q
+1 0 0 1 133.5591 116 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 15 Tm /F1 9 Tf 12 TL (Browser sends an HTTP request, server replies with HTML+CSS. Enough for) Tj T* (presentation.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 6 84 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 15 Tm /F1 9 Tf 12 TL (Static + JavaScript) Tj T* (\(interactive\)) Tj T* ET
+Q
+Q
+q
+1 0 0 1 133.5591 72 cm
+q
+BT 1 0 0 1 0 27 Tm 12 TL /F1 9 Tf 0 0 0 rg (Response is HTML + CSS + ) Tj /F2 9 Tf (JavaScript) Tj /F1 9 Tf (, a program executed ) Tj /F2 9 Tf (client-side) Tj /F1 9 Tf ( \(in) Tj T* (the browser\). Adds client-side interactivity: capturing user actions \(clicks\),) Tj T* (doing calculations, validating forms; anything a programming language can do.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 6 52 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (Dynamic) Tj T* ET
+Q
+Q
+q
+1 0 0 1 133.5591 4 cm
+q
+BT 1 0 0 1 0 51 Tm 12 TL /F1 9 Tf 0 0 0 rg (On top of that, a program runs ) Tj /F2 9 Tf (server-side) Tj /F1 9 Tf ( \(Java / PHP / JavaScript / Python\).) Tj T* (Page content is ) Tj /F2 9 Tf (built dynamically) Tj /F1 9 Tf ( and can vary with information such as the) Tj T* (time, the user's name or a submitted form, known only when the page is) Tj T* (requested. The server may also ) Tj /F2 9 Tf (use a database) Tj /F1 9 Tf ( \(SQL requests one way, data) Tj T* (back the other way\).) Tj T* ET
+Q
+Q
+q
+1 J
+1 j
+.690196 .721569 .768627 RG
+.4 w
+n 0 164 m 453.5433 164 l S
+n 0 0 m 453.5433 0 l S
+n 0 0 m 0 164 l S
+n 453.5433 0 m 453.5433 164 l S
+n 0 144 m 453.5433 144 l S
+n 0 112 m 453.5433 112 l S
+n 0 68 m 453.5433 68 l S
+n 127.5591 0 m 127.5591 164 l S
+Q
+Q
+Q
+q
+1 0 0 1 62.69291 148.8661 cm
+Q
+q
+1 0 0 1 62.69291 112.8661 cm
+q
+.121569 .227451 .372549 rg
+BT 1 0 0 1 0 7 Tm /F2 15 Tf 22 TL (3. Course content) Tj T* ET
+Q
+Q
+q
+1 0 0 1 70.86614 66.86614 cm
+q
+.121569 .227451 .372549 rg
+n 0 40 453.5433 -20 re f*
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 24 cm
+q
+1 1 1 rg
+BT 1 0 0 1 0 3 Tm /F2 9 Tf 12 TL (Chapter) Tj T* ET
+Q
+Q
+q
+1 0 0 1 91.03937 24 cm
+q
+1 1 1 rg
+BT 1 0 0 1 0 3 Tm /F2 9 Tf 12 TL (Topic) Tj T* ET
+Q
+Q
+q
+1 0 0 1 6 4 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (1) Tj T* ET
+Q
+Q
+q
+1 0 0 1 91.03937 4 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (Introduction \(this lesson\)) Tj T* ET
+Q
+Q
+q
+1 J
+1 j
+.690196 .721569 .768627 RG
+.4 w
+n 0 40 m 453.5433 40 l S
+n 0 0 m 0 40 l S
+n 453.5433 0 m 453.5433 40 l S
+n 0 0 m 453.5433 0 l S
+n 0 20 m 453.5433 20 l S
+n 85.03937 0 m 85.03937 40 l S
+Q
+Q
+Q
+ 
+endstream
+endobj
+16 0 obj
+<<
+/Length 10202
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 1 1 rg
+n 0 0 595.2756 841.8898 re f*
+Q
+q
+BT /F1 8 Tf 9.6 TL ET
+.501961 .501961 .501961 rg
+BT 1 0 0 1 244.2818 34.01575 Tm (PRAVAN - Chapter 1 - page 4) Tj T* ET
+Q
+q
+1 0 0 1 70.86614 664.8661 cm
+q
+.121569 .227451 .372549 rg
+n 0 120 453.5433 -20 re f*
+.933333 .952941 .976471 rg
+n 0 100 453.5433 -20 re f*
+.933333 .952941 .976471 rg
+n 0 60 453.5433 -20 re f*
+.933333 .952941 .976471 rg
+n 0 20 453.5433 -20 re f*
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 104 cm
+q
+1 1 1 rg
+BT 1 0 0 1 0 3 Tm /F2 9 Tf 12 TL (Chapter) Tj T* ET
+Q
+Q
+q
+1 0 0 1 91.03937 104 cm
+q
+1 1 1 rg
+BT 1 0 0 1 0 3 Tm /F2 9 Tf 12 TL (Topic) Tj T* ET
+Q
+Q
+q
+1 0 0 1 6 84 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (2) Tj T* ET
+Q
+Q
+q
+1 0 0 1 91.03937 84 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (Static site: HTML and CSS) Tj T* ET
+Q
+Q
+q
+1 0 0 1 6 64 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (3) Tj T* ET
+Q
+Q
+q
+1 0 0 1 91.03937 64 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (Interactivity \(client-side programming\): JavaScript) Tj T* ET
+Q
+Q
+q
+1 0 0 1 6 44 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (4) Tj T* ET
+Q
+Q
+q
+1 0 0 1 91.03937 44 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (Dynamic site: Python and Flask) Tj T* ET
+Q
+Q
+q
+1 0 0 1 6 24 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (5) Tj T* ET
+Q
+Q
+q
+1 0 0 1 91.03937 24 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (Databases \(MySQL\)) Tj T* ET
+Q
+Q
+q
+1 0 0 1 6 4 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (6) Tj T* ET
+Q
+Q
+q
+1 0 0 1 91.03937 4 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (Single Page App \(SPA\): AJAX \(Asynchronous JavaScript And XML\)) Tj T* ET
+Q
+Q
+q
+1 J
+1 j
+.690196 .721569 .768627 RG
+.4 w
+n 0 120 m 453.5433 120 l S
+n 0 100 m 0 120 l S
+n 0 0 m 0 100 l S
+n 453.5433 100 m 453.5433 120 l S
+n 453.5433 0 m 453.5433 100 l S
+n 0 0 m 453.5433 0 l S
+n 0 100 m 453.5433 100 l S
+n 85.03937 100 m 85.03937 120 l S
+n 0 80 m 453.5433 80 l S
+n 0 60 m 453.5433 60 l S
+n 0 40 m 453.5433 40 l S
+n 0 20 m 453.5433 20 l S
+n 85.03937 0 m 85.03937 100 l S
+Q
+Q
+Q
+q
+1 0 0 1 62.69291 656.8661 cm
+Q
+q
+1 0 0 1 62.69291 620.8661 cm
+q
+.121569 .227451 .372549 rg
+BT 1 0 0 1 0 7 Tm /F2 15 Tf 22 TL (4. Semester plan) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 586.8661 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 18 Tm /F1 10 Tf 14 TL (Dates are from the 2021-22 schedule. The Info and Math groups have staggered labs \(TP\), because Math) Tj T* (students need more time.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 70.86614 310.8661 cm
+q
+.121569 .227451 .372549 rg
+n 0 272 453.5433 -20 re f*
+.933333 .952941 .976471 rg
+n 0 232 453.5433 -20 re f*
+.933333 .952941 .976471 rg
+n 0 192 453.5433 -20 re f*
+.933333 .952941 .976471 rg
+n 0 152 453.5433 -20 re f*
+.933333 .952941 .976471 rg
+n 0 112 453.5433 -20 re f*
+.933333 .952941 .976471 rg
+n 0 60 453.5433 -20 re f*
+.933333 .952941 .976471 rg
+n 0 20 453.5433 -20 re f*
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 256 cm
+q
+1 1 1 rg
+BT 1 0 0 1 0 3 Tm /F2 9 Tf 12 TL (Week) Tj T* ET
+Q
+Q
+q
+1 0 0 1 79.70079 256 cm
+q
+1 1 1 rg
+BT 1 0 0 1 0 3 Tm /F2 9 Tf 12 TL (Lecture) Tj T* ET
+Q
+Q
+q
+1 0 0 1 232.7717 256 cm
+q
+1 1 1 rg
+BT 1 0 0 1 0 3 Tm /F2 9 Tf 12 TL (TP Info) Tj T* ET
+Q
+Q
+q
+1 0 0 1 346.1575 256 cm
+q
+1 1 1 rg
+BT 1 0 0 1 0 3 Tm /F2 9 Tf 12 TL (TP Math) Tj T* ET
+Q
+Q
+q
+1 0 0 1 6 236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (1 \(17 Oct\)) Tj T* ET
+Q
+Q
+q
+1 0 0 1 79.70079 236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (Ch. 1 Intro) Tj T* ET
+Q
+Q
+q
+1 0 0 1 232.7717 236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (-) Tj T* ET
+Q
+Q
+q
+1 0 0 1 346.1575 236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (-) Tj T* ET
+Q
+Q
+q
+1 0 0 1 6 216 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (2 \(24 Oct\)) Tj T* ET
+Q
+Q
+q
+1 0 0 1 79.70079 216 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (Ch. 2 HTML) Tj T* ET
+Q
+Q
+q
+1 0 0 1 232.7717 216 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (TP1 Intro) Tj T* ET
+Q
+Q
+q
+1 0 0 1 346.1575 216 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (TP1 Intro) Tj T* ET
+Q
+Q
+q
+1 0 0 1 6 196 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (3 \(31 Oct\)) Tj T* ET
+Q
+Q
+q
+1 0 0 1 79.70079 196 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (Ch. 2 CSS) Tj T* ET
+Q
+Q
+q
+1 0 0 1 232.7717 196 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (TP2 HTML/CSS) Tj T* ET
+Q
+Q
+q
+1 0 0 1 346.1575 196 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (Start TP2) Tj T* ET
+Q
+Q
+q
+1 0 0 1 6 176 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (4 \(7 Nov\)) Tj T* ET
+Q
+Q
+q
+1 0 0 1 79.70079 176 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (Ch. 3 JS) Tj T* ET
+Q
+Q
+q
+1 0 0 1 232.7717 176 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (Finish TP2) Tj T* ET
+Q
+Q
+q
+1 0 0 1 346.1575 176 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (TP2 HTML/CSS) Tj T* ET
+Q
+Q
+q
+1 0 0 1 6 156 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (5 \(14 Nov\)) Tj T* ET
+Q
+Q
+q
+1 0 0 1 79.70079 156 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (Ch. 4 Python) Tj T* ET
+Q
+Q
+q
+1 0 0 1 232.7717 156 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (TP3 JS) Tj T* ET
+Q
+Q
+q
+1 0 0 1 346.1575 156 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (Start TP3) Tj T* ET
+Q
+Q
+q
+1 0 0 1 6 136 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (6 \(21 Nov\)) Tj T* ET
+Q
+Q
+q
+1 0 0 1 79.70079 136 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (Ch. 4 Flask) Tj T* ET
+Q
+Q
+q
+1 0 0 1 232.7717 136 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (Finish TP3) Tj T* ET
+Q
+Q
+q
+1 0 0 1 346.1575 136 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (TP3 JS) Tj T* ET
+Q
+Q
+q
+1 0 0 1 6 116 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (7 \(28 Nov\)) Tj T* ET
+Q
+Q
+q
+1 0 0 1 79.70079 116 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (Ch. 5 Databases) Tj T* ET
+Q
+Q
+q
+1 0 0 1 232.7717 116 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (TP4 Python+Flask) Tj T* ET
+Q
+Q
+q
+1 0 0 1 346.1575 116 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (Start TP4) Tj T* ET
+Q
+Q
+q
+1 0 0 1 6 96 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (8 \(5 Dec\)) Tj T* ET
+Q
+Q
+q
+1 0 0 1 79.70079 96 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (Ch. 6 Ajax) Tj T* ET
+Q
+Q
+q
+1 0 0 1 232.7717 96 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (Finish TP4) Tj T* ET
+Q
+Q
+q
+1 0 0 1 346.1575 96 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (TP4 Python+Flask) Tj T* ET
+Q
+Q
+q
+1 0 0 1 6 76 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (9 \(12 Dec\)) Tj T* ET
+Q
+Q
+q
+1 0 0 1 79.70079 64 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 15 Tm /F1 9 Tf 12 TL (Revision \(with a question mark on) Tj T* (the slide\)) Tj T* ET
+Q
+Q
+q
+1 0 0 1 232.7717 76 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (TP5 Databases+Ajax) Tj T* ET
+Q
+Q
+q
+1 0 0 1 346.1575 76 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (TP5 Databases+Ajax) Tj T* ET
+Q
+Q
+q
+1 0 0 1 6 44 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (Holidays) Tj T* ET
+Q
+Q
+q
+1 0 0 1 79.70079 56 cm
+Q
+q
+1 0 0 1 232.7717 56 cm
+Q
+q
+1 0 0 1 346.1575 56 cm
+Q
+q
+1 0 0 1 6 24 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (10 \(2 Jan\)) Tj T* ET
+Q
+Q
+q
+1 0 0 1 79.70079 36 cm
+Q
+q
+1 0 0 1 232.7717 24 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F2 9 Tf 12 TL (Evaluation) Tj T* ET
+Q
+Q
+q
+1 0 0 1 346.1575 36 cm
+Q
+q
+1 0 0 1 6 4 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F1 9 Tf 12 TL (11 \(9 Jan\)) Tj T* ET
+Q
+Q
+q
+1 0 0 1 79.70079 16 cm
+Q
+q
+1 0 0 1 232.7717 16 cm
+Q
+q
+1 0 0 1 346.1575 4 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 3 Tm /F2 9 Tf 12 TL (Evaluation) Tj T* ET
+Q
+Q
+q
+1 J
+1 j
+.690196 .721569 .768627 RG
+.4 w
+n 0 272 m 453.5433 272 l S
+n 0 0 m 453.5433 0 l S
+n 0 0 m 0 272 l S
+n 453.5433 0 m 453.5433 272 l S
+n 0 252 m 453.5433 252 l S
+n 0 232 m 453.5433 232 l S
+n 0 212 m 453.5433 212 l S
+n 0 192 m 453.5433 192 l S
+n 0 172 m 453.5433 172 l S
+n 0 152 m 453.5433 152 l S
+n 0 132 m 453.5433 132 l S
+n 0 112 m 453.5433 112 l S
+n 0 92 m 453.5433 92 l S
+n 0 60 m 453.5433 60 l S
+n 0 40 m 453.5433 40 l S
+n 0 20 m 453.5433 20 l S
+n 73.70079 0 m 73.70079 272 l S
+n 226.7717 0 m 226.7717 272 l S
+n 340.1575 0 m 340.1575 272 l S
+Q
+Q
+Q
+q
+1 0 0 1 62.69291 302.8661 cm
+Q
+q
+1 0 0 1 62.69291 274.8661 cm
+q
+.180392 .427451 .643137 rg
+BT 1 0 0 1 0 6 Tm /F2 12 Tf 18 TL (Grading) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 256.8661 cm
+q
+BT 1 0 0 1 4 4 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 14 4 Tm 14 TL /F2 10 Tf 0 0 0 rg (TP continuous assessment:) Tj /F1 10 Tf ( /5) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 240.8661 cm
+q
+BT 1 0 0 1 4 4 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 14 4 Tm 14 TL /F2 10 Tf 0 0 0 rg (TP grade) Tj /F1 10 Tf ( \(project to submit, or test\): /15. Together the TP mark is /20.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 224.8661 cm
+q
+BT 1 0 0 1 4 4 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 14 4 Tm 14 TL /F2 10 Tf 0 0 0 rg (EMD \(written exam\):) Tj /F1 10 Tf ( /20) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 208.8661 cm
+q
+BT 1 0 0 1 4 4 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 14 4 Tm 14 TL /F2 10 Tf 0 0 0 rg (Credits: 4, Coefficient: 4) Tj /F1 10 Tf (, counted in the overall average.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 202.8661 cm
+Q
+q
+1 0 0 1 62.69291 166.8661 cm
+q
+.121569 .227451 .372549 rg
+BT 1 0 0 1 0 7 Tm /F2 15 Tf 22 TL (Errors in the slides themselves) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 132.8661 cm
+q
+BT 1 0 0 1 4 18 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 14 18 Tm 14 TL /F1 10 Tf 0 0 0 rg (Slide 12 says each IP number must be in [0, 255], then shows ) Tj /F2 10 Tf (151.119.354.12) Tj /F1 10 Tf (. 354 is invalid, so it is a) Tj T* (mistake on their part.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 116.8661 cm
+q
+BT 1 0 0 1 4 4 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+0 0 0 rg
+BT 1 0 0 1 14 4 Tm /F1 10 Tf 14 TL (Slide 15 has the typo "Swtich" \(Switch\). Slides 34 and 36 say "Langage" instead of "Language".) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 86.86614 cm
+q
+BT 1 0 0 1 4 18 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+0 0 0 rg
+BT 1 0 0 1 14 18 Tm /F1 10 Tf 14 TL (Slide 21 uses "www.blender.org" while slide 19's browser shows "blender.org". Both work; not a) Tj T* (conflict.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 70.86614 cm
+q
+BT 1 0 0 1 4 4 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+BT 1 0 0 1 14 4 Tm 14 TL /F2 10 Tf 0 0 0 rg (\(added\)) Tj /F1 10 Tf ( Each IP number is one byte, so an IPv4 address is 32 bits. The slides don't say this.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 64.86614 cm
+Q
+ 
+endstream
+endobj
+17 0 obj
+<<
+/Length 1492
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 1 1 rg
+n 0 0 595.2756 841.8898 re f*
+Q
+q
+BT /F1 8 Tf 9.6 TL ET
+.501961 .501961 .501961 rg
+BT 1 0 0 1 244.2818 34.01575 Tm (PRAVAN - Chapter 1 - page 5) Tj T* ET
+Q
+q
+1 0 0 1 62.69291 762.8661 cm
+q
+.121569 .227451 .372549 rg
+BT 1 0 0 1 0 7 Tm /F2 15 Tf 22 TL (What matters most for an exam) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 742.8661 cm
+q
+BT 1 0 0 1 4 4 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+0 0 0 rg
+BT 1 0 0 1 14 4 Tm /F1 10 Tf 14 TL (Internet vs Web, and who invented what and when.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 726.8661 cm
+q
+BT 1 0 0 1 4 4 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+0 0 0 rg
+BT 1 0 0 1 14 4 Tm /F1 10 Tf 14 TL (The 4-step browser-server flow and the roles of HTTP, URL and HTML.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 696.8661 cm
+q
+BT 1 0 0 1 4 18 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+0 0 0 rg
+BT 1 0 0 1 14 18 Tm /F1 10 Tf 14 TL (HTML = structure, CSS = style, JS = client-side behavior, Python/Flask etc. = server-side logic,) Tj T* (database = storage.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 680.8661 cm
+q
+BT 1 0 0 1 4 4 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+0 0 0 rg
+BT 1 0 0 1 14 4 Tm /F1 10 Tf 14 TL (Static vs dynamic: what changes when server-side code and a database enter the picture.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 664.8661 cm
+q
+BT 1 0 0 1 4 4 Tm /F1 10 Tf 12 TL 0 0 0 rg (\177) Tj ET
+0 0 0 rg
+BT 1 0 0 1 14 4 Tm /F1 10 Tf 14 TL (The chapter map and the grading split.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 658.8661 cm
+Q
+ 
+endstream
+endobj
+xref
+0 18
+0000000000 65535 f 
+0000000061 00000 n 
+0000000112 00000 n 
+0000000219 00000 n 
+0000000331 00000 n 
+0000000408 00000 n 
+0000000613 00000 n 
+0000000818 00000 n 
+0000001023 00000 n 
+0000001228 00000 n 
+0000001433 00000 n 
+0000001503 00000 n 
+0000001809 00000 n 
+0000001893 00000 n 
+0000008802 00000 n 
+0000016221 00000 n 
+0000024461 00000 n 
+0000034716 00000 n 
+trailer
+<<
+/ID 
+[<6472542803b9eec67e635767ba67b7a5><6472542803b9eec67e635767ba67b7a5>]
+% ReportLab generated PDF document -- digest (opensource)
+
+/Info 11 0 R
+/Root 10 0 R
+/Size 18
+>>
+startxref
+36260
+%%EOF

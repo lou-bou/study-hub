@@ -1,0 +1,11 @@
+{
+  "code": "SSAD",
+  "title": "Computer Security",
+  "blurb": "Sécurité: introduction, classical and modern symmetric cryptography.",
+  "order": 6,
+  "chapters": {
+    "ch1": "Introduction to computer security",
+    "ch2": "Classical cryptography (Cryptographie classique)",
+    "ch3": "Modern symmetric cryptography (Cryptographie moderne)"
+  }
+}

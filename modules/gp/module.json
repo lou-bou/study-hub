@@ -1,0 +1,7 @@
+{
+  "code": "GP",
+  "title": "Project Management",
+  "blurb": "Gestion de projets: the fundamentals.",
+  "order": 4,
+  "chapters": {"ch1": "Fundamentals (Les fondamentaux)"}
+}

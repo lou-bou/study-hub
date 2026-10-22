@@ -40,16 +40,16 @@ LINK_STYLE = "color:#fff;text-decoration:none;padding:5px 11px;border-radius:999
 ZOOM_STYLE = ("<style>@media (min-width:1200px){html{zoom:1.25}}"
               "@media (min-width:1500px){html{zoom:1.5}}</style>\n")
 # The theme toggle and the nav bar follow the viewport until they reach the end of the contents
-# (.toc, else .hero), then each parks just above that line and scrolls away with the page.
+# (.toc, else .hero), then each parks just below that line and scrolls away with the page.
 PARK_SCRIPT = (
     '(function(){var els=[document.getElementById("theme-toggle"),document.getElementById("studyhub-nav")]'
     '.filter(Boolean),orig=els.map(function(el){return el.style.cssText});'
     'function park(){var a=document.querySelector(".toc")||document.querySelector(".hero");'
     'if(!a)return;var line=a.getBoundingClientRect().bottom+scrollY;els.forEach(function(el,i){'
-    'var s=el.style;s.cssText=orig[i];var r=el.getBoundingClientRect();if(scrollY+r.bottom<=line||!r.height)return;'
-    # rects are in screen px, `top` in the page's zoomed px
-    'var k=el.offsetHeight/r.height;s.setProperty("position","absolute","important");'
-    's.setProperty("top",(line-r.height)*k+"px","important");s.setProperty("bottom","auto","important");});}'
+    'var s=el.style;s.cssText=orig[i];var r=el.getBoundingClientRect();if(!r.height)return;'
+    # rects are in screen px, `top` in the page's zoomed px; park 10px below the line
+    'var k=el.offsetHeight/r.height;if(scrollY+r.top<line+10/k)return;s.setProperty("position","absolute","important");'
+    's.setProperty("top",line*k+10+"px","important");s.setProperty("bottom","auto","important");});}'
     'addEventListener("scroll",park,{passive:true});addEventListener("resize",park);park();})();'
 )
 
