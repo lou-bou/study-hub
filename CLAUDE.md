@@ -21,6 +21,7 @@ modules/<module>/<chapter>/lesson.html, practice.html   my remakes
 modules/<module>/<chapter>/cours/     the professor's course PDFs, named <n>-<topic>.pdf
 modules/<module>/<chapter>/td/        the professor's exercise sheets (keep td/.gitkeep while empty)
 remake_template.html                  the shared remake shell: base CSS, theme toggle, components
+REMAKE_BRIEF.md                       rules for remakes written outside this repo (my claude.ai project)
 assets/saver.js                       auto-save script for practice pages
 hub_template.html                     shell for the hub and module pages (%%PAGETITLE%% %%BACK%% %%EYEBROW%% %%TITLE%% %%SUB%% %%STATS%% %%MAIN%%)
 build.py                              modules/ -> dist/
@@ -37,6 +38,7 @@ Naming: module and chapter folders lowercase (`thor`, `ch1`, `ch1-2` for a remak
 - Each folder in `modules/` (skip names starting with `.` or `_`) is a module; each subfolder of a module is a chapter. Modules with no chapters are hidden. Code defaults to the folder name uppercased; chapter label is derived from the folder (`ch1` -> Chapter 1, `ch1-2` -> Chapters 1–2), title from `module.json` `chapters`.
 - Pages: every `*.html` in a chapter, lessons first; `practice` in the filename = practice page. HTML inside `td/` is treated as practice too.
 - Build into `.dist_new/`, then swap into `dist/`. Copy `assets/` and each module folder (minus `module.json` and dotfiles), and generate `index.html` from the template.
+- Lint every page and print warnings (never fail the build): base styles missing or not identical to `remake_template.html`, missing theme script/toggle, `localStorage` use; on practice pages, fields without an id, radios without name/value, duplicate ids.
 - Inject before the last `</body>` of every page: a fixed bottom-left bar with "← <CODE>" (back to the module page) and links to the chapter's course PDFs. On practice pages also `<script src="/assets/saver.js" data-module="<module>" data-page="<chapter>/<file>"></script>`. Never edit the source HTML.
 - Hub (`/`): one clickable card per module with only the code chip, title and blurb. Module page (`/<module>/`, generated `index.html`): one `<details>` dropdown per chapter (open by default when the module has a single chapter), listing Remakes (Lesson, Practice), Cours and TD; PDFs open in a new tab. Both pages use `hub_template.html`, the remakes' tokens and fonts, and a theme toggle. Practice links get a badge from `/api/summary` ("N saved"); the saved total is scoped to the module on module pages.
 

@@ -21,6 +21,7 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 MODULES = os.path.join(ROOT, "modules")
 ASSETS = os.path.join(ROOT, "assets")
 TEMPLATE = os.path.join(ROOT, "hub_template.html")
+REMAKE_TEMPLATE = os.path.join(ROOT, "remake_template.html")
 SITE_JSON = os.path.join(ROOT, "site.json")
 DIST = os.path.join(ROOT, "dist")
 NEW = os.path.join(ROOT, ".dist_new")
@@ -143,6 +144,61 @@ def load_module(mslug):
     }
 
 
+BASE_RE = re.compile(r"/\* study-hub:base.*?/\* /study-hub:base \*/", re.S)
+THEME_RE = re.compile(r"<script>/\* study-hub:theme \*/.*?</script>", re.S)
+FIELD_RE = re.compile(r"<(input|select|textarea)\b[^>]*>", re.I)
+NOT_SAVED = ("button", "submit", "reset", "hidden", "file", "password", "image")
+
+
+def remake_base():
+    try:
+        with open(REMAKE_TEMPLATE, encoding="utf-8") as f:
+            m = BASE_RE.search(f.read())
+        return m.group(0) if m else None
+    except OSError:
+        return None
+
+
+def lint_page(path, practice, base):
+    """Warnings for a remake that breaks the shared template or the saving rules."""
+    with open(path, encoding="utf-8", errors="replace") as f:
+        s = f.read()
+    out = []
+    m = BASE_RE.search(s)
+    if not m:
+        out.append("missing the study-hub:base styles from remake_template.html")
+    elif base and m.group(0) != base:
+        out.append("study-hub:base styles differ from remake_template.html (copy them verbatim)")
+    if not THEME_RE.search(s) or 'id="theme-toggle"' not in s:
+        out.append("missing the shared theme script or the theme-toggle button")
+    if "localStorage" in THEME_RE.sub("", s):
+        out.append("uses localStorage (the site saves answers itself)")
+    if practice:
+        ids, missing, radios = [], 0, 0
+        for tag in (t.group(0) for t in FIELD_RE.finditer(s)):
+            t = re.search(r'\btype\s*=\s*["\']?(\w+)', tag, re.I)
+            kind = t.group(1).lower() if t else ""
+            if kind in NOT_SAVED or "data-no-save" in tag:
+                continue
+            if kind == "radio":
+                if not re.search(r"\bname\s*=", tag) or not re.search(r"\bvalue\s*=", tag):
+                    radios += 1
+                continue
+            i = re.search(r'\bid\s*=\s*["\']([^"\']+)', tag)
+            if i:
+                ids.append(i.group(1))
+            else:
+                missing += 1
+        dup = sorted({i for i in ids if ids.count(i) > 1})
+        if missing:
+            out.append(f"{missing} field(s) without an id (answers won't survive edits)")
+        if radios:
+            out.append(f"{radios} radio(s) without a name or value (restores the wrong option)")
+        if dup:
+            out.append(f"duplicate field ids: {', '.join(dup[:5])}")
+    return out
+
+
 def inject(src, dst, snippet):
     with open(src, "rb") as f:
         data = f.read()
@@ -167,7 +223,7 @@ def nav_bar(module, chapter, depth):
     return f'{css}<nav id="studyhub-nav" data-no-save aria-label="Study Hub" style="{BAR_STYLE}">{"".join(links)}</nav>'
 
 
-def build_module(module, out_root):
+def build_module(module, out_root, base, warnings):
     src = os.path.join(MODULES, module["slug"])
     dst = os.path.join(out_root, module["slug"])
     shutil.copytree(src, dst, ignore=shutil.ignore_patterns("module.json", ".*", "_*"))
@@ -184,7 +240,10 @@ def build_module(module, out_root):
                 rel = f if depth == 0 else os.path.join(rel_dir, f).replace(os.sep, "/")
                 page = f"{ch['slug']}/{rel}"
                 snippet = "\n" + nav_bar(module, ch, depth)
-                if in_td or "practice" in f.lower():
+                practice = in_td or "practice" in f.lower()
+                for w in lint_page(os.path.join(dirpath, f), practice, base):
+                    warnings.append(f"modules/{module['slug']}/{page}: {w}")
+                if practice:
                     snippet += (f'\n<script src="/assets/saver.js" data-module="{html.escape(module["slug"])}" '
                                 f'data-page="{html.escape(page)}"></script>')
                 inject(os.path.join(dirpath, f), os.path.join(dst, ch["slug"], rel),
@@ -287,8 +346,9 @@ def main():
 
     modules = [m for m in (load_module(s) for s in slugs) if m["chapters"]]  # empty modules stay hidden
     modules.sort(key=lambda m: (m["order"], m["code"].lower()))
+    base, warnings = remake_base(), []
     for m in modules:
-        build_module(m, NEW)
+        build_module(m, NEW, base, warnings)
 
     with open(TEMPLATE, encoding="utf-8") as f:
         tpl = f.read()
@@ -306,6 +366,8 @@ def main():
     n_ch = sum(len(m["chapters"]) for m in modules)
     n_pages = sum(len(c["pages"]) for m in modules for c in m["chapters"])
     print(f"built {len(modules)} module(s), {n_ch} chapter(s), {n_pages} page(s) -> dist/")
+    for w in warnings:
+        warn(w)
 
 
 if __name__ == "__main__":
