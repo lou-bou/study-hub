@@ -3,3 +3,4 @@ dist/
 .dist_old/
 data/*.db*
 __pycache__/
+.update.lock

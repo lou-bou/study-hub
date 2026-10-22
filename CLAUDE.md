@@ -25,6 +25,8 @@ REMAKE_BRIEF.md                       rules for remakes written outside this rep
 assets/saver.js                       auto-save script for practice pages
 hub_template.html                     shell for the hub and module pages (%%PAGETITLE%% %%BACK%% %%EYEBROW%% %%TITLE%% %%SUB%% %%STATS%% %%MAIN%%)
 build.py                              modules/ -> dist/
+add.py                                add/update a chapter: copy files, build, commit, push
+deploy/update.sh                      ThinkPad cron: pull + build when there are new commits
 server.py                             answers API
 site.json                             optional {"title","subtitle"}
 deploy/Caddyfile, deploy/studysite-api.service
@@ -32,7 +34,7 @@ data/answers.db                       my answers, never committed, never rsynced
 dist/                                 generated, never committed
 ```
 Naming: module and chapter folders lowercase (`thor`, `ch1`, `ch1-2` for a remake covering two chapters); remakes are always `lesson.html` and `practice.html`. Saved answers are keyed by module + `<chapter>/<file>`, so don't rename those once answers exist.
-`.gitignore`: `dist/`, `.dist_new/`, `.dist_old/`, `data/*.db*`, `__pycache__/`. Keep `data/.gitkeep`.
+`.gitignore`: `dist/`, `.dist_new/`, `.dist_old/`, `data/*.db*`, `__pycache__/`, `.update.lock`. Keep `data/.gitkeep`.
 
 ## build.py
 - Each folder in `modules/` (skip names starting with `.` or `_`) is a module; each subfolder of a module is a chapter. Modules with no chapters are hidden. Code defaults to the folder name uppercased; chapter label is derived from the folder (`ch1` -> Chapter 1, `ch1-2` -> Chapters 1–2), title from `module.json` `chapters`.
@@ -60,10 +62,10 @@ Validate module as one segment `^[\w\-][\w.\-]{0,99}$`, page as 1-4 such segment
 - After restoring it dispatches `studyhub:restored` on `document` so page scripts can react (THOR re-checks restored cards). Page scripts that clear fields programmatically must dispatch `input`/`change` so the saver deletes them.
 
 ## Deploy (Debian ThinkPad)
-- Code in `/srv/studysite`. Caddy: global `auto_https off`, site `http://localhost:8080`, `bind 127.0.0.1`, `root * /srv/studysite/dist`, `encode zstd gzip`, `handle /api/*` -> `reverse_proxy 127.0.0.1:8001`, otherwise `file_server`.
+- Code in `/srv/studysite`. Caddy: global `auto_https off`, site `http://:8088` (any Host, since the tunnel sends study.boussaid.me), `bind 127.0.0.1`, `root * /srv/studysite/dist`, `encode zstd gzip`, `handle /api/*` -> `reverse_proxy 127.0.0.1:8001`, otherwise `file_server`.
 - systemd unit `studysite-api.service` running `python3 /srv/studysite/server.py` as my user, `Restart=on-failure`, `ReadWritePaths=/srv/studysite/data`.
-- cloudflared installed from the Cloudflare Zero Trust dashboard (Networks -> Tunnels); public hostname `study.boussaid.me` -> `http://localhost:8080`; Access application with an Allow policy for my email only.
-- Update flow: push from my main machine, then on the ThinkPad `git pull && python3 build.py` (no restart needed). Never overwrite `data/`.
+- cloudflared: existing locally-managed tunnel `home-server` (`/etc/cloudflared/config.yml`, also serves `ssh.boussaid.me`). Ingress `study.boussaid.me` -> `http://localhost:8088`, DNS via `cloudflared tunnel route dns`. Access application (Public DNS, One-time PIN) with an Allow policy for my email only. Port 8080 is taken by qBittorrent.
+- Update flow: remakes are made in my claude.ai project (REMAKE_BRIEF.md + remake_template.html as knowledge), then `python3 add.py <module> <chapter> FILE... [--title] [--td FILE...]` on my main machine copies, builds, commits and pushes. On the ThinkPad, cron runs `deploy/update.sh` every 5 minutes (fetch, ff-only pull, build; no restart needed). Never overwrite `data/`.
 - Backup: `sqlite3 data/answers.db ".backup '<path>'"` on a daily cron, plus `/api/export` for a portable copy.
 
 ## Writing new remakes (when I give you course material)
