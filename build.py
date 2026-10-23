@@ -331,7 +331,7 @@ def render_hub(tpl, modules):
              + plural(n_practice, "practice sheet") + plural(n_docs, "PDF") + SAVED_STAT)
     cards = "\n".join(render_card(m) for m in modules) or \
         '<p class="empty">No modules yet. Add <code>modules/&lt;module&gt;/&lt;chapter&gt;/</code> and rebuild.</p>'
-    return fill(tpl, PAGETITLE=title, BACK='<a class="back" href="/upload/">+ Upload files</a>',
+    return fill(tpl, PAGETITLE=title, BACK='<a class="back" href="/upload/">Manage modules</a>',
                 EYEBROW="Master Big Data Analytics · USTHB", TITLE=title,
                 SUB=html.escape(str(site.get("subtitle") or "Course remakes, practice sheets and the original PDFs")),
                 STATS=stats, MAIN=f'<main class="grid">\n{cards}\n</main>')
@@ -346,7 +346,7 @@ def render_module_page(tpl, module):
     chapters = "\n".join(render_chapter(module, c, open_=len(chs) == 1) for c in chs)
     page = fill(tpl, PAGETITLE=f'{e(module["code"])} · {e(module["title"] or module["code"])}',
                 BACK=(f'<a class="back" href="/">&larr; All modules</a>'
-                      f'<a class="back" href="/upload/?module={e(module["slug"])}">+ Upload to {e(module["code"])}</a>'),
+                      f'<a class="back" href="/upload/?module={e(module["slug"])}">Manage {e(module["code"])}</a>'),
                 EYEBROW=e(module["code"]),
                 TITLE=e(module["title"] or module["code"]), SUB=e(module["blurb"]), STATS=stats,
                 MAIN=f'<main class="chapters">\n{chapters}\n</main>')
@@ -585,9 +585,9 @@ def render_upload(tpl, modules):
                           for c in m["chapters"]]}
             for m in modules]
     js = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
-    return fill(tpl, PAGETITLE="Upload · Study Hub", BACK='<a class="back" href="/">&larr; All modules</a>',
-                EYEBROW="Study Hub", TITLE="Upload",
-                SUB="Add a lesson, a practice sheet or PDFs. Each file goes live and is committed to GitHub.",
+    return fill(tpl, PAGETITLE="Manage modules · Study Hub", BACK='<a class="back" href="/">&larr; All modules</a>',
+                EYEBROW="Study Hub", TITLE="Manage modules",
+                SUB="Upload lessons, practice sheets and PDFs, or delete them. Every change goes live and is committed to GitHub.",
                 STATS="", MAIN=UPLOAD_MAIN.replace("%%DATA%%", js))
 
 
