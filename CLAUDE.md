@@ -30,6 +30,7 @@ add.py                                add/update a chapter: copy files, build, c
 deploy/ingest.py                      publishes uploads: data/inbox/ -> modules/, build, commit, push
 deploy/studysite-ingest.path/.service systemd: run ingest.py whenever data/inbox/ is not empty
 deploy/update.sh                      ThinkPad cron: pull + build when there are new commits
+deploy/SETUP.md                       runbook: fresh server or migration, plus known traps (keep it current)
 server.py                             answers API
 site.json                             optional {"title","subtitle"}
 deploy/Caddyfile, deploy/studysite-api.service
