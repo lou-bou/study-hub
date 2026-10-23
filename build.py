@@ -385,6 +385,11 @@ UPLOAD_MAIN = r"""<main class="up">
 <button class="btn" id="go" type="submit">Upload</button>
 </form>
 <ul class="jobs" id="jobs"></ul>
+<section class="manage">
+  <h2>Delete</h2>
+  <p class="hint">A file, a chapter or a whole module. Deleting is a commit too, so git history keeps the old files. A deleted practice page takes its saved answers with it (the nightly Drive backup still has them).</p>
+  <div id="tree"></div>
+</section>
 </main>
 <script>
 (function(){
@@ -450,17 +455,88 @@ UPLOAD_MAIN = r"""<main class="up">
     li.firstChild.textContent=name; $('jobs').prepend(li); return li;
   }
   function status(li,cls,text){li.className=cls||'';li.querySelector('.st').textContent=text;}
-  function poll(li,id,tries){
+  function esc(t){var d=document.createElement('div');d.textContent=t;return d.innerHTML;}
+  function renderTree(){
+    var t=$('tree'); t.innerHTML='';
+    if(!DATA.length){t.innerHTML='<p class="hint">Nothing to delete.</p>';return;}
+    DATA.forEach(function(m){
+      var d=document.createElement('details'); d.className='mod';
+      d.innerHTML='<summary><span class="chip">'+esc(m.code)+'</span><span>'+esc(m.title)+'</span>'
+        +'<button class="del" type="button" data-m="'+esc(m.slug)+'">Delete module</button></summary>';
+      if(!m.chapters.length)d.insertAdjacentHTML('beforeend','<div class="tree-ch"><span class="hint">No chapters.</span></div>');
+      m.chapters.forEach(function(c){
+        var div=document.createElement('div'); div.className='tree-ch';
+        div.innerHTML='<div class="tree-h"><span>'+esc(c.label+(c.title?' · '+c.title:''))+'</span>'
+          +'<button class="del" type="button" data-m="'+esc(m.slug)+'" data-c="'+esc(c.slug)+'">Delete chapter</button></div><ul></ul>';
+        (c.files||[]).forEach(function(f){
+          var li=document.createElement('li');
+          li.innerHTML='<span class="ft">'+esc(f.kind==='lesson'||f.kind==='practice'?'HTML':f.kind.toUpperCase())+'</span><span>'+esc(f.label)+'</span>'
+            +'<button class="del" type="button" data-m="'+esc(m.slug)+'" data-c="'+esc(c.slug)+'" data-p="'+esc(f.path)+'">Delete</button>';
+          div.querySelector('ul').appendChild(li);
+        });
+        d.appendChild(div);
+      });
+      t.appendChild(d);
+    });
+  }
+  function dropFromData(q){
+    var m=DATA.filter(function(x){return x.slug===q.module;})[0]; if(!m)return;
+    if(q.chapter===undefined){DATA.splice(DATA.indexOf(m),1);return;}
+    var c=m.chapters.filter(function(x){return x.slug===q.chapter;})[0]; if(!c)return;
+    if(q.path!==undefined)c.files=c.files.filter(function(f){return f.path!==q.path;});
+    if(q.path===undefined||!c.files.length)m.chapters.splice(m.chapters.indexOf(c),1);
+  }
+  $('tree').addEventListener('click',function(e){
+    var b=e.target.closest('.del'); if(!b)return;
+    e.preventDefault();
+    var q={action:'delete',module:b.dataset.m}, m=DATA.filter(function(x){return x.slug===q.module;})[0], name;
+    if(b.dataset.c!==undefined)q.chapter=b.dataset.c;
+    if(b.dataset.p!==undefined)q.path=b.dataset.p;
+    if(q.path!==undefined){
+      name=m.code+' '+q.chapter+' '+q.path;
+      if(!confirm('Delete '+name+'?'+(q.path==='practice.html'?'\n\nIts saved answers are deleted too.':'')))return;
+    }else if(q.chapter!==undefined){
+      name=m.code+' '+q.chapter;
+      if(!confirm('Delete the whole chapter '+name+', with all its files and saved answers?'))return;
+    }else{
+      name=m.code+' (whole module)';
+      var typed=prompt('This deletes every chapter, file and saved answer of '+m.code+'.\nType '+m.code+' to confirm.');
+      if(typed===null)return;
+      if(typed.trim()!==m.code){alert('That was not '+m.code+'. Nothing deleted.');return;}
+    }
+    b.disabled=true;
+    var li=row('Delete '+name);
+    fetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(q)})
+      .then(function(r){return r.json().then(function(j){return [r.status,j];});})
+      .then(function(x){
+        if(x[0]===200&&x[1].id){status(li,'','Queued…');poll(li,x[1].id,0,function(){dropFromData(q);renderTree();fillModules(mSel.value);});}
+        else{status(li,'bad','Rejected: '+(x[1].error||('HTTP '+x[0])));b.disabled=false;}
+      }).catch(function(){status(li,'bad','Request failed (network)');b.disabled=false;});
+  });
+  function poll(li,id,tries,ondone){
     fetch('/api/upload?id='+id,{cache:'no-store'}).then(function(r){return r.json();}).then(function(r){
-      if(r.state==='done'){
+      if(r.state==='done'&&r.deleted){
+        var g={pushed:'saved to GitHub',committed:'committed','push-failed':'committed on the server, push to GitHub failed (retried by the next update)'}[r.git]||r.git;
+        status(li,'ok','Deleted · '+g+(r.answers_deleted?' · '+r.answers_deleted+' saved answer'+(r.answers_deleted===1?'':'s')+' removed':''));
+        if(ondone)ondone();
+      }else if(r.state==='done'){
         var git={pushed:'saved to GitHub',committed:'committed',unchanged:'identical to the current file, nothing to commit','push-failed':'committed on the server, push to GitHub failed (retried by the next update)'}[r.git]||r.git;
         status(li,'ok','Live · '+git+(r.replaced&&r.git!=='unchanged'?' · replaced the old file':''));
         var a=document.createElement('a');a.href=r.url;a.textContent='Open '+r.url;a.target='_blank';li.appendChild(a);
+        if(ondone)ondone(r);
         if(r.warnings&&r.warnings.length){var ul=document.createElement('ul');r.warnings.forEach(function(w){var x=document.createElement('li');x.textContent=w;ul.appendChild(x);});li.appendChild(ul);}
       }else if(r.state==='error'||r.error){status(li,'bad','Failed: '+(r.error||'unknown error'));}
       else if(tries>180){status(li,'bad','Still '+r.state+' after 3 minutes. Is studysite-ingest.path running on the server?');}
-      else{status(li,'',r.state==='processing'?'Building and committing…':'Queued…');setTimeout(function(){poll(li,id,tries+1);},1000);}
-    }).catch(function(){setTimeout(function(){poll(li,id,tries+1);},2000);});
+      else{status(li,'',r.state==='processing'?'Building and committing…':'Queued…');setTimeout(function(){poll(li,id,tries+1,ondone);},1000);}
+    }).catch(function(){setTimeout(function(){poll(li,id,tries+1,ondone);},2000);});
+  }
+  function addFile(q,url){
+    var m=DATA.filter(function(x){return x.slug===q.module;})[0]; if(!m)return;
+    var c=m.chapters.filter(function(x){return x.slug===q.chapter;})[0]; if(!c)return;
+    var path=url.split('/').slice(3).join('/'), k=path.split('/')[0];
+    if(!c.files.some(function(f){return f.path===path;}))
+      c.files.push({path:path,kind:k.indexOf('.html')>0?k.replace('.html',''):k,label:path.split('/').pop()});
+    renderTree();
   }
   function send(file,q,done){
     var li=row(file.name), x=new XMLHttpRequest(), p=Object.assign({kind:kind(),name:file.name},q);
@@ -468,7 +544,7 @@ UPLOAD_MAIN = r"""<main class="up">
     x.upload.onprogress=function(e){if(e.lengthComputable)status(li,'','Uploading '+Math.round(100*e.loaded/e.total)+'%');};
     x.onload=function(){
       var r={};try{r=JSON.parse(x.responseText);}catch(e){}
-      if(x.status===200&&r.id){status(li,'','Queued…');poll(li,r.id,0);}
+      if(x.status===200&&r.id){status(li,'','Queued…');poll(li,r.id,0,function(res){addFile(q,res.url);});}
       else status(li,'bad','Rejected: '+(r.error||('HTTP '+x.status)));
       done();
     };
@@ -488,19 +564,25 @@ UPLOAD_MAIN = r"""<main class="up">
     // remember a new module/chapter so the next upload can pick it
     var m=DATA.filter(function(x){return x.slug===q.module;})[0];
     if(!m){m={slug:q.module,code:q.module_code,title:q.module_title,chapters:[]};DATA.push(m);}
-    if(!m.chapters.some(function(c){return c.slug===q.chapter;}))m.chapters.push({slug:q.chapter,label:q.chapter,title:q.title||''});
+    if(!m.chapters.some(function(c){return c.slug===q.chapter;}))m.chapters.push({slug:q.chapter,label:q.chapter,title:q.title||'',files:[]});
     (function next(i){ if(i>=list.length){$('go').disabled=false;files.value='';fillModules(q.module);fillChapters(q.chapter);return;}
       send(list[i],q,function(){next(i+1);}); })(0);
   });
   var pre=new URLSearchParams(location.search).get('module');
-  fillModules(DATA.some(function(m){return m.slug===pre;})?pre:(DATA[0]||{}).slug); setKind();
+  fillModules(DATA.some(function(m){return m.slug===pre;})?pre:(DATA[0]||{}).slug); setKind(); renderTree();
 })();
 </script>"""
 
 
 def render_upload(tpl, modules):
+    def files(c):
+        out = [{"path": p["file"], "kind": p["kind"], "label": p["kind"].capitalize() + " · " + p["file"]} for p in c["pages"]]
+        for d in DOC_DIRS:
+            out += [{"path": f"{d}/{x['file']}", "kind": d, "label": x["file"]} for x in c["docs"][d]]
+        return out
     data = [{"slug": m["slug"], "code": m["code"], "title": m["title"] or m["code"],
-             "chapters": [{"slug": c["slug"], "label": c["label"], "title": c["title"]} for c in m["chapters"]]}
+             "chapters": [{"slug": c["slug"], "label": c["label"], "title": c["title"], "files": files(c)}
+                          for c in m["chapters"]]}
             for m in modules]
     js = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
     return fill(tpl, PAGETITLE="Upload · Study Hub", BACK='<a class="back" href="/">&larr; All modules</a>',
@@ -523,8 +605,8 @@ def main():
         if s in ("assets", "upload") or not NAME_RE.match(s):
             sys.exit(f"error: module folder name {s!r} is reserved or invalid")
 
-    modules = [m for m in (load_module(s) for s in slugs) if m["chapters"]]  # empty modules stay hidden
-    modules.sort(key=lambda m: (m["order"], m["code"].lower()))
+    every = sorted((load_module(s) for s in slugs), key=lambda m: (m["order"], m["code"].lower()))
+    modules = [m for m in every if m["chapters"]]  # empty modules stay hidden (but can be deleted on /upload/)
     base, warnings = remake_base(), []
     for m in modules:
         build_module(m, NEW, base, warnings)
@@ -538,7 +620,7 @@ def main():
             f.write(render_module_page(tpl, m))
     os.makedirs(os.path.join(NEW, "upload"))
     with open(os.path.join(NEW, "upload", "index.html"), "w", encoding="utf-8") as f:
-        f.write(render_upload(tpl, modules))
+        f.write(render_upload(tpl, every))
 
     if os.path.exists(DIST):
         os.rename(DIST, OLD)

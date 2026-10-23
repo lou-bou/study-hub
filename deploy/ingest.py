@@ -11,6 +11,7 @@ import fcntl
 import json
 import os
 import shutil
+import sqlite3
 import subprocess
 import sys
 import time
@@ -19,7 +20,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 import add  # noqa: E402
 
-DATA = os.path.dirname(os.path.abspath(os.environ.get("ANSWERS_DB", os.path.join(ROOT, "data", "answers.db"))))
+DB = os.path.abspath(os.environ.get("ANSWERS_DB", os.path.join(ROOT, "data", "answers.db")))
+DATA = os.path.dirname(DB)
 INBOX = os.path.join(DATA, "inbox")
 DONE = os.path.join(DATA, "uploads")
 LOCK = os.path.join(ROOT, ".update.lock")  # shared with deploy/update.sh
@@ -34,10 +36,50 @@ def write(path, data):
     os.replace(tmp, path)
 
 
+def restore(m):
+    """Leave modules/<m> as git has it, so the next job doesn't commit half of this one."""
+    mod = os.path.join(ROOT, "modules", m)
+    subprocess.run(["git", "-C", ROOT, "checkout", "-q", "--", mod], capture_output=True)
+    subprocess.run(["git", "-C", ROOT, "clean", "-fdq", "--", mod], capture_output=True)
+
+
+def forget_answers(m, ch=None, path=None):
+    """Saved answers of what was deleted. Lessons and PDFs have none, so only practice pages count."""
+    if not os.path.exists(DB):
+        return 0
+    if ch is None:
+        sql, args = "DELETE FROM answers WHERE module=?", (m,)
+    elif path is None:
+        sql, args = "DELETE FROM answers WHERE module=? AND page LIKE ? ESCAPE '\\'", (m, ch.replace("_", "\\_") + "/%")
+    else:
+        sql, args = "DELETE FROM answers WHERE module=? AND page=?", (m, f"{ch}/{path}")
+    conn = sqlite3.connect(DB, timeout=10)
+    try:
+        with conn:
+            return conn.execute(sql, args).rowcount
+    finally:
+        conn.close()
+
+
+def delete(job):
+    m, ch, path = job["module"], job.get("chapter"), job.get("path")
+    add.sync()
+    try:
+        what = add.remove(m, ch, path)
+        add.build()
+    except Exception:
+        restore(m)
+        raise
+    state = add.commit_and_push([os.path.join("modules", m)], f"Delete: {what}", ident=IDENT)
+    return {"state": "done", "deleted": what, "git": state, "answers_deleted": forget_answers(m, ch, path)}
+
+
 def process(job_dir):
     with open(os.path.join(job_dir, "job.json"), encoding="utf-8") as f:
         job = json.load(f)
     write(os.path.join(job_dir, "status.json"), {"state": "processing"})
+    if job.get("op") == "delete":
+        return delete(job)
     m, ch, kind = job["module"], job["chapter"], job["kind"]
     add.sync()
     try:
@@ -45,10 +87,7 @@ def process(job_dir):
         add.set_meta(m, ch, job.get("title"), job.get("module_title"), job.get("module_code"), job.get("blurb"))
         _, warnings = add.build()
     except Exception:
-        # leave modules/ as git has it, so the next job doesn't commit half of this one
-        mod = os.path.join(ROOT, "modules", m)
-        subprocess.run(["git", "-C", ROOT, "checkout", "-q", "--", mod], capture_output=True)
-        subprocess.run(["git", "-C", ROOT, "clean", "-fdq", "--", mod], capture_output=True)
+        restore(m)
         raise
     prefix = f"modules/{m}/{ch}/{rel}: "
     what = kind if kind in ("lesson", "practice") else f"{kind} {os.path.basename(rel)}"

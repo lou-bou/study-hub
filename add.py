@@ -102,6 +102,56 @@ def place(module, chapter, kind, src, filename=None):
     return rel, replaced
 
 
+def check_file(path):
+    """A file inside a chapter: lesson.html, practice.html, cours/<name> or td/<name>."""
+    parts = path.split("/") if isinstance(path, str) else []
+    ok = (parts in (["lesson.html"], ["practice.html"])
+          or (len(parts) == 2 and parts[0] in ("cours", "td") and parts[1] and not parts[1].startswith(".")
+              and len(parts[1]) <= 200 and "\\" not in parts[1]))
+    if not ok:
+        raise AddError(f"invalid file {path!r}")
+    return path
+
+
+def remove(module, chapter=None, path=None):
+    """Delete a file, a chapter or a whole module from modules/. A chapter left with no files
+    goes too. Returns a short description for the commit message."""
+    check_module(module)
+    mod_dir = os.path.join(MODULES, module)
+    if not os.path.isdir(mod_dir):
+        raise AddError(f"no module {module}")
+    if chapter is None:
+        shutil.rmtree(mod_dir)
+        return f"{module.upper()} (whole module)"
+    check_slug(chapter, "chapter")
+    ch_dir = os.path.join(mod_dir, chapter)
+    if not os.path.isdir(ch_dir):
+        raise AddError(f"no chapter {module}/{chapter}")
+    what = f"{module.upper()} {chapter}"
+    if path is not None:
+        target = os.path.join(ch_dir, check_file(path))
+        if not os.path.isfile(target):
+            raise AddError(f"no file {module}/{chapter}/{path}")
+        os.remove(target)
+        what += f" {path}"
+        left = [f for _, _, fs in os.walk(ch_dir) for f in fs if f != ".gitkeep"]
+        if left:
+            td = os.path.join(ch_dir, "td")
+            if os.path.isdir(td) and not os.listdir(td):
+                open(os.path.join(td, ".gitkeep"), "a").close()
+            return what
+    shutil.rmtree(ch_dir)
+    meta_path = os.path.join(mod_dir, "module.json")
+    if os.path.exists(meta_path):
+        with open(meta_path, encoding="utf-8") as f:
+            meta = json.load(f)
+        if (meta.get("chapters") or {}).pop(chapter, None) is not None:
+            with open(meta_path, "w", encoding="utf-8") as f:
+                json.dump(meta, f, indent=2, ensure_ascii=False)
+                f.write("\n")
+    return what if path is not None else f"{what} (whole chapter)"
+
+
 def set_meta(module, chapter, title=None, module_title=None, module_code=None, blurb=None):
     """Create or update modules/<module>/module.json. Returns True for a new module."""
     mod_dir = os.path.join(MODULES, module)
@@ -157,7 +207,7 @@ def sync():
 def commit_and_push(paths, message, push=True, ident=None):
     """Commit paths; push (rebasing once if the remote moved).
     Returns 'unchanged', 'committed', 'pushed' or 'push-failed' (the commit stays local)."""
-    git("add", "--", *paths)
+    git("add", "-A", "--", *paths)  # -A also stages deletions
     if subprocess.run(["git", "-C", ROOT, "diff", "--cached", "--quiet"]).returncode == 0:
         return "unchanged"
     who = ["-c", f"user.name={ident[0]}", "-c", f"user.email={ident[1]}"] if ident else []

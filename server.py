@@ -269,6 +269,33 @@ class Handler(BaseHTTPRequestHandler):
             raise
         return {"ok": True, "id": job}
 
+    def manage(self, q):
+        """Queue a delete of a module, a chapter or one file; deploy/ingest.py carries it out."""
+        data = self.read_json()
+        if data.get("action") != "delete":
+            raise ApiError(400, "action must be delete")
+        job = {"op": "delete"}
+        try:
+            job["module"] = add.check_module(data.get("module"))
+            if data.get("chapter") is not None:
+                job["chapter"] = add.check_slug(data.get("chapter"), "chapter")
+                if data.get("path") is not None:
+                    job["path"] = add.check_file(data.get("path"))
+            elif data.get("path") is not None:
+                raise add.AddError("a file needs its chapter")
+        except add.AddError as e:
+            raise ApiError(400, str(e))
+        target = os.path.join(add.MODULES, job["module"], job.get("chapter", ""), job.get("path", ""))
+        if not os.path.exists(target):
+            raise ApiError(404, "nothing to delete there")
+        jid = time.strftime("%Y%m%d-%H%M%S") + "-" + secrets.token_hex(3)
+        tmp = os.path.join(INBOX_TMP, jid)
+        os.makedirs(tmp)
+        with open(os.path.join(tmp, "job.json"), "w", encoding="utf-8") as f:
+            json.dump(job, f)
+        os.rename(tmp, os.path.join(INBOX, jid))
+        return {"ok": True, "id": jid}
+
     def upload_status(self, q):
         job = q.get("id") or ""
         if not JOB_RE.match(job):
@@ -294,6 +321,7 @@ ROUTES = {
     ("GET", "/api/export"): Handler.export,
     ("PUT", "/api/upload"): Handler.upload,
     ("GET", "/api/upload"): Handler.upload_status,
+    ("POST", "/api/manage"): Handler.manage,
 }
 
 
