@@ -30,7 +30,7 @@
     color-scheme:dark;
   }
   *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--f-body);padding:28px 16px 72px}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--f-body);padding:64px 16px 72px}
   .wrap{max-width:1040px;margin:0 auto}
   a{color:var(--accent)}
   a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
@@ -38,7 +38,6 @@
   .toggle,.pbtn{display:inline-block;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 14px;font:500 .8rem var(--f-body);cursor:pointer;text-decoration:none}
   .toggle:hover,.pbtn:hover{border-color:var(--accent)}
   .pbtn.back{position:fixed;top:14px;left:14px;z-index:20}
-  .pbtn.back+.hero{margin-top:36px}
   [hidden]{display:none!important}
 
   /* hero */
@@ -49,11 +48,10 @@
   .stats{display:flex;flex-wrap:wrap;gap:6px 18px;color:var(--muted);font:500 .85rem var(--f-mono)}
   .stats b{color:var(--ink)}
   .figure{width:200px;height:auto}
-  .figure .e{stroke:var(--ink);stroke-width:1.8;stroke-linecap:round}
+  .figure .w{stroke:var(--muted);stroke-width:1.1;opacity:.55}
   .figure .hl{stroke:var(--accent);stroke-width:3.6;stroke-linecap:round}
   .figure .n{fill:var(--surface);stroke:var(--ink);stroke-width:1.8}
   .figure .na{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2.6}
-  .figure text{font:500 12.5px var(--f-mono);fill:var(--ink);text-anchor:middle;dominant-baseline:central}
 
   /* hub: module cards */
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;padding-top:28px}
@@ -126,8 +124,6 @@
   .del:disabled{opacity:.4;cursor:default}
 
   @media (max-width:600px){
-    body{padding-top:60px}
-    .pbtn.back+.hero{margin-top:0}
     .hero{grid-template-columns:1fr}
     .figure{width:150px;order:-1}
     .grid{grid-template-columns:minmax(0,1fr)}
@@ -145,18 +141,36 @@
       <p>%%SUB%%</p>
       <div class="stats">%%STATS%%</div>
     </div>
-    <svg class="figure" viewBox="0 0 200 150" role="img" aria-label="A small graph">
-      <line class="e" x1="40" y1="40" x2="110" y2="25"/>
-      <line class="e" x1="40" y1="40" x2="60" y2="115"/>
-      <line class="hl" x1="110" y1="25" x2="165" y2="75"/>
-      <line class="e" x1="60" y1="115" x2="135" y2="125"/>
-      <line class="hl" x1="165" y1="75" x2="135" y2="125"/>
-      <line class="e" x1="110" y1="25" x2="60" y2="115"/>
-      <circle class="n" cx="40" cy="40" r="14"/><text x="40" y="40">a</text>
-      <circle class="n na" cx="110" cy="25" r="14"/><text x="110" y="25">b</text>
-      <circle class="n na" cx="165" cy="75" r="14"/><text x="165" y="75">c</text>
-      <circle class="n" cx="60" cy="115" r="14"/><text x="60" y="115">d</text>
-      <circle class="n na" cx="135" cy="125" r="14"/><text x="135" y="125">e</text>
+    <svg class="figure" viewBox="0 0 200 150" role="img" aria-label="A small neural network">
+      <line class="w" x1="32" y1="38" x2="100" y2="21"/>
+      <line class="w" x1="32" y1="38" x2="100" y2="93"/>
+      <line class="w" x1="32" y1="38" x2="100" y2="129"/>
+      <line class="w" x1="32" y1="75" x2="100" y2="21"/>
+      <line class="w" x1="32" y1="75" x2="100" y2="93"/>
+      <line class="w" x1="32" y1="75" x2="100" y2="129"/>
+      <line class="w" x1="32" y1="112" x2="100" y2="21"/>
+      <line class="w" x1="32" y1="112" x2="100" y2="57"/>
+      <line class="w" x1="32" y1="112" x2="100" y2="93"/>
+      <line class="w" x1="32" y1="112" x2="100" y2="129"/>
+      <line class="w" x1="100" y1="21" x2="168" y2="57"/>
+      <line class="w" x1="100" y1="21" x2="168" y2="93"/>
+      <line class="w" x1="100" y1="57" x2="168" y2="93"/>
+      <line class="w" x1="100" y1="93" x2="168" y2="57"/>
+      <line class="w" x1="100" y1="93" x2="168" y2="93"/>
+      <line class="w" x1="100" y1="129" x2="168" y2="57"/>
+      <line class="w" x1="100" y1="129" x2="168" y2="93"/>
+      <line class="hl" x1="32" y1="38" x2="100" y2="57"/>
+      <line class="hl" x1="32" y1="75" x2="100" y2="57"/>
+      <line class="hl" x1="100" y1="57" x2="168" y2="57"/>
+      <circle class="n na" cx="32" cy="38" r="11"/>
+      <circle class="n na" cx="32" cy="75" r="11"/>
+      <circle class="n" cx="32" cy="112" r="11"/>
+      <circle class="n" cx="100" cy="21" r="11"/>
+      <circle class="n na" cx="100" cy="57" r="11"/>
+      <circle class="n" cx="100" cy="93" r="11"/>
+      <circle class="n" cx="100" cy="129" r="11"/>
+      <circle class="n na" cx="168" cy="57" r="11"/>
+      <circle class="n" cx="168" cy="93" r="11"/>
     </svg>
   </header>
 %%MAIN%%
