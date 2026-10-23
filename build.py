@@ -331,7 +331,8 @@ def render_hub(tpl, modules):
              + plural(n_practice, "practice sheet") + plural(n_docs, "PDF") + SAVED_STAT)
     cards = "\n".join(render_card(m) for m in modules) or \
         '<p class="empty">No modules yet. Add <code>modules/&lt;module&gt;/&lt;chapter&gt;/</code> and rebuild.</p>'
-    return fill(tpl, PAGETITLE=title, BACK="", EYEBROW="Master Big Data Analytics · USTHB", TITLE=title,
+    return fill(tpl, PAGETITLE=title, BACK='<a class="back" href="/upload/">+ Upload files</a>',
+                EYEBROW="Master Big Data Analytics · USTHB", TITLE=title,
                 SUB=html.escape(str(site.get("subtitle") or "Course remakes, practice sheets and the original PDFs")),
                 STATS=stats, MAIN=f'<main class="grid">\n{cards}\n</main>')
 
@@ -344,10 +345,168 @@ def render_module_page(tpl, module):
     stats = plural(len(chs), "chapter") + plural(n_practice, "practice sheet") + plural(n_docs, "PDF") + SAVED_STAT
     chapters = "\n".join(render_chapter(module, c, open_=len(chs) == 1) for c in chs)
     page = fill(tpl, PAGETITLE=f'{e(module["code"])} · {e(module["title"] or module["code"])}',
-                BACK='<a class="back" href="/">&larr; All modules</a>', EYEBROW=e(module["code"]),
+                BACK=(f'<a class="back" href="/">&larr; All modules</a>'
+                      f'<a class="back" href="/upload/?module={e(module["slug"])}">+ Upload to {e(module["code"])}</a>'),
+                EYEBROW=e(module["code"]),
                 TITLE=e(module["title"] or module["code"]), SUB=e(module["blurb"]), STATS=stats,
                 MAIN=f'<main class="chapters">\n{chapters}\n</main>')
     return page.replace("<body>", f'<body data-module="{e(module["slug"])}">', 1)
+
+
+UPLOAD_MAIN = r"""<main class="up">
+<form id="up" class="up" style="padding:0" novalidate>
+<fieldset><legend>Where</legend>
+  <div class="row">
+    <label class="f">Module<select id="module"></select></label>
+    <label class="f">Chapter<select id="chapter"></select></label>
+  </div>
+  <div class="row" id="new-module" hidden>
+    <label class="f">Folder (lowercase)<input type="text" id="m-slug" placeholder="e.g. cpsi" autocomplete="off"></label>
+    <label class="f">Code<input type="text" id="m-code" placeholder="e.g. CPSI" autocomplete="off"></label>
+    <label class="f">Title<input type="text" id="m-title" placeholder="e.g. Information Systems" autocomplete="off"></label>
+    <label class="f">Blurb<input type="text" id="m-blurb" placeholder="one line, optional" autocomplete="off"></label>
+  </div>
+  <div class="row" id="new-chapter" hidden>
+    <label class="f">Folder<input type="text" id="c-slug" placeholder="e.g. ch2 or ch1-2" autocomplete="off"></label>
+    <label class="f">Chapter title<input type="text" id="c-title" placeholder="e.g. Classical cryptography (Cryptographie classique)" autocomplete="off"></label>
+  </div>
+</fieldset>
+<fieldset><legend>What</legend>
+  <div class="kinds">
+    <label><input type="radio" name="kind" value="lesson" checked> Lesson</label>
+    <label><input type="radio" name="kind" value="practice"> Practice</label>
+    <label><input type="radio" name="kind" value="cours"> Cours PDFs</label>
+    <label><input type="radio" name="kind" value="td"> TD PDFs</label>
+  </div>
+  <label class="drop" id="drop"><span id="drop-txt">Drop the file here or choose it</span><input type="file" id="files"></label>
+  <p class="hint" id="kind-hint"></p>
+</fieldset>
+<p class="err" id="err" hidden></p>
+<button class="btn" id="go" type="submit">Upload</button>
+</form>
+<ul class="jobs" id="jobs"></ul>
+</main>
+<script>
+(function(){
+  var DATA=%%DATA%%, $=function(id){return document.getElementById(id);};
+  var SLUG=/^[a-z0-9][a-z0-9.\-]{0,99}$/, HINT={
+    lesson:'One .html file. It becomes lesson.html and replaces the current one (the old version stays in git).',
+    practice:'One .html file. It becomes practice.html; saved answers survive if the field ids stay the same.',
+    cours:'PDFs, several at once. Named <n>-<topic>.pdf after the ones already there.',
+    td:'PDFs, several at once. Named <n>-<topic>.pdf in the td/ folder of the chapter.'};
+  var mSel=$('module'), cSel=$('chapter'), files=$('files');
+  function opt(v,t){var o=document.createElement('option');o.value=v;o.textContent=t;return o;}
+  function kind(){return document.querySelector('input[name=kind]:checked').value;}
+  function fillModules(sel){
+    mSel.innerHTML='';
+    DATA.forEach(function(m){mSel.appendChild(opt(m.slug,m.code+' · '+m.title));});
+    mSel.appendChild(opt('+','+ New module'));
+    if(sel)mSel.value=sel;
+    fillChapters();
+  }
+  function fillChapters(sel){
+    var m=DATA.filter(function(x){return x.slug===mSel.value;})[0];
+    cSel.innerHTML='';
+    (m?m.chapters:[]).forEach(function(c){cSel.appendChild(opt(c.slug,c.label+(c.title?' · '+c.title:'')));});
+    cSel.appendChild(opt('+','+ New chapter'));
+    if(sel)cSel.value=sel;
+    $('new-module').hidden=mSel.value!=='+';
+    $('new-chapter').hidden=cSel.value!=='+';
+  }
+  function setKind(){
+    var k=kind(), pdf=k==='cours'||k==='td';
+    files.multiple=pdf; files.accept=pdf?'.pdf,application/pdf':'.html,text/html';
+    $('kind-hint').textContent=HINT[k]; files.value=''; $('drop-txt').textContent=pdf?'Drop the PDFs here or choose them':'Drop the file here or choose it';
+  }
+  mSel.addEventListener('change',function(){fillChapters();});
+  cSel.addEventListener('change',function(){$('new-chapter').hidden=cSel.value!=='+';});
+  document.querySelectorAll('input[name=kind]').forEach(function(r){r.addEventListener('change',setKind);});
+  var drop=$('drop');
+  ['dragenter','dragover'].forEach(function(t){drop.addEventListener(t,function(e){e.preventDefault();drop.classList.add('over');});});
+  ['dragleave','drop'].forEach(function(t){drop.addEventListener(t,function(e){e.preventDefault();drop.classList.remove('over');});});
+  drop.addEventListener('drop',function(e){files.files=e.dataTransfer.files;});
+
+  function fail(msg){$('err').textContent=msg;$('err').hidden=!msg;return false;}
+  function target(){
+    var m=mSel.value, c=cSel.value, q={};
+    if(m==='+'){
+      m=$('m-slug').value.trim();
+      if(!SLUG.test(m))return fail('Module folder: lowercase letters, digits, "-" and "." only.');
+      if(DATA.some(function(x){return x.slug===m;}))return fail('Module '+m+' already exists: pick it in the list.');
+      q.module_code=$('m-code').value.trim()||m.toUpperCase(); q.module_title=$('m-title').value.trim(); q.blurb=$('m-blurb').value.trim();
+      if(!q.module_title)return fail('Give the new module a title.');
+    }
+    if(c==='+'){
+      c=$('c-slug').value.trim();
+      if(!SLUG.test(c))return fail('Chapter folder: lowercase letters, digits, "-" and "." (e.g. ch2).');
+      q.title=$('c-title').value.trim();
+      if(!q.title)return fail('Give the new chapter a title.');
+    }
+    q.module=m; q.chapter=c; return q;
+  }
+  function row(name){
+    var li=document.createElement('li');
+    li.innerHTML='<b></b><span class="st">waiting</span>';
+    li.firstChild.textContent=name; $('jobs').prepend(li); return li;
+  }
+  function status(li,cls,text){li.className=cls||'';li.querySelector('.st').textContent=text;}
+  function poll(li,id,tries){
+    fetch('/api/upload?id='+id,{cache:'no-store'}).then(function(r){return r.json();}).then(function(r){
+      if(r.state==='done'){
+        var git={pushed:'saved to GitHub',committed:'committed',unchanged:'identical to the current file, nothing to commit','push-failed':'committed on the server, push to GitHub failed (retried by the next update)'}[r.git]||r.git;
+        status(li,'ok','Live · '+git+(r.replaced&&r.git!=='unchanged'?' · replaced the old file':''));
+        var a=document.createElement('a');a.href=r.url;a.textContent='Open '+r.url;a.target='_blank';li.appendChild(a);
+        if(r.warnings&&r.warnings.length){var ul=document.createElement('ul');r.warnings.forEach(function(w){var x=document.createElement('li');x.textContent=w;ul.appendChild(x);});li.appendChild(ul);}
+      }else if(r.state==='error'||r.error){status(li,'bad','Failed: '+(r.error||'unknown error'));}
+      else if(tries>180){status(li,'bad','Still '+r.state+' after 3 minutes. Is studysite-ingest.path running on the server?');}
+      else{status(li,'',r.state==='processing'?'Building and committing…':'Queued…');setTimeout(function(){poll(li,id,tries+1);},1000);}
+    }).catch(function(){setTimeout(function(){poll(li,id,tries+1);},2000);});
+  }
+  function send(file,q,done){
+    var li=row(file.name), x=new XMLHttpRequest(), p=Object.assign({kind:kind(),name:file.name},q);
+    x.open('PUT','/api/upload?'+new URLSearchParams(p));
+    x.upload.onprogress=function(e){if(e.lengthComputable)status(li,'','Uploading '+Math.round(100*e.loaded/e.total)+'%');};
+    x.onload=function(){
+      var r={};try{r=JSON.parse(x.responseText);}catch(e){}
+      if(x.status===200&&r.id){status(li,'','Queued…');poll(li,r.id,0);}
+      else status(li,'bad','Rejected: '+(r.error||('HTTP '+x.status)));
+      done();
+    };
+    x.onerror=function(){status(li,'bad','Upload failed (network)');done();};
+    x.send(file);
+  }
+  $('up').addEventListener('submit',function(e){
+    e.preventDefault(); fail('');
+    var q=target(); if(!q)return;
+    var list=[].slice.call(files.files), k=kind();
+    if(!list.length)return fail('Choose a file first.');
+    var ext=(k==='cours'||k==='td')?'.pdf':'.html';
+    var bad=list.filter(function(f){return f.name.toLowerCase().slice(-ext.length)!==ext;});
+    if(bad.length)return fail(bad[0].name+' is not a '+ext+' file.');
+    if(ext==='.html'&&list.length>1)return fail('One HTML file at a time.');
+    $('go').disabled=true;
+    // remember a new module/chapter so the next upload can pick it
+    var m=DATA.filter(function(x){return x.slug===q.module;})[0];
+    if(!m){m={slug:q.module,code:q.module_code,title:q.module_title,chapters:[]};DATA.push(m);}
+    if(!m.chapters.some(function(c){return c.slug===q.chapter;}))m.chapters.push({slug:q.chapter,label:q.chapter,title:q.title||''});
+    (function next(i){ if(i>=list.length){$('go').disabled=false;files.value='';fillModules(q.module);fillChapters(q.chapter);return;}
+      send(list[i],q,function(){next(i+1);}); })(0);
+  });
+  var pre=new URLSearchParams(location.search).get('module');
+  fillModules(DATA.some(function(m){return m.slug===pre;})?pre:(DATA[0]||{}).slug); setKind();
+})();
+</script>"""
+
+
+def render_upload(tpl, modules):
+    data = [{"slug": m["slug"], "code": m["code"], "title": m["title"] or m["code"],
+             "chapters": [{"slug": c["slug"], "label": c["label"], "title": c["title"]} for c in m["chapters"]]}
+            for m in modules]
+    js = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
+    return fill(tpl, PAGETITLE="Upload · Study Hub", BACK='<a class="back" href="/">&larr; All modules</a>',
+                EYEBROW="Study Hub", TITLE="Upload",
+                SUB="Add a lesson, a practice sheet or PDFs. Each file goes live and is committed to GitHub.",
+                STATS="", MAIN=UPLOAD_MAIN.replace("%%DATA%%", js))
 
 
 def main():
@@ -361,7 +520,7 @@ def main():
     if os.path.isdir(MODULES):
         slugs = [d for d in os.listdir(MODULES) if visible(d) and os.path.isdir(os.path.join(MODULES, d))]
     for s in slugs:
-        if s == "assets" or not NAME_RE.match(s):
+        if s in ("assets", "upload") or not NAME_RE.match(s):
             sys.exit(f"error: module folder name {s!r} is reserved or invalid")
 
     modules = [m for m in (load_module(s) for s in slugs) if m["chapters"]]  # empty modules stay hidden
@@ -377,6 +536,9 @@ def main():
     for m in modules:
         with open(os.path.join(NEW, m["slug"], "index.html"), "w", encoding="utf-8") as f:
             f.write(render_module_page(tpl, m))
+    os.makedirs(os.path.join(NEW, "upload"))
+    with open(os.path.join(NEW, "upload", "index.html"), "w", encoding="utf-8") as f:
+        f.write(render_upload(tpl, modules))
 
     if os.path.exists(DIST):
         os.rename(DIST, OLD)

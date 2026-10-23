@@ -3,15 +3,22 @@
 
 Env: ANSWERS_DB (default data/answers.db next to this file),
      ANSWERS_HOST (default 127.0.0.1), ANSWERS_PORT (default 8001).
+
+Uploads (PUT /api/upload) are only validated and queued in data/inbox/; deploy/ingest.py,
+outside this service's sandbox, places them in modules/, builds, commits and pushes.
 """
 import json
 import os
 import re
+import secrets
+import shutil
 import sqlite3
 import sys
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlsplit
+
+import add
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.environ.get("ANSWERS_DB", os.path.join(ROOT, "data", "answers.db"))
@@ -23,6 +30,13 @@ MAX_BODY = 64 * 1024
 MAX_VALUE = 20 * 1024
 MAX_KEY = 200
 
+DATA = os.path.dirname(os.path.abspath(DB_PATH))
+INBOX = os.path.join(DATA, "inbox")          # complete jobs, picked up by deploy/ingest.py
+INBOX_TMP = os.path.join(DATA, "inbox-tmp")  # jobs still being received
+DONE = os.path.join(DATA, "uploads")         # processed jobs with their result.json
+MAX_UPLOAD = {"lesson": 5 << 20, "practice": 5 << 20, "cours": 50 << 20, "td": 50 << 20}
+JOB_RE = re.compile(r"^\d{8}-\d{6}-[0-9a-f]{6}$")
+
 
 def connect():
     conn = sqlite3.connect(DB_PATH, timeout=10)
@@ -31,7 +45,8 @@ def connect():
 
 
 def init_db():
-    os.makedirs(os.path.dirname(os.path.abspath(DB_PATH)), exist_ok=True)
+    for d in (DATA, INBOX, INBOX_TMP, DONE):
+        os.makedirs(d, exist_ok=True)
     with connect() as conn:
         conn.execute("PRAGMA journal_mode=WAL")
         conn.execute(
@@ -129,6 +144,25 @@ class Handler(BaseHTTPRequestHandler):
             raise ApiError(400, "expected a json object")
         return data
 
+    def read_upload(self, path, limit):
+        """Stream the raw request body to path."""
+        try:
+            length = int(self.headers.get("Content-Length") or -1)
+        except ValueError:
+            length = -1
+        if length < 1:
+            raise ApiError(411, "empty upload or missing content-length")
+        if length > limit:
+            raise ApiError(413, f"file too large (max {limit >> 20} MB)")
+        with open(path, "wb") as f:
+            left = length
+            while left:
+                chunk = self.rfile.read(min(left, 1 << 16))
+                if not chunk:
+                    raise ApiError(400, "upload cut short")
+                f.write(chunk)
+                left -= len(chunk)
+
     # --- routes -------------------------------------------------------
 
     def health(self, q):
@@ -201,6 +235,56 @@ class Handler(BaseHTTPRequestHandler):
         ]
 
 
+    def upload(self, q):
+        kind = q.get("kind")
+        if kind not in MAX_UPLOAD:
+            raise ApiError(400, "kind must be lesson, practice, cours or td")
+        try:
+            module = add.check_module(q.get("module"))
+            chapter = add.check_slug(q.get("chapter"), "chapter")
+        except add.AddError as e:
+            raise ApiError(400, str(e))
+        name = os.path.basename(q.get("name") or "")
+        ext = ".html" if kind in ("lesson", "practice") else ".pdf"
+        if not name.lower().endswith(ext) or len(name) > 200:
+            raise ApiError(400, f"a {kind} upload must be a {ext} file")
+        meta = {k: q[k].strip()[:300] for k in ("title", "module_title", "module_code", "blurb") if q.get(k, "").strip()}
+
+        job = time.strftime("%Y%m%d-%H%M%S") + "-" + secrets.token_hex(3)
+        tmp = os.path.join(INBOX_TMP, job)
+        os.makedirs(tmp)
+        try:
+            self.read_upload(os.path.join(tmp, "file"), MAX_UPLOAD[kind])
+            with open(os.path.join(tmp, "file"), "rb") as f:
+                head = f.read(4096)
+            if ext == ".pdf" and not head.startswith(b"%PDF-"):
+                raise ApiError(400, f"{name} is not a PDF")
+            if ext == ".html" and b"<html" not in head.lower() and b"<!doctype html" not in head.lower():
+                raise ApiError(400, f"{name} doesn't look like an HTML page")
+            with open(os.path.join(tmp, "job.json"), "w", encoding="utf-8") as f:
+                json.dump({"module": module, "chapter": chapter, "kind": kind, "name": name, **meta}, f)
+            os.rename(tmp, os.path.join(INBOX, job))  # appears in the inbox only once complete
+        except BaseException:
+            shutil.rmtree(tmp, ignore_errors=True)
+            raise
+        return {"ok": True, "id": job}
+
+    def upload_status(self, q):
+        job = q.get("id") or ""
+        if not JOB_RE.match(job):
+            raise ApiError(400, "invalid id")
+        for d in (DONE, INBOX):
+            for name in ("result.json", "status.json"):
+                try:
+                    with open(os.path.join(d, job, name), encoding="utf-8") as f:
+                        return json.load(f)
+                except (OSError, ValueError):
+                    pass
+            if os.path.isdir(os.path.join(d, job)):
+                return {"state": "queued"}
+        raise ApiError(404, "unknown upload")
+
+
 ROUTES = {
     ("GET", "/api/health"): Handler.health,
     ("GET", "/api/answers"): Handler.get_answers,
@@ -208,6 +292,8 @@ ROUTES = {
     ("DELETE", "/api/answers"): Handler.delete_page,
     ("GET", "/api/summary"): Handler.summary,
     ("GET", "/api/export"): Handler.export,
+    ("PUT", "/api/upload"): Handler.upload,
+    ("GET", "/api/upload"): Handler.upload_status,
 }
 
 

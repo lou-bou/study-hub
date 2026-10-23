@@ -4,3 +4,6 @@ dist/
 data/*.db*
 __pycache__/
 .update.lock
+data/inbox/
+data/inbox-tmp/
+data/uploads/

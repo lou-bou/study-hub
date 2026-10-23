@@ -1,0 +1,12 @@
+# Started by studysite-ingest.path. Runs as my user (needs git and the deploy key),
+# outside the API's sandbox. Set User= to your login on the ThinkPad.
+[Unit]
+Description=Study Hub: publish uploads (place, build, commit, push)
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=lou
+WorkingDirectory=/srv/studysite
+Environment=ANSWERS_DB=/srv/studysite/data/answers.db
+ExecStart=/usr/bin/python3 /srv/studysite/deploy/ingest.py

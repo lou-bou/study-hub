@@ -13,6 +13,7 @@ Deployed. Modules in the repo: GBD ch1, OPL ch1-2, THOR ch1 (lesson + practice +
 - Caddy serves `dist/` and proxies `/api/*` to the API. Both bind to 127.0.0.1.
 - Exposure: Cloudflare Tunnel, no router ports (Algerian ISPs often use CGNAT). Cloudflare Access (one-time email code) restricts the whole hostname, API included, to me. boussaid.me must be on Cloudflare DNS for this; if I don't want to move it, use a spare student-pack domain or Tailscale instead.
 - Must be extensible: adding a remake means dropping files in a folder and running the build, nothing else.
+- Content lives in git, in `modules/`, however it is added. The website's upload page commits and pushes from the ThinkPad; answers stay in SQLite (never git).
 
 ## Layout
 ```
@@ -25,7 +26,9 @@ REMAKE_BRIEF.md                       rules for remakes written outside this rep
 assets/saver.js                       auto-save script for practice pages
 hub_template.html                     shell for the hub and module pages (%%PAGETITLE%% %%BACK%% %%EYEBROW%% %%TITLE%% %%SUB%% %%STATS%% %%MAIN%%)
 build.py                              modules/ -> dist/
-add.py                                add/update a chapter: copy files, build, commit, push
+add.py                                add/update a chapter: copy files, build, commit, push (CLI + shared by ingest.py)
+deploy/ingest.py                      publishes uploads: data/inbox/ -> modules/, build, commit, push
+deploy/studysite-ingest.path/.service systemd: run ingest.py whenever data/inbox/ is not empty
 deploy/update.sh                      ThinkPad cron: pull + build when there are new commits
 server.py                             answers API
 site.json                             optional {"title","subtitle"}
@@ -34,7 +37,7 @@ data/answers.db                       my answers, never committed, never rsynced
 dist/                                 generated, never committed
 ```
 Naming: module and chapter folders lowercase (`thor`, `ch1`, `ch1-2` for a remake covering two chapters); remakes are always `lesson.html` and `practice.html`. Saved answers are keyed by module + `<chapter>/<file>`, so don't rename those once answers exist.
-`.gitignore`: `dist/`, `.dist_new/`, `.dist_old/`, `data/*.db*`, `__pycache__/`, `.update.lock`. Keep `data/.gitkeep`.
+`.gitignore`: `dist/`, `.dist_new/`, `.dist_old/`, `data/*.db*`, `__pycache__/`, `.update.lock`, `data/inbox/`, `data/inbox-tmp/`, `data/uploads/`. Keep `data/.gitkeep`.
 
 ## build.py
 - Each folder in `modules/` (skip names starting with `.` or `_`) is a module; each subfolder of a module is a chapter. Modules with no chapters are hidden. Code defaults to the folder name uppercased; chapter label is derived from the folder (`ch1` -> Chapter 1, `ch1-2` -> Chapters 1–2), title from `module.json` `chapters`.
@@ -43,6 +46,7 @@ Naming: module and chapter folders lowercase (`thor`, `ch1`, `ch1-2` for a remak
 - Lint every page and print warnings (never fail the build): base styles missing or not identical to `remake_template.html`, missing theme script/toggle, `localStorage` use; on practice pages, fields without an id, radios without name/value, duplicate ids.
 - Inject before the last `</body>` of every page: a fixed bottom-left bar with "← <CODE>" (back to the module page) and links to the chapter's course PDFs, plus a script that lets the bar and the theme toggle follow the viewport until each reaches the bottom of `.toc` (else `.hero`), then parks it just below that line so it scrolls away. On practice pages also `<script src="/assets/saver.js" data-module="<module>" data-page="<chapter>/<file>"></script>`. Never edit the source HTML.
 - Every generated page (hub, module pages, remakes) gets a `<head>` style that zooms it to 125% at >= 1200px and 150% at >= 1500px wide; phones are unchanged.
+- Upload page (`/upload/`, generated from `hub_template.html` with the module/chapter list as JSON): pick module (or create one: folder, code, title, blurb), chapter (or create: folder, title), kind (lesson, practice, cours PDFs, td PDFs), file(s). XHR `PUT /api/upload` per file with progress, then polls the job and shows Live + git state, a link, and that page's lint warnings. The hub links to it; module pages link with `?module=` preselected. `upload` is a reserved module name.
 - Hub (`/`): one clickable card per module with only the code chip, title and blurb. Module page (`/<module>/`, generated `index.html`): one `<details>` dropdown per chapter (open by default when the module has a single chapter), listing Remakes (Lesson, Practice), Cours and TD; PDFs open in a new tab. Both pages use `hub_template.html`, the remakes' tokens and fonts, and a theme toggle. Practice links get a badge from `/api/summary` ("N saved"); the saved total is scoped to the module on module pages.
 
 ## server.py (127.0.0.1:8001, env ANSWERS_DB / ANSWERS_HOST / ANSWERS_PORT)
@@ -53,7 +57,12 @@ Table `answers(module, page, key, value, updated_at, PRIMARY KEY(module,page,key
 - `DELETE /api/answers?module=&page=` wipes one page
 - `GET /api/summary` -> `{"module/chapter/file": count}`
 - `GET /api/export` -> all rows
+- `PUT /api/upload?module=&chapter=&kind=&name=[&title=&module_title=&module_code=&blurb=]`, raw file as the body (no multipart). Checks names with add.py's rules, extension (.html for lesson/practice, .pdf for cours/td), size (5 MB HTML, 50 MB PDF), PDF magic / HTML sniff. Streams into `data/inbox-tmp/<job>/` (file + job.json), then renames into `data/inbox/<job>/`. Returns `{id}`.
+- `GET /api/upload?id=` -> `{state: queued|processing|done|error, ...}` from the job's status.json/result.json.
 Validate module as one segment `^[\w\-][\w.\-]{0,99}$`, page as 1-4 such segments joined by `/` (<= 200 chars), key 1-200 chars, body <= 64 KB, value <= 20 KB. JSON responses, `Cache-Control: no-store`, quiet logging.
+
+## Uploads (deploy/ingest.py)
+Runs as my user outside the API sandbox, holding `.update.lock` (shared with update.sh). Per job: `git pull --rebase --autostash`, `add.place` (lesson.html / practice.html replace; PDFs named `<n>-<topic>.pdf` with the next free number unless the name starts with one), `add.set_meta` (module.json), `add.build` (warnings filtered to that page), commit `Upload: <CODE> <chapter> <what>` as "Study Hub upload", push (rebase + retry once; a failed push stays local and update.sh pushes it later). If placing or building fails, `modules/<module>` is restored from git. Every job ends in `data/uploads/<job>/result.json` (kept 7 days), so the inbox always drains.
 
 ## saver.js
 - Handles `input, textarea, select`, skipping button/submit/reset/hidden/file/password/image and anything inside `[data-no-save]`.
@@ -65,9 +74,10 @@ Validate module as one segment `^[\w\-][\w.\-]{0,99}$`, page as 1-4 such segment
 ## Deploy (Debian ThinkPad)
 - Code in `/srv/studysite`. Caddy: global `auto_https off`, site `http://:8088` (any Host, since the tunnel sends study.boussaid.me), `bind 127.0.0.1`, `root * /srv/studysite/dist`, `encode zstd gzip`, `handle /api/*` -> `reverse_proxy 127.0.0.1:8001`, otherwise `file_server`.
 - systemd unit `studysite-api.service` running `python3 /srv/studysite/server.py` as my user, `Restart=on-failure`, `ReadWritePaths=/srv/studysite/data`.
+- `studysite-ingest.path` (DirectoryNotEmpty=/srv/studysite/data/inbox) starts `studysite-ingest.service` (oneshot, my user, `deploy/ingest.py`). The ThinkPad's deploy key has write access; `core.sshCommand` in /srv/studysite points git at it.
 - cloudflared: existing locally-managed tunnel `home-server` (`/etc/cloudflared/config.yml`, also serves `ssh.boussaid.me`). Ingress `study.boussaid.me` -> `http://localhost:8088`, DNS via `cloudflared tunnel route dns`. Access application (Public DNS, One-time PIN) with an Allow policy for my email only. Port 8080 is taken by qBittorrent.
-- Update flow: remakes are made in my claude.ai project (REMAKE_BRIEF.md + remake_template.html as knowledge), then `python3 add.py <module> <chapter> FILE... [--title] [--td FILE...]` on my main machine copies, builds, commits and pushes. On the ThinkPad, cron runs `deploy/update.sh` every 5 minutes (fetch, ff-only pull, build; no restart needed). Never overwrite `data/`.
-- Backup: `sqlite3 data/answers.db ".backup '<path>'"` on a daily cron, plus `/api/export` for a portable copy.
+- Update flow: remakes are made in my claude.ai project (REMAKE_BRIEF.md + remake_template.html as knowledge), then uploaded at `/upload/` (live at once, committed and pushed by the server), or added with `python3 add.py <module> <chapter> FILE... [--title] [--td FILE...]` on my main machine (pulls, copies, builds, commits, pushes). On the ThinkPad, cron runs `deploy/update.sh` every 5 minutes (fetch, `pull --rebase --autostash` + build when behind, push when ahead; no restart needed). Because the server commits too, always `git pull` before working in the repo on the laptop. Never overwrite `data/`.
+- Backup: daily 3 a.m. cron on the ThinkPad: `sqlite3 data/answers.db ".backup /home/lou/answers-backup.db"` then `rclone copyto` to Google Drive `gdrive:study-hub-backup/answers-<weekday>.db` (7 rolling copies; rclone remote `gdrive` uses scope drive.file). `/api/export` is a portable copy.
 
 ## Writing new remakes (when I give you course material)
 - Start from `remake_template.html`. Copy its `study-hub:theme` script and `study-hub:base` style block verbatim; page-specific CSS (SVG classes, palettes) goes in the second `<style>`, using the base tokens. Don't fork the base styles inside a page: change the template, then update every page.

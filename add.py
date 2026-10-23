@@ -4,10 +4,13 @@
     python3 add.py <module> <chapter> FILE... [--title "Chapter title"] [--td FILE...] [--no-push]
 
 FILE can be a remake (*.html: "practice" in the name -> practice.html, otherwise lesson.html)
-or a course PDF (-> cours/). --td files go to td/. A new module gets a module.json to edit.
+or a course PDF (-> cours/). --td files go to td/. PDFs are named <n>-<topic>.pdf, numbered
+after the ones already there. A new module gets a module.json to edit.
 The ThinkPad picks the push up within a few minutes (deploy/update.sh).
 
-    python3 add.py thor ch2 ~/dl/lesson.html ~/dl/practice.html ~/dl/2-methodes.pdf --title "Methods"
+    python3 add.py thor ch2 ~/dl/lesson.html ~/dl/practice.html ~/dl/methodes.pdf --title "Methods"
+
+The same functions back the website's upload page (deploy/ingest.py).
 """
 import argparse
 import json
@@ -16,28 +19,160 @@ import re
 import shutil
 import subprocess
 import sys
+import unicodedata
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 MODULES = os.path.join(ROOT, "modules")
 NAME_RE = re.compile(r"^[a-z0-9][a-z0-9.\-]{0,99}$")
+KINDS = ("lesson", "practice", "cours", "td")
+RESERVED = ("assets", "upload")  # site paths that build.py generates
 
 
-def die(msg):
-    sys.exit(f"error: {msg}")
+class AddError(Exception):
+    pass
 
 
-def git(*args):
-    return subprocess.run(["git", "-C", ROOT, *args], check=True)
+def check_slug(name, what):
+    if not isinstance(name, str) or not NAME_RE.match(name):
+        raise AddError(f"{what} {name!r}: use lowercase letters, digits, '-' and '.'")
+    return name
 
 
-def target_name(path):
-    name = os.path.basename(path)
-    ext = os.path.splitext(name)[1].lower()
-    if ext == ".html":
-        return "practice.html" if "practice" in name.lower() else "lesson.html"
-    if ext == ".pdf":
-        return os.path.join("cours", name)
-    die(f"don't know where to put {name} (expected .html or .pdf)")
+def check_module(name):
+    check_slug(name, "module")
+    if name in RESERVED:
+        raise AddError(f"module {name!r} is reserved, pick another name")
+    return name
+
+
+def git(*args, capture=False):
+    r = subprocess.run(["git", "-C", ROOT, *args], capture_output=True, text=True)
+    if r.returncode != 0:
+        raise AddError(f"git {args[0]} failed: {(r.stderr or r.stdout).strip()}")
+    return r.stdout.strip() if capture else None
+
+
+def kind_of(path):
+    """CLI guess: lesson/practice from an .html name, cours for a .pdf."""
+    name = os.path.basename(path).lower()
+    if name.endswith(".html"):
+        return "practice" if "practice" in name else "lesson"
+    if name.endswith(".pdf"):
+        return "cours"
+    raise AddError(f"don't know where to put {os.path.basename(path)} (expected .html or .pdf)")
+
+
+def doc_name(folder, filename):
+    """'Crypto classique.pdf' -> '<next n>-Crypto-classique.pdf'; a name that already starts
+    with a number keeps it, so re-adding 2-methodes.pdf replaces that file."""
+    stem, ext = os.path.splitext(os.path.basename(filename))
+    stem = unicodedata.normalize("NFKD", stem).encode("ascii", "ignore").decode()
+    stem = re.sub(r"[^A-Za-z0-9.\-]+", "-", stem).strip("-.") or "document"
+    stem = re.sub(r"-{2,}", "-", stem)
+    if not re.match(r"^\d+-", stem):
+        taken = [int(m.group(1)) for f in (os.listdir(folder) if os.path.isdir(folder) else [])
+                 if (m := re.match(r"^(\d+)-", f))]
+        stem = f"{max(taken, default=0) + 1}-{stem}"
+    return stem + ext.lower()
+
+
+def place(module, chapter, kind, src, filename=None):
+    """Copy src into modules/<module>/<chapter>/. Returns (path relative to the chapter, replaced?)."""
+    check_module(module)
+    check_slug(chapter, "chapter")
+    if kind not in KINDS:
+        raise AddError(f"unknown kind {kind!r}")
+    ch_dir = os.path.join(MODULES, module, chapter)
+    for d in ("cours", "td"):
+        os.makedirs(os.path.join(ch_dir, d), exist_ok=True)
+    if kind in ("lesson", "practice"):
+        rel = f"{kind}.html"
+    else:
+        rel = f"{kind}/{doc_name(os.path.join(ch_dir, kind), filename or src)}"
+    dst = os.path.join(ch_dir, rel)
+    replaced = os.path.exists(dst)
+    shutil.copyfile(src, dst)
+    td = os.path.join(ch_dir, "td")
+    keep = os.path.join(td, ".gitkeep")
+    if any(f != ".gitkeep" for f in os.listdir(td)):
+        if os.path.exists(keep):
+            os.remove(keep)
+    else:
+        open(keep, "a").close()
+    return rel, replaced
+
+
+def set_meta(module, chapter, title=None, module_title=None, module_code=None, blurb=None):
+    """Create or update modules/<module>/module.json. Returns True for a new module."""
+    mod_dir = os.path.join(MODULES, module)
+    path = os.path.join(mod_dir, "module.json")
+    new = not os.path.exists(path)
+    if new:
+        orders = []
+        for m in os.listdir(MODULES):
+            try:
+                with open(os.path.join(MODULES, m, "module.json"), encoding="utf-8") as f:
+                    orders.append(int(json.load(f).get("order", 0)))
+            except (OSError, ValueError, TypeError, AttributeError):
+                pass
+        meta = {"code": module.upper(), "title": module.upper(), "blurb": "",
+                "order": max(orders, default=0) + 1, "chapters": {}}
+    else:
+        with open(path, encoding="utf-8") as f:
+            meta = json.load(f)
+    before = json.dumps(meta, sort_keys=True)
+    for key, value in (("code", module_code), ("title", module_title), ("blurb", blurb)):
+        if value:
+            meta[key] = value
+    if title:
+        meta.setdefault("chapters", {})[chapter] = title
+    if new or json.dumps(meta, sort_keys=True) != before:
+        os.makedirs(mod_dir, exist_ok=True)
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(meta, f, indent=2, ensure_ascii=False)
+            f.write("\n")
+    return new
+
+
+def build():
+    """Run build.py. Returns (stdout, warnings)."""
+    r = subprocess.run([sys.executable, os.path.join(ROOT, "build.py")], capture_output=True, text=True)
+    if r.returncode != 0:
+        raise AddError(f"build failed: {(r.stderr or r.stdout).strip()}")
+    warnings = [line[len("warning: "):] for line in r.stderr.splitlines() if line.startswith("warning: ")]
+    return r.stdout.strip(), warnings
+
+
+def has_upstream():
+    return subprocess.run(["git", "-C", ROOT, "rev-parse", "--abbrev-ref", "@{u}"],
+                          capture_output=True).returncode == 0
+
+
+def sync():
+    """Pull first, so this machine and the server never push over each other."""
+    if has_upstream():
+        git("pull", "-q", "--rebase", "--autostash")
+
+
+def commit_and_push(paths, message, push=True, ident=None):
+    """Commit paths; push (rebasing once if the remote moved).
+    Returns 'unchanged', 'committed', 'pushed' or 'push-failed' (the commit stays local)."""
+    git("add", "--", *paths)
+    if subprocess.run(["git", "-C", ROOT, "diff", "--cached", "--quiet"]).returncode == 0:
+        return "unchanged"
+    who = ["-c", f"user.name={ident[0]}", "-c", f"user.email={ident[1]}"] if ident else []
+    git(*who, "commit", "-q", "-m", message)
+    if not push or not has_upstream():
+        return "committed"
+    try:
+        git("push", "-q")
+    except AddError:
+        try:
+            git("pull", "-q", "--rebase", "--autostash")
+            git("push", "-q")
+        except AddError:
+            return "push-failed"
+    return "pushed"
 
 
 def main():
@@ -50,66 +185,41 @@ def main():
     ap.add_argument("--no-push", action="store_true", help="commit but don't push")
     a = ap.parse_args()
 
-    for name in (a.module, a.chapter):
-        if not NAME_RE.match(name):
-            die(f"{name!r}: use lowercase letters, digits, '-' and '.'")
-    if not a.files and not a.td and not a.title:
-        die("nothing to add")
+    try:
+        check_module(a.module)
+        check_slug(a.chapter, "chapter")
+        if not a.files and not a.td and not a.title:
+            raise AddError("nothing to add")
+        jobs = [(src, kind_of(src)) for src in a.files] + [(src, "td") for src in a.td]
+        html = [k for _, k in jobs if k in ("lesson", "practice")]
+        if len(html) != len(set(html)):
+            raise AddError("two files would become the same lesson.html or practice.html")
+        for src, _ in jobs:
+            if not os.path.isfile(src):
+                raise AddError(f"no such file: {src}")
 
-    moves = [(src, target_name(src)) for src in a.files]
-    moves += [(src, os.path.join("td", os.path.basename(src))) for src in a.td]
-    targets = [t for _, t in moves]
-    for t in set(targets):
-        if targets.count(t) > 1:
-            die(f"two files would become {t}")
-    for src, _ in moves:
-        if not os.path.isfile(src):
-            die(f"no such file: {src}")
+        sync()
+        for src, kind in jobs:
+            rel, replaced = place(a.module, a.chapter, kind, src)
+            print(f"{'updated' if replaced else 'added'}  modules/{a.module}/{a.chapter}/{rel}")
+        if set_meta(a.module, a.chapter, a.title):
+            print(f"new module: fill in title and blurb in modules/{a.module}/module.json")
+        with open(os.path.join(MODULES, a.module, "module.json"), encoding="utf-8") as f:
+            if a.chapter not in json.load(f).get("chapters", {}):
+                print(f"note: no title for {a.chapter}; pass --title to set one")
 
-    mod_dir = os.path.join(MODULES, a.module)
-    ch_dir = os.path.join(mod_dir, a.chapter)
-    os.makedirs(os.path.join(ch_dir, "cours"), exist_ok=True)
-    os.makedirs(os.path.join(ch_dir, "td"), exist_ok=True)
+        out, warnings = build()  # the build lints every page; read its warnings before the push
+        print(out)
+        for w in warnings:
+            print(f"warning: {w}", file=sys.stderr)
 
-    for src, rel in moves:
-        dst = os.path.join(ch_dir, rel)
-        print(f"{'updated' if os.path.exists(dst) else 'added'}  {os.path.relpath(dst, ROOT)}")
-        shutil.copyfile(src, dst)
-    if not os.listdir(os.path.join(ch_dir, "td")):
-        open(os.path.join(ch_dir, "td", ".gitkeep"), "a").close()
-
-    meta_path = os.path.join(mod_dir, "module.json")
-    new_module = not os.path.exists(meta_path)
-    meta = {"code": a.module.upper(), "title": a.module.upper(), "blurb": "", "chapters": {}}
-    if not new_module:
-        with open(meta_path, encoding="utf-8") as f:
-            meta = json.load(f)
-    chapters = meta.setdefault("chapters", {})
-    if a.title:
-        chapters[a.chapter] = a.title
-    if new_module or a.title:
-        with open(meta_path, "w", encoding="utf-8") as f:
-            json.dump(meta, f, indent=2, ensure_ascii=False)
-            f.write("\n")
-    if new_module:
-        print(f"new module: fill in title and blurb in {os.path.relpath(meta_path, ROOT)}")
-    if a.chapter not in chapters:
-        print(f"note: no title for {a.chapter}; pass --title to set one")
-
-    # The build lints every page; read its warnings before the push.
-    subprocess.run([sys.executable, os.path.join(ROOT, "build.py")], check=True)
-
-    git("add", os.path.relpath(mod_dir, ROOT))
-    if subprocess.run(["git", "-C", ROOT, "diff", "--cached", "--quiet"]).returncode == 0:
-        print("nothing changed")
-        return
-    pages = ", ".join(os.path.splitext(os.path.basename(t))[0] for t in targets if t.endswith(".html"))
-    git("commit", "-q", "-m", f"{a.module.upper()} {a.chapter}: {pages or 'update'}")
-    if a.no_push:
-        print("committed, not pushed")
-    else:
-        git("push", "-q")
-        print("pushed; live within 5 minutes")
+        msg = f"{a.module.upper()} {a.chapter}: {', '.join(html) or 'update'}"
+        state = commit_and_push([os.path.join("modules", a.module)], msg, push=not a.no_push)
+        print({"unchanged": "nothing changed", "committed": "committed, not pushed",
+               "pushed": "pushed; live within 5 minutes",
+               "push-failed": "committed, but the push failed; run git push"}[state])
+    except AddError as e:
+        sys.exit(f"error: {e}")
 
 
 if __name__ == "__main__":
