@@ -34,10 +34,11 @@
   .wrap{max-width:1040px;margin:0 auto}
   a{color:var(--accent)}
   a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
-  .toggle{position:fixed;top:14px;right:14px;z-index:20;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 14px;font:500 .8rem var(--f-body);cursor:pointer}
-  .back{display:inline-block;margin-bottom:14px;font:500 .85rem var(--f-mono);text-decoration:none;color:var(--muted)}
-  .back:hover{color:var(--accent)}
-  .back+.back{margin-left:18px}
+  .topbar{position:fixed;top:14px;right:14px;z-index:20;display:flex;gap:8px}
+  .toggle,.pbtn{display:inline-block;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 14px;font:500 .8rem var(--f-body);cursor:pointer;text-decoration:none}
+  .toggle:hover,.pbtn:hover{border-color:var(--accent)}
+  .pbtn.back{position:fixed;top:14px;left:14px;z-index:20}
+  .pbtn.back+.hero{margin-top:36px}
   [hidden]{display:none!important}
 
   /* hero */
@@ -112,6 +113,7 @@
   .jobs li.bad .st{color:var(--hi)}
   .jobs ul{margin:4px 0 0;padding-left:1.2em;color:var(--hi);font-size:.88rem}
   .manage{display:grid;gap:10px;padding-top:30px}
+  #tree{display:grid;gap:12px}
   .manage h2{margin:0;font:700 1.4rem var(--f-display)}
   details.mod{background:var(--surface);border:1px solid var(--line);border-radius:14px}
   details.mod>summary{cursor:pointer;display:flex;align-items:center;gap:10px;padding:12px 16px;font-weight:600}
@@ -125,6 +127,7 @@
 
   @media (max-width:600px){
     body{padding-top:60px}
+    .pbtn.back+.hero{margin-top:0}
     .hero{grid-template-columns:1fr}
     .figure{width:150px;order:-1}
     .grid{grid-template-columns:minmax(0,1fr)}
@@ -132,7 +135,7 @@
 </style>
 </head>
 <body>
-<button class="toggle" id="theme-toggle" type="button" aria-label="Toggle light or dark theme">◐ Theme</button>
+<div class="topbar">%%ACTIONS%%<button class="toggle" id="theme-toggle" type="button" aria-label="Toggle light or dark theme">◐ Theme</button></div>
 <div class="wrap">
   %%BACK%%
   <header class="hero">

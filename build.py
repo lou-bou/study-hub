@@ -30,12 +30,12 @@ OLD = os.path.join(ROOT, ".dist_old")
 NAME_RE = re.compile(r"^[\w\-][\w.\-]{0,99}$")
 TITLE_RE = re.compile(rb"<title[^>]*>(.*?)</title>", re.I | re.S)
 DOC_DIRS = ("cours", "td")
-BAR_STYLE = (
-    "position:fixed;left:14px;bottom:14px;z-index:2147483000;display:flex;gap:2px;"
-    "padding:3px;border-radius:999px;background:#1f2937;box-shadow:0 2px 8px rgba(0,0,0,.25);opacity:.9;"
-    "font:600 13px/1.2 system-ui,-apple-system,'Segoe UI',sans-serif"
+# Back button on every remake: the theme toggle's look, mirrored to the top-left corner.
+BACK_STYLE = (
+    "position:fixed;top:14px;left:max(14px,env(safe-area-inset-left,0px));z-index:20;"
+    "border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;"
+    "padding:6px 14px;font:500 .8rem var(--f-body);text-decoration:none;cursor:pointer"
 )
-LINK_STYLE = "color:#fff;text-decoration:none;padding:5px 11px;border-radius:999px"
 # Pages render bigger on wide screens, like a browser zoom of 125% / 150%; phones are unchanged.
 ZOOM_STYLE = ("<style>@media (min-width:1200px){html{zoom:1.25}}"
               "@media (min-width:1500px){html{zoom:1.5}}</style>\n")
@@ -47,8 +47,9 @@ PARK_SCRIPT = (
     'function park(){var a=document.querySelector(".toc")||document.querySelector(".hero");'
     'if(!a)return;var line=a.getBoundingClientRect().bottom+scrollY;els.forEach(function(el,i){'
     'var s=el.style;s.cssText=orig[i];var r=el.getBoundingClientRect();if(!r.height)return;'
-    # rects are in screen px, `top` in the page's zoomed px; park 10px below the line
-    'var k=el.offsetHeight/r.height;if(scrollY+r.top<line+10/k)return;s.setProperty("position","absolute","important");'
+    # rects are in screen px, `top` in the page's px (divided by the html zoom); park 10px below the line
+    'var k=1/(parseFloat(getComputedStyle(document.documentElement).zoom)||1);'
+    'if(scrollY+r.top<line+10/k)return;s.setProperty("position","absolute","important");'
     's.setProperty("top",line*k+10+"px","important");s.setProperty("bottom","auto","important");});}'
     'addEventListener("scroll",park,{passive:true});addEventListener("resize",park);park();})();'
 )
@@ -227,20 +228,15 @@ def inject(src, dst, snippet):
         f.write(data)
 
 
-def nav_bar(module, chapter, depth):
-    """Bottom-left bar: ← back to the module page, then one link per course PDF of the chapter."""
+def back_button(module):
+    """Top-left "←" back to the module page, styled like the theme toggle; it parks after the
+    contents like the toggle (PARK_SCRIPT). The body gets room at the top so it never covers the hero."""
     e = html.escape
-    up = "../" * depth
-    links = [f'<a href="/{e(module["slug"])}/" style="{LINK_STYLE}">&larr; {e(module["code"])}</a>']
-    cours = chapter["docs"]["cours"]
-    for i, d in enumerate(cours, 1):
-        text = "Cours PDF" if len(cours) == 1 else f"PDF {i}"
-        links.append(f'<a href="{up}cours/{e(d["file"])}" target="_blank" rel="noopener" '
-                     f'title="{e(d["label"])}" style="{LINK_STYLE}">{text}</a>')
-    # on phones, lift the bar above the saver pill so they don't overlap
-    css = "<style>@media (max-width:640px){#studyhub-nav{bottom:58px!important}}</style>"
-    return (f'{css}<nav id="studyhub-nav" data-no-save aria-label="Study Hub" style="{BAR_STYLE}">{"".join(links)}</nav>'
-            f'\n<script>{PARK_SCRIPT}</script>')
+    label = f'Back to {e(module["code"])}'
+    css = ("<style>body{padding-top:62px}#studyhub-nav:hover{border-color:var(--accent)}"
+           "@media print{#studyhub-nav{display:none}}</style>")
+    return (f'{css}<a id="studyhub-nav" href="/{e(module["slug"])}/" data-no-save aria-label="{label}" '
+            f'title="{label}" style="{BACK_STYLE}">&larr;</a>\n<script>{PARK_SCRIPT}</script>')
 
 
 def build_module(module, out_root, base, warnings):
@@ -259,7 +255,7 @@ def build_module(module, out_root, base, warnings):
                     continue
                 rel = f if depth == 0 else os.path.join(rel_dir, f).replace(os.sep, "/")
                 page = f"{ch['slug']}/{rel}"
-                snippet = "\n" + nav_bar(module, ch, depth)
+                snippet = "\n" + back_button(module)
                 practice = in_td or "practice" in f.lower()
                 for w in lint_page(os.path.join(dirpath, f), practice, base):
                     warnings.append(f"modules/{module['slug']}/{page}: {w}")
@@ -312,6 +308,7 @@ def plural(n, word):
     return f'<span><b>{n}</b> {word}{"" if n == 1 else "s"}</span>'
 
 
+ALL_MODULES = '<a class="pbtn back" href="/" aria-label="All modules" title="All modules">&larr;</a>'
 SAVED_STAT = '<span><b id="saved-total">0</b> <span id="saved-word">answers</span> saved</span>'
 
 
@@ -331,7 +328,7 @@ def render_hub(tpl, modules):
              + plural(n_practice, "practice sheet") + plural(n_docs, "PDF") + SAVED_STAT)
     cards = "\n".join(render_card(m) for m in modules) or \
         '<p class="empty">No modules yet. Add <code>modules/&lt;module&gt;/&lt;chapter&gt;/</code> and rebuild.</p>'
-    return fill(tpl, PAGETITLE=title, BACK='<a class="back" href="/upload/">Manage modules</a>',
+    return fill(tpl, PAGETITLE=title, BACK="", ACTIONS='<a class="pbtn" href="/upload/">Manage modules</a>',
                 EYEBROW="Master Big Data Analytics · USTHB", TITLE=title,
                 SUB=html.escape(str(site.get("subtitle") or "Course remakes, practice sheets and the original PDFs")),
                 STATS=stats, MAIN=f'<main class="grid">\n{cards}\n</main>')
@@ -345,8 +342,8 @@ def render_module_page(tpl, module):
     stats = plural(len(chs), "chapter") + plural(n_practice, "practice sheet") + plural(n_docs, "PDF") + SAVED_STAT
     chapters = "\n".join(render_chapter(module, c, open_=len(chs) == 1) for c in chs)
     page = fill(tpl, PAGETITLE=f'{e(module["code"])} · {e(module["title"] or module["code"])}',
-                BACK=(f'<a class="back" href="/">&larr; All modules</a>'
-                      f'<a class="back" href="/upload/?module={e(module["slug"])}">Manage {e(module["code"])}</a>'),
+                BACK=ALL_MODULES,
+                ACTIONS=f'<a class="pbtn" href="/upload/?module={e(module["slug"])}">Manage {e(module["code"])}</a>',
                 EYEBROW=e(module["code"]),
                 TITLE=e(module["title"] or module["code"]), SUB=e(module["blurb"]), STATS=stats,
                 MAIN=f'<main class="chapters">\n{chapters}\n</main>')
@@ -585,7 +582,7 @@ def render_upload(tpl, modules):
                           for c in m["chapters"]]}
             for m in modules]
     js = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
-    return fill(tpl, PAGETITLE="Manage modules · Study Hub", BACK='<a class="back" href="/">&larr; All modules</a>',
+    return fill(tpl, PAGETITLE="Manage modules · Study Hub", BACK=ALL_MODULES, ACTIONS="",
                 EYEBROW="Study Hub", TITLE="Manage modules",
                 SUB="Upload lessons, practice sheets and PDFs, or delete them. Every change goes live and is committed to GitHub.",
                 STATS="", MAIN=UPLOAD_MAIN.replace("%%DATA%%", js))
