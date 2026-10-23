@@ -14,7 +14,7 @@ user (`lou`); `sudo` only where shown. Section 10 lists the traps I already fell
 | `deploy/ingest.py` | publishes uploads/deletes: place, build, commit, push | `studysite-ingest.path` → `.service`, as `lou` |
 | `deploy/update.sh` | pulls new commits + builds; pushes stuck server commits | cron, every 5 min |
 | cloudflared | tunnel from Cloudflare to `localhost:8088` | `cloudflared.service` |
-| Backup | `answers.db` → Google Drive, 7 rolling copies | cron, 03:00 |
+| Backup | `answers.db` → Google Drive, one copy per day of the month (up to 31) | cron, 03:00 |
 
 Content (remakes, PDFs) lives in git. Answers live only in `data/answers.db` (never in git), so the Drive
 backup is the only copy that survives losing the machine.
@@ -137,13 +137,13 @@ config on a headless server. It prints `rclone authorize "drive" "…"`: run tha
 Test the upload once:
 
 ```bash
-sqlite3 /srv/studysite/data/answers.db ".backup /home/$USER/answers-backup.db" && rclone copyto /home/$USER/answers-backup.db gdrive:study-hub-backup/answers-$(date +%a).db && rclone ls gdrive:study-hub-backup
+sqlite3 /srv/studysite/data/answers.db ".backup /home/$USER/answers-backup.db" && rclone copyto /home/$USER/answers-backup.db gdrive:study-hub-backup/answers-$(date +%d).db && rclone ls gdrive:study-hub-backup
 ```
 
 Install both cron lines (keeps any other jobs, drops old copies of these):
 
 ```bash
-(crontab -l 2>/dev/null | grep -v -e 'studysite' -e 'answers.db'; echo "*/5 * * * * /srv/studysite/deploy/update.sh >> \$HOME/studysite-update.log 2>&1"; echo '0 3 * * * sqlite3 /srv/studysite/data/answers.db ".backup /home/'$USER'/answers-backup.db" && rclone copyto /home/'$USER'/answers-backup.db gdrive:study-hub-backup/answers-$(date +\%a).db') | crontab -
+(crontab -l 2>/dev/null | grep -v -e 'studysite' -e 'answers.db'; echo "*/5 * * * * /srv/studysite/deploy/update.sh >> \$HOME/studysite-update.log 2>&1"; echo '0 3 * * * sqlite3 /srv/studysite/data/answers.db ".backup /home/'$USER'/answers-backup.db" && rclone copyto /home/'$USER'/answers-backup.db gdrive:study-hub-backup/answers-$(date +\%d).db') | crontab -
 ```
 
 In a crontab `%` must be written `\%`; on the command line it must not. `crontab -l` should show each
@@ -163,7 +163,8 @@ Reboot once afterwards; it also proves every service comes back on its own.
    nothing (no unpushed upload commits), then stop it: `sudo systemctl stop studysite-api`.
 2. Get the answers: copy `/srv/studysite/data/answers.db` straight from the old machine (best), or the
    latest backup: `rclone lsl gdrive:study-hub-backup` then
-   `rclone copyto gdrive:study-hub-backup/answers-<Day>.db /srv/studysite/data/answers.db`.
+   `rclone copyto gdrive:study-hub-backup/answers-<DD>.db /srv/studysite/data/answers.db` (`DD` = day of
+   the month; `lsl` shows which copy is newest).
 3. Put it in place **before** starting the API (section 4), with the API stopped if it's already running.
    Check: `curl -s localhost:8001/api/summary`.
 4. Point the tunnel at the new machine (move or recreate it) and stop `cloudflared` on the old one.
