@@ -1,9 +1,0 @@
-{
-  "code": "TT",
-  "title": "Test",
-  "blurb": "Testing feature",
-  "order": 7,
-  "chapters": {
-    "ch1test": "The first chapter, testing"
-  }
-}
