@@ -36,11 +36,23 @@ def write(path, data):
     os.replace(tmp, path)
 
 
-def restore(m):
+def restore(*mods):
     """Leave modules/<m> as git has it, so the next job doesn't commit half of this one."""
-    mod = os.path.join(ROOT, "modules", m)
-    subprocess.run(["git", "-C", ROOT, "checkout", "-q", "--", mod], capture_output=True)
-    subprocess.run(["git", "-C", ROOT, "clean", "-fdq", "--", mod], capture_output=True)
+    for m in mods:
+        mod = os.path.join(ROOT, "modules", m)
+        subprocess.run(["git", "-C", ROOT, "checkout", "-q", "--", mod], capture_output=True)
+        subprocess.run(["git", "-C", ROOT, "clean", "-fdq", "--", mod], capture_output=True)
+
+
+def move_answers(conn, m, ch, folder):
+    """Re-key saved answers for a renamed module (ch None) or chapter. Runs inside the caller's
+    transaction, so it only sticks if the rename is committed. OR REPLACE drops stale rows that
+    already sat under the new name."""
+    if ch is None:
+        return conn.execute("UPDATE OR REPLACE answers SET module=? WHERE module=?", (folder, m)).rowcount
+    return conn.execute(
+        "UPDATE OR REPLACE answers SET page=? || substr(page, ?) WHERE module=? AND substr(page, 1, ?)=?",
+        (folder + "/", len(ch) + 2, m, len(ch) + 1, ch + "/")).rowcount
 
 
 def forget_answers(m, ch=None, path=None):
@@ -75,19 +87,34 @@ def delete(job):
 
 
 def edit(job):
-    m, ch = job["module"], job.get("chapter")
+    m, ch, folder = job["module"], job.get("chapter"), job.get("folder")
     add.sync()
+    renames_module = folder is not None and ch is None
+    conn = sqlite3.connect(DB, timeout=10) if folder is not None and os.path.exists(DB) else None
     try:
-        what = add.edit_meta(m, ch, job.get("code"), job.get("title"), job.get("blurb"))
+        moved = move_answers(conn, m, ch, folder) if conn else 0
+        what = add.edit_meta(m, ch, job.get("code"), job.get("title"), job.get("blurb"), folder)
         add.build()
+        if not what:
+            if conn:
+                conn.rollback()
+            return {"state": "done", "edited": "", "git": "unchanged"}
+        paths = [os.path.join("modules", m)] + ([os.path.join("modules", folder)] if renames_module else [])
+        where = f"{m.upper()} {ch}" if ch else m.upper()
+        state = add.commit_and_push(paths, f"Edit: {where} {what}", ident=IDENT)
     except Exception:
-        restore(m)
+        if conn:
+            conn.rollback()
+        restore(m, *([folder] if renames_module else []))
         raise
-    if not what:
-        return {"state": "done", "edited": "", "git": "unchanged"}
-    where = f"{m.upper()} {ch}" if ch else m.upper()
-    state = add.commit_and_push([os.path.join("modules", m)], f"Edit: {where} {what}", ident=IDENT)
-    return {"state": "done", "edited": what, "git": state}
+    finally:
+        if conn and conn.in_transaction:
+            conn.commit()  # reached only after a successful commit (rollback above otherwise)
+        if conn:
+            conn.close()
+    new_m, new_ch = (folder, ch) if renames_module else (m, folder or ch)
+    return {"state": "done", "edited": what, "git": state, "answers_moved": moved,
+            "module": new_m, "chapter": new_ch}
 
 
 def process(job_dir):

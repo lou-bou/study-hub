@@ -499,13 +499,17 @@ UPLOAD_MAIN = r"""<main class="up">
     if(!c)host.open=true;
     var f=document.createElement('form'); f.className='edit-form'; f.noValidate=true;
     f.dataset.m=m.slug; if(c)f.dataset.c=c.slug;
-    f.innerHTML=(c?'<label class="f">Chapter title<input type="text" name="title" maxlength="200" autocomplete="off"></label>'
-      :'<div class="row"><label class="f">Code<input type="text" name="code" maxlength="20" autocomplete="off"></label>'
-       +'<label class="f">Title<input type="text" name="title" maxlength="200" autocomplete="off"></label></div>'
+    f.innerHTML=(c?'<div class="row"><label class="f">Folder<input type="text" name="folder" maxlength="100" autocomplete="off" spellcheck="false"></label>'
+       +'<label class="f">Chapter title<input type="text" name="title" maxlength="200" autocomplete="off"></label></div>'
+      :'<div class="row"><label class="f">Folder<input type="text" name="folder" maxlength="100" autocomplete="off" spellcheck="false"></label>'
+       +'<label class="f">Code<input type="text" name="code" maxlength="20" autocomplete="off"></label></div>'
+       +'<label class="f">Title<input type="text" name="title" maxlength="200" autocomplete="off"></label>'
        +'<label class="f">Blurb<input type="text" name="blurb" maxlength="300" autocomplete="off"></label>')
-      +'<p class="hint">The folder name ('+esc(c?m.slug+'/'+c.slug:m.slug)+') stays the same: saved answers and links use it.</p>'
+      +'<p class="hint">'+(c?'Folder: lowercase, e.g. ch1 or ch1-2 (shown as Chapter 1 / Chapters 1\u20132). ':'Folder: lowercase, e.g. opl. ')
+      +'Renaming it moves the saved answers along and changes the page addresses, so old bookmarks stop working.</p>'
       +'<p class="err" hidden></p><div class="edit-actions"><button class="btn sm" type="submit">Save</button>'
       +'<button class="pbtn" type="button" data-cancel>Cancel</button></div>';
+    field(f,'folder').value=c?c.slug:m.slug;
     if(c)field(f,'title').value=c.title||'';
     else{field(f,'code').value=m.code;field(f,'title').value=m.title;field(f,'blurb').value=m.blurb||'';}
     if(c)b.closest('.tree-h').after(f); else host.querySelector('summary').after(f);
@@ -519,20 +523,31 @@ UPLOAD_MAIN = r"""<main class="up">
     e.preventDefault();
     var mc=find(f.dataset.m,f.dataset.c), m=mc[0], c=mc[1], q={action:'edit',module:m.slug}, err=f.querySelector('.err');
     function clean(n){return field(f,n).value.replace(/\s+/g,' ').trim();}
-    if(c){q.chapter=c.slug; q.title=clean('title'); if(!q.title){err.textContent='The title can\u2019t be empty.';err.hidden=false;return;}
-      if(q.title===c.title){f.remove();return;}}
+    function bad(t){err.textContent=t;err.hidden=false;}
+    var folder=clean('folder').replace(/ /g,'');
+    if(!SLUG.test(folder))return bad('Folder: lowercase letters, digits, "-" and "." only.');
+    if(folder!==(c?c.slug:m.slug)){
+      var taken=c?m.chapters.some(function(x){return x.slug===folder;}):DATA.some(function(x){return x.slug===folder;});
+      if(taken)return bad((c?m.slug+'/':'')+folder+' already exists.');
+      if(!c&&(folder==='upload'||folder==='assets'))return bad(folder+' is reserved.');
+      q.folder=folder;
+    }
+    if(c){q.chapter=c.slug; var t=clean('title'); if(!t)return bad('The title can\u2019t be empty.');
+      if(t!==c.title)q.title=t;}
     else{
       ['code','title','blurb'].forEach(function(n){var v=clean(n);if(v!==(n==='blurb'?(m.blurb||''):m[n]))q[n]=v;});
-      if(q.code===''||q.title===''){err.textContent='Code and title can\u2019t be empty.';err.hidden=false;return;}
-      if(Object.keys(q).length===2){f.remove();return;}
+      if(q.code===''||q.title==='')return bad('Code and title can\u2019t be empty.');
     }
+    if(Object.keys(q).length===(c?3:2)){f.remove();return;}
+    if(q.folder&&!confirm('Rename the folder '+(c?m.slug+'/'+c.slug:m.slug)+' to '+(c?m.slug+'/':'')+q.folder+'?\n\nSaved answers move with it. Old links and bookmarks to it stop working.'))return;
     f.querySelector('button[type=submit]').disabled=true;
     var li=row('Edit '+m.code+(c?' '+c.slug:''));
     fetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(q)})
       .then(function(r){return r.json().then(function(j){return [r.status,j];});})
       .then(function(x){
-        if(x[0]===200&&x[1].id){status(li,'','Queued…');poll(li,x[1].id,0,function(){
-          if(c)c.title=q.title; else ['code','title','blurb'].forEach(function(n){if(q[n]!==undefined)m[n]=q[n];});
+        if(x[0]===200&&x[1].id){status(li,'','Queued…');poll(li,x[1].id,0,function(r){
+          if(q.folder){setTimeout(function(){location.href='/upload/?module='+encodeURIComponent(r.module||m.slug);},1500);return;}
+          if(c){if(q.title!==undefined)c.title=q.title;} else ['code','title','blurb'].forEach(function(n){if(q[n]!==undefined)m[n]=q[n];});
           renderTree(); fillModules(mSel.value);});}
         else{status(li,'bad','Rejected: '+(x[1].error||('HTTP '+x[0])));f.querySelector('button[type=submit]').disabled=false;}
       }).catch(function(){status(li,'bad','Request failed (network)');f.querySelector('button[type=submit]').disabled=false;});
@@ -568,8 +583,8 @@ UPLOAD_MAIN = r"""<main class="up">
     fetch('/api/upload?id='+id,{cache:'no-store'}).then(function(r){return r.json();}).then(function(r){
       if(r.state==='done'&&r.edited!==undefined){
         var eg={pushed:'saved to GitHub',committed:'committed',unchanged:'nothing changed','push-failed':'committed on the server, push to GitHub failed (retried by the next update)'}[r.git]||r.git;
-        status(li,'ok',r.edited?'Saved · '+r.edited+' · '+eg:'No change');
-        if(ondone)ondone();
+        status(li,'ok',r.edited?'Saved · '+r.edited+' · '+eg+(r.answers_moved?' · '+r.answers_moved+' saved answer'+(r.answers_moved===1?'':'s')+' moved':''):'No change');
+        if(ondone)ondone(r);
       }else if(r.state==='done'&&r.deleted){
         var g={pushed:'saved to GitHub',committed:'committed','push-failed':'committed on the server, push to GitHub failed (retried by the next update)'}[r.git]||r.git;
         status(li,'ok','Deleted · '+g+(r.answers_deleted?' · '+r.answers_deleted+' saved answer'+(r.answers_deleted===1?'':'s')+' removed':''));

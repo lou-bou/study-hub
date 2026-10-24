@@ -270,17 +270,19 @@ class Handler(BaseHTTPRequestHandler):
         return {"ok": True, "id": job}
 
     def manage(self, q):
-        """Queue an edit (module code/title/blurb, chapter title) or a delete (module, chapter or
-        one file); deploy/ingest.py carries it out."""
+        """Queue an edit (module code/title/blurb/folder, chapter title/folder) or a delete (module,
+        chapter or one file); deploy/ingest.py carries it out."""
         data = self.read_json()
         if data.get("action") == "edit":
             try:
-                fields = add.check_edit(data.get("module"), data.get("chapter"),
-                                        data.get("code"), data.get("title"), data.get("blurb"))
+                fields, folder = add.check_edit(data.get("module"), data.get("chapter"), data.get("code"),
+                                                data.get("title"), data.get("blurb"), data.get("folder"))
             except add.AddError as e:
                 raise ApiError(400, str(e))
             job = {"op": "edit", "module": data["module"], "chapter": data.get("chapter"),
                    **{k: v for k, v in fields.items() if v is not None}}
+            if folder is not None:
+                job["folder"] = folder
             return {"ok": True, "id": self.queue(job)}
         if data.get("action") != "delete":
             raise ApiError(400, "action must be edit or delete")

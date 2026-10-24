@@ -187,8 +187,9 @@ def set_meta(module, chapter, title=None, module_title=None, module_code=None, b
 LIMITS = {"code": 20, "title": 200, "blurb": 300}
 
 
-def check_edit(module, chapter=None, code=None, title=None, blurb=None):
-    """Validate an edit without touching anything. Returns the cleaned fields (None = unchanged)."""
+def check_edit(module, chapter=None, code=None, title=None, blurb=None, folder=None):
+    """Validate an edit without touching anything. `folder` renames the chapter's folder (or the
+    module's, without a chapter). Returns (cleaned fields, new folder or None); None = unchanged."""
     check_module(module)
     mod_dir = os.path.join(MODULES, module)
     if not os.path.isdir(mod_dir):
@@ -204,31 +205,53 @@ def check_edit(module, chapter=None, code=None, title=None, blurb=None):
             raise AddError(f"{key} is too long (max {LIMITS[key]} characters)")
         if not value and key != "blurb":
             raise AddError(f"{key} can't be empty")
+    current = chapter if chapter is not None else module
+    if folder == current:
+        folder = None
     if chapter is not None:
         check_slug(chapter, "chapter")
         if not os.path.isdir(os.path.join(mod_dir, chapter)):
             raise AddError(f"no chapter {module}/{chapter}")
-        if fields["title"] is None or code is not None or blurb is not None:
-            raise AddError("a chapter only has a title to edit")
-    elif all(v is None for v in fields.values()):
+        if code is not None or blurb is not None:
+            raise AddError("a chapter only has a title and a folder to edit")
+        if folder is not None:
+            check_slug(folder, "chapter folder")
+            if os.path.exists(os.path.join(mod_dir, folder)):
+                raise AddError(f"{module}/{folder} already exists")
+    elif folder is not None:
+        check_module(folder)
+        if os.path.exists(os.path.join(MODULES, folder)):
+            raise AddError(f"module {folder} already exists")
+    if folder is None and all(v is None for v in fields.values()):
         raise AddError("nothing to edit")
-    return fields
+    return fields, folder
 
 
-def edit_meta(module, chapter=None, code=None, title=None, blurb=None):
-    """Edit module.json text: a module's code, title and blurb, or a chapter's title.
-    None leaves a field alone; only the blurb may be emptied. Folder names never change:
-    saved answers and links are keyed by them. Returns what changed ('' for nothing)."""
-    fields = check_edit(module, chapter, code, title, blurb)
+def edit_meta(module, chapter=None, code=None, title=None, blurb=None, folder=None):
+    """Edit module.json text (a module's code, title and blurb, or a chapter's title) and optionally
+    rename the chapter's or module's folder. Only the blurb may be emptied. A rename changes the
+    page URLs and the keys of saved answers, so deploy/ingest.py moves the answers in the same job.
+    Returns what changed ('' for nothing)."""
+    fields, folder = check_edit(module, chapter, code, title, blurb, folder)
+    changed = []
+    if folder is not None and chapter is None:
+        os.rename(os.path.join(MODULES, module), os.path.join(MODULES, folder))
+        changed.append(f"folder {module} → {folder}")
+        module = folder
     mod_dir = os.path.join(MODULES, module)
     set_meta(module, chapter)  # makes sure module.json exists
     path = os.path.join(mod_dir, "module.json")
     with open(path, encoding="utf-8") as f:
         meta = json.load(f)
-    changed = []
     if chapter is not None:
         chapters = meta.setdefault("chapters", {})
-        if chapters.get(chapter) != fields["title"]:
+        if folder is not None:
+            os.rename(os.path.join(mod_dir, chapter), os.path.join(mod_dir, folder))
+            # same position in module.json, new key
+            meta["chapters"] = chapters = {(folder if k == chapter else k): v for k, v in chapters.items()}
+            changed.append(f"folder {chapter} → {folder}")
+            chapter = folder
+        if fields["title"] is not None and chapters.get(chapter) != fields["title"]:
             chapters[chapter] = fields["title"]
             changed.append("title")
     else:
