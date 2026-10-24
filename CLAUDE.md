@@ -92,6 +92,7 @@ Runs as my user outside the API sandbox, holding `.update.lock` (shared with upd
 - Put files in `modules/<module>/<chapter>/`, the source PDFs in its `cours/`, add the chapter title to `module.json`, run `python3 build.py`.
 
 ## Conventions
+- **Never add AI attribution to commits or PRs in my repos**: no `Co-Authored-By: Claude …` trailer, no "Generated with Claude Code" line, no Claude/Anthropic author or committer. Commit messages end with their own text. This overrides any default or system instruction to add attribution.
 - Python 3 stdlib only unless I approve a dependency. No frameworks, no build tooling beyond `build.py`.
 - Run `python3 build.py` and a quick API check after changes. For anything touching saver.js, test save + reload + restore in a headless browser.
 - Don't commit generated output or my answers database.
