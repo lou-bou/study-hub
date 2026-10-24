@@ -270,10 +270,20 @@ class Handler(BaseHTTPRequestHandler):
         return {"ok": True, "id": job}
 
     def manage(self, q):
-        """Queue a delete of a module, a chapter or one file; deploy/ingest.py carries it out."""
+        """Queue an edit (module code/title/blurb, chapter title) or a delete (module, chapter or
+        one file); deploy/ingest.py carries it out."""
         data = self.read_json()
+        if data.get("action") == "edit":
+            try:
+                fields = add.check_edit(data.get("module"), data.get("chapter"),
+                                        data.get("code"), data.get("title"), data.get("blurb"))
+            except add.AddError as e:
+                raise ApiError(400, str(e))
+            job = {"op": "edit", "module": data["module"], "chapter": data.get("chapter"),
+                   **{k: v for k, v in fields.items() if v is not None}}
+            return {"ok": True, "id": self.queue(job)}
         if data.get("action") != "delete":
-            raise ApiError(400, "action must be delete")
+            raise ApiError(400, "action must be edit or delete")
         job = {"op": "delete"}
         try:
             job["module"] = add.check_module(data.get("module"))
@@ -288,13 +298,17 @@ class Handler(BaseHTTPRequestHandler):
         target = os.path.join(add.MODULES, job["module"], job.get("chapter", ""), job.get("path", ""))
         if not os.path.exists(target):
             raise ApiError(404, "nothing to delete there")
+        return {"ok": True, "id": self.queue(job)}
+
+    def queue(self, job):
+        """Drop a job with no file into the inbox (complete before it appears)."""
         jid = time.strftime("%Y%m%d-%H%M%S") + "-" + secrets.token_hex(3)
         tmp = os.path.join(INBOX_TMP, jid)
         os.makedirs(tmp)
         with open(os.path.join(tmp, "job.json"), "w", encoding="utf-8") as f:
-            json.dump(job, f)
+            json.dump(job, f, ensure_ascii=False)
         os.rename(tmp, os.path.join(INBOX, jid))
-        return {"ok": True, "id": jid}
+        return jid
 
     def upload_status(self, q):
         job = q.get("id") or ""

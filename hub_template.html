@@ -121,6 +121,13 @@
   .tree-ch li{display:flex;align-items:center;gap:10px;padding:3px 0 3px 10px;font-size:.9rem;overflow-wrap:anywhere;min-width:0}
   .del{margin-left:auto;flex-shrink:0;font:500 .78rem var(--f-body);color:var(--hi);background:none;border:1px solid color-mix(in srgb,var(--hi) 45%,transparent);border-radius:999px;padding:3px 11px;cursor:pointer}
   .del:hover{background:var(--hi-soft)}
+  .edt{margin-left:auto;flex-shrink:0;font:500 .78rem var(--f-body);color:var(--accent);background:none;border:1px solid color-mix(in srgb,var(--accent) 45%,transparent);border-radius:999px;padding:3px 11px;cursor:pointer}
+  .edt:hover{background:var(--accent-soft)}
+  .edt+.del{margin-left:0}
+  .edit-form{display:grid;gap:10px;margin:4px 16px 12px;padding:14px 16px;border:1px dashed var(--line);border-radius:12px;background:var(--bg)}
+  .tree-ch .edit-form{margin:10px 0 4px}
+  .edit-actions{display:flex;gap:8px;align-items:center}
+  .btn.sm{padding:6px 18px;font-size:.85rem}
   .del:disabled{opacity:.4;cursor:default}
 
   @media (max-width:600px){

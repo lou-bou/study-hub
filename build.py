@@ -383,8 +383,8 @@ UPLOAD_MAIN = r"""<main class="up">
 </form>
 <ul class="jobs" id="jobs"></ul>
 <section class="manage">
-  <h2>Delete</h2>
-  <p class="hint">A file, a chapter or a whole module. Deleting is a commit too, so git history keeps the old files. A deleted practice page takes its saved answers with it (the nightly Drive backup still has them).</p>
+  <h2>Edit and delete</h2>
+  <p class="hint">Edit a module's code, title and blurb, or a chapter's title. Delete a file, a chapter or a whole module. Every change is a commit, so git history keeps the old version. A deleted practice page takes its saved answers with it (the nightly Drive backup still has them).</p>
   <div id="tree"></div>
 </section>
 </main>
@@ -459,11 +459,13 @@ UPLOAD_MAIN = r"""<main class="up">
     DATA.forEach(function(m){
       var d=document.createElement('details'); d.className='mod';
       d.innerHTML='<summary><span class="chip">'+esc(m.code)+'</span><span>'+esc(m.title)+'</span>'
+        +'<button class="edt" type="button" data-m="'+esc(m.slug)+'">Edit</button>'
         +'<button class="del" type="button" data-m="'+esc(m.slug)+'">Delete module</button></summary>';
       if(!m.chapters.length)d.insertAdjacentHTML('beforeend','<div class="tree-ch"><span class="hint">No chapters.</span></div>');
       m.chapters.forEach(function(c){
         var div=document.createElement('div'); div.className='tree-ch';
         div.innerHTML='<div class="tree-h"><span>'+esc(c.label+(c.title?' · '+c.title:''))+'</span>'
+          +'<button class="edt" type="button" data-m="'+esc(m.slug)+'" data-c="'+esc(c.slug)+'">Edit</button>'
           +'<button class="del" type="button" data-m="'+esc(m.slug)+'" data-c="'+esc(c.slug)+'">Delete chapter</button></div><ul></ul>';
         (c.files||[]).forEach(function(f){
           var li=document.createElement('li');
@@ -483,6 +485,58 @@ UPLOAD_MAIN = r"""<main class="up">
     if(q.path!==undefined)c.files=c.files.filter(function(f){return f.path!==q.path;});
     if(q.path===undefined||!c.files.length)m.chapters.splice(m.chapters.indexOf(c),1);
   }
+  function find(ms,cs){
+    var m=DATA.filter(function(x){return x.slug===ms;})[0];
+    return [m, m&&cs!==undefined?m.chapters.filter(function(x){return x.slug===cs;})[0]:undefined];
+  }
+  function field(f,n){return f.elements.namedItem(n);}
+  $('tree').addEventListener('click',function(e){
+    var b=e.target.closest('.edt'); if(!b)return;
+    e.preventDefault();
+    var mc=find(b.dataset.m,b.dataset.c), m=mc[0], c=mc[1];
+    var host=c?b.closest('.tree-ch'):b.closest('details'), open=host.querySelector(':scope>form.edit-form');
+    if(open){open.remove();return;}
+    if(!c)host.open=true;
+    var f=document.createElement('form'); f.className='edit-form'; f.noValidate=true;
+    f.dataset.m=m.slug; if(c)f.dataset.c=c.slug;
+    f.innerHTML=(c?'<label class="f">Chapter title<input type="text" name="title" maxlength="200" autocomplete="off"></label>'
+      :'<div class="row"><label class="f">Code<input type="text" name="code" maxlength="20" autocomplete="off"></label>'
+       +'<label class="f">Title<input type="text" name="title" maxlength="200" autocomplete="off"></label></div>'
+       +'<label class="f">Blurb<input type="text" name="blurb" maxlength="300" autocomplete="off"></label>')
+      +'<p class="hint">The folder name ('+esc(c?m.slug+'/'+c.slug:m.slug)+') stays the same: saved answers and links use it.</p>'
+      +'<p class="err" hidden></p><div class="edit-actions"><button class="btn sm" type="submit">Save</button>'
+      +'<button class="pbtn" type="button" data-cancel>Cancel</button></div>';
+    if(c)field(f,'title').value=c.title||'';
+    else{field(f,'code').value=m.code;field(f,'title').value=m.title;field(f,'blurb').value=m.blurb||'';}
+    if(c)b.closest('.tree-h').after(f); else host.querySelector('summary').after(f);
+    field(f,'title').focus();
+  });
+  $('tree').addEventListener('click',function(e){
+    var x=e.target.closest('[data-cancel]'); if(x){e.preventDefault();x.closest('form').remove();}
+  });
+  $('tree').addEventListener('submit',function(e){
+    var f=e.target; if(!f.classList.contains('edit-form'))return;
+    e.preventDefault();
+    var mc=find(f.dataset.m,f.dataset.c), m=mc[0], c=mc[1], q={action:'edit',module:m.slug}, err=f.querySelector('.err');
+    function clean(n){return field(f,n).value.replace(/\s+/g,' ').trim();}
+    if(c){q.chapter=c.slug; q.title=clean('title'); if(!q.title){err.textContent='The title can\u2019t be empty.';err.hidden=false;return;}
+      if(q.title===c.title){f.remove();return;}}
+    else{
+      ['code','title','blurb'].forEach(function(n){var v=clean(n);if(v!==(n==='blurb'?(m.blurb||''):m[n]))q[n]=v;});
+      if(q.code===''||q.title===''){err.textContent='Code and title can\u2019t be empty.';err.hidden=false;return;}
+      if(Object.keys(q).length===2){f.remove();return;}
+    }
+    f.querySelector('button[type=submit]').disabled=true;
+    var li=row('Edit '+m.code+(c?' '+c.slug:''));
+    fetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(q)})
+      .then(function(r){return r.json().then(function(j){return [r.status,j];});})
+      .then(function(x){
+        if(x[0]===200&&x[1].id){status(li,'','Queued…');poll(li,x[1].id,0,function(){
+          if(c)c.title=q.title; else ['code','title','blurb'].forEach(function(n){if(q[n]!==undefined)m[n]=q[n];});
+          renderTree(); fillModules(mSel.value);});}
+        else{status(li,'bad','Rejected: '+(x[1].error||('HTTP '+x[0])));f.querySelector('button[type=submit]').disabled=false;}
+      }).catch(function(){status(li,'bad','Request failed (network)');f.querySelector('button[type=submit]').disabled=false;});
+  });
   $('tree').addEventListener('click',function(e){
     var b=e.target.closest('.del'); if(!b)return;
     e.preventDefault();
@@ -512,7 +566,11 @@ UPLOAD_MAIN = r"""<main class="up">
   });
   function poll(li,id,tries,ondone){
     fetch('/api/upload?id='+id,{cache:'no-store'}).then(function(r){return r.json();}).then(function(r){
-      if(r.state==='done'&&r.deleted){
+      if(r.state==='done'&&r.edited!==undefined){
+        var eg={pushed:'saved to GitHub',committed:'committed',unchanged:'nothing changed','push-failed':'committed on the server, push to GitHub failed (retried by the next update)'}[r.git]||r.git;
+        status(li,'ok',r.edited?'Saved · '+r.edited+' · '+eg:'No change');
+        if(ondone)ondone();
+      }else if(r.state==='done'&&r.deleted){
         var g={pushed:'saved to GitHub',committed:'committed','push-failed':'committed on the server, push to GitHub failed (retried by the next update)'}[r.git]||r.git;
         status(li,'ok','Deleted · '+g+(r.answers_deleted?' · '+r.answers_deleted+' saved answer'+(r.answers_deleted===1?'':'s')+' removed':''));
         if(ondone)ondone();
@@ -577,7 +635,7 @@ def render_upload(tpl, modules):
         for d in DOC_DIRS:
             out += [{"path": f"{d}/{x['file']}", "kind": d, "label": x["file"]} for x in c["docs"][d]]
         return out
-    data = [{"slug": m["slug"], "code": m["code"], "title": m["title"] or m["code"],
+    data = [{"slug": m["slug"], "code": m["code"], "title": m["title"] or m["code"], "blurb": m["blurb"],
              "chapters": [{"slug": c["slug"], "label": c["label"], "title": c["title"], "files": files(c)}
                           for c in m["chapters"]]}
             for m in modules]

@@ -74,12 +74,30 @@ def delete(job):
     return {"state": "done", "deleted": what, "git": state, "answers_deleted": forget_answers(m, ch, path)}
 
 
+def edit(job):
+    m, ch = job["module"], job.get("chapter")
+    add.sync()
+    try:
+        what = add.edit_meta(m, ch, job.get("code"), job.get("title"), job.get("blurb"))
+        add.build()
+    except Exception:
+        restore(m)
+        raise
+    if not what:
+        return {"state": "done", "edited": "", "git": "unchanged"}
+    where = f"{m.upper()} {ch}" if ch else m.upper()
+    state = add.commit_and_push([os.path.join("modules", m)], f"Edit: {where} {what}", ident=IDENT)
+    return {"state": "done", "edited": what, "git": state}
+
+
 def process(job_dir):
     with open(os.path.join(job_dir, "job.json"), encoding="utf-8") as f:
         job = json.load(f)
     write(os.path.join(job_dir, "status.json"), {"state": "processing"})
     if job.get("op") == "delete":
         return delete(job)
+    if job.get("op") == "edit":
+        return edit(job)
     m, ch, kind = job["module"], job["chapter"], job["kind"]
     add.sync()
     try:

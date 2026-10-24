@@ -184,6 +184,65 @@ def set_meta(module, chapter, title=None, module_title=None, module_code=None, b
     return new
 
 
+LIMITS = {"code": 20, "title": 200, "blurb": 300}
+
+
+def check_edit(module, chapter=None, code=None, title=None, blurb=None):
+    """Validate an edit without touching anything. Returns the cleaned fields (None = unchanged)."""
+    check_module(module)
+    mod_dir = os.path.join(MODULES, module)
+    if not os.path.isdir(mod_dir):
+        raise AddError(f"no module {module}")
+    fields = {"code": code, "title": title, "blurb": blurb}
+    for key, value in fields.items():
+        if value is None:
+            continue
+        if not isinstance(value, str):
+            raise AddError(f"{key} must be text")
+        fields[key] = value = " ".join(value.split())
+        if len(value) > LIMITS[key]:
+            raise AddError(f"{key} is too long (max {LIMITS[key]} characters)")
+        if not value and key != "blurb":
+            raise AddError(f"{key} can't be empty")
+    if chapter is not None:
+        check_slug(chapter, "chapter")
+        if not os.path.isdir(os.path.join(mod_dir, chapter)):
+            raise AddError(f"no chapter {module}/{chapter}")
+        if fields["title"] is None or code is not None or blurb is not None:
+            raise AddError("a chapter only has a title to edit")
+    elif all(v is None for v in fields.values()):
+        raise AddError("nothing to edit")
+    return fields
+
+
+def edit_meta(module, chapter=None, code=None, title=None, blurb=None):
+    """Edit module.json text: a module's code, title and blurb, or a chapter's title.
+    None leaves a field alone; only the blurb may be emptied. Folder names never change:
+    saved answers and links are keyed by them. Returns what changed ('' for nothing)."""
+    fields = check_edit(module, chapter, code, title, blurb)
+    mod_dir = os.path.join(MODULES, module)
+    set_meta(module, chapter)  # makes sure module.json exists
+    path = os.path.join(mod_dir, "module.json")
+    with open(path, encoding="utf-8") as f:
+        meta = json.load(f)
+    changed = []
+    if chapter is not None:
+        chapters = meta.setdefault("chapters", {})
+        if chapters.get(chapter) != fields["title"]:
+            chapters[chapter] = fields["title"]
+            changed.append("title")
+    else:
+        for key, value in fields.items():
+            if value is not None and meta.get(key, "") != value:
+                meta[key] = value
+                changed.append(key)
+    if changed:
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(meta, f, indent=2, ensure_ascii=False)
+            f.write("\n")
+    return ", ".join(changed)
+
+
 def build():
     """Run build.py. Returns (stdout, warnings)."""
     r = subprocess.run([sys.executable, os.path.join(ROOT, "build.py")], capture_output=True, text=True)
