@@ -3,5 +3,7 @@
   "title": "Linear Optimization",
   "blurb": "Optimisation linéaire: modelling, canonical and standard forms, graphical method.",
   "order": 2,
-  "chapters": {"ch1-2": "Linear programming (Programmation linéaire)"}
+  "chapters": {
+    "ch1": "Linear programming (Programmation linéaire)"
+  }
 }
