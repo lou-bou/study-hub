@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VT · Ch 1 · Lesson</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<script>/* study-hub:theme */(function(){var r=document.documentElement;try{var t=localStorage.getItem("studyhub-theme");if(t)r.setAttribute("data-theme",t);}catch(e){}document.addEventListener("DOMContentLoaded",function(){var b=document.getElementById("theme-toggle");if(b)b.addEventListener("click",function(){var c=r.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");var n=c==="dark"?"light":"dark";r.setAttribute("data-theme",n);try{localStorage.setItem("studyhub-theme",n);}catch(e){}});});})();</script>
+<style>
+/* study-hub:base v1 — shared by every remake; edit here, then copy into pages */
+:root{
+  --bg:#F3F5FB; --surface:#FFFFFF; --ink:#14203B; --muted:#586583; --line:#D9DFEC;
+  --accent:#2B52E6; --accent-soft:#E3E9FF; --hi:#D9481C; --hi-soft:#FFE3D6; --code-bg:#E9EDF8;
+  --ok:#1B7A49; --ok-soft:#E2F4EA;
+  --c1:#8FB0FF; --c2:#FFB877; --c3:#7EDBAA; --c4:#CDAEFF;
+  --f-display:'Bricolage Grotesque',system-ui,sans-serif;
+  --f-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+  --f-math:'Cambria Math','STIX Two Math',Georgia,serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D1426; --surface:#151F38; --ink:#E6EBF8; --muted:#9BA8C7; --line:#28345A;
+    --accent:#8AA5FF; --accent-soft:#1B2958; --hi:#FF8D63; --hi-soft:#47281F; --code-bg:#1C2849;
+    --ok:#5FD394; --ok-soft:#173326;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D1426; --surface:#151F38; --ink:#E6EBF8; --muted:#9BA8C7; --line:#28345A;
+  --accent:#8AA5FF; --accent-soft:#1B2958; --hi:#FF8D63; --hi-soft:#47281F; --code-bg:#1C2849;
+  --ok:#5FD394; --ok-soft:#173326;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg); color:var(--ink); font-family:var(--f-body); font-size:16px; line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:28px 72px; margin:0;
+}
+.wrap{max-width:1040px;margin:0 auto}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px}
+code{font-family:var(--f-mono);font-size:.9em;background:var(--code-bg);padding:1px 6px;border-radius:5px}
+.en{font-weight:600}
+.fr{color:var(--muted);font-style:italic;font-weight:400}
+sub,sup{line-height:0}
+.m{font-family:var(--f-math);font-style:italic}
+.ov{text-decoration:overline}
+.eq{font-family:var(--f-math);font-size:1.05rem;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 16px;margin:12px 0;overflow-x:auto;white-space:pre}
+.res{display:inline-block;background:var(--ok-soft);color:var(--ink);border-radius:6px;padding:1px 8px;font-weight:600}
+.toggle{position:fixed;top:14px;right:max(14px,env(safe-area-inset-right,0px));z-index:20;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 14px;font:500 .8rem var(--f-body);cursor:pointer}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:36px;align-items:center;padding-bottom:36px}
+.hero.solo{grid-template-columns:minmax(0,1fr)}
+.eyebrow{font:600 .75rem/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+h1{font-family:var(--f-display);font-weight:800;font-size:clamp(2.3rem,5.4vw,3.8rem);line-height:1.02;letter-spacing:-.025em;margin:14px 0 16px;text-wrap:balance}
+.lead{font-size:1.1rem;color:var(--muted);max-width:60ch;margin:0 0 22px}
+.how{display:grid;gap:10px;margin:0;padding:0;list-style:none;max-width:52ch}
+.how li{display:flex;gap:12px;align-items:baseline;font-size:.95rem}
+.how .tag{flex:0 0 auto;min-width:9.5em}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin:0}
+.pill{background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:4px 12px;font:500 .8rem var(--f-mono)}
+.herofig{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 16px 12px;min-width:0;overflow-x:auto}
+.herofig svg{display:block;width:100%;height:auto;min-width:var(--minw,0)}
+.herofig figcaption{font-size:.84rem;color:var(--muted);margin-top:8px}
+
+/* contents */
+.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:28px 24px;padding-block:28px 8px;border-top:1px solid var(--line)}
+.part h3{font:600 .72rem/1.3 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.part ul{list-style:none;margin:0;padding:0;display:grid;gap:3px}
+.part a{display:flex;gap:10px;text-decoration:none;color:var(--ink);padding:3px 0;font-size:.95rem}
+.part a:hover{color:var(--accent)}
+.part a small{display:block;color:var(--muted);font-size:.8rem;line-height:1.35}
+.part .n{font:500 .8rem/1.7 var(--f-mono);color:var(--accent);min-width:1.6em}
+.part .sc{margin-left:auto;font:500 .78rem/1.7 var(--f-mono);color:var(--muted);white-space:nowrap}
+
+/* sections */
+.sec{margin-top:56px;padding-top:36px;border-top:1px solid var(--line);scroll-margin-top:12px}
+.sec-h{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
+.num{font:800 2.5rem/1 var(--f-display);color:var(--accent);letter-spacing:-.03em}
+.sec h2{font-family:var(--f-display);font-weight:700;font-size:clamp(1.4rem,3vw,1.9rem);line-height:1.15;margin:0;letter-spacing:-.015em;text-wrap:balance;min-width:0}
+.sec h2 .fr{font-family:var(--f-body);font-size:.62em;font-weight:400}
+.sec h3{font-family:var(--f-display);font-weight:700;font-size:1.15rem;margin:28px 0 8px}
+.sec h3 .fr{font-family:var(--f-body);font-size:.8em}
+.sec>p,.sec>ul,.sec>ol{max-width:78ch}
+.back{margin-left:auto;font-size:.78rem;color:var(--muted);text-decoration:none}
+.back:hover{color:var(--accent)}
+.secscore{font:600 .85rem var(--f-mono);color:var(--accent)}
+.tag{display:inline-block;font:600 .68rem/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;margin-top:20px}
+.plain{margin-top:20px;border-left:3px solid var(--accent);padding:2px 0 2px 16px}
+.intro .plain{margin-top:0}
+.plain p{margin:8px 0 0;font-size:1.05rem;max-width:62ch}
+.defs{list-style:none;margin:20px 0 0;padding:0;display:grid;gap:12px;min-width:0}
+.intro .defs{margin-top:0}
+.defs li{display:grid;gap:1px;font-size:.95rem}
+.defs .mean{color:var(--muted)}
+.defs .eg{color:var(--muted);font-size:.9rem}
+.defs .eg::before{content:"e.g. ";font-weight:600;color:var(--accent)}
+.callout{margin-top:20px;background:var(--surface);border:1px dashed var(--accent);border-radius:12px;padding:14px 20px}
+.callout>b:first-child{color:var(--accent)}
+.callout ol,.callout ul{margin:6px 0 2px;padding-left:22px}
+.callout li{margin:5px 0}
+details.more{margin-top:14px;border:1px dashed var(--line);border-radius:10px;padding:8px 14px;background:var(--surface)}
+details.more summary{cursor:pointer;font-weight:600;color:var(--accent)}
+
+/* figures */
+.figs{display:flex;flex-wrap:wrap;gap:16px;margin-top:24px}
+.figs figure{flex:1 1 250px;max-width:430px;min-width:0;margin:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 14px 12px}
+figure.fig{margin:18px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 14px 12px;overflow-x:auto}
+figure.fig svg{display:block;width:100%;height:auto;min-width:var(--minw,0);max-width:var(--maxw,560px);margin-inline:auto}
+figcaption{font-size:.82rem;color:var(--muted);margin-top:8px;line-height:1.45}
+
+/* worked example */
+.calc{margin-top:22px;background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--ok);border-radius:12px;padding:14px 20px 18px}
+.calc>.tag{color:var(--ok)}
+.calc>p{margin:10px 0 0}
+.calc ol{margin:10px 0 0;padding-left:22px}
+.calc li{margin:8px 0}
+.calc li>b:first-child{color:var(--accent)}
+.calc figure.fig,.calc .eq{background:var(--bg)}
+ul.ln{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:7px;font-family:var(--f-mono);font-size:.88rem;line-height:1.55}
+ul.ln li{padding-left:1.1em;text-indent:-1.1em;overflow-wrap:anywhere}
+ul.ln li::before{content:"\203A\00a0";color:var(--accent);font-weight:600}
+
+/* tables */
+.scroll{overflow-x:auto;margin-top:12px;max-width:100%}
+table.t{border-collapse:collapse;font:400 .9rem/1.45 var(--f-body);min-width:260px}
+table.t th{font-weight:600;text-align:left;color:var(--muted)}
+table.t th,table.t td{padding:6px 14px 6px 0;border-bottom:1px solid var(--line);vertical-align:top}
+table.t.mono{font-family:var(--f-mono);font-size:.85rem}
+table.t.mono th,table.t.mono td{white-space:nowrap}
+table.t.grid th,table.t.grid td{padding:6px 10px;border:1px solid var(--line)}
+table.t.grid th{background:var(--accent-soft);color:var(--ink)}
+table.t .c,table.t.center th,table.t.center td{text-align:center}
+table.t.center .l{text-align:left}
+table.t td.ok{color:var(--ok);font-weight:600}
+table.t td.bad,table.t td.x{color:var(--hi);font-weight:600}
+table.t tr.best td{background:var(--ok-soft);font-weight:600}
+
+/* notes and footer */
+.note{margin-top:20px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 20px}
+.note.errata{background:var(--hi-soft);border-color:color-mix(in srgb,var(--hi) 35%,transparent)}
+.note.errata>.tag{color:var(--hi)}
+.note ul,.note ol{margin:8px 0 0;padding-left:1.2em;display:grid;gap:8px;font-size:.95rem}
+.foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);font-size:.82rem;color:var(--muted)}
+
+/* practice */
+.prog{display:flex;align-items:center;gap:14px;max-width:460px;margin-top:22px;font:500 .85rem var(--f-mono);color:var(--muted)}
+.prog .track{flex:1;height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.prog .fill{display:block;height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .25s}
+.legend{display:flex;gap:10px 16px;flex-wrap:wrap;margin-top:16px;font-size:.88rem;color:var(--muted)}
+.setmeta{margin:6px 0 0;color:var(--muted);font-size:.9rem}
+.prob{margin-top:18px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 20px 14px;scroll-margin-top:12px}
+.prob.ok{border-color:var(--ok);box-shadow:0 0 0 1px var(--ok) inset}
+.prob.bad{border-color:var(--hi)}
+.ph{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.pid{font:600 1.05rem var(--f-mono);color:var(--accent)}
+.ph .pt{font:600 1rem/1.35 var(--f-body);margin:0;min-width:0;flex:1 1 16em}
+.lvl{font:600 .66rem/1 var(--f-mono);letter-spacing:.09em;text-transform:uppercase;padding:5px 9px;border-radius:99px}
+.lw{background:var(--accent-soft);color:var(--accent)}
+.ls{background:var(--code-bg);color:var(--ink)}
+.lc{background:var(--hi-soft);color:var(--hi)}
+.done{margin-left:auto;display:flex;align-items:center;gap:7px;font-size:.82rem;color:var(--muted);cursor:pointer}
+.done input{width:17px;height:17px;accent-color:var(--accent);cursor:pointer}
+.pq{margin-top:10px;max-width:78ch}
+.pq>p,.prob>p{margin:10px 0 0}
+.parts{margin:8px 0 0;padding-left:1.4em;display:grid;gap:5px}
+.pfs{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px}
+.pfs figure{flex:1 1 200px;max-width:340px;min-width:0;margin:0;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 10px 8px}
+.prob details{margin-top:14px}
+.prob summary{cursor:pointer;font:600 .82rem var(--f-mono);color:var(--accent);width:max-content;padding:4px 0}
+.sol{margin-top:8px;background:var(--bg);border:1px solid var(--line);border-top:4px solid var(--ok);border-radius:10px;padding:6px 18px 12px;font-size:.95rem}
+.sol p{margin:10px 0 0;max-width:78ch}
+.sol li>b:first-child{color:var(--accent)}
+.sol .pfs figure,.sol .eq{background:var(--surface)}
+.aid{margin-top:12px;background:var(--bg);border:1px dashed var(--accent);border-radius:10px;padding:8px 14px;font-size:.9rem;line-height:1.55}
+.aid>b:first-child{color:var(--accent)}
+.prob input[type=text]{width:100%;min-width:56px;max-width:90px;font:inherit;text-align:center;padding:5px 6px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.prob textarea{width:100%;font:inherit;padding:8px 10px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.prob select{font:inherit;padding:5px 8px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.prob input:focus,.prob select:focus,.prob textarea:focus{outline:2px solid var(--accent);outline-offset:1px}
+.prob input.ok,.prob select.ok{border-color:var(--ok);background:var(--ok-soft)}
+.prob input.bad,.prob select.bad{border-color:var(--hi);background:var(--hi-soft)}
+table.t.inp td{padding:3px 6px 3px 0}
+.scalars{display:flex;flex-wrap:wrap;gap:12px 20px;margin:12px 0 0}
+label.sc{display:flex;align-items:center;gap:8px}
+label.sc>span{font-weight:600;min-width:34px}
+label.sc small{color:var(--muted);font-size:.75rem}
+.mc{display:grid;gap:7px;margin:12px 0 0}
+label.opt{display:flex;gap:10px;align-items:flex-start;padding:8px 12px;border:1.5px solid var(--line);border-radius:10px;cursor:pointer;background:var(--bg)}
+label.opt:hover{border-color:var(--accent)}
+label.opt.ok{border-color:var(--ok);background:var(--ok-soft)}
+label.opt.bad{border-color:var(--hi);background:var(--hi-soft)}
+label.opt.reveal{border-color:var(--ok)}
+label.opt input{margin-top:5px;accent-color:var(--accent)}
+.chips-set{display:inline-flex;flex-wrap:wrap;gap:6px;vertical-align:middle}
+label.chipbox{position:relative;border:1.5px solid var(--line);border-radius:999px;padding:3px 12px;cursor:pointer;background:var(--bg);font-size:.88rem}
+label.chipbox:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+label.chipbox input{position:absolute;opacity:0;pointer-events:none}
+.chips-set.ok label.chipbox:has(input:checked){border-color:var(--ok);background:var(--ok-soft)}
+.chips-set.bad{outline:2px solid var(--hi);outline-offset:3px;border-radius:12px}
+.actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:14px}
+.b{font:500 .85rem var(--f-body);padding:6px 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.b.chk{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:600}
+.fb{font-size:.88rem;font-weight:600}
+.fb.ok{color:var(--ok)} .fb.bad{color:var(--hi)}
+.solution,.expl{margin-top:12px;border-top:1px dashed var(--line);padding-top:10px;font-size:.95rem}
+.solution>p,.expl>p{margin:6px 0}
+.expl{color:var(--muted)}
+
+@media (max-width:820px){
+  .hero{grid-template-columns:minmax(0,1fr)}
+  .intro{grid-template-columns:minmax(0,1fr)}
+  .how li{flex-direction:column;gap:2px}
+  body{padding-top:56px}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{.toggle{display:none}body{background:#fff}}
+/* /study-hub:base */
+</style>
+<style>
+/* page-specific styles (figures, palettes) go here, using the tokens above */
+.sv text{font-family:var(--f-body);fill:var(--ink)}
+.sv .t{font-size:13px;font-weight:500}
+.sv .tb{font-size:13px;font-weight:700}
+.sv .tl{font-size:16px;font-weight:700;font-family:var(--f-display)}
+.sv .big{font-size:34px;font-weight:800;font-family:var(--f-display)}
+.sv .sm{font-size:11px;fill:var(--muted)}
+.sv .mo{font-family:var(--f-mono);font-size:11px;fill:var(--muted);letter-spacing:.06em}
+.sv .ac{fill:var(--accent)} .sv .hc{fill:var(--hi)} .sv .oc{fill:var(--ok)}
+.sv .box{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.sv .bac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.sv .bhi{fill:var(--hi-soft);stroke:var(--hi);stroke-width:1.5}
+.sv .bhd{fill:var(--hi-soft);stroke:var(--hi);stroke-width:1.5;stroke-dasharray:5 4}
+.sv .bok{fill:var(--ok-soft);stroke:var(--ok);stroke-width:1.5}
+.sv .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+.sv .lna{stroke:var(--accent);stroke-width:2;fill:none}
+.sv .lnd{stroke:var(--muted);stroke-width:1.2;fill:none;stroke-dasharray:4 4}
+.sv .old{stroke:var(--muted);stroke-width:2.5;fill:none}
+.sv .new{stroke:var(--accent);stroke-width:2.5;fill:none}
+.sv .noise{fill:var(--muted);opacity:.38}
+.sv .sig{fill:var(--accent)}
+.sv .ah{fill:var(--muted)} .sv .aha{fill:var(--accent)}
+.dodont{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;margin-top:16px}
+.dodont .note{margin-top:0}
+.dodont ul{list-style:none;padding-left:0}
+.dodont .yes li::before{content:"\2713\00a0";color:var(--ok);font-weight:700}
+.dodont .no li::before{content:"\2717\00a0";color:var(--hi);font-weight:700}
+.dodont .yes>.tag{color:var(--ok)} .dodont .no>.tag{color:var(--hi)}
+blockquote.q{margin:12px 0 0;padding:10px 16px;background:var(--surface);border:1px solid var(--line);border-radius:10px;font-size:.95rem;max-width:78ch}
+blockquote.q cite{display:block;margin-top:6px;font-size:.82rem;color:var(--muted);font-style:normal}
+@media (max-width:820px){.dodont{grid-template-columns:minmax(0,1fr)}}
+</style>
+</head>
+<body>
+<button class="toggle" id="theme-toggle" type="button" aria-label="Toggle light or dark theme">◐ Theme</button>
+<div class="wrap">
+
+<header class="hero" id="top">
+  <div>
+    <div class="eyebrow">VT · Chapter 1 · Lesson</div>
+    <h1>What monitoring (veille) is, and how SWOT uses it</h1>
+    <p class="lead">Why companies watch their environment continuously, the official definitions, the seven types of monitoring, what it is for, and the SWOT analysis that turns what you watch into decisions. <span class="fr">(Généralités sur la veille)</span></p>
+    <ul class="how">
+      <li><span class="tag">In plain words</span><span>What the idea means, without the jargon.</span></li>
+      <li><span class="tag">Keywords</span><span><b class="en">monitoring</b> <span class="fr">(veille)</span>: English first, French after.</span></li>
+      <li><span class="tag">Worked example</span><span>The course's own cases and quiz answers, redone step by step.</span></li>
+    </ul>
+  </div>
+  <figure class="herofig"><svg class="sv" viewBox="0 0 320 210" role="img" aria-label="Many grey information dots enter a funnel labelled veille; only a few blue relevant dots come out and reach a decision box, and the loop repeats continuously.">
+    <defs><marker id="arh" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="aha" d="M0,0L10,5L0,10z"/></marker></defs>
+    <circle class="sig" cx="44" cy="53" r="4"/>
+    <circle class="noise" cx="75" cy="41" r="4"/>
+    <circle class="noise" cx="64" cy="86" r="4"/>
+    <circle class="noise" cx="19" cy="107" r="4"/>
+    <circle class="noise" cx="18" cy="96" r="4"/>
+    <circle class="noise" cx="21" cy="44" r="4"/>
+    <circle class="noise" cx="54" cy="156" r="4"/>
+    <circle class="noise" cx="26" cy="64" r="4"/>
+    <circle class="noise" cx="73" cy="174" r="4"/>
+    <circle class="sig" cx="106" cy="37" r="4"/>
+    <circle class="noise" cx="95" cy="74" r="4"/>
+    <circle class="noise" cx="43" cy="154" r="4"/>
+    <circle class="noise" cx="31" cy="118" r="4"/>
+    <circle class="noise" cx="78" cy="95" r="4"/>
+    <circle class="noise" cx="44" cy="119" r="4"/>
+    <circle class="noise" cx="57" cy="76" r="4"/>
+    <circle class="noise" cx="89" cy="136" r="4"/>
+    <circle class="noise" cx="63" cy="163" r="4"/>
+    <circle class="sig" cx="83" cy="74" r="4"/>
+    <circle class="noise" cx="106" cy="48" r="4"/>
+    <circle class="noise" cx="53" cy="145" r="4"/>
+    <circle class="noise" cx="18" cy="132" r="4"/>
+    <circle class="noise" cx="86" cy="117" r="4"/>
+    <circle class="noise" cx="93" cy="174" r="4"/>
+    <circle class="noise" cx="59" cy="131" r="4"/>
+    <circle class="noise" cx="20" cy="147" r="4"/>
+    <circle class="noise" cx="91" cy="161" r="4"/>
+    <circle class="sig" cx="40" cy="93" r="4"/>
+    <circle class="noise" cx="48" cy="164" r="4"/>
+    <circle class="noise" cx="36" cy="104" r="4"/>
+    <circle class="noise" cx="69" cy="70" r="4"/>
+    <circle class="noise" cx="104" cy="135" r="4"/>
+    <circle class="noise" cx="99" cy="149" r="4"/>
+    <circle class="noise" cx="51" cy="91" r="4"/>
+    <path class="bac" d="M118,28 L190,86 L190,124 L118,182 Z"/>
+    <text class="tb ac" x="152" y="101" text-anchor="middle">veille</text>
+    <text class="sm" x="152" y="117" text-anchor="middle">filter</text>
+    <circle class="sig" cx="206" cy="92" r="4.5"/><circle class="sig" cx="214" cy="105" r="4.5"/><circle class="sig" cx="206" cy="118" r="4.5"/>
+    <line class="lna" x1="224" y1="105" x2="246" y2="105" marker-end="url(#arh)"/>
+    <rect class="bok" x="250" y="80" width="64" height="50" rx="8"/>
+    <text class="tb" x="282" y="102" text-anchor="middle">decide</text>
+    <text class="sm" x="282" y="118" text-anchor="middle">&amp; act</text>
+    <path class="lnd" d="M282,134 C282,196 60,206 60,190" marker-end="url(#arh)"/>
+    <text class="mo" x="200" y="156" text-anchor="middle">CONTINUOUS</text><text class="mo" x="200" y="170" text-anchor="middle">&amp; AUTOMATED</text>
+    <text class="mo" x="62" y="18" text-anchor="middle">OCEAN OF INFO</text>
+  </svg><figcaption>Monitoring filters an ocean of information down to the few relevant signals, delivers them to a decision-maker, and keeps doing it.</figcaption></figure>
+</header>
+
+<nav class="toc" aria-label="Contents">
+  <div class="part"><h3>A · What monitoring is</h3><ul>
+    <li><a href="#s1"><span class="n">1</span><span>Why monitor?<small>fact, but, and, so</small></span></a></li>
+    <li><a href="#s2"><span class="n">2</span><span>Three definitions<small>AFNOR, ADBS, professionals</small></span></a></li>
+  </ul></div>
+  <div class="part"><h3>B · Kinds and uses</h3><ul>
+    <li><a href="#s3"><span class="n">3</span><span>Seven types of monitoring<small>from competitive to strategic</small></span></a></li>
+    <li><a href="#s4"><span class="n">4</span><span>What monitoring is for<small>Kodak, threats, opportunities</small></span></a></li>
+  </ul></div>
+  <div class="part"><h3>C · SWOT analysis</h3><ul>
+    <li><a href="#s5"><span class="n">5</span><span>The SWOT matrix<small>internal vs external</small></span></a></li>
+    <li><a href="#s6"><span class="n">6</span><span>Running a SWOT<small>steps, brainstorming, pitfalls</small></span></a></li>
+    <li><a href="#s7"><span class="n">7</span><span>Monitoring feeds SWOT<small>from snapshot to forecast</small></span></a></li>
+  </ul></div>
+</nav>
+
+<!-- 1 -->
+<section class="sec" id="s1">
+  <div class="sec-h"><span class="num">1</span><h2>Why monitor? <span class="fr">(Constat)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>In tech you must keep up with innovations. But the useful news is buried under useless or repeated news, and you cannot spend unlimited time searching. So you need a system that collects the relevant information for you, automatically and all the time. That system is monitoring.</p></div>
+    <ul class="defs">
+      <li><span class="term"><b class="en">monitoring</b> <span class="fr">(veille)</span></span><span class="mean">From "être éveillé": staying awake and attentive to everything happening in your information environment.</span></li>
+      <li><span class="term"><b class="en">technology monitoring</b> <span class="fr">(veille technologique)</span></span><span class="mean">Monitoring done with technological tools for collecting, processing and distributing information.</span><span class="eg">databases, RSS feed aggregators (agrégateurs de flux RSS), alert services (services d'alerte)</span></li>
+      <li><span class="term"><b class="en">relevant information</b> <span class="fr">(information pertinente)</span></span><span class="mean">The small part of what is published that actually matters for your decisions.</span></li>
+    </ul>
+  </div>
+  <figure class="fig" style="--maxw:660px;--minw:520px"><svg class="sv" viewBox="0 0 650 160" role="img" aria-label="Four boxes in a chain: fact, but, and, so.">
+    <defs><marker id="ar1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,0L10,5L0,10z"/></marker></defs>
+    <text class="mo" x="76" y="26" text-anchor="middle">FACT</text>
+    <text class="mo" x="242" y="26" text-anchor="middle">BUT (MAIS)</text>
+    <text class="mo" x="408" y="26" text-anchor="middle">AND (OR)</text>
+    <text class="mo oc" x="574" y="26" text-anchor="middle">SO (DONC)</text>
+    <rect class="box" x="6" y="38" width="140" height="92" rx="10"/>
+    <rect class="bhi" x="172" y="38" width="140" height="92" rx="10"/>
+    <rect class="bhi" x="338" y="38" width="140" height="92" rx="10"/>
+    <rect class="bok" x="504" y="38" width="140" height="92" rx="10"/>
+    <line class="ln" x1="148" y1="84" x2="170" y2="84" marker-end="url(#ar1)"/>
+    <line class="ln" x1="314" y1="84" x2="336" y2="84" marker-end="url(#ar1)"/>
+    <line class="ln" x1="480" y1="84" x2="502" y2="84" marker-end="url(#ar1)"/>
+    <text class="t" text-anchor="middle"><tspan x="76" y="70">You must keep up</tspan><tspan x="76" y="88">with innovations</tspan><tspan x="76" y="106">in new tech</tspan></text>
+    <text class="t" text-anchor="middle"><tspan x="242" y="70">Relevant info is</tspan><tspan x="242" y="88">drowned in useless</tspan><tspan x="242" y="106">or redundant info</tspan></text>
+    <text class="t" text-anchor="middle"><tspan x="408" y="70">Time to search</tspan><tspan x="408" y="88">is not</tspan><tspan x="408" y="106">unlimited</tspan></text>
+    <text class="t" text-anchor="middle"><tspan x="574" y="70">Collect relevant</tspan><tspan x="574" y="88">info, automated</tspan><tspan x="574" y="106">and continuous</tspan></text>
+    <text class="tb oc" x="574" y="150" text-anchor="middle">= monitoring (veille)</text>
+  </svg><figcaption>The course's opening argument, slide 2. Each box is one line of the reasoning.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+    <p>Apply the chain to you, a Big Data Analytics student who wants to follow new data tools.</p>
+    <ul class="ln">
+      <li>Fact: new frameworks, papers and releases appear every week.</li>
+      <li>But: most posts are hype, reposts or off-topic.</li>
+      <li>And: you have courses; you cannot read everything by hand.</li>
+      <li>So: subscribe to a few chosen sources through an RSS aggregator and set alerts on 3 or 4 keywords. The tools collect; you only read what passes the filter. That is monitoring, not occasional searching.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s2">
+  <div class="sec-h"><span class="num">2</span><h2>Three definitions <span class="fr">(Définitions de la veille)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>All three definitions agree that monitoring is continuous and aimed at the future. Each stresses a different thing: AFNOR the goal (watch and anticipate), ADBS the organisation (a structured setup), and the professionals the delivery (regular, tailored information for one recipient).</p></div>
+    <ul class="defs">
+      <li><span class="term"><b class="en">AFNOR</b> <span class="fr">(Association Française de Normalisation)</span></span><span class="mean">The French standards body. Its definition comes from experimental standard XP X 50-053.</span></li>
+      <li><span class="term"><b class="en">ADBS</b> <span class="fr">(Association des professionnels de l'information et de la documentation)</span></span><span class="mean">The French association of information and documentation professionals.</span></li>
+      <li><span class="term"><b class="en">information search</b> <span class="fr">(recherche d'information)</span></span><span class="mean">A one-off activity that answers a precise need. Monitoring, by contrast, is continuous and organised.</span></li>
+      <li><span class="term"><b class="en">monitoring service</b> <span class="fr">(prestation de veille)</span></span><span class="mean">Monitoring delivered to a client: periodic, personalised, processed for that client's purpose.</span></li>
+    </ul>
+  </div>
+  <div class="scroll"><table class="t">
+    <thead><tr><th>Source</th><th>Monitoring is…</th><th>What it stresses</th></tr></thead>
+    <tbody>
+      <tr><td><b>AFNOR</b></td><td>a "continuous, largely iterative activity aiming at active surveillance of the technological, commercial… environment, to anticipate its evolutions"</td><td>The <b>goal</b>: watch and detect changes. Unlike information search, it is continuous and anticipates.</td></tr>
+      <tr><td><b>ADBS</b></td><td>an "organised, integrated and purposeful setup (dispositif) for collecting, processing, distributing and exploiting information, so an organisation can react in the medium and long term to changes or threats"</td><td>The <b>organisation</b> of the setup, usually run by information professionals.</td></tr>
+      <tr><td><b>Professionals</b><br><small>ADBS, SCIP, SYNAPI, 2001</small></td><td>a "continuous, dynamic process of personalised, periodic delivery of processed data or information, with expertise in the subject"</td><td>The <b>delivery</b>: regular and personalised, for a precise recipient.</td></tr>
+    </tbody>
+  </table></div>
+  <figure class="fig" style="--maxw:640px;--minw:500px"><svg class="sv" viewBox="0 0 620 180" role="img" aria-label="Two timelines. Information search: a single point answering one need. Monitoring: regular points all along the timeline.">
+    <defs><marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,0L10,5L0,10z"/></marker></defs>
+    <text class="tb" x="10" y="52">Information search</text><text class="sm" x="10" y="68">(recherche d'information)</text>
+    <line class="ln" x1="190" y1="60" x2="600" y2="60" marker-end="url(#ar2)"/>
+    <circle class="bhi" cx="320" cy="60" r="8"/>
+    <text class="sm" x="320" y="40" text-anchor="middle">one precise need</text>
+    <text class="sm" x="320" y="84" text-anchor="middle">one answer, then stop</text>
+    <text class="tb ac" x="10" y="132">Monitoring</text><text class="sm" x="10" y="148">(veille)</text>
+    <line class="lna" x1="190" y1="140" x2="600" y2="140" marker-end="url(#arh)"/>
+    <g class="sig"><circle cx="210" cy="140" r="5.5"/><circle cx="250" cy="140" r="5.5"/><circle cx="290" cy="140" r="5.5"/><circle cx="330" cy="140" r="5.5"/><circle cx="370" cy="140" r="5.5"/><circle cx="410" cy="140" r="5.5"/><circle cx="450" cy="140" r="5.5"/><circle cx="490" cy="140" r="5.5"/><circle cx="530" cy="140" r="5.5"/><circle cx="570" cy="140" r="5.5"/></g>
+    <text class="sm" x="390" y="120" text-anchor="middle">continuous, organised, periodic deliveries, aimed at anticipating</text>
+    <text class="mo" x="600" y="172" text-anchor="end">TIME →</text>
+  </svg><figcaption>The difference AFNOR insists on: a search answers once; monitoring keeps delivering.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+    <p>Monitoring or information search? Decide, then name the definition that fits best.</p>
+    <ol>
+      <li><b>"Find out this afternoon which Python library reads Parquet files."</b> One precise need, answered once. <span class="res">information search</span></li>
+      <li><b>"Every Monday, send the R&amp;D team a short digest of new papers on stream processing."</b> Continuous, periodic, personalised for one recipient. <span class="res">monitoring</span>, the professionals' definition.</li>
+      <li><b>"Set up a team, sources and procedure to watch competitors' patents, so the company can react over the next years."</b> An organised setup, aimed at medium and long-term reaction. <span class="res">monitoring</span>, the ADBS definition.</li>
+    </ol>
+    <p>The course quiz (slides 6 to 8) checks exactly this: AFNOR = continuous, iterative surveillance; ADBS = organised, integrated, purposeful setup; professionals = regular, personalised delivery to a precise recipient.</p>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s3">
+  <div class="sec-h"><span class="num">3</span><h2>Seven types of monitoring <span class="fr">(Types de veille)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>Each type watches a different part of the company's surroundings: rivals, trading partners, the market, technology, the law, or the brand's image online. Strategic monitoring sits on top: it brings all of them together and turns them into action.</p></div>
+    <ul class="defs">
+      <li><span class="term"><b class="en">competitive</b> <span class="fr">(veille concurrentielle)</span></span><span class="mean">Competitors direct and indirect, current and potential: prices, suppliers, strategy, hiring, communication.</span></li>
+      <li><span class="term"><b class="en">commercial</b> <span class="fr">(veille commerciale)</span></span><span class="mean">Clients and prospects, suppliers, distributors: contracts, new products. Helps find prospects and buy better.</span></li>
+      <li><span class="term"><b class="en">marketing</b> <span class="fr">(veille marketing)</span></span><span class="mean">The market, consumer behaviour, companies' communication, results of your own campaigns.</span></li>
+      <li><span class="term"><b class="en">technological</b> <span class="fr">(veille technologique)</span></span><span class="mean">Standards (normes) and technologies: patent filings (dépôts de brevets), new processes.</span></li>
+      <li><span class="term"><b class="en">legal</b> <span class="fr">(veille juridique)</span></span><span class="mean">Legislation, case law (jurisprudence), counterfeits (contrefaçons). Keeps you compliant.</span></li>
+      <li><span class="term"><b class="en">e-reputation</b> <span class="fr">(veille d'e-réputation)</span></span><span class="mean">The image, positive or negative, a brand carries online. Goal: turn a "bad buzz" into a "good buzz".</span></li>
+      <li><span class="term"><b class="en">strategic</b> <span class="fr">(veille stratégique)</span></span><span class="mean">The global approach: federates all the other types, adds the strategic dimension, oriented toward action.</span></li>
+    </ul>
+  </div>
+  <figure class="fig" style="--maxw:620px;--minw:500px"><svg class="sv" viewBox="0 0 600 232" role="img" aria-label="A large box labelled strategic monitoring contains six tiles: competitive, commercial, marketing, technological, legal, e-reputation.">
+    <rect class="bac" x="6" y="6" width="588" height="220" rx="14"/>
+    <text class="tb ac" x="22" y="30">Strategic monitoring (veille stratégique)</text>
+    <text class="sm" x="584" y="30" text-anchor="end">federates everything → action</text>
+    <g>
+      <rect class="box" x="22" y="44" width="178" height="80" rx="9"/><text class="tb" x="111" y="74" text-anchor="middle">Competitive</text><text class="sm" x="111" y="92" text-anchor="middle">rivals: prices, strategy,</text><text class="sm" x="111" y="107" text-anchor="middle">suppliers, hiring</text>
+      <rect class="box" x="211" y="44" width="178" height="80" rx="9"/><text class="tb" x="300" y="74" text-anchor="middle">Commercial</text><text class="sm" x="300" y="92" text-anchor="middle">clients, suppliers,</text><text class="sm" x="300" y="107" text-anchor="middle">distributors</text>
+      <rect class="box" x="400" y="44" width="178" height="80" rx="9"/><text class="tb" x="489" y="74" text-anchor="middle">Marketing</text><text class="sm" x="489" y="92" text-anchor="middle">market, consumers,</text><text class="sm" x="489" y="107" text-anchor="middle">campaigns</text>
+      <rect class="box" x="22" y="134" width="178" height="80" rx="9"/><text class="tb" x="111" y="164" text-anchor="middle">Technological</text><text class="sm" x="111" y="182" text-anchor="middle">standards, patents,</text><text class="sm" x="111" y="197" text-anchor="middle">new processes</text>
+      <rect class="box" x="211" y="134" width="178" height="80" rx="9"/><text class="tb" x="300" y="164" text-anchor="middle">Legal</text><text class="sm" x="300" y="182" text-anchor="middle">laws, case law,</text><text class="sm" x="300" y="197" text-anchor="middle">counterfeits</text>
+      <rect class="box" x="400" y="134" width="178" height="80" rx="9"/><text class="tb" x="489" y="164" text-anchor="middle">E-reputation</text><text class="sm" x="489" y="182" text-anchor="middle">brand image online,</text><text class="sm" x="489" y="197" text-anchor="middle">bad buzz → good buzz</text>
+    </g>
+  </svg><figcaption>Six specialised types inside the seventh. Strategic monitoring is not "another topic" but the layer that combines them.</figcaption></figure>
+  <div class="callout"><b>Commercial vs marketing</b> (course slide 21). Commercial monitoring is <i>operational</i>: day-to-day buying and selling relations (e.g. a supplier lowers its prices). Marketing monitoring is <i>strategic</i>: the market and consumers, to shape the offer (e.g. spotting the organic trend and adapting). They complement each other.</div>
+  <div class="calc"><span class="tag">Worked example</span>
+    <p>Which type of monitoring catches each signal?</p>
+    <div class="scroll"><table class="t">
+      <thead><tr><th>Signal</th><th>Type</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>A start-up that could enter your market raises funds</td><td><b>competitive</b></td><td>a potential competitor, not only a direct one</td></tr>
+        <tr><td>A supplier lowers its prices</td><td><b>commercial</b></td><td>trading partner, operational</td></tr>
+        <tr><td>Consumers turn toward organic products</td><td><b>marketing</b></td><td>consumer behaviour, market trend</td></tr>
+        <tr><td>A rival files a patent on a new IoT sensor</td><td><b>technological</b></td><td>patents and new processes</td></tr>
+        <tr><td>A new law on personal data storage</td><td><b>legal</b></td><td>regulation, compliance</td></tr>
+        <tr><td>A video mocking your product goes viral</td><td><b>e-reputation</b></td><td>brand image online, bad buzz</td></tr>
+      </tbody>
+    </table></div>
+    <p>Course quiz (slide 17): strategic monitoring <b>integrates</b> the other dimensions and <b>orients the company toward action</b>; it is not limited to competitors or patents.</p>
+  </div>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s4">
+  <div class="sec-h"><span class="num">4</span><h2>What monitoring is for <span class="fr">(À quoi sert la veille ?)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>Monitoring has four jobs: see where the market is going, keep an eye on competitors, follow technology before it leaves you behind, and spot threats and opportunities early enough to act. It does not remove risk; it lets you see it and manage it.</p></div>
+    <ul class="defs">
+      <li><span class="term"><b class="en">forecast the market</b> <span class="fr">(prévoir l'évolution du marché)</span></span><span class="mean">Know clients' needs and consumption trends, and dare to see the market in a new way.</span></li>
+      <li><span class="term"><b class="en">watch competitors</b> <span class="fr">(surveiller les concurrents)</span></span><span class="mean">Who they are, their patents, finances, sales, strategy, across R&amp;D, production, marketing, HR, finance and management.</span></li>
+      <li><span class="term"><b class="en">follow technology</b> <span class="fr">(tenir compte de l'évolution technologique)</span></span><span class="mean">Technologies are born, evolve, disappear and get replaced. Watch scientific publications and patents.</span></li>
+      <li><span class="term"><b class="en">opportunity</b> <span class="fr">(opportunité)</span></span><span class="mean">A new process, component, idea, company to buy, market to take, alliance to make. Not seized = left to others.</span></li>
+      <li><span class="term"><b class="en">threat</b> <span class="fr">(menace)</span></span><span class="mean">An unfavourable change in the environment that, without reaction, will erode profitability over time.</span></li>
+    </ul>
+  </div>
+  <figure class="fig" style="--maxw:600px;--minw:460px"><svg class="sv" viewBox="0 0 560 230" role="img" aria-label="Two technology curves over time. The old film curve rises then falls; the new digital curve rises later. A dashed line marks the early moment when monitoring can see the new curve.">
+    <defs><marker id="ar4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,0L10,5L0,10z"/></marker></defs>
+    <line class="ln" x1="50" y1="195" x2="545" y2="195" marker-end="url(#ar4)"/>
+    <line class="ln" x1="50" y1="195" x2="50" y2="14" marker-end="url(#ar4)"/>
+    <text class="mo" x="545" y="216" text-anchor="end">TIME →</text>
+    <text class="mo" x="40" y="110" text-anchor="middle" transform="rotate(-90 40 110)">MARKET USE</text>
+    <path class="old" d="M60,190 C120,190 140,52 220,52 C300,52 330,70 380,150 C410,185 460,190 525,191"/>
+    <path class="new" d="M200,192 C300,192 330,120 385,80 C430,48 480,40 535,38"/>
+    <line class="lnd" x1="262" y1="40" x2="262" y2="195"/>
+    <text class="sm" x="256" y="150" text-anchor="end">monitoring sees the</text><text class="sm" x="256" y="163" text-anchor="end">new curve here</text>
+    <text class="tb" x="150" y="38" text-anchor="middle">old technology <tspan class="sm">(film)</tspan></text>
+    <text class="tb ac" x="545" y="24" text-anchor="end">new technology <tspan class="sm">(digital)</tspan></text>
+    <text class="sm hc" x="400" y="140">a company tied to</text><text class="sm hc" x="400" y="153">the old curve falls</text>
+  </svg><figcaption>Schematic, not data. A product must rest on the most efficient technology of the moment; monitoring is how you notice the next one while it is still small.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+    <p><b>Kodak</b> (course slide 13 and quiz slide 20).</p>
+    <ul class="ln">
+      <li>Situation: Kodak dominated photographic film.</li>
+      <li>Signal: digital photography was rising (the new curve above).</li>
+      <li>Mistake: it saw itself as a film company, not an imaging company, so it did not reposition.</li>
+      <li>Result: it collapsed against new technologies.</li>
+      <li>What strategic monitoring would have done: redefine the business as imaging and take the lead in digital photography.</li>
+    </ul>
+    <p><b>Turning a threat into an opportunity</b> (course slide 20).</p>
+    <ul class="ln">
+      <li>Threat: sales drop because clients prefer more ecological products.</li>
+      <li>Marketing and competitive monitoring detect the trend early.</li>
+      <li>Action: develop recyclable products and communicate on the ecological approach.</li>
+      <li>Result: new clients and a better brand image.</li>
+    </ul>
+  </div>
+  <div class="callout"><b>True or false?</b> (course slide 19)
+    <ul>
+      <li>"Competitive monitoring only looks at direct competitors." <b>False</b>: also indirect, current and potential ones.</li>
+      <li>"A company that skips technology monitoring can stay competitive in the long run." <b>False</b>: it risks missing major technological shifts.</li>
+      <li>"Monitoring eliminates all risk." <b>False</b>: it identifies risks so you can manage them proactively.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s5">
+  <div class="sec-h"><span class="num">5</span><h2>The SWOT matrix <span class="fr">(Analyse SWOT / FFOM)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>SWOT sorts everything you know into four boxes using two questions. Is it inside the organisation (you control it) or outside (you don't)? Does it help or hurt? Inside and helpful = Strength; inside and harmful = Weakness; outside and helpful = Opportunity; outside and harmful = Threat.</p></div>
+    <ul class="defs">
+      <li><span class="term"><b class="en">SWOT</b> <span class="fr">(FFOM: Forces, Faiblesses, Opportunités, Menaces)</span></span><span class="mean">A planning tool to understand the strengths, weaknesses, opportunities and threats of a project or company. Commonly credited to Albert Humphrey (Stanford, 1960s–70s).</span></li>
+      <li><span class="term"><b class="en">strengths</b> <span class="fr">(forces)</span></span><span class="mean">Internal, positive, tangible or intangible attributes that give an advantage.</span><span class="eg">well-known brand, ample funds, economies of scale, engaged staff</span></li>
+      <li><span class="term"><b class="en">weaknesses</b> <span class="fr">(faiblesses)</span></span><span class="mean">Internal traits that put you at a disadvantage. Controllable: minimise or remove them.</span><span class="eg">limited funds, narrow product range, obsolete technology, weak marketing</span></li>
+      <li><span class="term"><b class="en">opportunities</b> <span class="fr">(opportunités)</span></span><span class="mean">External, attractive conditions you can exploit to become more profitable. Come from market, competition, industry/government, technology.</span><span class="eg">fast market growth, complacent rivals, new uses for a product</span></li>
+      <li><span class="term"><b class="en">threats</b> <span class="fr">(menaces)</span></span><span class="mean">External elements, beyond your control, that put the mission or operations at risk.</span><span class="eg">foreign competitors arrive, substitute products, more regulation, economic slowdown</span></li>
+    </ul>
+  </div>
+  <figure class="fig" style="--maxw:520px;--minw:400px"><svg class="sv" viewBox="0 0 510 330" role="img" aria-label="Two by two SWOT matrix. Rows internal and external, columns helpful and harmful. Strengths, weaknesses, opportunities, threats.">
+    <text class="mo" x="205" y="28" text-anchor="middle">HELPFUL (POSITIF)</text>
+    <text class="mo" x="405" y="28" text-anchor="middle">HARMFUL (NÉGATIF)</text>
+    <text class="tb" x="52" y="104" text-anchor="middle">Internal</text><text class="sm" x="52" y="120" text-anchor="middle">(interne)</text><text class="sm" x="52" y="140" text-anchor="middle">controllable</text>
+    <text class="tb" x="52" y="244" text-anchor="middle">External</text><text class="sm" x="52" y="260" text-anchor="middle">(externe)</text><text class="sm" x="52" y="280" text-anchor="middle">not controllable</text>
+    <rect class="bok" x="110" y="40" width="190" height="135" rx="10"/>
+    <rect class="bhd" x="310" y="40" width="190" height="135" rx="10"/>
+    <rect class="bac" x="110" y="185" width="190" height="135" rx="10"/>
+    <rect class="bhi" x="310" y="185" width="190" height="135" rx="10"/>
+    <text class="big oc" x="205" y="98" text-anchor="middle">S</text><text class="tb" x="205" y="124" text-anchor="middle">Strengths</text><text class="sm" x="205" y="142" text-anchor="middle">F · Forces</text>
+    <text class="big hc" x="405" y="98" text-anchor="middle">W</text><text class="tb" x="405" y="124" text-anchor="middle">Weaknesses</text><text class="sm" x="405" y="142" text-anchor="middle">F · Faiblesses</text>
+    <text class="big ac" x="205" y="243" text-anchor="middle">O</text><text class="tb" x="205" y="269" text-anchor="middle">Opportunities</text><text class="sm" x="205" y="287" text-anchor="middle">O · Opportunités</text>
+    <text class="big hc" x="405" y="243" text-anchor="middle">T</text><text class="tb" x="405" y="269" text-anchor="middle">Threats</text><text class="sm" x="405" y="287" text-anchor="middle">M · Menaces</text>
+  </svg><figcaption>SWOT in English, FFOM in French: same four boxes, different letters.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+    <p>SWOT for the course's case: an Algerian tech start-up launching an IoT product for agriculture (slides 22 and 40). O and T come from the course; S and W are illustrative.</p>
+    <div class="scroll"><table class="t grid">
+      <thead><tr><th></th><th>Helpful</th><th>Harmful</th></tr></thead>
+      <tbody>
+        <tr><th>Internal</th><td><b>S</b>: team skilled in IoT and data; close to local farmers' needs</td><td><b>W</b>: limited funds; one product only; unknown brand</td></tr>
+        <tr><th>External</th><td><b>O</b>: growing adoption of IoT sensors to optimise irrigation</td><td><b>T</b>: high equipment costs; network outages; regulation on IoT and data</td></tr>
+      </tbody>
+    </table></div>
+    <ul class="ln">
+      <li>Test each item: "Can we change it ourselves?" Yes → S or W. No → O or T.</li>
+      <li>"Network outages" is outside the start-up's control → T, even though it hurts the product directly.</li>
+      <li>"One product only" is the start-up's own choice → W, not T.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s6">
+  <div class="sec-h"><span class="num">6</span><h2>Running a SWOT <span class="fr">(Comment mener l'analyse SWOT ?)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>First look around (inside and outside), then fill the four boxes and write them down, then decide what to do about them. Brainstorm freely, but keep only the five most important items per box. Treat the result as a guide, not a verdict: two people rarely produce the same SWOT.</p></div>
+    <ul class="defs">
+      <li><span class="term"><b class="en">brainstorming</b> <span class="fr">(remue-méninges)</span></span><span class="mean">Start with four questions: What opportunities exist outside? What threats? What are our strengths? Our weaknesses?</span></li>
+      <li><span class="term"><b class="en">prioritisation</b> <span class="fr">(priorisation)</span></span><span class="mean">Cut S and W to at most five distinctive competencies and discouraging weaknesses; cut O and T to the five most important each.</span></li>
+      <li><span class="term"><b class="en">action plan</b> <span class="fr">(plan d'action)</span></span><span class="mean">The third step: what you will do with what the SWOT shows.</span></li>
+      <li><span class="term"><b class="en">who uses it</b> <span class="fr">(qui en a besoin ?)</span></span><span class="mean">Product launch, competitor or product evaluation, strategic planning, decision-making, workshops, brainstorming meetings, even a job change or personal development plan.</span></li>
+    </ul>
+  </div>
+  <figure class="fig" style="--maxw:660px;--minw:520px"><svg class="sv" viewBox="0 0 650 150" role="img" aria-label="Three chevron steps: analyse environment, do and document the SWOT, prepare action plans.">
+    <polygon class="bac" points="8,30 188,30 213,72 188,114 8,114 30,72"/>
+    <polygon class="bok" points="222,30 402,30 427,72 402,114 222,114 244,72"/>
+    <polygon class="bhi" points="436,30 616,30 641,72 616,114 436,114 458,72"/>
+    <text class="mo" x="113" y="20" text-anchor="middle">STEP 1</text><text class="mo" x="327" y="20" text-anchor="middle">STEP 2</text><text class="mo" x="541" y="20" text-anchor="middle">STEP 3</text>
+    <text class="t" text-anchor="middle"><tspan x="118" y="66">Analyse internal</tspan><tspan x="118" y="84">&amp; external environment</tspan></text>
+    <text class="t" text-anchor="middle"><tspan x="332" y="66">Do the SWOT</tspan><tspan x="332" y="84">and document it</tspan></text>
+    <text class="t" text-anchor="middle"><tspan x="546" y="66">Prepare</tspan><tspan x="546" y="84">action plans</tspan></text>
+    <text class="sm" x="332" y="136" text-anchor="middle">brainstorm, then keep ≤ 5 items per box</text>
+  </svg><figcaption>The three steps from course slide 32.</figcaption></figure>
+  <div class="dodont">
+    <div class="note yes"><span class="tag">Do (faire)</span><ul>
+      <li>Be analytical and specific.</li><li>Write down every thought and idea.</li><li>Be selective in the final evaluation.</li><li>Pick the right people, and one SWOT leader.</li><li>Be open to change.</li></ul></div>
+    <div class="note no"><span class="tag">Don't (ne pas faire)</span><ul>
+      <li>Hide weaknesses.</li><li>Just list mistakes.</li><li>Lose sight of external influences and trends.</li><li>Turn it into a blame exercise.</li><li>Ignore the results later in planning.</li></ul></div>
+  </div>
+  <div class="scroll"><table class="t">
+    <thead><tr><th>Advantages (avantages)</th><th>Pitfalls (pièges)</th></tr></thead>
+    <tbody>
+      <tr><td>Helps set objectives for strategic planning</td><td>Very subjective; use as a guide, not a prescription</td></tr>
+      <tr><td>A framework to identify and analyse S, W, O, T</td><td>Can make things look too simple and miss key elements</td></tr>
+      <tr><td>A setting to analyse a situation and build strategies</td><td>Classifying is uncertain when the market is uncertain</td></tr>
+      <tr><td>A basis to assess capabilities and skills</td><td>Must be redone regularly; change is fast</td></tr>
+      <tr><td>A group exercise everyone can join</td><td>May rest on assumptions that later prove wrong</td></tr>
+    </tbody>
+  </table></div>
+  <div class="calc"><span class="tag">Worked example</span>
+    <p>Course exercise (slides 41 to 44): <i>University studies in the age of AI tools like ChatGPT: opportunity or threat?</i></p>
+    <ol>
+      <li><b>Locate the subject.</b> We analyse university studies. ChatGPT comes from outside, so its effects go in <b>O</b> or <b>T</b>, not S or W.</li>
+      <li><b>Brainstorm O.</b> Fast access to information; help with research (ideas, summaries); writing assistance (content, grammar, structure); automation of tedious tasks.</li>
+      <li><b>Brainstorm T.</b> Plagiarism (copying AI text without attribution); unreliable or biased output; loss of essential thinking and research skills; ethics and intellectual property.</li>
+      <li><b>Prioritise.</b> 4 items in O and 4 in T, already within the limit of 5 per box.</li>
+      <li><b>Action plan.</b> Both: a valuable opportunity if used responsibly. Institutions and students should write ethical guidelines together, to maximise benefits and minimise risks.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s7">
+  <div class="sec-h"><span class="num">7</span><h2>Monitoring feeds SWOT <span class="fr">(La veille dans l'analyse SWOT)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>A classic SWOT is a photo taken at one moment. Monitoring keeps filming the outside world, so new opportunities and threats show up in the O and T boxes before they become critical. That turns SWOT from a snapshot into a tool for anticipating.</p></div>
+    <ul class="defs">
+      <li><span class="term"><b class="en">early signal</b> <span class="fr">(indice précoce, signal faible)</span></span><span class="mean">A small sign of a coming change: a patent, a trend, a draft regulation.</span></li>
+      <li><span class="term"><b class="en">role of monitoring in SWOT</b> <span class="fr">(rôle de la veille)</span></span><span class="mean">Identify threats and opportunities before they become critical. It does not replace SWOT and is not limited to internal weaknesses.</span></li>
+      <li><span class="term"><b class="en">interaction between boxes</b> <span class="fr">(interaction entre les cases)</span></span><span class="mean">A weakness can amplify a threat or block an opportunity; an opportunity you don't seize can become a threat.</span></li>
+    </ul>
+  </div>
+  <figure class="fig" style="--maxw:640px;--minw:500px"><svg class="sv" viewBox="0 0 620 225" role="img" aria-label="Three small SWOT grids at times t1, t2, t3. A monitoring stream below sends arrows up into the O and T cells of each grid.">
+    <defs><marker id="ar7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="aha" d="M0,0L10,5L0,10z"/></marker></defs>
+    <g>
+      <text class="mo" x="110" y="24" text-anchor="middle">SWOT AT t₁</text>
+      <rect class="bok" x="60" y="34" width="50" height="50"/><rect class="bhd" x="110" y="34" width="50" height="50"/><rect class="bac" x="60" y="84" width="50" height="50"/><rect class="bhi" x="110" y="84" width="50" height="50"/>
+      <text class="tb" x="85" y="64" text-anchor="middle">S</text><text class="tb" x="135" y="64" text-anchor="middle">W</text><text class="tb" x="85" y="114" text-anchor="middle">O</text><text class="tb" x="135" y="114" text-anchor="middle">T</text>
+      <text class="mo" x="310" y="24" text-anchor="middle">SWOT AT t₂</text>
+      <rect class="bok" x="260" y="34" width="50" height="50"/><rect class="bhd" x="310" y="34" width="50" height="50"/><rect class="bac" x="260" y="84" width="50" height="50"/><rect class="bhi" x="310" y="84" width="50" height="50"/>
+      <text class="tb" x="285" y="64" text-anchor="middle">S</text><text class="tb" x="335" y="64" text-anchor="middle">W</text><text class="tb" x="285" y="114" text-anchor="middle">O</text><text class="tb" x="335" y="114" text-anchor="middle">T</text>
+      <text class="mo" x="510" y="24" text-anchor="middle">SWOT AT t₃</text>
+      <rect class="bok" x="460" y="34" width="50" height="50"/><rect class="bhd" x="510" y="34" width="50" height="50"/><rect class="bac" x="460" y="84" width="50" height="50"/><rect class="bhi" x="510" y="84" width="50" height="50"/>
+      <text class="tb" x="485" y="64" text-anchor="middle">S</text><text class="tb" x="535" y="64" text-anchor="middle">W</text><text class="tb" x="485" y="114" text-anchor="middle">O</text><text class="tb" x="535" y="114" text-anchor="middle">T</text>
+    </g>
+    <line class="ln" x1="170" y1="84" x2="250" y2="84" marker-end="url(#ar1)"/><line class="ln" x1="370" y1="84" x2="450" y2="84" marker-end="url(#ar1)"/>
+    <line class="lna" x1="20" y1="185" x2="600" y2="185" marker-end="url(#ar7)"/>
+    <g><line class="lna" x1="85" y1="180" x2="85" y2="140" marker-end="url(#ar7)"/><line class="lna" x1="135" y1="180" x2="135" y2="140" marker-end="url(#ar7)"/>
+    <line class="lna" x1="285" y1="180" x2="285" y2="140" marker-end="url(#ar7)"/><line class="lna" x1="335" y1="180" x2="335" y2="140" marker-end="url(#ar7)"/>
+    <line class="lna" x1="485" y1="180" x2="485" y2="140" marker-end="url(#ar7)"/><line class="lna" x1="535" y1="180" x2="535" y2="140" marker-end="url(#ar7)"/></g>
+    <text class="tb ac" x="20" y="208">Monitoring stream (veille)</text>
+    <text class="sm" x="600" y="208" text-anchor="end">patents · trends · new regulations</text>
+  </svg><figcaption>Monitoring keeps the external half (O, T) of the SWOT up to date, so each new version is ahead of events rather than behind them.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+    <p>Course quiz (slide 38): a company lists <b>"lack of artificial intelligence skills"</b> as a weakness. Which consequences hold?</p>
+    <div class="scroll"><table class="t">
+      <thead><tr><th>Statement</th><th>Verdict</th><th>Reason</th></tr></thead>
+      <tbody>
+        <tr><td>It can amplify a threat (rivals arrive using AI)</td><td class="ok">yes</td><td>W makes you vulnerable to T</td></tr>
+        <tr><td>It can stop it seizing an opportunity (new AI-related markets)</td><td class="ok">yes</td><td>W blocks O</td></tr>
+        <tr><td>It automatically becomes a threat</td><td class="bad">no</td><td>W is internal, T is external; the box never changes</td></tr>
+        <tr><td>It can be offset by an opportunity, e.g. a partnership with a research institute</td><td class="ok">yes</td><td>use an O to fix a W</td></tr>
+      </tbody>
+    </table></div>
+    <p>And the reverse link (slide 39): a new technology is an opportunity, but if the company does not act, competitors use it and it becomes a threat. <span class="res">opportunity missed → threat</span></p>
+  </div>
+</section>
+
+<section class="sec" id="notes">
+  <div class="note errata"><span class="tag">Errors found in the original course</span>
+    <ul>
+      <li>Slide 3: the AFNOR standard is written "XP X 50-53". Its reference is <b>XP X 50-053</b> (AFNOR, 1998, on monitoring services).</li>
+      <li>SWOT slides 25 and 32: typos "Strenghts" → <b>Strengths</b>, "Oppurtunités / Oppurtunities" → <b>Opportunités / Opportunities</b>, "Effecuter" → <b>Effectuer</b>. Slide 28: "Ils doivent être minimisées" → <b>Elles doivent être minimisées</b> (les faiblesses).</li>
+      <li>Slide 13, Kodak: saying it "did not anticipate" digital is too strong. A Kodak engineer (Steven Sasson) built the first digital camera prototype in 1975. Kodak saw the technology but did not reposition around it, and filed for bankruptcy in 2012. The lesson is about acting on monitoring, not only doing it.</li>
+      <li>Slide 25: crediting SWOT to Albert Humphrey at Stanford is common but poorly documented. The approach is also traced to Harvard Business School teaching in the 1960s. Treat the attribution as "commonly credited".</li>
+      <li>Introduction, slide 7: the grading list jumps from item 3 to item 5 (there is no item 4). Items 1 to 3 add up to 10 + 3 + 7 = 20 points, separate from the exam out of 20.</li>
+    </ul>
+  </div>
+</section>
+
+<footer class="foot">Based on Mme AZZOUZ Mahdia, <i>Module Veille Technologique</i>, USTHB, 1st year Master Big Data Analytics: "Introduction" and "Chapitre 01 : Généralités sur la veille" (revision September 2026). This chapter has no calculations; the few counts (7 types, at most 5 items per SWOT box, grading total) were checked by program. Figures are schematic.</footer>
+</div>
+<script>
+/* study-hub:progress — practice pages: counts ticked .done boxes */
+(function(){
+  var boxes=document.querySelectorAll('.done input'), txt=document.getElementById('prog-txt'), bar=document.getElementById('prog-bar');
+  if(!boxes.length||!txt) return;
+  function upd(){var n=0;boxes.forEach(function(b){if(b.checked)n++;});txt.textContent=n+' / '+boxes.length+' done';bar.style.width=(100*n/boxes.length)+'%';}
+  boxes.forEach(function(b){b.addEventListener('change',upd);});
+  upd();
+})();
+</script>
+</body>
+</html>

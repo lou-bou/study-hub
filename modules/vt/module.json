@@ -3,5 +3,7 @@
   "title": "Technology Watch",
   "blurb": "Veille technologique.",
   "order": 7,
-  "chapters": {}
+  "chapters": {
+    "ch1": "Introduction + Generalities"
+  }
 }
