@@ -1,0 +1,833 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GP · Ch 1 · Lesson</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<script>/* study-hub:theme */(function(){var r=document.documentElement;try{var t=localStorage.getItem("studyhub-theme");if(t)r.setAttribute("data-theme",t);}catch(e){}document.addEventListener("DOMContentLoaded",function(){var b=document.getElementById("theme-toggle");if(b)b.addEventListener("click",function(){var c=r.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");var n=c==="dark"?"light":"dark";r.setAttribute("data-theme",n);try{localStorage.setItem("studyhub-theme",n);}catch(e){}});});})();</script>
+<style>
+/* study-hub:base v1 — shared by every remake; edit here, then copy into pages */
+:root{
+  --bg:#F3F5FB; --surface:#FFFFFF; --ink:#14203B; --muted:#586583; --line:#D9DFEC;
+  --accent:#2B52E6; --accent-soft:#E3E9FF; --hi:#D9481C; --hi-soft:#FFE3D6; --code-bg:#E9EDF8;
+  --ok:#1B7A49; --ok-soft:#E2F4EA;
+  --c1:#8FB0FF; --c2:#FFB877; --c3:#7EDBAA; --c4:#CDAEFF;
+  --f-display:'Bricolage Grotesque',system-ui,sans-serif;
+  --f-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+  --f-math:'Cambria Math','STIX Two Math',Georgia,serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D1426; --surface:#151F38; --ink:#E6EBF8; --muted:#9BA8C7; --line:#28345A;
+    --accent:#8AA5FF; --accent-soft:#1B2958; --hi:#FF8D63; --hi-soft:#47281F; --code-bg:#1C2849;
+    --ok:#5FD394; --ok-soft:#173326;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D1426; --surface:#151F38; --ink:#E6EBF8; --muted:#9BA8C7; --line:#28345A;
+  --accent:#8AA5FF; --accent-soft:#1B2958; --hi:#FF8D63; --hi-soft:#47281F; --code-bg:#1C2849;
+  --ok:#5FD394; --ok-soft:#173326;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg); color:var(--ink); font-family:var(--f-body); font-size:16px; line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:28px 72px; margin:0;
+}
+.wrap{max-width:1040px;margin:0 auto}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px}
+code{font-family:var(--f-mono);font-size:.9em;background:var(--code-bg);padding:1px 6px;border-radius:5px}
+.en{font-weight:600}
+.fr{color:var(--muted);font-style:italic;font-weight:400}
+sub,sup{line-height:0}
+.m{font-family:var(--f-math);font-style:italic}
+.ov{text-decoration:overline}
+.eq{font-family:var(--f-math);font-size:1.05rem;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 16px;margin:12px 0;overflow-x:auto;white-space:pre}
+.res{display:inline-block;background:var(--ok-soft);color:var(--ink);border-radius:6px;padding:1px 8px;font-weight:600}
+.toggle{position:fixed;top:14px;right:max(14px,env(safe-area-inset-right,0px));z-index:20;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 14px;font:500 .8rem var(--f-body);cursor:pointer}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:36px;align-items:center;padding-bottom:36px}
+.hero.solo{grid-template-columns:minmax(0,1fr)}
+.eyebrow{font:600 .75rem/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+h1{font-family:var(--f-display);font-weight:800;font-size:clamp(2.3rem,5.4vw,3.8rem);line-height:1.02;letter-spacing:-.025em;margin:14px 0 16px;text-wrap:balance}
+.lead{font-size:1.1rem;color:var(--muted);max-width:60ch;margin:0 0 22px}
+.how{display:grid;gap:10px;margin:0;padding:0;list-style:none;max-width:52ch}
+.how li{display:flex;gap:12px;align-items:baseline;font-size:.95rem}
+.how .tag{flex:0 0 auto;min-width:9.5em}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin:0}
+.pill{background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:4px 12px;font:500 .8rem var(--f-mono)}
+.herofig{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 16px 12px;min-width:0;overflow-x:auto}
+.herofig svg{display:block;width:100%;height:auto;min-width:var(--minw,0)}
+.herofig figcaption{font-size:.84rem;color:var(--muted);margin-top:8px}
+
+/* contents */
+.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:28px 24px;padding-block:28px 8px;border-top:1px solid var(--line)}
+.part h3{font:600 .72rem/1.3 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.part ul{list-style:none;margin:0;padding:0;display:grid;gap:3px}
+.part a{display:flex;gap:10px;text-decoration:none;color:var(--ink);padding:3px 0;font-size:.95rem}
+.part a:hover{color:var(--accent)}
+.part a small{display:block;color:var(--muted);font-size:.8rem;line-height:1.35}
+.part .n{font:500 .8rem/1.7 var(--f-mono);color:var(--accent);min-width:1.6em}
+.part .sc{margin-left:auto;font:500 .78rem/1.7 var(--f-mono);color:var(--muted);white-space:nowrap}
+
+/* sections */
+.sec{margin-top:56px;padding-top:36px;border-top:1px solid var(--line);scroll-margin-top:12px}
+.sec-h{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
+.num{font:800 2.5rem/1 var(--f-display);color:var(--accent);letter-spacing:-.03em}
+.sec h2{font-family:var(--f-display);font-weight:700;font-size:clamp(1.4rem,3vw,1.9rem);line-height:1.15;margin:0;letter-spacing:-.015em;text-wrap:balance;min-width:0}
+.sec h2 .fr{font-family:var(--f-body);font-size:.62em;font-weight:400}
+.sec h3{font-family:var(--f-display);font-weight:700;font-size:1.15rem;margin:28px 0 8px}
+.sec h3 .fr{font-family:var(--f-body);font-size:.8em}
+.sec>p,.sec>ul,.sec>ol{max-width:78ch}
+.back{margin-left:auto;font-size:.78rem;color:var(--muted);text-decoration:none}
+.back:hover{color:var(--accent)}
+.secscore{font:600 .85rem var(--f-mono);color:var(--accent)}
+.tag{display:inline-block;font:600 .68rem/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;margin-top:20px}
+.plain{margin-top:20px;border-left:3px solid var(--accent);padding:2px 0 2px 16px}
+.intro .plain{margin-top:0}
+.plain p{margin:8px 0 0;font-size:1.05rem;max-width:62ch}
+.defs{list-style:none;margin:20px 0 0;padding:0;display:grid;gap:12px;min-width:0}
+.intro .defs{margin-top:0}
+.defs li{display:grid;gap:1px;font-size:.95rem}
+.defs .mean{color:var(--muted)}
+.defs .eg{color:var(--muted);font-size:.9rem}
+.defs .eg::before{content:"e.g. ";font-weight:600;color:var(--accent)}
+.callout{margin-top:20px;background:var(--surface);border:1px dashed var(--accent);border-radius:12px;padding:14px 20px}
+.callout>b:first-child{color:var(--accent)}
+.callout ol,.callout ul{margin:6px 0 2px;padding-left:22px}
+.callout li{margin:5px 0}
+details.more{margin-top:14px;border:1px dashed var(--line);border-radius:10px;padding:8px 14px;background:var(--surface)}
+details.more summary{cursor:pointer;font-weight:600;color:var(--accent)}
+
+/* figures */
+.figs{display:flex;flex-wrap:wrap;gap:16px;margin-top:24px}
+.figs figure{flex:1 1 250px;max-width:430px;min-width:0;margin:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 14px 12px}
+figure.fig{margin:18px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 14px 12px;overflow-x:auto}
+figure.fig svg{display:block;width:100%;height:auto;min-width:var(--minw,0);max-width:var(--maxw,560px);margin-inline:auto}
+figcaption{font-size:.82rem;color:var(--muted);margin-top:8px;line-height:1.45}
+
+/* worked example */
+.calc{margin-top:22px;background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--ok);border-radius:12px;padding:14px 20px 18px}
+.calc>.tag{color:var(--ok)}
+.calc>p{margin:10px 0 0}
+.calc ol{margin:10px 0 0;padding-left:22px}
+.calc li{margin:8px 0}
+.calc li>b:first-child{color:var(--accent)}
+.calc figure.fig,.calc .eq{background:var(--bg)}
+ul.ln{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:7px;font-family:var(--f-mono);font-size:.88rem;line-height:1.55}
+ul.ln li{padding-left:1.1em;text-indent:-1.1em;overflow-wrap:anywhere}
+ul.ln li::before{content:"\203A\00a0";color:var(--accent);font-weight:600}
+
+/* tables */
+.scroll{overflow-x:auto;margin-top:12px;max-width:100%}
+table.t{border-collapse:collapse;font:400 .9rem/1.45 var(--f-body);min-width:260px}
+table.t th{font-weight:600;text-align:left;color:var(--muted)}
+table.t th,table.t td{padding:6px 14px 6px 0;border-bottom:1px solid var(--line);vertical-align:top}
+table.t.mono{font-family:var(--f-mono);font-size:.85rem}
+table.t.mono th,table.t.mono td{white-space:nowrap}
+table.t.grid th,table.t.grid td{padding:6px 10px;border:1px solid var(--line)}
+table.t.grid th{background:var(--accent-soft);color:var(--ink)}
+table.t .c,table.t.center th,table.t.center td{text-align:center}
+table.t.center .l{text-align:left}
+table.t td.ok{color:var(--ok);font-weight:600}
+table.t td.bad,table.t td.x{color:var(--hi);font-weight:600}
+table.t tr.best td{background:var(--ok-soft);font-weight:600}
+
+/* notes and footer */
+.note{margin-top:20px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 20px}
+.note.errata{background:var(--hi-soft);border-color:color-mix(in srgb,var(--hi) 35%,transparent)}
+.note.errata>.tag{color:var(--hi)}
+.note ul,.note ol{margin:8px 0 0;padding-left:1.2em;display:grid;gap:8px;font-size:.95rem}
+.foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);font-size:.82rem;color:var(--muted)}
+
+/* practice */
+.prog{display:flex;align-items:center;gap:14px;max-width:460px;margin-top:22px;font:500 .85rem var(--f-mono);color:var(--muted)}
+.prog .track{flex:1;height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.prog .fill{display:block;height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .25s}
+.legend{display:flex;gap:10px 16px;flex-wrap:wrap;margin-top:16px;font-size:.88rem;color:var(--muted)}
+.setmeta{margin:6px 0 0;color:var(--muted);font-size:.9rem}
+.prob{margin-top:18px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 20px 14px;scroll-margin-top:12px}
+.prob.ok{border-color:var(--ok);box-shadow:0 0 0 1px var(--ok) inset}
+.prob.bad{border-color:var(--hi)}
+.ph{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.pid{font:600 1.05rem var(--f-mono);color:var(--accent)}
+.ph .pt{font:600 1rem/1.35 var(--f-body);margin:0;min-width:0;flex:1 1 16em}
+.lvl{font:600 .66rem/1 var(--f-mono);letter-spacing:.09em;text-transform:uppercase;padding:5px 9px;border-radius:99px}
+.lw{background:var(--accent-soft);color:var(--accent)}
+.ls{background:var(--code-bg);color:var(--ink)}
+.lc{background:var(--hi-soft);color:var(--hi)}
+.done{margin-left:auto;display:flex;align-items:center;gap:7px;font-size:.82rem;color:var(--muted);cursor:pointer}
+.done input{width:17px;height:17px;accent-color:var(--accent);cursor:pointer}
+.pq{margin-top:10px;max-width:78ch}
+.pq>p,.prob>p{margin:10px 0 0}
+.parts{margin:8px 0 0;padding-left:1.4em;display:grid;gap:5px}
+.pfs{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px}
+.pfs figure{flex:1 1 200px;max-width:340px;min-width:0;margin:0;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 10px 8px}
+.prob details{margin-top:14px}
+.prob summary{cursor:pointer;font:600 .82rem var(--f-mono);color:var(--accent);width:max-content;padding:4px 0}
+.sol{margin-top:8px;background:var(--bg);border:1px solid var(--line);border-top:4px solid var(--ok);border-radius:10px;padding:6px 18px 12px;font-size:.95rem}
+.sol p{margin:10px 0 0;max-width:78ch}
+.sol li>b:first-child{color:var(--accent)}
+.sol .pfs figure,.sol .eq{background:var(--surface)}
+.aid{margin-top:12px;background:var(--bg);border:1px dashed var(--accent);border-radius:10px;padding:8px 14px;font-size:.9rem;line-height:1.55}
+.aid>b:first-child{color:var(--accent)}
+.prob input[type=text]{width:100%;min-width:56px;max-width:90px;font:inherit;text-align:center;padding:5px 6px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.prob textarea{width:100%;font:inherit;padding:8px 10px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.prob select{font:inherit;padding:5px 8px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.prob input:focus,.prob select:focus,.prob textarea:focus{outline:2px solid var(--accent);outline-offset:1px}
+.prob input.ok,.prob select.ok{border-color:var(--ok);background:var(--ok-soft)}
+.prob input.bad,.prob select.bad{border-color:var(--hi);background:var(--hi-soft)}
+table.t.inp td{padding:3px 6px 3px 0}
+.scalars{display:flex;flex-wrap:wrap;gap:12px 20px;margin:12px 0 0}
+label.sc{display:flex;align-items:center;gap:8px}
+label.sc>span{font-weight:600;min-width:34px}
+label.sc small{color:var(--muted);font-size:.75rem}
+.mc{display:grid;gap:7px;margin:12px 0 0}
+label.opt{display:flex;gap:10px;align-items:flex-start;padding:8px 12px;border:1.5px solid var(--line);border-radius:10px;cursor:pointer;background:var(--bg)}
+label.opt:hover{border-color:var(--accent)}
+label.opt.ok{border-color:var(--ok);background:var(--ok-soft)}
+label.opt.bad{border-color:var(--hi);background:var(--hi-soft)}
+label.opt.reveal{border-color:var(--ok)}
+label.opt input{margin-top:5px;accent-color:var(--accent)}
+.chips-set{display:inline-flex;flex-wrap:wrap;gap:6px;vertical-align:middle}
+label.chipbox{position:relative;border:1.5px solid var(--line);border-radius:999px;padding:3px 12px;cursor:pointer;background:var(--bg);font-size:.88rem}
+label.chipbox:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+label.chipbox input{position:absolute;opacity:0;pointer-events:none}
+.chips-set.ok label.chipbox:has(input:checked){border-color:var(--ok);background:var(--ok-soft)}
+.chips-set.bad{outline:2px solid var(--hi);outline-offset:3px;border-radius:12px}
+.actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:14px}
+.b{font:500 .85rem var(--f-body);padding:6px 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.b.chk{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:600}
+.fb{font-size:.88rem;font-weight:600}
+.fb.ok{color:var(--ok)} .fb.bad{color:var(--hi)}
+.solution,.expl{margin-top:12px;border-top:1px dashed var(--line);padding-top:10px;font-size:.95rem}
+.solution>p,.expl>p{margin:6px 0}
+.expl{color:var(--muted)}
+
+@media (max-width:820px){
+  .hero{grid-template-columns:minmax(0,1fr)}
+  .intro{grid-template-columns:minmax(0,1fr)}
+  .how li{flex-direction:column;gap:2px}
+  body{padding-top:56px}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{.toggle{display:none}body{background:#fff}}
+/* /study-hub:base */
+</style>
+<style>
+/* page-specific styles (figures, palettes) go here, using the tokens above */
+.fig svg text,.herofig svg text{font-family:var(--f-body);font-size:13px;fill:var(--ink)}
+svg text.ts{font-size:11.5px} svg text.tx{font-size:9.5px}
+svg text.tb{font-weight:600} svg text.tm{fill:var(--muted)} svg text.c{text-anchor:middle}
+svg .bx{fill:var(--surface);stroke:var(--muted);stroke-width:1.2}
+svg .ba{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .bh{fill:var(--hi-soft);stroke:var(--hi);stroke-width:1.5}
+svg .bo{fill:var(--ok-soft);stroke:var(--ok);stroke-width:1.5}
+svg .sl{fill:none;stroke:var(--muted);stroke-width:1.3}
+svg .ahd{fill:var(--muted)}
+svg .dot{fill:var(--hi)}
+svg .curve{fill:none;stroke:var(--accent);stroke-width:2.5}
+</style>
+</head>
+<body>
+<button class="toggle" id="theme-toggle" type="button" aria-label="Toggle light or dark theme">◐ Theme</button>
+<div class="wrap">
+
+<header class="hero" id="top">
+  <div>
+    <div class="eyebrow">GP · Chapter 1 · Lesson</div>
+    <h1>Project management fundamentals</h1>
+    <p class="lead">What makes a piece of work a project, how to start, staff and organise one, what "managing" it means, and how agile methods and Big Data jobs fit in. <span class="fr">(Les fondamentaux de la gestion de projets · Le projet Big Data)</span></p>
+    <ul class="how">
+      <li><span class="tag">In plain words</span><span>What the idea means, without the jargon.</span></li>
+      <li><span class="tag">Keywords</span><span><b class="en">sponsor</b> <span class="fr">(mandant)</span>: English first, French after.</span></li>
+      <li><span class="tag">Worked example</span><span>The course's own cases, redone. Every count and date checked by program.</span></li>
+    </ul>
+  </div>
+  <figure class="herofig"><svg viewBox="0 0 320 200" role="img" aria-label="An idea goes through five stages: initiate, plan, execute, control, close. Monitoring runs across all stages.">
+    <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" class="ahd"/></marker></defs>
+    <ellipse cx="38" cy="32" rx="30" ry="16" class="bh"/><text x="38" y="36" class="c tb">Idea</text>
+    <path d="M38 48 V72" class="sl" marker-end="url(#ah)"/>
+    <g>
+      <rect x="6" y="76" width="56" height="34" rx="6" class="ba"/><text x="34" y="97" class="c ts">Initiate</text>
+      <rect x="68" y="76" width="56" height="34" rx="6" class="ba"/><text x="96" y="97" class="c ts">Plan</text>
+      <rect x="130" y="76" width="56" height="34" rx="6" class="ba"/><text x="158" y="97" class="c ts">Execute</text>
+      <rect x="192" y="76" width="56" height="34" rx="6" class="ba"/><text x="220" y="97" class="c ts">Control</text>
+      <rect x="254" y="76" width="60" height="34" rx="6" class="bo"/><text x="284" y="97" class="c ts">Close</text>
+    </g>
+    <rect x="68" y="128" width="180" height="22" rx="11" class="bx"/><text x="158" y="143" class="c ts tm">monitoring &amp; control, all along</text>
+    <polygon points="70,160 30,196 110,196" class="bx"/>
+    <text x="70" y="190" class="c ts tb">P·C·D</text>
+    <text x="122" y="184" class="ts tm">judged on performance,</text><text x="122" y="198" class="ts tm">cost and deadline</text>
+  </svg><figcaption>A project turns an idea into a result through five stages, judged on three criteria.</figcaption></figure>
+</header>
+
+<nav class="toc" aria-label="Contents">
+  <div class="part"><h3>A · What is a project</h3><ul>
+    <li><a href="#s1"><span class="n">1</span><span>Project, sponsor, project manager<small>7 conditions</small></span></a></li>
+    <li><a href="#s2"><span class="n">2</span><span>Project or not?<small>routine, size, checklist</small></span></a></li>
+  </ul></div>
+  <div class="part"><h3>B · Getting a project going</h3><ul>
+    <li><a href="#s3"><span class="n">3</span><span>Starting a project<small>5 elements, milestones</small></span></a></li>
+    <li><a href="#s4"><span class="n">4</span><span>Finding the real need<small>user visits, 5 whys</small></span></a></li>
+    <li><a href="#s5"><span class="n">5</span><span>Choosing the project manager<small>FORMALUX case</small></span></a></li>
+    <li><a href="#s6"><span class="n">6</span><span>Project organisation<small>matrix vs project</small></span></a></li>
+    <li><a href="#s7"><span class="n">7</span><span>The pre-project<small>feasibility study</small></span></a></li>
+  </ul></div>
+  <div class="part"><h3>C · Managing a project</h3><ul>
+    <li><a href="#s8"><span class="n">8</span><span>Management process &amp; life cycle<small>5 stages, deliverables</small></span></a></li>
+    <li><a href="#s9"><span class="n">9</span><span>The golden triangle<small>performance, cost, deadline</small></span></a></li>
+    <li><a href="#s10"><span class="n">10</span><span>Non-quality<small>cost and schedule drift</small></span></a></li>
+    <li><a href="#s11"><span class="n">11</span><span>Stakeholders<small>MOA and MOE</small></span></a></li>
+  </ul></div>
+  <div class="part"><h3>D · Agile &amp; Big Data projects</h3><ul>
+    <li><a href="#s12"><span class="n">12</span><span>Agile projects and Scrum<small>sprints, tools</small></span></a></li>
+    <li><a href="#s13"><span class="n">13</span><span>Big Data jobs<small>3 families, 10 roles</small></span></a></li>
+    <li><a href="#s14"><span class="n">14</span><span>Running a Big Data project<small>tech side, business side</small></span></a></li>
+  </ul></div>
+</nav>
+
+<!-- 1 -->
+<section class="sec" id="s1">
+  <div class="sec-h"><span class="num">1</span><h2>Project, sponsor, project manager <span class="fr">(projet, mandant, chef de projet)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>A project is a one-off, somewhat new piece of work that someone asked for, with a goal, a deadline and a budget. One person orders it and answers for the result (the sponsor). Another person runs it day to day (the project manager).</p></div>
+    <ul class="defs">
+      <li><span class="term"><b class="en">project</b> <span class="fr">(projet)</span></span><span class="mean">A set of complex actions meant to satisfy a sponsor's need.</span></li>
+      <li><span class="term"><b class="en">sponsor / client</b> <span class="fr">(mandant, donneur d'ordre, commanditaire)</span></span><span class="mean">Answers for results, cost and deadline. Always one person from the permanent organisation. Starts and steers the project, provides resources, names the project manager and the steering committee <span class="fr">(comité de pilotage)</span>.</span></li>
+      <li><span class="term"><b class="en">project manager</b> <span class="fr">(chef de projet)</span></span><span class="mean">Supervises execution from A to Z: assigns people, tracks schedule and budget, links client and team.</span></li>
+      <li><span class="term"><b class="en">funder</b> <span class="fr">(sponsor)</span></span><span class="mean">An outside party that pays for part of the project. The same person can sometimes be sponsor and manager.</span></li>
+    </ul>
+  </div>
+  <figure class="fig"><svg viewBox="0 0 520 210" role="img" aria-label="The seven conditions of a project arranged around a central circle.">
+    <circle cx="260" cy="105" r="44" class="ba"/><text x="260" y="101" class="c tb">PROJECT</text><text x="260" y="117" class="c ts tm">all 7 needed</text>
+    <g class="ts">
+      <rect x="20" y="14" width="150" height="30" rx="15" class="bx"/><text x="95" y="33" class="c">1 unique</text>
+      <rect x="185" y="6" width="150" height="30" rx="15" class="bx"/><text x="260" y="25" class="c">2 some novelty</text>
+      <rect x="350" y="14" width="150" height="30" rx="15" class="bx"/><text x="425" y="33" class="c">3 a sponsor</text>
+      <rect x="10" y="90" width="150" height="30" rx="15" class="bx"/><text x="85" y="109" class="c">4 a project manager</text>
+      <rect x="360" y="90" width="150" height="30" rx="15" class="bx"/><text x="435" y="109" class="c">5 a defined goal</text>
+      <rect x="60" y="166" width="150" height="30" rx="15" class="bx"/><text x="135" y="185" class="c">6 a defined deadline</text>
+      <rect x="310" y="166" width="150" height="30" rx="15" class="bx"/><text x="385" y="185" class="c">7 a defined budget</text>
+    </g>
+    <g class="sl"><path d="M150 44 L222 82"/><path d="M260 36 V61"/><path d="M370 44 L298 82"/><path d="M160 105 H216"/><path d="M360 105 H304"/><path d="M170 166 L228 136"/><path d="M350 166 L292 136"/></g>
+  </svg><figcaption>Uniqueness, novelty, sponsor, project manager, goal, deadline, budget <span class="fr">(unique, nouveauté, mandant, chef de projet, but, délai, budget)</span>.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example · USTHB research projects (PRFU)</span>
+    <p>Check a PRFU <span class="fr">(Projet de Recherche et Formation Universitaire)</span> against the 7 conditions.</p>
+    <ul class="ln">
+      <li>Sponsor: the Ministry of Higher Education.</li>
+      <li>Project manager: a senior lecturer-researcher (Professor or Maître de Conférences) attached to a research lab.</li>
+      <li>Unique and new: each research topic is new by nature.</li>
+      <li>Goal, deadline, budget: fixed when the project is approved.</li>
+      <li>7 / 7 conditions met, so a PRFU is a project.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s2">
+  <div class="sec-h"><span class="num">2</span><h2>Project or not? <span class="fr">(projet ou non-projet)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>Repetitive work and tiny jobs are not projects. A mission is a project only if every condition holds. If even one red flag appears (routine, no end date, very small amount), it is not. Calling everything a project clogs the project system.</p></div>
+    <ul class="defs">
+      <li><span class="term"><b class="en">routine task</b> <span class="fr">(tâche répétitive, travail de routine)</span></span><span class="mean">Recurring work with no end. Never a project.</span></li>
+      <li><span class="term"><b class="en">minimum threshold</b> <span class="fr">(coût minimal)</span></span><span class="mean">Many companies set a minimum amount below which work is not a project.</span><span class="eg">in Switzerland, thresholds such as 50'000 or 250'000 CHF; other countries have none.</span></li>
+      <li><span class="term"><b class="en">checklist</b> <span class="fr">(liste de contrôle)</span></span><span class="mean">The 7 conditions of section 1, ticked one by one.</span></li>
+    </ul>
+  </div>
+  <figure class="fig"><svg viewBox="0 0 520 190" role="img" aria-label="Decision flow: if routine, no end date or tiny amount, not a project. Otherwise check all seven conditions.">
+    <defs><marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" class="ahd"/></marker></defs>
+    <rect x="10" y="74" width="90" height="40" rx="8" class="bx"/><text x="55" y="98" class="c ts tb">a mission</text>
+    <path d="M100 94 H140" class="sl" marker-end="url(#ah2)"/>
+    <rect x="142" y="58" width="150" height="72" rx="8" class="bh"/>
+    <text x="217" y="80" class="c ts tb">any red flag?</text><text x="217" y="98" class="c ts">routine · no end date</text><text x="217" y="114" class="c ts">· tiny amount</text>
+    <path d="M292 76 L360 34" class="sl" marker-end="url(#ah2)"/><text x="316" y="46" class="ts tm">yes</text>
+    <rect x="362" y="12" width="148" height="40" rx="8" class="bh"/><text x="436" y="37" class="c ts tb">NOT a project</text>
+    <path d="M292 112 L360 150" class="sl" marker-end="url(#ah2)"/><text x="316" y="148" class="ts tm">no</text>
+    <rect x="362" y="130" width="148" height="48" rx="8" class="ba"/><text x="436" y="150" class="c ts">all 7 conditions?</text><text x="436" y="168" class="c ts tb">yes → project</text>
+  </svg><figcaption>Rule out first, then confirm with the full checklist.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example · the course's six missions</span>
+    <div class="scroll"><table class="t">
+      <tr><th>Mission</th><th>Verdict</th><th>Why</th></tr>
+      <tr><td>By end of December, raise sales of product X in South-East Asia by 15% (value and volume)</td><td class="ok">project</td><td>clear goal, end date, measurable</td></tr>
+      <tr><td>In 8 months, cut returns for manufacturing defects by 20%</td><td class="ok">project</td><td>goal + deadline</td></tr>
+      <tr><td>Before year end, replace all local printers with networked department printers</td><td class="ok">project</td><td>one-off, dated</td></tr>
+      <tr><td>Develop sales in Asia</td><td class="bad">not</td><td>too vague, no deadline</td></tr>
+      <tr><td>Look after after-sales service quality</td><td class="bad">not</td><td>routine</td></tr>
+      <tr><td>Keep department printers available</td><td class="bad">not</td><td>routine</td></tr>
+    </table></div>
+    <p>Note the pair "replace the printers" (project) and "keep the printers available" (routine): same topic, different nature.</p>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s3">
+  <div class="sec-h"><span class="num">3</span><h2>Starting a project <span class="fr">(débuter un projet)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>Ideally five things exist at the start: someone who pays and benefits, a sponsor, a manager, a problem or need, and a goal. Often the goal is missing; defining it with the sponsor is then the manager's first job. Then you plan milestones where the sponsor gives the green light.</p></div>
+    <ul class="defs">
+      <li><span class="term"><b class="en">client</b> <span class="fr">(client)</span></span><span class="mean">Pays for the project and benefits from it.</span></li>
+      <li><span class="term"><b class="en">milestone</b> <span class="fr">(jalon)</span></span><span class="mean">A significant event with a date that can be known for sure. Reached only when its result is irreversibly acquired (a delivery, an end of phase).</span></li>
+      <li><span class="term"><b class="en">project management plan</b> <span class="fr">(plan de management de projet)</span></span><span class="mean">The plan agreed with the sponsor, if the project size calls for one.</span></li>
+      <li><span class="term"><b class="en">acceptance</b> <span class="fr">(recette)</span></span><span class="mean">The final reception of the project: the last milestone.</span></li>
+    </ul>
+  </div>
+  <figure class="fig"><svg viewBox="0 0 540 150" role="img" aria-label="A timeline with milestone diamonds: goals agreed, pre-project accepted, project request accepted, plan accepted, equipment received, acceptance.">
+    <path d="M20 70 H520" class="sl"/>
+    <g class="ts">
+      <path d="M40 58 l12 12 l-12 12 l-12 -12z" class="ba"/><text x="40" y="104" class="c">goals</text><text x="40" y="118" class="c">agreed</text>
+      <path d="M130 58 l12 12 l-12 12 l-12 -12z" class="ba"/><text x="130" y="104" class="c">pre-project</text><text x="130" y="118" class="c">accepted</text>
+      <path d="M220 58 l12 12 l-12 12 l-12 -12z" class="ba"/><text x="220" y="104" class="c">technical</text><text x="220" y="118" class="c">option chosen</text>
+      <path d="M310 58 l12 12 l-12 12 l-12 -12z" class="ba"/><text x="310" y="104" class="c">project request</text><text x="310" y="118" class="c">accepted</text>
+      <path d="M400 58 l12 12 l-12 12 l-12 -12z" class="ba"/><text x="400" y="104" class="c">plan</text><text x="400" y="118" class="c">accepted</text>
+      <path d="M496 58 l12 12 l-12 12 l-12 -12z" class="bo"/><text x="496" y="104" class="c tb">acceptance</text><text x="496" y="118" class="c">(recette)</text>
+    </g>
+    <text x="270" y="30" class="c ts tm">each diamond = sponsor's green light (feu vert)</text>
+  </svg><figcaption>Typical milestones listed in the course, from goals to final acceptance.</figcaption></figure>
+  <div class="callout"><b>The manager's first five steps</b>
+    <ol><li>Rephrase the problem or need in your own words and have the sponsor check it.</li><li>Make sure the goals and expected deliverables are understood.</li><li>Agree the main phases: pre-project? formal project request? management plan?</li><li>Start from an existing list of project activities and strike out what is not needed.</li><li>Plan the milestones where you want the sponsor's green light.</li></ol>
+  </div>
+  <div class="calc"><span class="tag">Worked example · the "Web page" project that starts without a goal</span>
+    <ul class="ln">
+      <li>Everyone agrees the company "needs a web page". Client? the company. Need? vaguely "be visible".</li>
+      <li>Startup checklist: sponsor defined? client identified? need understood? goal formulated? Only the client is clear.</li>
+      <li>First job of the manager: hold talks with the sponsor until the goal is written down, for example "a 5-page site presenting our products, online before the trade fair".</li>
+      <li>First milestone = "goals agreed". Trap: a project everyone agrees on but that still has no sponsor.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s4">
+  <div class="sec-h"><span class="num">4</span><h2>Finding the real need <span class="fr">(identifier les problèmes ou les besoins)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>A project starts from a problem (something that hurts) or a need (something wanted). Before building anything, find out what users really want. The single biggest success factor: spend time with the end users, not only their bosses. Keep asking "why?" to reach the real problem behind the stated one.</p></div>
+    <ul class="defs">
+      <li><span class="term"><b class="en">problem</b> <span class="fr">(problème)</span></span><span class="mean">Users are unhappy with something existing.</span><span class="eg">a badly designed car dashboard.</span></li>
+      <li><span class="term"><b class="en">need</b> <span class="fr">(besoin)</span></span><span class="mean">Users want something new.</span><span class="eg">a GPS in the car.</span></li>
+      <li><span class="term"><b class="en">5 whys method</b> <span class="fr">(méthode des cinq pourquoi)</span></span><span class="mean">Ask "why?" repeatedly to separate the false problem from the true one.</span></li>
+      <li><span class="term"><b class="en">stakeholders</b> <span class="fr">(parties prenantes)</span></span><span class="mean">Everyone concerned. Interview all categories, with open questions.</span></li>
+    </ul>
+  </div>
+  <figure class="fig"><svg viewBox="0 0 540 260" role="img" aria-label="Five whys chain from 'we need new offices' down to 'unrealistic quality requirements'.">
+    <defs><marker id="ah4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" class="ahd"/></marker></defs>
+    <g class="ts">
+      <rect x="10" y="8" width="300" height="32" rx="6" class="bh"/><text x="20" y="29">Stated: "we need new offices"</text>
+      <rect x="40" y="56" width="330" height="32" rx="6" class="bx"/><text x="50" y="77">Why 1 → 3 people per office</text>
+      <rect x="70" y="104" width="360" height="32" rx="6" class="bx"/><text x="80" y="125">Why 2 → floor full of computer boxes to check</text>
+      <rect x="100" y="152" width="380" height="32" rx="6" class="bx"/><text x="110" y="173">Why 3 → supplier no longer does quality checks</text>
+      <rect x="130" y="200" width="400" height="32" rx="6" class="bx"/><text x="140" y="221">Why 4 → supplier asked +70% for the checks</text>
+    </g>
+    <g class="sl"><path d="M25 40 V72 H40" marker-end="url(#ah4)"/><path d="M55 88 V120 H70" marker-end="url(#ah4)"/><path d="M85 136 V168 H100" marker-end="url(#ah4)"/><path d="M115 184 V216 H130" marker-end="url(#ah4)"/></g>
+    <rect x="340" y="10" width="190" height="56" rx="8" class="bo"/><text x="435" y="32" class="c ts">Why 5 → our QA demanded</text><text x="435" y="50" class="c ts tb">4 h of work per computer</text>
+    <path d="M500 200 C 540 160, 540 110, 470 68" class="sl" marker-end="url(#ah4)"/>
+  </svg><figcaption>The office-space case: renting offices would have solved the false problem. The real one was unrealistic quality requirements.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example · the purchasing department's lack of space</span>
+    <ol>
+      <li><b>Why new offices?</b> Not enough room: three people per office.</li>
+      <li><b>Why three per office?</b> Computers waiting to be checked fill the whole floor.</li>
+      <li><b>Why check them here?</b> The supplier used to do the checks; now we must.</li>
+      <li><b>Why did the supplier stop?</b> (asked to the head of purchasing) The supplier wanted 70% more for the checks.</li>
+      <li><b>Why the price rise?</b> (asked to the supplier) Our QA manager's demands cost 4 hours per computer.</li>
+    </ol>
+    <p>Fix: soften the QA requirements. The supplier resumes the checks, the floor empties, no new offices needed. To feel the scale: at, say, 50 computers a month, 4 h each is <span class="res">200 hours of checks a month</span> (illustrative volume, not from the course).</p>
+    <p>The course's three field cases make the same point: insurance agents followed for 2 to 3 days before designing their laptops, a team spending a day at the Algiers marshalling yard <span class="fr">(gare de triage)</span>, and a CEO visiting 28 clients in 6 weeks (about 4.7 a week) before launching three successful machines.</p>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s5">
+  <div class="sec-h"><span class="num">5</span><h2>Choosing the project manager <span class="fr">(choisir le chef de projet)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>Pick someone who has led a similar project, or at least worked in one. They must communicate well, handle conflict, know the field and know project management. Technical skill alone is not enough, and neither is pure management without domain knowledge.</p></div>
+    <ul class="defs">
+      <li><span class="term"><b class="en">hands-on vs directing</b> <span class="fr">(mettre la main à la pâte / diriger)</span></span><span class="mean">In small projects the manager also does the work; in large ones they only lead.</span></li>
+      <li><span class="term"><b class="en">half-day rule</b> <span class="fr">(une demi-journée par collaborateur)</span></span><span class="mean">A manager needs about half a day of organising per team member (per week).</span></li>
+      <li><span class="term"><b class="en">coach</b> <span class="fr">(coach externe)</span></span><span class="mean">An outside expert who supports a manager lacking one skill.</span></li>
+    </ul>
+  </div>
+  <figure class="fig"><svg viewBox="0 0 540 200" role="img" aria-label="Seven FORMALUX candidates; six eliminated, Meyer chosen with an external coach.">
+    <g class="ts">
+      <rect x="10" y="10" width="168" height="40" rx="6" class="bh"/><text x="20" y="27" class="tb">Gindraz, 26</text><text x="20" y="42" class="tm">CAD/CAM · too technical</text>
+      <rect x="10" y="58" width="168" height="40" rx="6" class="bh"/><text x="20" y="75" class="tb">Queloz, 24</text><text x="20" y="90" class="tm">networks · too technical</text>
+      <rect x="10" y="106" width="168" height="40" rx="6" class="bh"/><text x="20" y="123" class="tb">Franke, 45</text><text x="20" y="138" class="tm">tooling · narrow view</text>
+      <rect x="10" y="154" width="168" height="40" rx="6" class="bh"/><text x="20" y="171" class="tb">Laub, 48</text><text x="20" y="186" class="tm">purchasing · narrow view</text>
+      <rect x="196" y="10" width="176" height="40" rx="6" class="bh"/><text x="206" y="27" class="tb">Droz, 27</text><text x="206" y="42" class="tm">Bridoflex marketing · biased</text>
+      <rect x="196" y="58" width="176" height="40" rx="6" class="bh"/><text x="206" y="75" class="tb">Payot, 36</text><text x="206" y="90" class="tm">design · poor manager</text>
+      <rect x="384" y="60" width="150" height="56" rx="8" class="bo"/><text x="394" y="80" class="tb">Meyer, 56 ✓</text><text x="394" y="96" class="tm">production planning</text><text x="394" y="110" class="tm">+ external coach</text>
+    </g>
+    <path d="M200 130 l160 0" class="sl"/><text x="280" y="150" class="c ts tm">6 out → 1 left</text>
+  </svg><figcaption>FORMALUX: six candidates ruled out, Meyer chosen with a coach for "just-in-time" methods.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example · FORMALUX's new production system (GPAO)</span>
+    <ul class="ln">
+      <li>Context: a tool maker (one-off parts) whose BRIDOFLEX line became series production. Founder M. Crettaz wants a computer-aided production management system <span class="fr">(GPAO)</span> covering both.</li>
+      <li>Rule out: Gindraz, Queloz (technicians, little production knowledge), Franke, Laub (narrow view), Droz (all of production against him), Payot (good designer, poor manager).</li>
+      <li>Remaining: Meyer, production planning, wants the job, but struggles with "just-in-time".</li>
+      <li>Hiring an outsider would offend Meyer. Decision: Meyer + external coach.</li>
+      <li>Half-day rule check: with 10 full-time members, 10 × ½ day = <span class="res">5 days a week</span>, the whole week is spent on organising and leading.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s6">
+  <div class="sec-h"><span class="num">6</span><h2>Project organisation <span class="fr">(organisation de projet)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>Every project gets a temporary structure that disappears at the end. In a matrix, members stay in their departments and have two bosses: flexible but conflict-prone. In a dedicated project organisation, the manager is everyone's boss: efficient, rigid, for long projects. A small purchase can do with a few coordination meetings.</p></div>
+    <ul class="defs">
+      <li><span class="term"><b class="en">matrix organisation</b> <span class="fr">(organisation matricielle)</span></span><span class="mean">Members belong to their department and to the project; two bosses: line manager <span class="fr">(chef de ligne)</span> and project manager. Typical for small and medium projects, and for services.</span></li>
+      <li><span class="term"><b class="en">project organisation</b> <span class="fr">(organisation de projet, structure divisionnelle par projet)</span></span><span class="mean">The project manager is also the hierarchical boss. For large, long projects.</span></li>
+      <li><span class="term"><b class="en">staff organisation</b> <span class="fr">(organisation en état-major)</span></span><span class="mean">No real team; the manager coordinates through a few meetings.</span></li>
+      <li><span class="term"><b class="en">project office</b> <span class="fr">(bureau de projet)</span></span><span class="mean">A shared room where part-time members work on project days.</span></li>
+    </ul>
+  </div>
+  <figure class="fig" style="--maxw:640px;--minw:480px"><svg viewBox="0 0 600 220" role="img" aria-label="Left: project organisation tree, management over projects A to D. Right: matrix grid with departments as columns and projects as rows.">
+    <text x="140" y="16" class="c ts tb">Project (divisional) organisation</text>
+    <rect x="100" y="26" width="80" height="26" rx="4" class="ba"/><text x="140" y="44" class="c ts">Management</text>
+    <path d="M140 52 V68 M35 68 H245 M35 68 V82 M105 68 V82 M175 68 V82 M245 68 V82" class="sl"/>
+    <g class="ts">
+      <rect x="10" y="82" width="50" height="24" rx="4" class="bx"/><text x="35" y="98" class="c">Proj A</text>
+      <rect x="80" y="82" width="50" height="24" rx="4" class="bx"/><text x="105" y="98" class="c">Proj B</text>
+      <rect x="150" y="82" width="50" height="24" rx="4" class="bx"/><text x="175" y="98" class="c">Proj C</text>
+      <rect x="220" y="82" width="50" height="24" rx="4" class="bx"/><text x="245" y="98" class="c">Proj D</text>
+    </g>
+    <g class="sl"><path d="M35 106 V170 M105 106 V170 M175 106 V170 M245 106 V170"/><path d="M35 124h12M35 142h12M35 160h12M105 124h12M105 142h12M105 160h12M175 124h12M175 142h12M175 160h12M245 124h12M245 142h12M245 160h12"/></g>
+    <text x="140" y="198" class="c ts tm">one boss: the project manager</text>
+    <text x="450" y="16" class="c ts tb">Matrix organisation</text>
+    <rect x="410" y="26" width="80" height="26" rx="4" class="ba"/><text x="450" y="44" class="c ts">Management</text>
+    <g class="ts">
+      <rect x="350" y="62" width="58" height="24" rx="4" class="bx"/><text x="379" y="78" class="c">Tech</text>
+      <rect x="414" y="62" width="58" height="24" rx="4" class="bx"/><text x="443" y="78" class="c">Finance</text>
+      <rect x="478" y="62" width="58" height="24" rx="4" class="bx"/><text x="507" y="78" class="c">Sales</text>
+      <rect x="542" y="62" width="54" height="24" rx="4" class="bx"/><text x="569" y="78" class="c">Admin</text>
+      <rect x="296" y="100" width="48" height="22" rx="4" class="bh"/><text x="320" y="115" class="c">Proj A</text>
+      <rect x="296" y="132" width="48" height="22" rx="4" class="bh"/><text x="320" y="147" class="c">Proj B</text>
+      <rect x="296" y="164" width="48" height="22" rx="4" class="bh"/><text x="320" y="179" class="c">Proj C</text>
+    </g>
+    <g class="sl"><path d="M344 111 H596 M344 143 H596 M344 175 H596 M379 86 V186 M443 86 V186 M507 86 V186 M569 86 V186"/></g>
+    <circle cx="443" cy="143" r="6" class="dot"/>
+    <text x="450" y="208" class="c ts tm">● a member: two bosses (department + project)</text>
+  </svg><figcaption>Redrawn from the course's two diagrams.</figcaption></figure>
+  <div class="scroll"><table class="t grid">
+    <tr><th></th><th>Advantages <span class="fr">(avantages)</span></th><th>Drawbacks <span class="fr">(inconvénients)</span></th></tr>
+    <tr><td><b>Project</b></td><td>high autonomy of managers · strong team involvement · adapts to the market</td><td>company life tied to project length · little cross-communication · projects siloed</td></tr>
+    <tr><td><b>Matrix</b></td><td>values the project function · motivates the team · balances workload</td><td>double hierarchy · managing seconded staff</td></tr>
+  </table></div>
+  <div class="calc"><span class="tag">Worked example · three cases, three structures</span>
+    <ul class="ln">
+      <li>"HotLine 7/7" (insurer): 2 Marketing + 2 Field services + 1 App development + 1 HR + 1 Training + 2 Internal organisation = 9 members, + the manager = <span class="res">10 people</span> from 6 departments → matrix.</li>
+      <li>Buying 4 machining centres: interviews, weighting meeting, tender to 8–10 suppliers, choice meeting, approval. No team needed → staff organisation (état-major).</li>
+      <li>Motorway tunnel: 4 engineers + 2 draughtsmen full time for at least 3 years → project organisation.</li>
+      <li>Matrix staffing tip: 10 people at 10%, 5 at 20% and 2 at 50% all give 1.0 full-time equivalent. With the half-day rule, leading them costs 5, 2.5 and <span class="res">1 day a week</span>: prefer 2 people at 50%.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s7">
+  <div class="sec-h"><span class="num">7</span><h2>The pre-project <span class="fr">(avant-projet)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>A pre-project is a small project whose results are studies, not products. It gathers the facts needed to decide whether and how to launch the real project. It costs resources, so a manager with spending authority must approve it. Do not confuse its goal with the project's goal, and do not hide risks.</p></div>
+    <ul class="defs">
+      <li><span class="term"><b class="en">pre-project</b> <span class="fr">(avant-projet, pré-étude, étude, pré-projet, étude de faisabilité)</span></span><span class="mean">Same thing, many names.</span></li>
+      <li><span class="term"><b class="en">typical outputs</b></span><span class="mean">market study, profitability calculation <span class="fr">(calcul de rentabilité)</span>, technical feasibility, risk analysis, delivery-time estimate, impact study.</span></li>
+      <li><span class="term"><b class="en">pre-project request form</b> <span class="fr">(demande d'avant-projet)</span></span><span class="mean">Situation, summary, goal of the pre-project, usefulness of the project, main milestones, planned resources.</span></li>
+    </ul>
+  </div>
+  <figure class="fig"><svg viewBox="0 0 540 156" role="img" aria-label="Timeline of Mrs Jufer's pre-project: 15 March start, 30 April report, 20 May software evaluation and end, 31 May final project request.">
+    <path d="M30 60 H510" class="sl"/>
+    <rect x="30" y="48" width="372" height="24" rx="4" class="ba"/><text x="216" y="65" class="c ts">pre-project: 66 days</text>
+    <rect x="402" y="48" width="62" height="24" rx="4" class="bo"/><text x="433" y="65" class="c ts">11 d</text>
+    <g class="ts">
+      <path d="M30 40 V80" class="sl"/><text x="30" y="98" class="c tb">15 Mar</text><text x="30" y="112" class="c tm">start</text>
+      <path d="M290 40 V80" class="sl"/><text x="290" y="98" class="c tb">30 Apr</text><text x="290" y="112" class="c tm">situation report</text>
+      <path d="M402 40 V80" class="sl"/><text x="402" y="98" class="c tb">20 May</text><text x="402" y="112" class="c tm">software eval · end</text>
+      <path d="M464 40 V118" class="sl"/><text x="480" y="132" class="c tb">31 May</text><text x="480" y="146" class="c tm">project request</text>
+    </g>
+    <text x="160" y="36" class="c ts tm">46 days</text><text x="346" y="36" class="c ts tm">20 days</text>
+  </svg><figcaption>Bar lengths to scale (1 day ≈ 5.6 px). Day counts computed from the dates.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example · Mrs Jufer's HR software pre-project</span>
+    <ul class="ln">
+      <li>Company: 1680 employees on 2 sites. Problems: staff data spread over 3 systems (costly updates, errors), appraisal data on paper only, unclear passwords and access rights.</li>
+      <li>Pre-project goal: get the data to specify the software, choose among market products, and estimate costs and benefits to ±20%.</li>
+      <li>Project goal (different!): replace the 3 systems with one, compatible with accounting, compliant with data-protection law, with clear access rules.</li>
+      <li>Phases: 15 Mar → 30 Apr = 46 days; 30 Apr → 20 May = 20 days; total pre-project <span class="res">66 days</span>; then 11 days to write the project request (31 May).</li>
+      <li>What ±20% means: if the estimate is 500 000 DA (illustrative), the true cost should fall between <span class="res">400 000 and 600 000 DA</span>.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s8">
+  <div class="sec-h"><span class="num">8</span><h2>Management process &amp; life cycle <span class="fr">(gestion de projet, cycle de vie)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>Project management means applying knowledge, skills, tools and techniques to reach the project's requirements. It follows the project from start to closure in five stages, each producing deliverables. A client review at the end of each stage decides whether to go on, so risk is cut into slices. Control runs across all stages.</p></div>
+    <ul class="defs">
+      <li><span class="term"><b class="en">initiate</b> <span class="fr">(initier)</span></span><span class="mean">Analyse the project and decide go or no-go.</span></li>
+      <li><span class="term"><b class="en">plan</b> <span class="fr">(planifier)</span></span><span class="mean">Produces the project management plan <span class="fr">(plan de management, business plan)</span>.</span></li>
+      <li><span class="term"><b class="en">execute</b> <span class="fr">(exécuter)</span></span><span class="mean">Carry out the work packages <span class="fr">(lots de travaux)</span> of the plan.</span></li>
+      <li><span class="term"><b class="en">monitor &amp; control</b> <span class="fr">(surveiller et maîtriser)</span></span><span class="mean">Continuous, iterative, frequent, during execution.</span></li>
+      <li><span class="term"><b class="en">close</b> <span class="fr">(clore)</span></span><span class="mean">Wrap up with lessons learned, strengths and weaknesses, for the next similar project.</span></li>
+      <li><span class="term"><b class="en">project life cycle</b> <span class="fr">(cycle de vie du projet)</span></span><span class="mean">The sequence of these phases, with a client review between each.</span></li>
+    </ul>
+  </div>
+  <figure class="fig" style="--maxw:640px;--minw:480px"><svg viewBox="0 0 600 220" role="img" aria-label="Five phase headers with their deliverables underneath.">
+    <g class="ts">
+      <rect x="6" y="10" width="110" height="28" rx="5" class="bh"/><text x="61" y="29" class="c tb">Initiation</text>
+      <rect x="126" y="10" width="110" height="28" rx="5" class="ba"/><text x="181" y="29" class="c tb">Planning</text>
+      <rect x="246" y="10" width="110" height="28" rx="5" class="ba"/><text x="301" y="29" class="c tb">Execution</text>
+      <rect x="366" y="10" width="110" height="28" rx="5" class="bo"/><text x="421" y="29" class="c tb">Control</text>
+      <rect x="486" y="10" width="108" height="28" rx="5" class="bo"/><text x="540" y="29" class="c tb">Closing</text>
+    </g>
+    <g class="ts">
+      <text x="14" y="62">· charter</text><text x="14" y="84">· content (scope)</text><text x="14" y="106">· deliverables</text><text x="14" y="128">· client acceptance</text>
+      <text x="134" y="62">· schedule</text><text x="134" y="84">· planning</text><text x="134" y="106">· resources</text><text x="134" y="128">· risks</text><text x="134" y="150">· communication</text>
+      <text x="254" y="62">· results</text><text x="254" y="84">· reports</text><text x="254" y="106">· team</text>
+      <text x="374" y="62">· deadlines</text><text x="374" y="84">· changes</text>
+      <text x="494" y="62">· acceptance</text><text x="494" y="84">· supplier closure</text><text x="494" y="106">· review (bilan)</text>
+    </g>
+    <rect x="126" y="178" width="350" height="26" rx="13" class="bx"/><text x="301" y="196" class="c ts tm">monitoring &amp; control is transversal to all phases</text>
+  </svg><figcaption>Main deliverables per phase, from the course figure <span class="fr">(charte, contenu, livrables, échéancier, ressources, risques, rapports, bilan)</span>.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example · place each output of the HR software project</span>
+    <div class="scroll"><table class="t">
+      <tr><th>Output</th><th>Phase</th></tr>
+      <tr><td>Decision to go ahead after the pre-project</td><td>Initiation</td></tr>
+      <tr><td>Schedule of the migration from 3 systems to 1</td><td>Planning</td></tr>
+      <tr><td>Weekly progress report of the team</td><td>Execution</td></tr>
+      <tr><td>Request from HR to add an appraisal module, accepted with a new date</td><td>Control (changes, deadlines)</td></tr>
+      <tr><td>Final review: what went well, what to do differently</td><td>Closing (bilan)</td></tr>
+    </table></div>
+  </div>
+</section>
+
+<!-- 9 -->
+<section class="sec" id="s9">
+  <div class="sec-h"><span class="num">9</span><h2>The golden triangle <span class="fr">(le triangle d'or, PCD)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>A project succeeds when it delivers what was promised, for the agreed cost, on the agreed date. Together these are called overall quality. Performance comes first, because if the technical work goes wrong, delays and overruns follow. Any new client request outside the contract must be renegotiated in money and in time.</p></div>
+    <ul class="defs">
+      <li><span class="term"><b class="en">performance</b> <span class="fr">(performance, qualité technique)</span></span><span class="mean">The technical object of the project itself.</span></li>
+      <li><span class="term"><b class="en">cost</b> <span class="fr">(coûts, qualité économique)</span></span><span class="mean">Estimated item by item, overruns analysed and renegotiated.</span></li>
+      <li><span class="term"><b class="en">deadline</b> <span class="fr">(délais, qualité temporelle)</span></span><span class="mean">Delivery date: estimate durations, control slippage.</span></li>
+      <li><span class="term"><b class="en">overall quality</b> <span class="fr">(qualité globale, PCD)</span></span><span class="mean">The three together.</span></li>
+    </ul>
+  </div>
+  <figure class="fig"><svg viewBox="0 0 400 220" role="img" aria-label="Triangle with Performance at the top, Cost bottom left, Deadline bottom right, overall quality in the centre.">
+    <polygon points="200,24 50,190 350,190" class="ba"/>
+    <text x="200" y="134" class="c tb">overall quality</text><text x="200" y="152" class="c ts tm">(qualité globale)</text>
+    <circle cx="200" cy="24" r="16" class="bh"/><text x="200" y="29" class="c tb">P</text><text x="226" y="22" class="ts">Performance</text>
+    <circle cx="50" cy="190" r="16" class="bx"/><text x="50" y="195" class="c tb">C</text><text x="50" y="216" class="c ts">Cost</text>
+    <circle cx="350" cy="190" r="16" class="bx"/><text x="350" y="195" class="c tb">D</text><text x="350" y="216" class="c ts">Deadline (délais)</text>
+  </svg><figcaption>Performance drives the other two: technical failures cause delays and overruns.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example · a change request (illustrative numbers)</span>
+    <ul class="ln">
+      <li>Contract: budget 1 200 000 DA, 6 months.</li>
+      <li>The client asks for an extra feature estimated at +15% of the work.</li>
+      <li>Cost rule: renegotiate financially → new budget 1 200 000 × 1.15 = <span class="res">1 380 000 DA</span>.</li>
+      <li>Deadline rule: carry it into the contractual calendar → about 6 × 1.15 ≈ 6.9 months, so roughly one extra month.</li>
+      <li>Accepting the feature "for free" breaks C and D, even if P is perfect.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 10 -->
+<section class="sec" id="s10">
+  <div class="sec-h"><span class="num">10</span><h2>Non-quality <span class="fr">(la non-qualité)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>Missing any of P, C or D is non-quality, and fixing it costs more than doing it right first time. The later a problem is found, the more it costs. Over-quality is also wasteful. Aim for acceptable quality in between.</p></div>
+    <ul class="defs">
+      <li><span class="term"><b class="en">cost drift</b> <span class="fr">(dérive des coûts)</span></span><span class="mean">Problem found early: add resources, keep the date, but blow the budget.</span></li>
+      <li><span class="term"><b class="en">schedule and cost drift</b> <span class="fr">(dérive du planning et des coûts)</span></span><span class="mean">Problem found late: even extra resources cannot save the date; extra cost + late penalties.</span></li>
+      <li><span class="term"><b class="en">over-quality</b> <span class="fr">(surqualité)</span></span><span class="mean">More than needed: costly and useless.</span></li>
+    </ul>
+  </div>
+  <figure class="fig"><svg viewBox="0 0 440 210" role="img" aria-label="Total cost against quality level: high on the non-quality side, high on the over-quality side, lowest in the acceptable zone.">
+    <path d="M40 20 V180 H420" class="sl"/>
+    <text x="16" y="100" class="ts tm" transform="rotate(-90 16 100)">total cost</text>
+    <rect x="180" y="24" width="90" height="156" class="bo" opacity=".6"/>
+    <path d="M60 40 C 140 170, 260 170, 400 50" class="curve"/>
+    <text x="80" y="198" class="c ts">non-quality</text><text x="225" y="198" class="c ts tb">acceptable</text><text x="370" y="198" class="c ts">over-quality</text>
+  </svg><figcaption>Schematic: both extremes are costly; the acceptable zone is in between.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example · same technical problem, found early or late</span>
+    <div class="scroll"><table class="t">
+      <tr><th></th><th>Found early</th><th>Found late</th></tr>
+      <tr><td>Response</td><td>add people and tools</td><td>add people and tools, longer</td></tr>
+      <tr><td>Performance (P)</td><td class="ok">kept</td><td class="ok">kept</td></tr>
+      <tr><td>Deadline (D)</td><td class="ok">kept</td><td class="bad">missed</td></tr>
+      <tr><td>Cost (C)</td><td class="bad">overrun</td><td class="bad">bigger overrun + penalties</td></tr>
+      <tr><td>Name</td><td>cost drift</td><td>schedule and cost drift</td></tr>
+    </table></div>
+  </div>
+</section>
+
+<!-- 11 -->
+<section class="sec" id="s11">
+  <div class="sec-h"><span class="num">11</span><h2>Stakeholders <span class="fr">(parties prenantes : MOA et MOE)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>Every project has a client side that orders and pays, and a supplier side that does the work. The client side is the project owner (MOA); the supplier side is the prime contractor (MOE). The contract is the interface between them. Inside the supplier's company sit the project manager and the team.</p></div>
+    <ul class="defs">
+      <li><span class="term"><b class="en">project owner</b> <span class="fr">(maître d'ouvrage, MOA)</span></span><span class="mean">The client, public or industrial, who awards the contracts. Its project director follows progress, attends reviews, controls finances, checks conformity to needs, informs its own client.</span></li>
+      <li><span class="term"><b class="en">prime contractor</b> <span class="fr">(maître d'œuvre, MOE)</span></span><span class="mean">The supplier, chosen for technical skill, who executes the work (or has it executed) within time, cost, resources and quality.</span></li>
+      <li><span class="term"><b class="en">contract</b> <span class="fr">(contrat)</span></span><span class="mean">The interface linking client and supplier.</span></li>
+    </ul>
+  </div>
+  <figure class="fig"><svg viewBox="0 0 520 240" role="img" aria-label="The project contains two sides: the client with its project owner, and the company with the prime contractor, project manager and team. A contract links the project owner and the prime contractor.">
+    <rect x="6" y="6" width="508" height="228" rx="18" class="bx" stroke-dasharray="5 4"/><text x="22" y="26" class="ts tm">the project</text>
+    <circle cx="120" cy="128" r="80" class="bx"/><text x="120" y="68" class="c ts tm">the client</text>
+    <circle cx="120" cy="138" r="46" class="bh"/><text x="120" y="134" class="c ts tb">project owner</text><text x="120" y="150" class="c ts">(MOA)</text>
+    <circle cx="380" cy="128" r="100" class="bx"/><text x="380" y="46" class="c ts tm">the company</text>
+    <ellipse cx="380" cy="142" rx="78" ry="70" class="ba"/><text x="380" y="96" class="c ts tb">prime contractor</text><text x="380" y="109" class="c ts tb">(MOE)</text>
+    <circle cx="380" cy="136" r="20" class="bh"/><text x="380" y="134" class="c tx">project</text><text x="380" y="145" class="c tx">manager</text>
+    <ellipse cx="380" cy="182" rx="52" ry="20" class="bo"/><text x="380" y="186" class="c ts">project team</text>
+    <path d="M166 138 H302" class="curve"/><rect x="200" y="124" width="68" height="28" rx="14" class="bx"/><text x="234" y="143" class="c ts tb">contract</text>
+  </svg><figcaption>Simplified from the course figure "représentation des parties prenantes d'un projet": the contract is the client–supplier interface, and the project group sits inside the company.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example · who is who</span>
+    <div class="scroll"><table class="t">
+      <tr><th>Project</th><th>MOA (client side)</th><th>MOE (supplier side)</th></tr>
+      <tr><td>Motorway tunnel (section 6)</td><td>the public road authority ordering the tunnel</td><td>the engineering firm whose team digs it</td></tr>
+      <tr><td>HR software (section 7)</td><td>the company, via its HR service</td><td>the software vendor or IT team installing it</td></tr>
+      <tr><td>PRFU research project (section 1)</td><td>the Ministry</td><td>the lab and its project leader</td></tr>
+    </table></div>
+  </div>
+</section>
+
+<!-- 12 -->
+<section class="sec" id="s12">
+  <div class="sec-h"><span class="num">12</span><h2>Agile projects and Scrum <span class="fr">(le projet agile)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>Classic life cycles plan everything upfront. Agile life cycles work in short loops, built on flexibility, collaboration, efficiency and speed. Scrum, the most used and well structured, cuts the work into sprints, and each sprint gives the client a usable deliverable. Kanban and SAFe are other agile methods.</p></div>
+    <ul class="defs">
+      <li><span class="term"><b class="en">agile life cycle</b> <span class="fr">(cycle de vie agile)</span></span><span class="mean">Iterative, adaptive development instead of one long plan.</span></li>
+      <li><span class="term"><b class="en">sprint</b> <span class="fr">(sprint, itération)</span></span><span class="mean">A short fixed period (often 2 to 4 weeks) ending with a deliverable <span class="fr">(livrable)</span>.</span></li>
+      <li><span class="term"><b class="en">product backlog</b> <span class="fr">(carnet de produit)</span></span><span class="mean">The ordered list of everything to build. Each sprint takes items from the top.</span></li>
+      <li><span class="term"><b class="en">Scrum roles</b></span><span class="mean">Product Owner (priorities), Scrum Master (process), development team.</span></li>
+      <li><span class="term"><b class="en">agile tools</b> <span class="fr">(plateformes de gestion de projets agiles)</span></span><span class="mean">Jira, ClickUp, Confluence: follow sprints end to end.</span></li>
+    </ul>
+  </div>
+  <figure class="fig"><svg viewBox="0 0 520 200" role="img" aria-label="Scrum loop: product backlog, sprint planning, sprint with daily meeting, increment, review and retrospective, back to backlog.">
+    <defs><marker id="ah12" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" class="ahd"/></marker></defs>
+    <g class="ts">
+      <rect x="10" y="70" width="100" height="56" rx="6" class="bx"/><text x="60" y="94" class="c tb">product</text><text x="60" y="110" class="c tb">backlog</text>
+      <rect x="140" y="80" width="80" height="36" rx="6" class="ba"/><text x="180" y="102" class="c">planning</text>
+    </g>
+    <circle cx="300" cy="98" r="54" class="ba"/><text x="300" y="94" class="c tb">sprint</text><text x="300" y="110" class="c ts tm">2–4 weeks</text>
+    <circle cx="300" cy="30" r="18" class="bx"/><text x="300" y="34" class="c tx">daily</text>
+    <rect x="390" y="80" width="120" height="36" rx="6" class="bo"/><text x="450" y="102" class="c ts tb">increment → client</text>
+    <rect x="160" y="160" width="220" height="30" rx="6" class="bx"/><text x="270" y="179" class="c ts">review + retrospective</text>
+    <g class="sl"><path d="M110 98 H138" marker-end="url(#ah12)"/><path d="M220 98 H244" marker-end="url(#ah12)"/><path d="M354 98 H388" marker-end="url(#ah12)"/><path d="M450 116 V175 H382" marker-end="url(#ah12)"/><path d="M160 175 H60 V128" marker-end="url(#ah12)"/></g>
+  </svg><figcaption>One Scrum loop. The course points to a video for details; this is the standard Scrum cycle.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example · how many sprints?</span>
+    <ul class="ln">
+      <li>Backlog: 60 story points (an estimate of effort). The team completes about 12 points per sprint (its velocity).</li>
+      <li>Sprints needed: 60 / 12 = <span class="res">5 sprints</span>.</li>
+      <li>With 2-week sprints: 5 × 2 = 10 weeks, and the client receives 5 deliverables along the way instead of one at the end.</li>
+      <li>In Jira or ClickUp, each sprint is a board; the 5 sprints become the project's milestones.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 13 -->
+<section class="sec" id="s13">
+  <div class="sec-h"><span class="num">13</span><h2>Big Data jobs <span class="fr">(les métiers du Big Data)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>A Big Data project needs three kinds of people: those who collect and store the data, those who process and analyse it, and those who protect it. Knowing who does what helps you staff the team (section 5) and organise it (section 6).</p></div>
+    <ul class="defs">
+      <li><span class="term"><b class="en">collection &amp; storage</b> <span class="fr">(collecte et stockage)</span></span><span class="mean"><b>Data Engineer</b>: builds collection systems, prepares data (SQL, Python). <b>Chief Data Officer (CDO)</b>: links top management and the data team, leads it (Power BI, SQL, Python). <b>Data Miner</b>: explores and formats useful data. <b>Big Data Architect</b>: supervises retrieval, management, storage (NoSQL like Cassandra, Hadoop, Spark).</span></li>
+      <li><span class="term"><b class="en">processing &amp; analysis</b> <span class="fr">(traitement et analyse)</span></span><span class="mean"><b>Data Analyst</b>: "makes the data talk" for managers (Python, SQL, data visualisation). <b>Data Scientist</b>: statistical and predictive models (Python, R, ML). <b>Data Manager</b>: availability, quality, GDPR compliance. <b>ML Engineer</b>: deep neural networks, models for images and text.</span></li>
+      <li><span class="term"><b class="en">protection &amp; security</b> <span class="fr">(protection et sécurisation)</span></span><span class="mean"><b>Data Protection Officer (DPO)</b>: security and legal compliance (GDPR, <span class="fr">RGPD</span>). <b>Data Steward</b>: quality, reliable sources, who accesses what.</span></li>
+    </ul>
+  </div>
+  <figure class="fig" style="--maxw:620px;--minw:460px"><svg viewBox="0 0 600 200" role="img" aria-label="Three columns of Big Data jobs: collect and store, process and analyse, protect and secure.">
+    <g class="ts">
+      <rect x="10" y="10" width="180" height="30" rx="6" class="ba"/><text x="100" y="30" class="c tb">collect &amp; store</text>
+      <rect x="210" y="10" width="180" height="30" rx="6" class="bo"/><text x="300" y="30" class="c tb">process &amp; analyse</text>
+      <rect x="410" y="10" width="180" height="30" rx="6" class="bh"/><text x="500" y="30" class="c tb">protect &amp; secure</text>
+      <text x="24" y="66">Data Engineer</text><text x="24" y="92">Chief Data Officer</text><text x="24" y="118">Data Miner</text><text x="24" y="144">Big Data Architect</text>
+      <text x="224" y="66">Data Analyst</text><text x="224" y="92">Data Scientist</text><text x="224" y="118">Data Manager</text><text x="224" y="144">ML Engineer</text>
+      <text x="424" y="66">DPO</text><text x="424" y="92">Data Steward</text>
+    </g>
+    <path d="M30 176 H570" class="sl" marker-end="url(#ah13)"/><defs><marker id="ah13" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" class="ahd"/></marker></defs>
+    <text x="300" y="194" class="c ts tm">data flows from raw to insight, protected throughout</text>
+  </svg><figcaption>4 + 4 + 2 = 10 roles in three families.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example · who does it?</span>
+    <div class="scroll"><table class="t">
+      <tr><th>Task</th><th>Role</th></tr>
+      <tr><td>Set up the pipeline that pulls sales data every night</td><td>Data Engineer</td></tr>
+      <tr><td>Build a dashboard showing monthly sales to managers</td><td>Data Analyst</td></tr>
+      <tr><td>Predict next quarter's demand</td><td>Data Scientist</td></tr>
+      <tr><td>Train a neural network to read scanned invoices</td><td>ML Engineer</td></tr>
+      <tr><td>Check that customer data storage respects GDPR and is safe from intrusions</td><td>DPO</td></tr>
+      <tr><td>Decide who may access the HR database</td><td>Data Steward</td></tr>
+      <tr><td>Report data results to the board and lead the data team</td><td>CDO</td></tr>
+    </table></div>
+  </div>
+</section>
+
+<!-- 14 -->
+<section class="sec" id="s14">
+  <div class="sec-h"><span class="num">14</span><h2>Running a Big Data project <span class="fr">(aborder un projet Big Data)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>A Big Data project is an IT project centred on data and its processing. It has two sides: the technology, and the business stake. The business side usually takes more effort: convincing decision-makers that data will improve processes, strategy and decisions. Because it differs from building a software product, think carefully about how to organise it, often with agile methods.</p></div>
+    <ul class="defs">
+      <li><span class="term"><b class="en">technological aspect</b> <span class="fr">(aspect technologique)</span></span><span class="mean">Platforms, storage, processing, models.</span></li>
+      <li><span class="term"><b class="en">business stake</b> <span class="fr">(aspect professionnel, enjeu métier)</span></span><span class="mean">What value the data brings to the organisation, and convincing its leaders.</span></li>
+      <li><span class="term"><b class="en">collaboration</b> <span class="fr">(collaboration)</span></span><span class="mean">Business experts and data roles must work together from the start.</span></li>
+    </ul>
+  </div>
+  <figure class="fig"><svg viewBox="0 0 480 190" role="img" aria-label="Two pillars, technology and business stake, support a Big Data project; the business pillar is heavier.">
+    <rect x="70" y="20" width="340" height="40" rx="8" class="ba"/><text x="240" y="45" class="c tb">Big Data project</text>
+    <rect x="100" y="60" width="90" height="90" class="bx"/><text x="145" y="100" class="c ts">technology</text><text x="145" y="116" class="c tx tm">platforms, models</text>
+    <rect x="270" y="60" width="130" height="90" class="bh"/><text x="335" y="100" class="c ts tb">business stake</text><text x="335" y="116" class="c tx tm">convince, create value</text>
+    <text x="240" y="176" class="c ts tm">the wider pillar needs more effort</text>
+  </svg><figcaption>Two aspects to handle; the course stresses the business one.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example · putting the whole lesson together</span>
+    <p>A retailer wants to predict stock shortages from its sales data.</p>
+    <ul class="ln">
+      <li>Project? Unique, new, sponsor = sales director, goal = "cut shortages by 20% within 9 months", budget set → yes (sections 1–2).</li>
+      <li>Real need (5 whys): shortages come from late orders, not from bad forecasts alone → include the ordering process (section 4).</li>
+      <li>Business stake: show the director the cost of a shortage before talking technology (section 14).</li>
+      <li>Team: Data Engineer + Data Scientist + Data Analyst from IT, store managers from sales → matrix (sections 6, 13).</li>
+      <li>Run it in 2-week Scrum sprints, each giving a usable forecast to the stores (section 12), and keep P, C, D in view (section 9).</li>
+    </ul>
+  </div>
+</section>
+
+<section class="sec" id="notes">
+  <div class="note errata"><span class="tag">Errors found in the original course</span>
+    <ul>
+      <li><b>Conditions count.</b> Section I lists 7 conditions of a project and the checklist repeats 7, but the "Méthode" in section III lists only 6 (it drops "a project manager").</li>
+      <li><b>Sponsor must be a natural person?</b> The course says the sponsor is "always one natural person" <span class="fr">(une seule personne physique)</span>, yet its own PRFU example names the Ministry as sponsor, and a remark allows an "organisational entity" to be both sponsor and manager.</li>
+      <li><b>Dates in the pre-project form.</b> Mrs Jufer's credit request is dated 21.3.2020, but the pre-project it asks funding for starts on 15 March, 6 days earlier.</li>
+      <li><b>Undefined term.</b> The "machining centres" example uses an "organisation en état-major" (staff organisation), which the section never defines; only matrix and project organisation are explained.</li>
+      <li><b>Naming mismatch.</b> The text calls it "organisation de projet" while the diagram is titled "structure divisionnelle par projet"; they are the same thing.</li>
+      <li><b>Big Data chapter.</b> "Memtables" is presented as a data-storage tool; a memtable is an in-memory structure inside databases such as Cassandra, not a separate tool. "Data Scientiste" and "programmateur" should read "Data Scientist" and "programmeur".</li>
+      <li><b>File vs content.</b> The file named "Intro" is titled "Chapitre 4 · Big Data Project Management &amp; More" and refers to a chapter III on Moodle; it was merged here as part D.</li>
+    </ul>
+  </div>
+</section>
+
+<footer class="foot">Based on Pr. Latifa Mahdaoui, "I. Les fondamentaux de la gestion de projets" (GP, 2021/2022) and "Chapitre 4 · Big Data Project Management &amp; More" (16-12-2024). Counts and dates recomputed by program; amounts marked illustrative are not from the course. Scrum details summarise the standard method, since the course defers to a video.</footer>
+</div>
+<script>
+/* study-hub:progress — practice pages: counts ticked .done boxes */
+(function(){
+  var boxes=document.querySelectorAll('.done input'), txt=document.getElementById('prog-txt'), bar=document.getElementById('prog-bar');
+  if(!boxes.length||!txt) return;
+  function upd(){var n=0;boxes.forEach(function(b){if(b.checked)n++;});txt.textContent=n+' / '+boxes.length+' done';bar.style.width=(100*n/boxes.length)+'%';}
+  boxes.forEach(function(b){b.addEventListener('change',upd);});
+  upd();
+})();
+</script>
+</body>
+</html>
