@@ -22,6 +22,8 @@
   #cahier-side .nav-label{margin:var(--space-4) var(--space-3) var(--space-1);font:600 var(--text-xs) var(--font-body);color:var(--text-muted)}
   #cahier-side .nav-sub{margin:0 0 var(--space-2) var(--space-5);padding-left:var(--space-2);border-left:1px solid var(--border);display:grid;gap:1px}
   #cahier-side .nav-sub a{display:block;padding:4px var(--space-2);color:var(--text-muted);font:400 var(--text-xs)/1.3 var(--font-body);text-decoration:none;border-radius:var(--radius-sm)}
+  #cahier-side .nav-sub a.nav-ch{color:var(--text);margin-top:var(--space-1)}
+  #cahier-side .nav-sub a.nav-pg{padding-left:var(--space-4)}
   #cahier-side .nav-sub a.on{background:var(--surface-2);color:var(--text);font-weight:600}
   #cahier-side a:focus-visible,#cahier-side button:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
   #cahier-side .side-foot{margin-top:auto;padding-top:var(--space-3);display:grid;gap:2px}

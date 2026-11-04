@@ -4,11 +4,13 @@
   "use strict";
   var PINNED = "cahier-pinned";
 
-  // ---- desktop sidebar: open, or collapsed to one button. This runs in <head>, so the
-  // page never flashes the wrong state. Small windows start collapsed until I choose. --
+  // ---- desktop sidebar: open, or collapsed to one button. This runs in <head>, so the page never
+  // flashes the wrong state. Lessons and sheets always open collapsed. Hub pages remember my choice,
+  // and in small windows they start collapsed until I choose. ------------------------------------
   var root = document.documentElement, SIDE = "cahier-side", stored = null, animTimer = null;
+  var remake = root.hasAttribute("data-remake");
   try { stored = localStorage.getItem(SIDE); } catch (e) {}
-  if (stored === "closed" || (!stored && window.innerWidth < 1000)) root.setAttribute("data-side", "closed");
+  if (remake || stored === "closed" || (!stored && window.innerWidth < 1000)) root.setAttribute("data-side", "closed");
 
   function syncSide() {
     var btn = document.getElementById("cahier-side-btn");
@@ -24,7 +26,7 @@
     clearTimeout(animTimer);
     animTimer = setTimeout(function () { root.removeAttribute("data-side-anim"); }, 400);
     if (closed) root.removeAttribute("data-side"); else root.setAttribute("data-side", "closed");
-    try { localStorage.setItem(SIDE, closed ? "open" : "closed"); } catch (e) {}
+    if (!remake) try { localStorage.setItem(SIDE, closed ? "open" : "closed"); } catch (e) {}
     syncSide();
   }
   document.addEventListener("click", function (e) {

@@ -16,7 +16,7 @@ function fail(message) {
 }
 
 const valid = /^\/[^/]/.test(file) && /\.pdf$/i.test(file) && parts.length === 4 && !parts.includes("..");
-const back = params.get("b") || (valid ? `/${parts[0]}/#pdfs` : "/");
+const back = params.get("b") || (valid ? `/${parts[0]}/#${parts[1]}` : "/");
 $("back").href = /^\/[^/]/.test(back) ? back : "/";
 $("title").textContent = params.get("t") || parts[parts.length - 1] || "PDF";
 document.title = `${$("title").textContent} · Cahier`;

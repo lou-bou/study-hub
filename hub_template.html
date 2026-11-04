@@ -69,11 +69,16 @@
   .hero .pg{margin-top:var(--space-3)}
 
   /* course page: tabs and rows */
-  .tabbar{display:flex;gap:var(--space-5);border-bottom:1px solid var(--border)}
-  .tabbar button{min-height:44px;padding:var(--space-2) 2px;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;background:none;color:var(--text-muted);font:600 var(--text-sm) var(--font-body);cursor:pointer}
-  .tabbar button[aria-selected=true]{color:var(--text);border-bottom-color:var(--text)}
-  .group-title{margin:var(--space-5) 0 var(--space-2);font:500 var(--text-lg)/1.25 var(--font-display)}
-  .group-title .label{display:block;margin-bottom:2px}
+  .chapters{display:grid;gap:var(--space-3)}
+  .chapter{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;scroll-margin-top:var(--space-4)}
+  .chapter>summary{display:flex;align-items:center;gap:var(--space-3);min-height:60px;padding:var(--space-3) var(--space-4);cursor:pointer;list-style:none;transition:background var(--dur-fast) var(--ease-out)}
+  .chapter>summary::-webkit-details-marker{display:none}
+  .chapter>summary:focus-visible{outline-offset:-2px}
+  .chapter>summary .i{color:var(--text-muted);transition:transform var(--dur-fast) var(--ease-out)}
+  .chapter[open]>summary .i{transform:rotate(180deg)}
+  .chapter-name{flex:1;min-width:0;font:500 var(--text-lg)/1.25 var(--font-display);overflow-wrap:anywhere}
+  .chapter-name .label{display:block;margin-bottom:2px}
+  .chapter .row-wrap{border-top:1px solid var(--border)}
   .rows{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden}
   .row-wrap{display:flex;align-items:center}
   .row-wrap+.row-wrap{border-top:1px solid var(--border)}
@@ -84,7 +89,7 @@
   .status{flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:20px;height:22px;color:var(--text-muted)}
   .status.done{color:var(--correct)}
   .offline-btn{flex-shrink:0;width:44px;height:44px;margin-right:var(--space-1);display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:var(--radius-sm);background:none;cursor:pointer}
-  .row-sub{margin:var(--space-3) 0 var(--space-1)}
+  .row-sub{margin:0;padding:var(--space-3) var(--space-4) var(--space-1);border-top:1px solid var(--border)}
   .none{padding:var(--space-4);color:var(--text-muted);font-size:var(--text-sm)}
 
   /* search */
@@ -144,7 +149,7 @@
   .edit-actions{display:flex;gap:var(--space-2);align-items:center}
 
   @media (hover:hover){
-    .pbtn:hover,.edt:hover,a.card:hover,a.row:hover,.continue:hover,.hit:hover,.offline-btn:hover,.icon-btn:hover{background:var(--surface-2)}
+    .chapter>summary:hover,.pbtn:hover,.edt:hover,a.card:hover,a.row:hover,.continue:hover,.hit:hover,.offline-btn:hover,.icon-btn:hover{background:var(--surface-2)}
     .btn:hover:not(:disabled){opacity:.88}
     .del:hover{border-color:var(--wrong)}
     .drop:hover{border-color:var(--text-muted)}
@@ -171,7 +176,6 @@
 %%SIDE%%
 <header class="topbar">
   <a class="brand" href="/"><img src="/assets/logo.svg" alt="">%%SITENAME%%</a>
-  %%TOPMANAGE%%
   <button class="icon-btn" id="theme-tab" type="button" aria-label="Toggle light or dark theme">%%ICON_THEME%%</button>
 </header>
 <div class="page"><div class="page-in">
@@ -181,6 +185,6 @@
 <nav class="tabs" aria-label="Main">%%TABS%%</nav>
 %%CATALOG%%
 <script>document.getElementById("theme-tab").addEventListener("click",function(){document.getElementById("theme-toggle").click();});</script>
-<script src="/assets/hub.js"></script>
+<script src="%%JS_HUB%%"></script>
 </body>
 </html>

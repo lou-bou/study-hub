@@ -1,4 +1,4 @@
-/* Cahier hub pages: the Continue card, progress and statuses, course tabs, search.
+/* Cahier hub pages: the Continue card, progress and statuses, course chapters, search.
  * Reads /api/progress and fills in from this device's copies, so it also works offline. */
 (function () {
   "use strict";
@@ -99,10 +99,36 @@
     });
   }
 
+  // ---- course page: the chapter in the link, else the one I was last reading --
+  function showChapter(id) {
+    var chapter = document.getElementById(id), all = document.querySelectorAll(".chapter");
+    if (!chapter || !chapter.classList.contains("chapter")) return false;
+    all.forEach(function (c) { c.open = c === chapter; });
+    return true;
+  }
+  function linked() {
+    try { return decodeURIComponent(location.hash.slice(1)); } catch (e) { return ""; }
+  }
+  function openLastRead(data) {
+    var module = document.body.getAttribute("data-module"), best = null;
+    if (!module) return;
+    Object.keys(data).forEach(function (k) {
+      var parts = k.split("/"), p = data[k].pos;
+      if (parts[0] === module && p && (!best || (p.t || 0) > (best.t || 0))) best = { t: p.t || 0, chapter: parts[1] };
+    });
+    if (best) showChapter(best.chapter);
+  }
+  var cameByLink = showChapter(linked());
+  if (cameByLink) document.getElementById(linked()).scrollIntoView();
+  window.addEventListener("hashchange", function () {
+    if (showChapter(linked())) document.getElementById(linked()).scrollIntoView();
+  });
+
   function apply(data) {
     data = localData(data || {});
     renderContinue(data);
     renderProgress(data);
+    if (!cameByLink) openLastRead(data);
   }
 
   fetch("/api/progress", { cache: "no-store", credentials: "same-origin" })
@@ -113,23 +139,6 @@
   document.querySelectorAll("[data-keep]").forEach(function (b) {
     window.cahier.bindKeep(b, b.getAttribute("data-keep"));
   });
-
-  // ---- course page tabs ------------------------------------------------
-  var bar = document.querySelector(".tabbar");
-  if (bar) {
-    var tabs = [].slice.call(bar.querySelectorAll("button"));
-    var pick = function (name, push) {
-      tabs.forEach(function (t) {
-        var on = t.getAttribute("data-tab") === name;
-        t.setAttribute("aria-selected", on ? "true" : "false");
-        document.getElementById("tab-" + t.getAttribute("data-tab")).hidden = !on;
-      });
-      if (push) history.replaceState(null, "", "#" + name);
-    };
-    tabs.forEach(function (t) { t.addEventListener("click", function () { pick(t.getAttribute("data-tab"), true); }); });
-    var wanted = location.hash.slice(1);
-    pick(tabs.some(function (t) { return t.getAttribute("data-tab") === wanted; }) ? wanted : bar.getAttribute("data-default"));
-  }
 
   // ---- search: the index comes from the build, so it works offline ------
   var box = document.getElementById("search-box");
@@ -145,6 +154,7 @@
         var head = fold(e.h + " " + e.c), body = fold(e.x), hay = head + " " + body, score = 0;
         if (!words.every(function (w) { return hay.indexOf(w) >= 0; })) return;
         words.forEach(function (w) { if (head.indexOf(w) >= 0) score += 10; });
+        if (fold(e.h).indexOf(q) >= 0) score += 5;  // the query is in the title itself: a chapter name, say
         hits.push({ e: e, score: score, at: body.indexOf(words[0]) });
       });
       hits.sort(function (a, b) { return b.score - a.score; });

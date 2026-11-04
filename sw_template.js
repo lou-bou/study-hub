@@ -16,7 +16,7 @@ self.addEventListener("install", function (e) {
   e.waitUntil(caches.open(PAGES).then(function (cache) {
     return Promise.all(PRECACHE.map(function (url) {
       return fetch(url, { cache: "no-cache" }).then(function (r) {
-        if (storable(r)) return cache.put(url, r);
+        if (storable(r)) return cache.put(new URL(url, location.href).pathname, r);
       }).catch(function () {});  // an expired login or a bad link must not block the install
     }));
   }));

@@ -10,6 +10,7 @@ Every page gets a "← <MODULE>" bar (plus links to the chapter's course PDFs);
 practice pages, and any HTML inside td/, also get the auto-save script.
 Source files are never modified.
 """
+import functools
 import hashlib
 import html
 import json
@@ -39,12 +40,10 @@ ICONS = {
     "house": '<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
     "sun-moon": '<path d="M12 8a2.83 2.83 0 0 0 4 4 4 4 0 1 1-4-4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.9 4.9 1.4 1.4"/><path d="m17.7 17.7 1.4 1.4"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.3 17.7-1.4 1.4"/><path d="m19.1 4.9-1.4 1.4"/>',
     "folder-cog": '<circle cx="18" cy="18" r="3"/><path d="M10.3 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v3.3"/><path d="m21.7 19.4-.9-.3"/><path d="m15.2 16.9-.9-.3"/><path d="m16.6 21.7.3-.9"/><path d="m19.1 15.2.3-.9"/><path d="m19.6 21.7-.4-1"/><path d="m16.8 15.3-.4-1"/><path d="m14.3 19.6 1-.4"/><path d="m20.7 16.8 1-.4"/>',
-    "library": '<path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16"/>',
     "search": '<path d="m21 21-4.3-4.3"/><circle cx="11" cy="11" r="8"/>',
     "circle": '<circle cx="12" cy="12" r="9"/>',
-    "book-open": '<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>',
-    "pencil-line": '<path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/><path d="m15 5 3 3"/>',
     "file-text": '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
+    "chevron-down": '<path d="m6 9 6 6 6-6"/>',
     "panel-left": '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/>',
 }
 
@@ -91,7 +90,8 @@ REMAKE_MOBILE = ("<style>@media " + PHONE + "{"
     "#studyhub-saver button{padding:9px 12px!important;min-height:40px}"
     "}</style>\n")
 # Remakes on desktop: the sidebar replaces the floating back and theme buttons, and pushes the page aside.
-# Collapsed, the page keeps clear of the one button left.
+# Collapsed, the page keeps clear of the one button left. Remakes always open collapsed (shared.js reads the flag).
+REMAKE_FLAG = '<script>document.documentElement.setAttribute("data-remake","");</script>\n'
 REMAKE_DESKTOP = ("<style>@media screen and (min-width:701px){"
     "#studyhub-nav,#theme-toggle{display:none!important}"
     "html:not([data-side=closed]) body{margin-left:16rem}"
@@ -125,6 +125,14 @@ PARK_SCRIPT = (
     'addEventListener("resize",fades);fades();'
     'addEventListener("scroll",park,{passive:true});addEventListener("resize",park);park();})();'
 )
+
+
+@functools.lru_cache(maxsize=None)
+def asset(rel):
+    """An asset's URL, versioned by its contents. Cloudflare and browsers may keep /assets/* for hours,
+    so a page must never ask for a changed file under the URL it had before."""
+    with open(os.path.join(ASSETS, rel), "rb") as f:
+        return f"/assets/{rel}?v={hashlib.sha256(f.read()).hexdigest()[:10]}"
 
 
 def warn(msg):
@@ -306,8 +314,8 @@ def head_tags():
     """Tags every generated page gets. Tokens and fonts are real files so they work offline. The manifest
     needs credentials: Cloudflare Access guards it too."""
     name = html.escape(site_title())
-    return ('<link rel="stylesheet" href="/assets/tokens.css">\n<link rel="stylesheet" href="/assets/fonts.css">\n'
-            '<link rel="stylesheet" href="/assets/sidebar.css">\n'
+    return (f'<link rel="stylesheet" href="{asset("tokens.css")}">\n<link rel="stylesheet" href="{asset("fonts.css")}">\n'
+            f'<link rel="stylesheet" href="{asset("sidebar.css")}">\n'
             + ZOOM_STYLE +
             '<link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials">\n'
             '<link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">\n'
@@ -318,7 +326,7 @@ def head_tags():
             '<meta name="mobile-web-app-capable" content="yes">\n'
             '<meta name="apple-mobile-web-app-capable" content="yes">\n'
             f'<meta name="apple-mobile-web-app-title" content="{name}">\n'
-            '<script src="/assets/shared.js"></script>\n'
+            f'<script src="{asset("shared.js")}"></script>\n'
             '<script>if("serviceWorker"in navigator)addEventListener("load",function(){'
             'navigator.serviceWorker.register("/sw.js");});</script>\n')
 
@@ -356,6 +364,8 @@ def write_pwa(out_root):
         with open(os.path.join(out_root, url.lstrip("/")), "rb") as f:
             digest.update(f.read())
     urls = ["/" if u == "/index.html" else (u[:-10] if u.endswith("/index.html") else u) for u in files]
+    # versioned, so installing can't store a stale copy from Cloudflare; the worker keys its cache by path
+    urls = [asset(u[len("/assets/"):]) if u.startswith("/assets/") else u for u in urls]
     with open(os.path.join(out_root, "sw.js"), "w", encoding="utf-8") as f:
         f.write(tpl.replace("%%VERSION%%", digest.hexdigest()[:12]).replace("%%PRECACHE%%", json.dumps(urls)))
 
@@ -385,7 +395,7 @@ def inject(src, dst, snippet, base=None, theme=None, top=b""):
     if i < 0:  # the closing tag is optional in HTML, and uploaded pages sometimes omit it
         i = low.find(b"<body")
     if i >= 0:
-        data = data[:i] + (head_tags() + REMAKE_MOBILE + REMAKE_DESKTOP).encode("utf-8") + data[i:]
+        data = data[:i] + (REMAKE_FLAG + head_tags() + REMAKE_MOBILE + REMAKE_DESKTOP).encode("utf-8") + data[i:]
     with open(dst, "wb") as f:
         f.write(data)
 
@@ -422,10 +432,10 @@ def build_module(module, out_root, base, warnings, theme=None, nav=()):
                 for w in lint_page(os.path.join(dirpath, f), practice, base):
                     warnings.append(f"modules/{module['slug']}/{page}: {w}")
                 if practice:
-                    snippet += (f'\n<script src="/assets/saver.js" data-module="{html.escape(module["slug"])}" '
+                    snippet += (f'\n<script src="{asset("saver.js")}" data-module="{html.escape(module["slug"])}" '
                                 f'data-page="{html.escape(page)}"></script>')
                 else:
-                    snippet += (f'\n<script src="/assets/reading.js" data-module="{html.escape(module["slug"])}" '
+                    snippet += (f'\n<script src="{asset("reading.js")}" data-module="{html.escape(module["slug"])}" '
                                 f'data-page="{html.escape(page)}"></script>')
                 # a remake's own #theme-toggle stays in the page, hidden on desktop, and does the work
                 side = sidebar(nav, "module", module, current=page, theme_id="cahier-side-theme")
@@ -472,51 +482,40 @@ def row(href, name, key=None, kind="", total=0, small="", glyph=None, keep=None)
             f'<span class="row-name">{e(name)}{note}</span><span class="row-meta"></span></a>{btn}</div>')
 
 
-def page_rows(module, kind):
-    '''Lesson or practice rows of a module, one per chapter.'''
-    out = []
-    for ch in module["chapters"]:
-        for p in ch["pages"]:
-            if p["kind"] == kind:
-                out.append(row(f'/{module["slug"]}/{ch["slug"]}/{p["file"]}', ch["title"] or ch["label"],
-                               f'{module["slug"]}/{ch["slug"]}/{p["file"]}', kind, p["total"],
-                               ch["label"] if ch["title"] else ""))
-    return out
-
-
 def viewer_href(module, ch, d, doc):
     query = urlencode({"f": f'/{module["slug"]}/{ch["slug"]}/{d}/{doc["file"]}', "t": doc["label"],
-                       "b": f'/{module["slug"]}/#pdfs'})
+                       "b": f'/{module["slug"]}/#{ch["slug"]}'})
     return f"/viewer/?{query}"
 
 
-def pdf_panel(module):
+def chapter_rows(module, ch):
+    '''A chapter's lesson and practice pages, then its PDFs.'''
     e = html.escape
     out = []
-    for ch in module["chapters"]:
-        if not any(ch["docs"].values()):
-            continue
-        out.append(f'<h3 class="group-title"><span class="label">{e(ch["label"])}</span>{e(ch["title"])}</h3>')
-        for d, name in (("cours", "Cours"), ("td", "TD")):
-            if ch["docs"][d]:
-                rows = "".join(row(viewer_href(module, ch, d, x), x["label"],
-                                   glyph=f'<span class="status">{icon("file-text")}</span>',
-                                   keep=f'/{module["slug"]}/{ch["slug"]}/{d}/{x["file"]}') for x in ch["docs"][d])
-                out.append(f'<p class="label row-sub">{name}</p><div class="rows">{rows}</div>')
+    for p in ch["pages"]:
+        key = f'{module["slug"]}/{ch["slug"]}/{p["file"]}'
+        name = p["kind"].capitalize() if p["file"] == f'{p["kind"]}.html' else p["title"]
+        out.append(row("/" + key, name, key, p["kind"], p["total"]))
+    for d, name in (("cours", "Cours"), ("td", "TD")):
+        if ch["docs"][d]:
+            out.append(f'<p class="label row-sub">{name}</p>')
+            out += [row(viewer_href(module, ch, d, x), x["label"], glyph=f'<span class="status">{icon("file-text")}</span>',
+                        keep=f'/{module["slug"]}/{ch["slug"]}/{d}/{x["file"]}') for x in ch["docs"][d]]
     return "".join(out)
+
+
+def render_chapter(module, ch, is_open):
+    '''The first chapter starts open; hub.js opens the one I was last reading, or the one in the link.'''
+    e = html.escape
+    title = f'<span class="label">{e(ch["label"])}</span>{e(ch["title"])}' if ch["title"] else e(ch["label"])
+    return (f'<details class="chapter" id="{e(ch["slug"])}"{" open" if is_open else ""}>'
+            f'<summary><span class="chapter-name">{title}</span>{icon("chevron-down")}</summary>'
+            f'{chapter_rows(module, ch)}</details>')
 
 
 def render_module_page(tpl, module, nav):
     e = html.escape
-    lessons, sheets, pdfs = page_rows(module, "lesson"), page_rows(module, "practice"), pdf_panel(module)
-    default = "lessons" if lessons else "practice" if sheets else "pdfs"
-    empty = lambda t: f'<div class="none">{t}</div>'
-    tabs = "".join(f'<button type="button" role="tab" data-tab="{k}">{n}</button>'
-                   for k, n in (("lessons", "Lessons"), ("practice", "Practice"), ("pdfs", "PDFs")))
-    main = (f'<div class="tabbar" role="tablist" data-default="{default}">{tabs}</div>'
-            f'<div id="tab-lessons" style="padding-top:var(--space-4)">' + (f'<div class="rows">{"".join(lessons)}</div>' if lessons else empty("No lessons yet.")) + '</div>'
-            f'<div id="tab-practice" style="padding-top:var(--space-4)" hidden>' + (f'<div class="rows">{"".join(sheets)}</div>' if sheets else empty("No practice sheets yet.")) + '</div>'
-            f'<div id="tab-pdfs" hidden>' + (pdfs or empty("No PDFs yet.")) + '</div>')
+    main = '<div class="chapters">' + "".join(render_chapter(module, c, i == 0) for i, c in enumerate(module["chapters"])) + "</div>"
     blurb = f'<p>{e(module["blurb"])}</p>' if module["blurb"] else ""
     head = (f'<header class="hero"><div class="hero-text"><div class="code">{e(module["code"])}</div>'
             f'<h1>{e(module["title"] or module["code"])}</h1>{blurb}{progress_bar(module)}</div>'
@@ -542,27 +541,8 @@ def simple_head(title, sub=""):
     return f'<header class="hero"><div class="hero-text"><h1>{html.escape(title)}</h1>{p}</div></header>'
 
 
-def render_courses(tpl, modules):
-    cards = "".join(render_card(m) for m in modules) or '<p class="none">No courses yet.</p>'
-    return fill(tpl, **shell(modules, "courses"), HEAD=simple_head("Courses"), PAGETITLE=f"Courses · {html.escape(site_title())}",
-                MAIN=f'<div class="grid">{cards}</div>')
-
-
-def render_practice(tpl, modules):
-    e = html.escape
-    parts = []
-    for m in modules:
-        rows = page_rows(m, "practice")
-        if rows:
-            parts.append(f'<h2 class="group-title"><span class="label">{e(m["code"])}</span>{e(m["title"] or m["code"])}</h2>'
-                         f'<div class="rows">{"".join(rows)}</div>')
-    return fill(tpl, **shell(modules, "practice"), HEAD=simple_head("Practice", "Every practice sheet, with where you got to."),
-                PAGETITLE=f"Practice · {html.escape(site_title())}",
-                MAIN="".join(parts) or '<p class="none">No practice sheets yet.</p>')
-
-
 def render_search(tpl, modules):
-    main = ('<label class="label" for="search-box" style="display:block;margin-bottom:var(--space-1)">Search lessons, practice sheets and PDF names</label>'
+    main = ('<label class="label" for="search-box" style="display:block;margin-bottom:var(--space-1)">Search chapters, lessons, practice sheets and PDF names</label>'
             '<input class="search-box" id="search-box" type="search" autocomplete="off" spellcheck="false" data-no-save>'
             '<div id="search-results" style="margin-top:var(--space-4)" aria-live="polite"></div>')
     return fill(tpl, **shell(modules, "search"), HEAD=simple_head("Search"), PAGETITLE=f"Search · {html.escape(site_title())}", MAIN=main)
@@ -578,11 +558,13 @@ def plain_text(fragment):
 
 
 def search_index(modules):
-    '''One entry per section of every remake, plus one per PDF name. Read by /search/ in the browser.'''
+    '''One entry per chapter, per section of every remake and per PDF name. Read by /search/ in the browser.'''
     out = []
     for m in modules:
         for c in m["chapters"]:
             where = f'{m["code"]} {c["label"]}'
+            out.append({"u": f'/{m["slug"]}/#{c["slug"]}', "h": c["title"] or c["label"],
+                        "c": where if c["title"] else m["code"], "x": ""})
             for p in c["pages"]:
                 with open(os.path.join(MODULES, m["slug"], c["slug"], p["file"]), encoding="utf-8", errors="replace") as f:
                     text = f.read()
@@ -604,8 +586,7 @@ def render_viewer():
     return fill(tpl, ICON_BACK=icon("arrow-left"))
 
 
-MAIN_NAV = (("/", "house", "Home", "home"), ("/courses/", "library", "Courses", "courses"),
-            ("/practice/", "pencil-line", "Practice", "practice"), ("/search/", "search", "Search", "search"))
+MAIN_NAV = (("/", "house", "Home", "home"), ("/search/", "search", "Search", "search"))
 
 
 def sidebar(nav, page="home", module=None, current=None, theme_id="theme-toggle"):
@@ -624,11 +605,12 @@ def sidebar(nav, page="home", module=None, current=None, theme_id="theme-toggle"
             if m["slug"] == active:
                 links = ""
                 for c in m["chapters"]:
+                    links += f'<a class="nav-ch" href="/{e(m["slug"])}/#{e(c["slug"])}">{e(c["title"] or c["label"])}</a>'
                     for p in c["pages"]:
                         here = f'{c["slug"]}/{p["file"]}' == current
-                        name = (c["title"] or c["label"]) + (" · Practice" if p["kind"] == "practice" else "")
-                        links += (f'<a href="/{e(m["slug"])}/{e(c["slug"])}/{e(p["file"])}"'
-                                  + (' class="on" aria-current="page"' if here else "") + f'>{e(name)}</a>')
+                        name = p["kind"].capitalize() if p["file"] == f'{p["kind"]}.html' else p["title"]
+                        links += (f'<a class="nav-pg{" on" if here else ""}" href="/{e(m["slug"])}/{e(c["slug"])}/{e(p["file"])}"'
+                                  + (' aria-current="page"' if here else "") + f'>{e(name)}</a>')
                 if links:
                     side += f'<div class="nav-sub">{links}</div>'
     return (f'<button id="cahier-side-btn" type="button" data-no-save aria-controls="cahier-side" '
@@ -644,11 +626,11 @@ def shell(nav, page="home", module=None):
     '''Sidebar, top bar and bottom nav for hub-template pages. `module` is set on a course page.'''
     e = html.escape
     manage = "/upload/" + (f'?module={module["slug"]}' if module else "")
-    tab_on = lambda k: k == page or (k == "courses" and page == "module")
-    tabs = "".join(f'<a class="tab{" on" if tab_on(k) else ""}" href="{h}">{icon(i)}{n}</a>' for h, i, n, k in MAIN_NAV)
+    tab_on = lambda k: k == page or (k == "home" and page == "module")
+    tabs = "".join(f'<a class="tab{" on" if tab_on(k) else ""}" href="{e(h)}">{icon(i)}{n}</a>'
+                   for h, i, n, k in MAIN_NAV + ((manage, "folder-cog", "Manage modules", "manage"),))
     return {
         "SITENAME": e(site_title()), "ICON_THEME": icon("sun-moon"), "SIDE": sidebar(nav, page, module),
-        "TOPMANAGE": f'<a class="icon-btn" href="{e(manage)}" aria-label="Manage modules">{icon("folder-cog")}</a>',
         "TABS": tabs,
     }
 
@@ -656,6 +638,8 @@ def shell(nav, page="home", module=None):
 def fill(tpl, **parts):
     parts.setdefault("BODYATTR", "")
     parts.setdefault("CATALOG", "")
+    parts.setdefault("JS_HUB", asset("hub.js"))
+    parts.setdefault("JS_VIEWER", asset("viewer.js"))
     for k, v in parts.items():
         tpl = tpl.replace(f"%%{k}%%", v)
     return tpl.replace("</head>", head_tags() + "</head>", 1)
@@ -996,7 +980,7 @@ def main():
     if os.path.isdir(MODULES):
         slugs = [d for d in os.listdir(MODULES) if visible(d) and os.path.isdir(os.path.join(MODULES, d))]
     for s in slugs:
-        if s in ("assets", "upload", "viewer", "courses", "practice", "search", "search.json",
+        if s in ("assets", "upload", "viewer", "search", "search.json",
                  "manifest.webmanifest", "sw.js") or not NAME_RE.match(s):
             sys.exit(f"error: module folder name {s!r} is reserved or invalid")
 
@@ -1014,8 +998,6 @@ def main():
         with open(path, "w", encoding="utf-8") as f:
             f.write(text)
     page("", render_home(tpl, modules))
-    page("courses", render_courses(tpl, modules))
-    page("practice", render_practice(tpl, modules))
     page("search", render_search(tpl, modules))
     page("viewer", render_viewer())
     page("upload", render_upload(tpl, every, modules))
