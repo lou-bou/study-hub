@@ -1,4 +1,4 @@
-/* Acorn auto-save for practice pages.
+/* Cahier auto-save for practice pages.
  * Injected by build.py as <script src="/assets/saver.js" data-module=".." data-page="<chapter>/<file>">.
  * Works offline: every edit waits in a device queue until the server confirms it, for any page,
  * and a snapshot of each page's answers lets it restore without a connection. Last write wins.
@@ -235,17 +235,16 @@
     pill.setAttribute("data-no-save", "");
     pill.setAttribute("role", "status");
     pill.style.cssText = "position:fixed;right:14px;bottom:14px;z-index:2147483000;display:flex;" +
-      "align-items:center;gap:8px;padding:5px 5px 5px 14px;border-radius:999px;background:var(--surface,#fff);" +
-      "border:1px solid var(--line,#e4e1da);color:var(--ink,#1c1b19);font:500 13px/1.2 var(--f-body,system-ui,sans-serif);" +
-      "box-shadow:var(--shadow,0 8px 28px rgb(28 27 25 / 12%))";
+      "align-items:center;gap:8px;padding:3px 3px 3px 10px;border-radius:var(--radius-md,8px);background:var(--surface,#FFFCF6);" +
+      "border:1px solid var(--border,#E2D8C6);color:var(--text-muted,#5C6475);font:400 var(--text-xs,13px)/1.2 var(--font-body,system-ui,sans-serif)";
     label = document.createElement("span");
     label.textContent = "Loading…";
     var reset = document.createElement("button");
     reset.type = "button";
     reset.textContent = "Reset";
     reset.title = "Delete all saved answers on this page";
-    reset.style.cssText = "border:0;border-radius:999px;padding:5px 11px;background:var(--sunken,#efede8);" +
-      "color:var(--ink,#1c1b19);font:inherit;cursor:pointer";
+    reset.style.cssText = "border:0;border-radius:var(--radius-sm,4px);padding:5px 9px;background:none;" +
+      "color:var(--text-muted,#5C6475);font:inherit;cursor:pointer";
     reset.addEventListener("click", function () {
       if (!confirm("Delete all saved answers on this page?")) return;
       pending = {};
@@ -274,15 +273,15 @@
     if (!label) return;
     var text = {
       saving: "Saving…",
-      saved: "Saved ✓",
+      saved: "Saved",
       restored: "Restored " + n + " answer" + (n === 1 ? "" : "s"),
       ready: "Answers auto-save",
       offline: "Saved on this device",
       error: "Not saved ⚠"
     }[state];
     label.textContent = text;
-    pill.style.background = state === "error" ? "var(--hi-soft,#f8e4e1)" : state === "offline" ? "var(--accent-soft,#fdf0d5)" : "var(--surface,#fff)";
-    pill.style.color = state === "error" ? "var(--hi,#c2413a)" : state === "offline" ? "var(--accent,#8a5a00)" : "var(--ink,#1c1b19)";
+    pill.style.background = state === "error" ? "var(--wrong-bg,#F6E2DF)" : "var(--surface,#FFFCF6)";
+    pill.style.color = state === "error" ? "var(--wrong,#B4443A)" : "var(--text-muted,#5C6475)";
     pill.setAttribute("data-state", state);
   }
 

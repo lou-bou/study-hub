@@ -1,10 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Acorn">
-  <path d="M32 11C32 7 34 4.500 37.500 3.500" fill="none" stroke="#7A4F24" stroke-width="4" stroke-linecap="round"/>
-  <path d="M13 29C13 45 23 55 32 61C41 55 51 45 51 29Z" fill="#F2A922"/>
-  <path d="M19 35C20 42 23 47 27 51" fill="none" stroke="#F9D27F" stroke-width="3.500" stroke-linecap="round"/>
-  <circle cx="26" cy="39" r="2.300" fill="#2A1D04"/>
-  <circle cx="38" cy="39" r="2.300" fill="#2A1D04"/>
-  <path d="M28.500 44.500C30 47 34 47 35.500 44.500" fill="none" stroke="#2A1D04" stroke-width="2.200" stroke-linecap="round"/>
-  <path d="M8 27C8 16 19 9.500 32 9.500C45 9.500 56 16 56 27C56 31 54 33 50.500 33H13.500C10 33 8 31 8 27Z" fill="#7A4F24"/>
-  <path d="M15.500 24C17.500 19 22 16 27 15" fill="none" stroke="#A67A47" stroke-width="3" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-label="Cahier">
+  <rect x="42" y="28" width="90" height="112" rx="6" fill="#F3EBDD" stroke="#1E2A44" stroke-width="2"/>
+  <rect x="32" y="18" width="90" height="112" rx="6" fill="#1E2A44"/>
+  <line x1="44" y1="18" x2="44" y2="130" stroke="#F3EBDD" stroke-width="1.5" opacity="0.4"/>
+  <polyline points="56,76 68,88 90,62" fill="none" stroke="#F3EBDD" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <polygon points="96,12 108,12 108,146 102,139 96,146" fill="#D9952B"/>
 </svg>

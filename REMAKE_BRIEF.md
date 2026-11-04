@@ -1,16 +1,16 @@
-# Remake brief (for the claude.ai "Study Hub remakes" project)
+# Remake brief (for the claude.ai "Cahier remakes" project)
 
 Put this file and `remake_template.html` in the project's knowledge. Every page you make
-is dropped into my Study Hub site, so it must follow the rules below exactly.
+is dropped into my Cahier site, so it must follow the rules below exactly.
 
 ## Output
 - Two standalone HTML files per chapter: `lesson.html` and `practice.html`. Give me each as one complete file.
-- Start from `remake_template.html`. Copy its `<head>` as is: the font links, the `study-hub:theme` script and the
-  whole `study-hub:base` `<style>` block, **verbatim, never edited**. Put anything page-specific (SVG classes)
-  in the second `<style>` block, using the base variables only (`--ink`, `--surface`, `--line`, `--muted`, `--hi`, `--ok`).
-  `--accent` is for text and strokes; fills use `--accent-fill` with `--on-accent` text. In figures, `--c1` to `--c4` tell
-  things apart, with dark text on them. No blue, purple or other hardcoded colours. Keep the theme toggle button
-  as the first element of `<body>`, and always close `</head>`.
+- Start from `remake_template.html`. Copy its `<head>` as is: the `study-hub:theme` script and the whole
+  `study-hub:base` `<style>` block, **verbatim, never edited**. Put anything page-specific (SVG classes) in the second
+  `<style>` block, using the tokens only: `--text`, `--text-muted`, `--surface`, `--surface-2`, `--border`, `--correct`,
+  `--wrong`, and for figures `--fig`, `--fig-soft`, `--c1` to `--c4` (dark text on those). Never use amber (`--accent`):
+  it means "my place" only. No hardcoded colours, no external fonts. Keep the theme toggle button as the first element
+  of `<body>`, and always close `</head>`.
 - Don't add your own theme switcher, fonts, colour palette or progress storage. No `localStorage`.
 - No external scripts or libraries. Inline SVG for every figure.
 
@@ -20,7 +20,7 @@ is dropped into my Study Hub site, so it must follow the rules below exactly.
 - Numbered `section.sec` with the `.sec-h` header (`.num`, `h2` + French in `.fr`, `↑ contents` link).
 - In each section: `.plain` ("In plain words"), `.defs` (English term, French in parentheses), `figure.fig`
   with an inline SVG, and a `.calc` worked example. Use `.callout`, `.eq`, `table.t` as needed.
-- End with `.note.errata` listing errors found in the original course text, then `.foot`.
+- End with `.note.errata`, tagged "Notes on the original course", listing errors found in the course text, then `.foot`.
 - English, with the French term in parentheses next to key terms. At least one example per concept; redo the
   course's own examples. Concise, not dense. Check every number by running code before writing it in.
 

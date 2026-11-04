@@ -25,7 +25,8 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 MODULES = os.path.join(ROOT, "modules")
 NAME_RE = re.compile(r"^[a-z0-9][a-z0-9.\-]{0,99}$")
 KINDS = ("lesson", "practice", "cours", "td")
-RESERVED = ("assets", "upload", "manifest.json", "sw.js")  # site paths that build.py generates
+RESERVED = ("assets", "upload", "viewer", "courses", "practice", "search", "search.json",
+            "manifest.webmanifest", "sw.js")  # site paths that build.py generates
 
 
 class AddError(Exception):

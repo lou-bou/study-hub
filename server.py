@@ -225,7 +225,7 @@ class Handler(BaseHTTPRequestHandler):
         return {f"{c}/{p}": n for c, p, n in rows}
 
     def progress(self, q):
-        """Per page: saved answers, the sheet's own "N/M" (p:progress), furthest percent read (p:read)."""
+        """Per page: saved answers, the sheet's own "N/M" (p:progress), the reading position and furthest percent (p:read)."""
         out = {}
         with connect() as conn:
             for c, p, n in conn.execute(
@@ -240,9 +240,10 @@ class Handler(BaseHTTPRequestHandler):
                     entry["done"] = v
                 else:
                     try:
-                        entry["read"] = int(json.loads(v).get("m", 0))
+                        entry["pos"] = json.loads(v)
+                        entry["read"] = int(entry["pos"].get("m", 0))
                     except (ValueError, TypeError, AttributeError):
-                        pass
+                        entry.pop("pos", None)
         return out
 
     def export(self, q):

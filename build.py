@@ -17,6 +17,7 @@ import os
 import re
 import shutil
 import sys
+from urllib.parse import urlencode
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 MODULES = os.path.join(ROOT, "modules")
@@ -38,6 +39,9 @@ ICONS = {
     "house": '<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
     "sun-moon": '<path d="M12 8a2.83 2.83 0 0 0 4 4 4 4 0 1 1-4-4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.9 4.9 1.4 1.4"/><path d="m17.7 17.7 1.4 1.4"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.3 17.7-1.4 1.4"/><path d="m19.1 4.9-1.4 1.4"/>',
     "folder-cog": '<circle cx="18" cy="18" r="3"/><path d="M10.3 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v3.3"/><path d="m21.7 19.4-.9-.3"/><path d="m15.2 16.9-.9-.3"/><path d="m16.6 21.7.3-.9"/><path d="m19.1 15.2.3-.9"/><path d="m19.6 21.7-.4-1"/><path d="m16.8 15.3-.4-1"/><path d="m14.3 19.6 1-.4"/><path d="m20.7 16.8 1-.4"/>',
+    "library": '<path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16"/>',
+    "search": '<path d="m21 21-4.3-4.3"/><circle cx="11" cy="11" r="8"/>',
+    "circle": '<circle cx="12" cy="12" r="9"/>',
     "book-open": '<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>',
     "pencil-line": '<path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/><path d="m15 5 3 3"/>',
     "file-text": '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
@@ -52,14 +56,12 @@ def icon(name, cls="i"):
 # Back button on every remake: the theme toggle's look, mirrored to the top-left corner.
 BACK_STYLE = (
     "position:fixed;top:14px;left:max(14px,env(safe-area-inset-left,0px));z-index:20;display:inline-flex;"
-    "align-items:center;justify-content:center;width:40px;height:40px;border:1px solid var(--line);"
-    "background:var(--surface);color:var(--ink);border-radius:var(--pill);text-decoration:none;cursor:pointer"
+    "align-items:center;justify-content:center;width:40px;height:40px;border:1px solid var(--border);"
+    "background:var(--surface);color:var(--text);border-radius:var(--radius-md);text-decoration:none;cursor:pointer"
 )
-FONT_LINK = ('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=Nunito:wght@800&family=IBM+Plex+Mono:wght@400;500;600&display=swap">')
-FONT_RE = re.compile(r'<link rel="stylesheet" href="https://fonts\.googleapis\.com/css2[^>]*>')
+OLD_FONTS_RE = re.compile(r'<link rel="(?:stylesheet|preconnect)" href="https://fonts\.(?:googleapis|gstatic)\.com[^>]*>\s*')
 TOGGLE_RE = re.compile(r'(<button[^>]*id="theme-toggle"[^>]*>).*?(</button>)', re.S)
-# Pages keep their own diagram colours, but this ramp was blue; these come later in the cascade.
-REMAKE_OVERRIDES = "<style>:root{--l0:#e9a92e;--l1:#f2c163;--l2:#f7d690;--l3:#fbe6bc;--l4:#fdf3df}</style>\n"
+TOKENS_RE = re.compile(r"/\* tokens:.*?/\* /tokens \*/\n?", re.S)
 # Pages render bigger on wide screens, like a browser zoom of 125% / 150%; phones are unchanged.
 ZOOM_STYLE = ("<style>@media (min-width:1200px){html{zoom:1.25}}"
               "@media (min-width:1500px){html{zoom:1.5}}</style>\n")
@@ -69,17 +71,18 @@ REMAKE_MOBILE = ("<style>@media " + PHONE + "{"
     ".toggle,#studyhub-nav{width:44px!important;height:44px!important}"
     "#studyhub-nav{transition:transform .2s}"
     ".part a,.prob summary,details.more summary,.b,label.opt,.done{min-height:44px}"
+    ".prob summary{display:flex}"
     ".part a,label.opt{align-items:center}"
-    ".prob summary,details.more summary{display:flex;align-items:center;width:auto}"
+    "details.more summary{display:flex;align-items:center;width:auto}"
     "label.opt input{margin-top:0}"
     ".done input{width:24px;height:24px}"
     ".sec-h .back{padding:12px 0 12px 12px}"
     "label.chipbox{display:inline-flex;align-items:center;min-height:40px}"
     "input:not([type=radio]):not([type=checkbox]),select,textarea{font-size:16px!important}"
     "input:not([type=radio]):not([type=checkbox]),select{min-height:44px}"
-    ".toc-m{margin-top:8px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg)}"
+    ".toc-m{margin-top:8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md)}"
     ".toc-m>summary{display:flex;align-items:center;min-height:48px;padding:0 16px;font-weight:600;cursor:pointer}"
-    ".toc-m>.toc{border-top:1px solid var(--line);padding:14px 16px}"
+    ".toc-m>.toc{border-top:1px solid var(--border);padding:14px 16px}"
     "[data-more]{-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 28px),transparent);"
     "mask-image:linear-gradient(to right,#000 calc(100% - 28px),transparent)}"
     "#studyhub-saver{right:10px!important;bottom:10px!important;font-size:12px!important}"
@@ -292,32 +295,36 @@ def lint_page(path, practice, base):
 
 
 def head_tags():
-    """Tags every generated page gets. The manifest needs credentials: Cloudflare Access guards it too."""
+    """Tags every generated page gets. Tokens and fonts are real files so they work offline. The manifest
+    needs credentials: Cloudflare Access guards it too."""
     name = html.escape(site_title())
-    return (ZOOM_STYLE +
-            '<link rel="manifest" href="/manifest.json" crossorigin="use-credentials">\n'
-            '<link rel="icon" href="/assets/logo.svg" type="image/svg+xml">\n'
+    return ('<link rel="stylesheet" href="/assets/tokens.css">\n<link rel="stylesheet" href="/assets/fonts.css">\n'
+            + ZOOM_STYLE +
+            '<link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials">\n'
+            '<link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">\n'
+            '<link rel="icon" href="/assets/icons/favicon-32.png" sizes="32x32" type="image/png">\n'
             '<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">\n'
-            '<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f5f2">\n'
-            '<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#121211">\n'
+            '<meta name="theme-color" media="(prefers-color-scheme: light)" content="#F7F1E6">\n'
+            '<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1E2A44">\n'
             '<meta name="mobile-web-app-capable" content="yes">\n'
             '<meta name="apple-mobile-web-app-capable" content="yes">\n'
             f'<meta name="apple-mobile-web-app-title" content="{name}">\n'
+            '<script src="/assets/shared.js"></script>\n'
             '<script>if("serviceWorker"in navigator)addEventListener("load",function(){'
             'navigator.serviceWorker.register("/sw.js");});</script>\n')
 
 
 def site_title():
-    return str(load_json(SITE_JSON).get("title") or "Acorn")
+    return str(load_json(SITE_JSON).get("title") or "Cahier")
 
 
 def write_pwa(out_root):
     """manifest.json and sw.js. The version hashes everything precached, so any change updates the app."""
     name = site_title()
-    with open(os.path.join(out_root, "manifest.json"), "w", encoding="utf-8") as f:
+    with open(os.path.join(out_root, "manifest.webmanifest"), "w", encoding="utf-8") as f:
         json.dump({
             "name": name, "short_name": name, "start_url": "/", "scope": "/", "display": "standalone",
-            "background_color": "#121211", "theme_color": "#121211",
+            "background_color": "#F7F1E6", "theme_color": "#1E2A44",
             "icons": [
                 {"src": "/assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png"},
                 {"src": "/assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png"},
@@ -329,7 +336,7 @@ def write_pwa(out_root):
         rel = os.path.relpath(dirpath, out_root).replace(os.sep, "/")
         dirnames[:] = [d for d in dirnames if not (rel == "." and d == "upload")]
         for fn in filenames:
-            if fn.endswith((".html", ".js", ".svg", ".json", ".png")) and fn != "sw.js":
+            if fn.endswith((".html", ".js", ".mjs", ".css", ".woff2", ".svg", ".json", ".webmanifest", ".png")) and fn != "sw.js":
                 files.append("/" + (fn if rel == "." else f"{rel}/{fn}"))
     files.sort()
     with open(SW_TEMPLATE, encoding="utf-8") as f:
@@ -345,12 +352,14 @@ def write_pwa(out_root):
 
 
 def normalize(text, base, theme):
-    """The look comes from the current template, whichever version a page was uploaded with."""
+    """The look comes from the current template, whichever version a page was uploaded with. Amber means
+    "my place" only, so older figures drawn in the accent move to the figure colour first."""
+    text = text.replace("var(--accent)", "var(--fig)")
     if base:
-        text = BASE_RE.sub(lambda m: base, text, count=1)
+        text = BASE_RE.sub(lambda m: TOKENS_RE.sub("", base), text, count=1)
     if theme:
         text = THEME_RE.sub(lambda m: theme, text, count=1)
-    text = FONT_RE.sub(lambda m: FONT_LINK, text, count=1)
+    text = OLD_FONTS_RE.sub("", text)
     return TOGGLE_RE.sub(lambda m: m.group(1) + icon("sun-moon", "") + m.group(2), text, count=1)
 
 
@@ -364,7 +373,7 @@ def inject(src, dst, snippet, base=None, theme=None):
     if i < 0:  # the closing tag is optional in HTML, and uploaded pages sometimes omit it
         i = low.find(b"<body")
     if i >= 0:
-        data = data[:i] + (head_tags() + REMAKE_OVERRIDES + REMAKE_MOBILE).encode("utf-8") + data[i:]
+        data = data[:i] + (head_tags() + REMAKE_MOBILE).encode("utf-8") + data[i:]
     with open(dst, "wb") as f:
         f.write(data)
 
@@ -374,8 +383,8 @@ def back_button(module):
     contents like the toggle (PARK_SCRIPT). The body gets room at the top so it never covers the hero."""
     e = html.escape
     label = f'Back to {e(module["code"])}'
-    css = ("<style>body{padding-top:62px}#studyhub-nav svg{width:20px;height:20px}@media (hover:hover){#studyhub-nav:hover{background:var(--hover)}}"
-           "#studyhub-nav:active{transform:scale(.97)}@media print{#studyhub-nav{display:none}}</style>")
+    css = ("<style>body{padding-top:62px}#studyhub-nav svg{width:20px;height:20px}@media (hover:hover){#studyhub-nav:hover{background:var(--surface-2)}}"
+           "@media print{#studyhub-nav{display:none}}</style>")
     return (f'{css}<a id="studyhub-nav" href="/{e(module["slug"])}/" data-no-save aria-label="{label}" '
             f'title="{label}" style="{BACK_STYLE}">{icon("arrow-left")}</a>\n<script>{PARK_SCRIPT}</script>')
 
@@ -410,42 +419,11 @@ def build_module(module, out_root, base, warnings, theme=None):
                        (snippet + "\n").encode("utf-8"), base, theme)
 
 
-def resource(href, kind, label, tag, key=None, new_tab=False, total=0):
-    e = html.escape
-    attrs = f' data-key="{e(key)}" data-total="{total}"' if key else ""
-    attrs += ' target="_blank" rel="noopener"' if new_tab else ""
-    badge = '<span class="badge" hidden></span>' if key else ""
-    glyph = icon({"lesson": "book-open", "practice": "pencil-line"}.get(kind, "file-text"))
-    return (f'<li><a class="res {kind}" href="{e(href)}"{attrs}>{glyph}'
-            f'<span>{e(label)}</span>{badge}</a></li>')
-
-
-def render_chapter(module, ch, open_):
-    e = html.escape
-    base = f"/{module['slug']}/{ch['slug']}/"
-    remakes = [
-        resource(base + p["file"], p["kind"], p["kind"].capitalize(), "HTML",
-                 key=f"{module['slug']}/{ch['slug']}/{p['file']}", total=p["total"])
-        for p in ch["pages"]
-    ]
-    groups = [("Remakes", remakes)]
-    for d, name in (("cours", "Cours"), ("td", "TD")):
-        groups.append((name, [resource(f"{base}{d}/{x['file']}", "doc", x["label"], x["type"], new_tab=True)
-                              for x in ch["docs"][d]]))
-    body = "".join(
-        f'<div class="group"><h3>{name}</h3><ul>{"".join(items) or "<li class=none>none yet</li>"}</ul></div>'
-        for name, items in groups
-    )
-    title = f'<span class="ct">{e(ch["title"])}</span>' if ch["title"] else ""
-    totals = sheet_totals(module, [ch])
-    title += f'<span class="pg-txt" data-pages="{e(json.dumps(totals))}" hidden></span>' if totals else ""
-    return (f'<details class="chapter" id="{e(ch["slug"])}"{" open" if open_ else ""}>'
-            f'<summary><span class="cl">{e(ch["label"])}</span>{title}</summary>'
-            f'<div class="groups">{body}</div></details>')
+ICON_CHECK = '<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>'
 
 
 def sheet_totals(module, chapters):
-    """{"module/chapter/practice.html": problem count} for the practice sheets of these chapters."""
+    '''{"module/chapter/practice.html": problem count} for the practice sheets of these chapters.'''
     return {f'{module["slug"]}/{c["slug"]}/{p["file"]}': p["total"]
             for c in chapters for p in c["pages"] if p["kind"] == "practice"}
 
@@ -461,90 +439,192 @@ def progress_bar(module):
 def render_card(module):
     e = html.escape
     blurb = f'<p class="blurb">{e(module["blurb"])}</p>' if module["blurb"] else ""
-    return (f'<a class="card" href="/{e(module["slug"])}/"><span class="chip">{e(module["code"])}</span>'
-            f'<h2>{e(module["title"] or module["code"])}</h2>{blurb}{progress_bar(module)}</a>')
+    return (f'<a class="card" href="/{e(module["slug"])}/"><span class="code">{e(module["code"])}</span>'
+            f'<h3>{e(module["title"] or module["code"])}</h3>{blurb}{progress_bar(module)}</a>')
 
 
-def plural(n, word):
-    return f'<span><b>{n}</b> {word}{"" if n == 1 else "s"}</span>'
+def chapter_name(ch):
+    return ch["label"] + (f' · {ch["title"]}' if ch["title"] else "")
 
 
-# The small neural network from the hub head, in the theme's colours.
-FIGURE = ('<svg class="figure" viewBox="0 0 200 150" role="img" aria-label="A small neural network">'
-          + "".join(f'<line class="w" x1="{a}" y1="{b}" x2="{c}" y2="{d}"/>' for a, ys, c, zs in
-                    ((32, (38, 75, 112), 100, (21, 57, 93, 129)), (100, (21, 57, 93, 129), 168, (57, 93)))
-                    for b in ys for d in zs)
-          + '<line class="hl" x1="32" y1="38" x2="100" y2="57"/><line class="hl" x1="32" y1="75" x2="100" y2="57"/>'
-            '<line class="hl" x1="100" y1="57" x2="168" y2="57"/>'
-          + "".join(f'<circle class="n{" na" if (x, y) in ((32, 38), (32, 75), (100, 57), (168, 57)) else ""}" cx="{x}" cy="{y}" r="11"/>'
-                    for x, ys in ((32, (38, 75, 112)), (100, (21, 57, 93, 129)), (168, (57, 93))) for y in ys)
-          + "</svg>")
-SAVED_STAT = '<span><b id="saved-total">0</b> <span id="saved-word">answers</span> saved</span>'
-
-
-def theme_tokens():
-    """The token block of remake_template.html: the one place colours, fonts and radii are defined."""
-    with open(REMAKE_TEMPLATE, encoding="utf-8") as f:
-        m = re.search(r"/\* tokens:.*?/\* /tokens \*/", f.read(), re.S)
-    return m.group(0) if m else ""
-
-
-def shell(nav, page="home", active=None):
-    """Sidebar and bottom tabs. `active` is the module slug on a module page."""
+def row(href, name, key=None, kind="", total=0, small="", glyph=None, keep=None):
+    '''One list row. Status starts as not started; hub.js fills in progress.'''
     e = html.escape
+    attrs = f' data-key="{e(key)}" data-kind="{e(kind)}" data-total="{total}"' if key else ""
+    note = f"<small>{e(small)}</small>" if small else ""
+    status = glyph or f'<span class="status" aria-label="Not started">{icon("circle")}</span>'
+    btn = f'<button class="offline-btn" type="button" data-keep="{e(keep)}"></button>' if keep else ""
+    return (f'<div class="row-wrap"><a class="row" href="{e(href)}"{attrs}>{status}'
+            f'<span class="row-name">{e(name)}{note}</span><span class="row-meta"></span></a>{btn}</div>')
+
+
+def page_rows(module, kind):
+    '''Lesson or practice rows of a module, one per chapter.'''
+    out = []
+    for ch in module["chapters"]:
+        for p in ch["pages"]:
+            if p["kind"] == kind:
+                out.append(row(f'/{module["slug"]}/{ch["slug"]}/{p["file"]}', ch["title"] or ch["label"],
+                               f'{module["slug"]}/{ch["slug"]}/{p["file"]}', kind, p["total"],
+                               ch["label"] if ch["title"] else ""))
+    return out
+
+
+def viewer_href(module, ch, d, doc):
+    query = urlencode({"f": f'/{module["slug"]}/{ch["slug"]}/{d}/{doc["file"]}', "t": doc["label"],
+                       "b": f'/{module["slug"]}/#pdfs'})
+    return f"/viewer/?{query}"
+
+
+def pdf_panel(module):
+    e = html.escape
+    out = []
+    for ch in module["chapters"]:
+        if not any(ch["docs"].values()):
+            continue
+        out.append(f'<h3 class="group-title"><span class="label">{e(ch["label"])}</span>{e(ch["title"])}</h3>')
+        for d, name in (("cours", "Cours"), ("td", "TD")):
+            if ch["docs"][d]:
+                rows = "".join(row(viewer_href(module, ch, d, x), x["label"],
+                                   glyph=f'<span class="status">{icon("file-text")}</span>',
+                                   keep=f'/{module["slug"]}/{ch["slug"]}/{d}/{x["file"]}') for x in ch["docs"][d])
+                out.append(f'<p class="label row-sub">{name}</p><div class="rows">{rows}</div>')
+    return "".join(out)
+
+
+def render_module_page(tpl, module, nav):
+    e = html.escape
+    lessons, sheets, pdfs = page_rows(module, "lesson"), page_rows(module, "practice"), pdf_panel(module)
+    default = "lessons" if lessons else "practice" if sheets else "pdfs"
+    empty = lambda t: f'<div class="none">{t}</div>'
+    tabs = "".join(f'<button type="button" role="tab" data-tab="{k}">{n}</button>'
+                   for k, n in (("lessons", "Lessons"), ("practice", "Practice"), ("pdfs", "PDFs")))
+    main = (f'<div class="tabbar" role="tablist" data-default="{default}">{tabs}</div>'
+            f'<div id="tab-lessons" style="padding-top:var(--space-4)">' + (f'<div class="rows">{"".join(lessons)}</div>' if lessons else empty("No lessons yet.")) + '</div>'
+            f'<div id="tab-practice" style="padding-top:var(--space-4)" hidden>' + (f'<div class="rows">{"".join(sheets)}</div>' if sheets else empty("No practice sheets yet.")) + '</div>'
+            f'<div id="tab-pdfs" hidden>' + (pdfs or empty("No PDFs yet.")) + '</div>')
+    blurb = f'<p>{e(module["blurb"])}</p>' if module["blurb"] else ""
+    head = (f'<header class="hero"><div class="hero-text"><div class="code">{e(module["code"])}</div>'
+            f'<h1>{e(module["title"] or module["code"])}</h1>{blurb}{progress_bar(module)}</div>'
+            f'<a class="pbtn" href="/upload/?module={e(module["slug"])}">Manage {e(module["code"])}</a></header>')
+    return fill(tpl, **shell(nav, "module", module), BODYATTR=f' data-module="{e(module["slug"])}"', HEAD=head,
+                PAGETITLE=f'{e(module["code"])} · {e(module["title"] or module["code"])}', MAIN=main)
+
+
+def render_home(tpl, modules):
+    title = html.escape(site_title())
+    cat = {f'{m["slug"]}/{c["slug"]}/{p["file"]}': {"course": m["title"] or m["code"], "chapter": chapter_name(c),
+                                                    "href": f'/{m["slug"]}/{c["slug"]}/{p["file"]}'}
+           for m in modules for c in m["chapters"] for p in c["pages"] if p["kind"] == "lesson"}
+    catalog = '<script type="application/json" id="catalog">' + json.dumps(cat, ensure_ascii=False).replace("</", "<\\/") + "</script>"
+    cards = "".join(render_card(m) for m in modules) or '<p class="none">No courses yet.</p>'
+    main = ('<div id="continue"><div class="empty-card">Nothing started yet. Open a lesson below and your place will be kept here.</div></div>'
+            f'<h2 class="section">Courses</h2><div class="grid">{cards}</div>')
+    return fill(tpl, **shell(modules, "home"), HEAD="", CATALOG=catalog, PAGETITLE=title, MAIN=main)
+
+
+def simple_head(title, sub=""):
+    p = f"<p>{html.escape(sub)}</p>" if sub else ""
+    return f'<header class="hero"><div class="hero-text"><h1>{html.escape(title)}</h1>{p}</div></header>'
+
+
+def render_courses(tpl, modules):
+    cards = "".join(render_card(m) for m in modules) or '<p class="none">No courses yet.</p>'
+    return fill(tpl, **shell(modules, "courses"), HEAD=simple_head("Courses"), PAGETITLE=f"Courses · {html.escape(site_title())}",
+                MAIN=f'<div class="grid">{cards}</div>')
+
+
+def render_practice(tpl, modules):
+    e = html.escape
+    parts = []
+    for m in modules:
+        rows = page_rows(m, "practice")
+        if rows:
+            parts.append(f'<h2 class="group-title"><span class="label">{e(m["code"])}</span>{e(m["title"] or m["code"])}</h2>'
+                         f'<div class="rows">{"".join(rows)}</div>')
+    return fill(tpl, **shell(modules, "practice"), HEAD=simple_head("Practice", "Every practice sheet, with where you got to."),
+                PAGETITLE=f"Practice · {html.escape(site_title())}",
+                MAIN="".join(parts) or '<p class="none">No practice sheets yet.</p>')
+
+
+def render_search(tpl, modules):
+    main = ('<label class="label" for="search-box" style="display:block;margin-bottom:var(--space-1)">Search lessons, practice sheets and PDF names</label>'
+            '<input class="search-box" id="search-box" type="search" autocomplete="off" spellcheck="false" data-no-save>'
+            '<div id="search-results" style="margin-top:var(--space-4)" aria-live="polite"></div>')
+    return fill(tpl, **shell(modules, "search"), HEAD=simple_head("Search"), PAGETITLE=f"Search · {html.escape(site_title())}", MAIN=main)
+
+
+SEC_RE = re.compile(r'<section\b[^>]*class="sec"[^>]*\bid="([^"]+)"[^>]*>(.*?)</section>', re.S)
+CUT_RE = re.compile(r"<(svg|script|style)\b.*?</\1>", re.S)
+TAG_RE = re.compile(r"<[^>]+>")
+
+
+def plain_text(fragment):
+    return " ".join(html.unescape(TAG_RE.sub(" ", CUT_RE.sub(" ", fragment))).split())
+
+
+def search_index(modules):
+    '''One entry per section of every remake, plus one per PDF name. Read by /search/ in the browser.'''
+    out = []
+    for m in modules:
+        for c in m["chapters"]:
+            where = f'{m["code"]} {c["label"]}'
+            for p in c["pages"]:
+                with open(os.path.join(MODULES, m["slug"], c["slug"], p["file"]), encoding="utf-8", errors="replace") as f:
+                    text = f.read()
+                base = f'/{m["slug"]}/{c["slug"]}/{p["file"]}'
+                kind = p["kind"].capitalize()
+                for sid, body in SEC_RE.findall(text):
+                    h2 = re.search(r"<h2\b[^>]*>(.*?)</h2>", body, re.S)
+                    head = plain_text(h2.group(1)) if h2 else kind
+                    out.append({"u": f"{base}#{sid}", "h": head, "c": f"{where} · {kind}", "x": plain_text(body)[:1500]})
+            for d in DOC_DIRS:
+                for x in c["docs"][d]:
+                    out.append({"u": viewer_href(m, c, d, x), "h": x["label"], "c": f"{where} · PDF", "x": ""})
+    return out
+
+
+def render_viewer():
+    with open(os.path.join(ROOT, "viewer_template.html"), encoding="utf-8") as f:
+        tpl = f.read()
+    return fill(tpl, ICON_BACK=icon("arrow-left"))
+
+
+def shell(nav, page="home", module=None):
+    '''Sidebar, top bar and bottom nav for hub-template pages. `module` is set on a course page.'''
+    e = html.escape
+    active = module["slug"] if module else None
     item = lambda href, body, on: f'<a class="nav-item{" on" if on else ""}" href="{e(href)}">{body}</a>'
     manage = "/upload/" + (f"?module={active}" if active else "")
-    side = item("/", icon("house") + "Home", page == "home")
+    main = (("/", "house", "Home", "home"), ("/courses/", "library", "Courses", "courses"),
+            ("/practice/", "pencil-line", "Practice", "practice"), ("/search/", "search", "Search", "search"))
+    side = "".join(item(h, icon(i) + n, page == k) for h, i, n, k in main)
     if nav:
-        side += '<div class="nav-label">Modules</div>'
-        side += "".join(item(f'/{m["slug"]}/', f'<span class="nav-code">{e(m["code"])}</span>'
-                             f'<span class="nav-name">{e(m["title"] or m["code"])}</span>', m["slug"] == active) for m in nav)
-    tab = lambda href, name, label, on: (f'<a class="tab{" on" if on else ""}" href="{e(href)}"><span>{icon(name)}</span>{label}</a>')
+        side += '<div class="nav-label">My courses</div>'
+        for m in nav:
+            side += item(f'/{m["slug"]}/', f'<span class="nav-code">{e(m["code"])}</span>'
+                         f'<span class="nav-name">{e(m["title"] or m["code"])}</span>', m["slug"] == active)
+            if m["slug"] == active:
+                links = "".join(f'<a href="/{e(m["slug"])}/{e(c["slug"])}/{e(p["file"])}">{e(c["title"] or c["label"])}</a>'
+                                for c in m["chapters"] for p in c["pages"] if p["kind"] == "lesson")
+                if links:
+                    side += f'<div class="nav-sub">{links}</div>'
+    tab_on = lambda k: k == page or (k == "courses" and page == "module")
+    tabs = "".join(f'<a class="tab{" on" if tab_on(k) else ""}" href="{h}">{icon(i)}{n}</a>' for h, i, n, k in main)
     return {
-        "SITENAME": html.escape(site_title()), "ICON_THEME": icon("sun-moon"), "SIDENAV": side,
+        "SITENAME": e(site_title()), "ICON_THEME": icon("sun-moon"), "SIDENAV": side,
         "SIDEMANAGE": item(manage, icon("folder-cog") + "Manage modules", page == "manage"),
-        "TABS": tab("/", "house", "Home", page != "manage") + tab(manage, "folder-cog", "Manage", page == "manage"),
-        "TOKENS": theme_tokens(),
+        "TOPMANAGE": f'<a class="icon-btn" href="{e(manage)}" aria-label="Manage modules">{icon("folder-cog")}</a>',
+        "TABS": tabs,
     }
 
 
 def fill(tpl, **parts):
     parts.setdefault("BODYATTR", "")
-    parts.setdefault("ASIDE", "")
+    parts.setdefault("CATALOG", "")
     for k, v in parts.items():
         tpl = tpl.replace(f"%%{k}%%", v)
     return tpl.replace("</head>", head_tags() + "</head>", 1)
-
-
-def render_hub(tpl, modules):
-    site = load_json(SITE_JSON)
-    title = html.escape(site_title())
-    chapters = [c for m in modules for c in m["chapters"]]
-    n_practice = sum(1 for c in chapters for p in c["pages"] if p["kind"] == "practice")
-    n_docs = sum(len(c["docs"][d]) for c in chapters for d in DOC_DIRS)
-    stats = (plural(len(modules), "module") + plural(len(chapters), "chapter")
-             + plural(n_practice, "practice sheet") + plural(n_docs, "PDF") + SAVED_STAT)
-    cards = "\n".join(render_card(m) for m in modules) or \
-        '<p class="empty">No modules yet. Add <code>modules/&lt;module&gt;/&lt;chapter&gt;/</code> and rebuild.</p>'
-    return fill(tpl, **shell(modules), ASIDE=FIGURE, PAGETITLE=title,
-                EYEBROW="Master Big Data Analytics · USTHB",
-                TITLE=f'<img class="logo" src="/assets/logo.svg" alt="">{title}',
-                SUB=html.escape(str(site.get("subtitle") or "Course remakes, practice sheets and the original PDFs")),
-                STATS=stats, MAIN=f'<main class="grid">\n{cards}\n</main>')
-
-
-def render_module_page(tpl, module, nav):
-    e = html.escape
-    chs = module["chapters"]
-    n_practice = sum(1 for c in chs for p in c["pages"] if p["kind"] == "practice")
-    n_docs = sum(len(c["docs"][d]) for c in chs for d in DOC_DIRS)
-    stats = plural(len(chs), "chapter") + plural(n_practice, "practice sheet") + plural(n_docs, "PDF") + SAVED_STAT
-    chapters = "\n".join(render_chapter(module, c, open_=len(chs) == 1) for c in chs)
-    return fill(tpl, **shell(nav, "module", module["slug"]), BODYATTR=f' data-module="{e(module["slug"])}"',
-                ASIDE=f'<a class="pbtn" href="/upload/?module={e(module["slug"])}">Manage {e(module["code"])}</a>',
-                PAGETITLE=f'{e(module["code"])} · {e(module["title"] or module["code"])}',
-                EYEBROW=e(module["code"]), TITLE=e(module["title"] or module["code"]), SUB=e(module["blurb"]), STATS=stats,
-                MAIN=f'{progress_bar(module)}<main class="chapters">\n{chapters}\n</main>')
 
 
 UPLOAD_MAIN = r"""<main class="up">
@@ -864,10 +944,11 @@ def render_upload(tpl, modules, nav):
                           for c in m["chapters"]]}
             for m in modules]
     js = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
-    return fill(tpl, **shell(nav, "manage"), PAGETITLE=f"Manage modules · {html.escape(site_title())}",
-                EYEBROW=html.escape(site_title()), TITLE="Manage modules",
-                SUB="Upload lessons, practice sheets and PDFs, or delete them. Every change goes live and is committed to GitHub.",
-                STATS="", MAIN=UPLOAD_MAIN.replace("%%DATA%%", js))
+    head = (f'<header class="hero"><div class="hero-text"><div class="eyebrow">{html.escape(site_title())}</div>'
+            '<h1>Manage modules</h1><p>Upload lessons, practice sheets and PDFs, or edit and delete them. '
+            'Every change goes live and is committed to GitHub.</p></div></header>')
+    return fill(tpl, **shell(nav, "manage"), HEAD=head, PAGETITLE=f"Manage modules · {html.escape(site_title())}",
+                MAIN=UPLOAD_MAIN.replace("%%DATA%%", js))
 
 
 def main():
@@ -881,7 +962,8 @@ def main():
     if os.path.isdir(MODULES):
         slugs = [d for d in os.listdir(MODULES) if visible(d) and os.path.isdir(os.path.join(MODULES, d))]
     for s in slugs:
-        if s in ("assets", "upload", "manifest.json", "sw.js") or not NAME_RE.match(s):
+        if s in ("assets", "upload", "viewer", "courses", "practice", "search", "search.json",
+                 "manifest.webmanifest", "sw.js") or not NAME_RE.match(s):
             sys.exit(f"error: module folder name {s!r} is reserved or invalid")
 
     every = sorted((load_module(s) for s in slugs), key=lambda m: (m["order"], m["code"].lower()))
@@ -892,14 +974,21 @@ def main():
 
     with open(TEMPLATE, encoding="utf-8") as f:
         tpl = f.read()
-    with open(os.path.join(NEW, "index.html"), "w", encoding="utf-8") as f:
-        f.write(render_hub(tpl, modules))
+    def page(rel, text):
+        path = os.path.join(NEW, rel, "index.html")
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(text)
+    page("", render_home(tpl, modules))
+    page("courses", render_courses(tpl, modules))
+    page("practice", render_practice(tpl, modules))
+    page("search", render_search(tpl, modules))
+    page("viewer", render_viewer())
+    page("upload", render_upload(tpl, every, modules))
     for m in modules:
-        with open(os.path.join(NEW, m["slug"], "index.html"), "w", encoding="utf-8") as f:
-            f.write(render_module_page(tpl, m, modules))
-    os.makedirs(os.path.join(NEW, "upload"))
-    with open(os.path.join(NEW, "upload", "index.html"), "w", encoding="utf-8") as f:
-        f.write(render_upload(tpl, every, modules))
+        page(m["slug"], render_module_page(tpl, m, modules))
+    with open(os.path.join(NEW, "search.json"), "w", encoding="utf-8") as f:
+        json.dump(search_index(modules), f, ensure_ascii=False, separators=(",", ":"))
     write_pwa(NEW)
 
     if os.path.exists(DIST):
@@ -907,6 +996,10 @@ def main():
     os.rename(NEW, DIST)
     shutil.rmtree(OLD, ignore_errors=True)
 
+    tokens_file = os.path.join(ASSETS, "tokens.css")
+    with open(tokens_file, encoding="utf-8") as f, open(REMAKE_TEMPLATE, encoding="utf-8") as g:
+        if f.read().strip() not in g.read():
+            warnings.append("remake_template.html: its tokens copy differs from assets/tokens.css")
     n_ch = sum(len(m["chapters"]) for m in modules)
     n_pages = sum(len(c["pages"]) for m in modules for c in m["chapters"])
     print(f"built {len(modules)} module(s), {n_ch} chapter(s), {n_pages} page(s) -> dist/")

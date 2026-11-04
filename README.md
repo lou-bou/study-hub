@@ -1,6 +1,6 @@
-# study-hub
+# study-hub (Cahier)
 
-Personal site for my interactive course remakes and practice sheets, with auto-saved answers.
+Cahier: my master's courses in one place. Interactive lessons, practice sheets and the original PDFs, with saved answers and resume-where-I-stopped on any device. Website on desktop, installable offline PWA on phone. Design spec: `DESIGN.md`.
 
 ```
 python3 build.py              # courses/ -> dist/

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PDF</title>
+<script>/* study-hub:theme */(function(){try{var t=localStorage.getItem("studyhub-theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font:var(--text-md)/var(--leading-body) var(--font-body)}
+  a:focus-visible,button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+  [hidden]{display:none!important}
+  .i{width:20px;height:20px}
+  .ribbon{width:9px;height:22px;fill:var(--accent)}
+  .ribbon.outline{fill:none;stroke:var(--text-muted);stroke-width:7}
+  .bar{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:var(--space-2);min-height:56px;padding:var(--space-1) var(--space-2);background:var(--surface);border-bottom:1px solid var(--border)}
+  .icon-btn{flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border:0;border-radius:var(--radius-sm);background:none;color:var(--text);cursor:pointer;text-decoration:none}
+  #title{flex:1;min-width:0;font-weight:600;font-size:var(--text-sm);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #count{flex-shrink:0;font:400 var(--text-xs) var(--font-mono);color:var(--text-muted)}
+  #open{flex-shrink:0;padding:0 var(--space-2);color:var(--link);font-size:var(--text-xs)}
+  main{max-width:900px;margin:0 auto;padding:var(--space-4)}
+  #resume{display:flex;align-items:center;gap:var(--space-2);min-height:44px;margin-bottom:var(--space-4);padding:var(--space-2) var(--space-4) var(--space-2) var(--space-3);background:var(--note-bg);border:1px solid var(--border);border-radius:var(--radius-md);color:var(--text);font:600 var(--text-sm) var(--font-body);cursor:pointer}
+  #status{padding:var(--space-6) 0;text-align:center;color:var(--text-muted)}
+  .pdf-page{width:100%;margin-bottom:var(--space-3);background:var(--surface);border:1px solid var(--border);scroll-margin-top:64px}
+  .pdf-page canvas{display:block;width:100%;height:auto}
+  @media (hover:hover){.icon-btn:hover{background:var(--surface-2)}}
+  @media (max-width:700px){main{padding:0}#resume{margin:var(--space-2)}.pdf-page{border-inline:0;margin-bottom:var(--space-1)}}
+</style>
+</head>
+<body>
+<header class="bar">
+  <a class="icon-btn" id="back" href="/" aria-label="Back">%%ICON_BACK%%</a>
+  <div id="title"></div>
+  <span id="count"></span>
+  <a id="open" target="_blank" rel="noopener">Open file</a>
+  <button class="icon-btn" id="keep" type="button"></button>
+</header>
+<main>
+  <button id="resume" type="button" hidden><svg class="ribbon" viewBox="0 0 64 160" aria-hidden="true"><polygon points="20,0 44,0 44,160 32,146 20,160"/></svg><span></span></button>
+  <div id="status">Opening…</div>
+  <div id="pages"></div>
+</main>
+<script type="module" src="/assets/viewer.js"></script>
+</body>
+</html>

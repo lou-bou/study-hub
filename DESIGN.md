@@ -1,89 +1,172 @@
-# Acorn design theme: soft fintech on a warm minimal base, tailored to study pages
+# Cahier — design spec
 
-Calm, friendly and precise. Warm stone neutrals, one marigold accent, thin borders instead of
-shadows, rounded shapes, strong type hierarchy.
+Hand-off spec for building the Cahier UI. Read this fully before touching styles.
+Stack: plain HTML, CSS and JavaScript (no framework), small Python + SQLite backend, self-hosted
+behind a Cloudflare Tunnel. Website on desktop, installable PWA on phone, works offline. Single user.
 
-**Every value lives in one place:** the `/* tokens */` block of `remake_template.html`. Hub pages
-get the same block through `%%TOKENS%%`, and the build swaps the current base styles into every
-remake, so changing that block changes the whole site. Components only reference tokens.
+## 1. Identity
 
-## Colour
-Role            | Token                | Light   | Dark
-----------------|----------------------|---------|--------
-Background      | `--bg`               | #f6f5f2 | #121211
-Surface (cards) | `--surface`          | #ffffff | #1b1a18
-Surface sunken  | `--sunken`           | #efede8 | #0e0e0d
-Surface hover   | `--hover`            | #f2f0ec | #23221f
-Border          | `--line`             | #e4e1da | #2c2a27
-Border strong   | `--line-strong`      | #cdc9c0 | #3d3a35
-Text            | `--ink`              | #1c1b19 | #f1efea
-Text muted      | `--muted`            | #6b675f | #a39f96
-Text faint      | `--faint`            | #9a958b | #75716a
-Accent fill     | `--accent-fill`      | #f2a922 | #f5b13a
-Accent hover    | `--accent-fill-hover`| #e39912 | #f8c160
-Text on accent  | `--on-accent`        | #2a1d04 | #2a1d04
-Accent as text  | `--accent`           | #8a5a00 | #f5b13a
-Accent soft bg  | `--accent-soft`      | #fdf0d5 | #33270f
-Positive        | `--ok`               | #1d8049 | #4cbd78
-Positive soft   | `--ok-soft`          | #e2f2e8 | #142b1d
-Negative        | `--hi`               | #c2413a | #ec6b61
-Negative soft   | `--hi-soft`          | #f8e4e1 | #361816
+- **Name:** Cahier (French: notebook). Always "Cahier" in UI text, `cahier` in code.
+- **What it is:** my master's courses (Big Data Analytics, USTHB) in one place — interactive lessons,
+  practice sheets and the original PDFs — with saved answers and resume-where-I-stopped on any device.
+- **Personality:** "editorial paper". A well-made printed course notebook: calm, warm paper, ink text,
+  one amber ribbon marking where I am. Reading comfort beats decoration every time.
+- **The ribbon is the brand.** Amber = "my place / my progress". Use it for resume points, bookmarks and
+  progress bars, and almost nothing else.
 
-- One accent. Fills use `--accent-fill` with `--on-accent` text. `--accent` is the readable form for
-  text and strokes, kept under that name so every existing remake's figures stay legible.
-- Green and red carry meaning only: right and wrong, plus the emphasis mark below.
-- Neutrals are warm, never blue-grey. Light and dark follow the system, with a manual override.
+## 2. Files in this kit
 
-### Tailored for teaching figures
-Diagrams have to tell tasks and machines apart, so they may use more than one colour:
-- `--c1` to `--c4`: a warm palette, with dark text on all of them (#f5c56a, #e9a88e, #a9d0a6, #d3c7b5).
-- `--l0` to `--l4`: a marigold ramp for heatmaps and levels.
-- `--hi` marks "this one" in a figure (the optimum, the critical path).
-- Decoration never uses these. THOR chapter 1 keeps its own 10 task colours: a Gantt chart needs them.
+| File | Use |
+|---|---|
+| `assets/tokens.css` | All colors, fonts, spacing, radii, motion. Link it first on every page. **Never hard-code a hex value** — add a token if one is missing. |
+| `assets/logo.svg` | Full mark: navy notebook, tick, amber ribbon. Works on paper and on dark. |
+| `assets/ribbon.svg` | Ribbon alone — use as a "resume here" marker, loading indicator, or tiny brand accent. |
+| `assets/icons/favicon.svg` | Browser favicon (navy tile, tick + ribbon). |
+| `assets/icons/cahier-icon.svg` | Full-bleed square, maskable-safe. Source for PWA icons. |
+| `assets/icons/*.png` | Pre-rendered: `icon-192.png`, `icon-512.png`, `icon-maskable-512.png`, `apple-touch-icon.png` (180), `favicon-32.png`. |
 
-## Type
-- Body and UI: Inter. Display (wordmark, page, section and card titles): Nunito 800.
-- Tailored: IBM Plex Mono only for code, ciphertext and `table.t.mono`, where characters must line
-  up. Cambria Math for formulas. Labels and numbers are Inter, not mono.
-- Scale (rem): 0.6875, 0.75, 0.875, 1, 1.125, 1.375, 1.75, 2.5.
-- Line height: 1.15 for headings, 1.45 in the shell, 1.5 on reading pages. Headings use -0.02em.
-- Small uppercase labels use +0.06em. Numbers use tabular figures.
+**Wordmark:** live text, no file. Mark + "Cahier" in `--font-display` (Fraunces), weight 600,
+optical size high (`font-variation-settings: "opsz" 72`), `letter-spacing: -0.01em`.
 
-## Shape, space, depth
-- Spacing on a 4px base. Radius: 8, 12, 18, 24px and pill.
-- Cards: surface, 1px border, 24px radius, 20px padding, no shadow. Figures and worked examples: 18px.
-- No cards in cards: anything inside a card (solutions, aids, equations) is sunken, with no border.
-- Worked examples keep their top bar, in the accent.
-- Buttons and segmented controls: pills. Inputs: 12px radius.
-- Controls: 44px on phones, 36px for small ones on desktop.
-- Flat by default. Only floating layers (the save pill) get `--shadow`.
+## 3. Color
 
-## Components
-- Primary button: accent fill, dark text. Secondary: surface with a strong border. Delete: soft red.
-- Segmented control: sunken track, the selected segment a raised surface pill.
-- Selectable chips: outlined; when selected, inverted.
-- Lists: rows separated by 1px borders.
-- Icons: Lucide, 20px, stroke 1.75, inlined by `build.py` (`ICONS`). No emoji as icons.
+Light ("paper") is the default; dark ("night ink") via the OS or the `data-theme` toggle on `<html>`.
 
-## Layout
-- Hub, module and manage pages are the app shell: a 15rem left sidebar on desktop (logo, Home, modules,
-  Manage, Theme), and a 4rem bottom tab bar on phones (Home, Manage, Theme) where the active icon sits
-  in a soft accent pill. Content max-width 46rem.
-- Tailored: lessons and practice pages stay focused reading pages, with no sidebar or tabs. They get a
-  round back button and theme button that park below the contents, and a 1040px width because they
-  hold wide figures and two-column sections; prose is capped at 78ch.
-- Tailored: edit forms open inline rather than as bottom sheets, since they are small and rarely used.
+| Role | Token | Light | Notes |
+|---|---|---|---|
+| Page | `--bg` | #F7F1E6 | warm paper, never pure white |
+| Cards, lesson column | `--surface` | #FFFCF6 | |
+| Inputs, code, hovered rows | `--surface-2` | #EFE6D6 | |
+| Hairlines | `--border` | #E2D8C6 | |
+| Body text / headings | `--text` | #1E2A44 ink navy | never pure black |
+| Secondary text | `--text-muted` | #5C6475 | |
+| Ribbon / progress fills | `--accent` | #D9952B amber | fills only |
+| Amber as text | `--accent-text` | #8A5A12 | AA on paper |
+| Links | `--link` | #1E4FA0 | underlined |
+| Correct answer | `--correct` / `--correct-bg` | green | + check icon |
+| Wrong answer | `--wrong` / `--wrong-bg` | brick red | + x icon |
+| "In plain words", worked examples | `--note-bg` | #FBF0D9 | |
 
-## Motion and touch
-- 120ms for hover and press, 200ms base, 360ms for progress. Easing: cubic-bezier(.2,.8,.2,1).
-- Hover styles only inside `@media (hover:hover)`. Real `:active` states: buttons scale to .97, rows tint.
-- `-webkit-tap-highlight-color:transparent` and `touch-action:manipulation` on tappable elements.
+Rules: correct/wrong are never color-only (always icon + word). Amber is never used for errors or warnings.
 
-## Logo
-A small smiling acorn (`assets/logo.svg`): marigold nut, warm brown cap, so the logo and the theme are
-one thing. Wordmark in Nunito 800. App icons sit on the soft accent background. They are PNGs rendered
-once from the SVG; redo them if the SVG changes.
+## 4. Typography
 
-## Avoid
-Purple or blue gradients, glassmorphism, cards nested in cards, shadows on everything, oversized heroes,
-centred everything, stock illustrations, inconsistent padding, more than one accent colour.
+Self-host all fonts (woff2 in `assets/fonts/`) and precache them — **no Google Fonts CDN**, the app must
+work offline. Use the variable versions.
+
+| Role | Font | Weight | Size |
+|---|---|---|---|
+| Lesson title (hero) | Fraunces | 600 | `--text-2xl` |
+| Section headings (h2/h3) | Fraunces | 600 / 500 | `--text-xl` / `--text-lg` |
+| Body, UI | Source Sans 3 | 400 / 600 | `--text-md`, line-height `--leading-body` |
+| Code, formulas, cipher tables | JetBrains Mono | 400 | `--text-sm` |
+| Small labels, metadata | Source Sans 3 | 600 | `--text-xs`, muted |
+
+- Lesson text column max width `--measure` (68ch). Never let paragraphs run full-width on desktop.
+- French terms in parentheses next to English key terms: render the French in italic, `--text-muted`
+  — e.g. **Shortest path** *(plus court chemin)*.
+- Math: KaTeX, self-hosted, inherits `--text`.
+
+## 5. Space, shape, elevation
+
+- 4px grid via `--space-*`. Generous vertical rhythm: `--space-7` between lesson sections.
+- Quiet radii: `--radius-sm` inputs/buttons, `--radius-md` cards, `--radius-lg` sheets.
+- No drop shadows; layer with `--surface` on `--bg` and 1px `--border`. Paper doesn't glow.
+
+## 6. Structure & screens
+
+Desktop: left sidebar (courses → lessons) + centered lesson column. Mobile: top bar + bottom nav
+(Home · Courses · Practice · Search).
+
+1. **Home ("Continue")** — the first thing is a single **Continue** card: course, lesson, section title,
+   amber progress bar, and a ribbon icon. One tap lands at the exact saved scroll/section. Below it:
+   courses grid (THOR, OPL, GBD, SSAD…) with per-course progress.
+2. **Course page** — lessons list with status per lesson: not started (empty circle), in progress
+   (amber ribbon + %), done (green check). Three tabs: Lessons · Practice · PDFs.
+3. **Lesson page** — keep the existing remake format (it IS this design system):
+   hero with a figure → contents grid → numbered sections, each with an **In plain words** box
+   (`--note-bg`, left 3px amber border, radius 0 on that side), keyword definitions, SVG figures and a
+   **Worked example** box → **Notes on the original course** box at the end (`--surface-2`, muted).
+   A thin amber reading-progress bar sits at the very top of the viewport.
+4. **Practice sheet** — one problem per card; aids (alphabet strip, lookup tables) shown above the input
+   in mono on `--surface-2`. Check → card border + badge switch to correct/wrong colors with icon.
+   "Show solution" is a ghost button. Answers autosave (small "Saved" in muted text, no toasts).
+5. **PDF viewer** — embedded viewer on desktop; on mobile, open full-screen with a back bar.
+   Remember last page per PDF (same ribbon logic).
+
+### Resume behaviour (the core feature — design it carefully)
+
+- Save position = course + lesson + section id + scroll offset, debounced, per device, synced to the
+  backend when online.
+- When opening a lesson with a saved position, show a ribbon chip under the hero:
+  "Resume at §4 · Huffman coding" → tap scrolls there. Don't auto-jump without asking.
+- If another device has a newer position, the Continue card shows "From your laptop · 2h ago".
+
+## 7. Motion
+
+Minimal. `--dur-fast` hovers, `--dur-med` sheets and the correct/wrong state change. Smooth scroll for
+in-page jumps, disabled under `prefers-reduced-motion`. No celebratory animations — a finished lesson
+gets a green check, nothing more.
+
+## 8. PWA & offline
+
+- `manifest.webmanifest`:
+  ```json
+  {
+    "name": "Cahier",
+    "short_name": "Cahier",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#F7F1E6",
+    "theme_color": "#1E2A44",
+    "icons": [
+      { "src": "/assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+      { "src": "/assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+      { "src": "/assets/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    ]
+  }
+  ```
+- `<link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">` + `favicon-32.png` + `apple-touch-icon.png`.
+- `<meta name="theme-color">` follows the theme (`#1E2A44` dark, `#F7F1E6` light).
+- Each lesson/sheet/PDF gets an "Available offline" toggle (ribbon icon outline → filled when cached).
+- Offline: a muted pill "Offline · progress saved on this device". Never block reading.
+
+## 9. Accessibility
+
+- Text contrast ≥ 4.5:1 in both themes; don't lighten `--text-muted`.
+- Focus ring: `outline: 2px solid var(--focus); outline-offset: 2px`.
+- Tap targets ≥ 44px. Practice inputs have real `<label>`s.
+- SVG figures in lessons carry `role="img"` + `<title>`. Correct/wrong results announced via `aria-live`.
+
+## 10. Don'ts
+
+- No pure white backgrounds, no pure black text.
+- No gradients, glass, shadows, emoji in UI chrome.
+- No new accent colors per course — courses are distinguished by name and an optional mono code label,
+  not a color each.
+- Don't use amber for anything except progress / resume / bookmarks (and the ribbon in the logo).
+- Don't break the existing lesson remake structure; new UI should wrap around it, not restyle it.
+
+## 11. How this project applies the spec
+
+The spec above is the brand kit, with paths adjusted to this repo. These are the decisions it left open or that differ.
+
+**Gaps filled**
+- Tokens: `assets/tokens.css` is the kit's file plus a clearly marked additions block. `remake_template.html` holds a copy so a page previews alone; the build warns if they drift and every page links the real file.
+- Main buttons are ink (`--primary`), since amber is reserved for my place.
+- Figures: amber can't be used, so lesson diagrams use `--fig` and `--fig-soft`, and `--c1`-`--c4` to tell things apart. `--wrong` also marks "this one" in a figure (the optimum, the critical path). The build turns `var(--accent)` in a page's own CSS into `var(--fig)`, so older or careless uploads can't paint figures amber. THOR chapter 1 keeps its own 10 task colours, because a Gantt chart needs them.
+- Older pages' token names (`--ink`, `--line`, `--hi`...) are aliased in the additions block.
+- Icons: Lucide at 20px, inlined by `build.py`.
+- PDF viewer: PDF.js, vendored in `assets/pdfjs/`, is what makes "remember last page" and viewing on phones possible.
+- Search: `/search/` runs in the browser over `search.json`, built from every section and PDF name, so it works offline. It doesn't search inside PDFs.
+- Manage modules isn't in the spec's navigation. It sits at the bottom of the sidebar and as an icon in the phone top bar.
+- Position sync: one position per lesson, the newest wins, labelled with the device that saved it.
+
+**Deliberate differences**
+- Lessons and practice sheets have no sidebar or bottom nav, only a back button and theme button that park after the contents. I asked for that earlier because nav distracted me while reading.
+- "Available offline" is only on PDFs. Lessons and sheets are always saved on install, so a toggle there would do nothing.
+- Page zoom stays (125% / 150% on wide screens), because I asked for it.
+- KaTeX isn't used: the remakes write maths as text and symbols, with no TeX to render. `--font-math` styles it.
+- Internal `studyhub` ids, storage keys and the `studyhub:restored` event stay, because source pages and saved data depend on them. New code uses `cahier`.
+- Practice inputs use `aria-label` and many lesson figures have `aria-label` rather than `<title>`; both come from the source pages, which the build doesn't edit.
+
