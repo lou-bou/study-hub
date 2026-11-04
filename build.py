@@ -32,19 +32,41 @@ OLD = os.path.join(ROOT, ".dist_old")
 NAME_RE = re.compile(r"^[\w\-][\w.\-]{0,99}$")
 TITLE_RE = re.compile(rb"<title[^>]*>(.*?)</title>", re.I | re.S)
 DOC_DIRS = ("cours", "td")
+# Lucide icons (ISC licence), inlined at 1.75 stroke.
+ICONS = {
+    "arrow-left": '<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>',
+    "house": '<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+    "sun-moon": '<path d="M12 8a2.83 2.83 0 0 0 4 4 4 4 0 1 1-4-4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.9 4.9 1.4 1.4"/><path d="m17.7 17.7 1.4 1.4"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.3 17.7-1.4 1.4"/><path d="m19.1 4.9-1.4 1.4"/>',
+    "folder-cog": '<circle cx="18" cy="18" r="3"/><path d="M10.3 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v3.3"/><path d="m21.7 19.4-.9-.3"/><path d="m15.2 16.9-.9-.3"/><path d="m16.6 21.7.3-.9"/><path d="m19.1 15.2.3-.9"/><path d="m19.6 21.7-.4-1"/><path d="m16.8 15.3-.4-1"/><path d="m14.3 19.6 1-.4"/><path d="m20.7 16.8 1-.4"/>',
+    "book-open": '<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>',
+    "pencil-line": '<path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/><path d="m15 5 3 3"/>',
+    "file-text": '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
+}
+
+
+def icon(name, cls="i"):
+    return (f'<svg class="{cls}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+            f'stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{ICONS[name]}</svg>')
+
+
 # Back button on every remake: the theme toggle's look, mirrored to the top-left corner.
 BACK_STYLE = (
-    "position:fixed;top:14px;left:max(14px,env(safe-area-inset-left,0px));z-index:20;"
-    "border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;"
-    "padding:6px 14px;font:500 .8rem var(--f-body);text-decoration:none;cursor:pointer"
+    "position:fixed;top:14px;left:max(14px,env(safe-area-inset-left,0px));z-index:20;display:inline-flex;"
+    "align-items:center;justify-content:center;width:40px;height:40px;border:1px solid var(--line);"
+    "background:var(--surface);color:var(--ink);border-radius:var(--pill);text-decoration:none;cursor:pointer"
 )
+FONT_LINK = ('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=Nunito:wght@800&family=IBM+Plex+Mono:wght@400;500;600&display=swap">')
+FONT_RE = re.compile(r'<link rel="stylesheet" href="https://fonts\.googleapis\.com/css2[^>]*>')
+TOGGLE_RE = re.compile(r'(<button[^>]*id="theme-toggle"[^>]*>).*?(</button>)', re.S)
+# Pages keep their own diagram colours, but this ramp was blue; these come later in the cascade.
+REMAKE_OVERRIDES = "<style>:root{--l0:#e9a92e;--l1:#f2c163;--l2:#f7d690;--l3:#fbe6bc;--l4:#fdf3df}</style>\n"
 # Pages render bigger on wide screens, like a browser zoom of 125% / 150%; phones are unchanged.
 ZOOM_STYLE = ("<style>@media (min-width:1200px){html{zoom:1.25}}"
               "@media (min-width:1500px){html{zoom:1.5}}</style>\n")
 PHONE = "(max-width:700px)"
 # Remakes on phones. Page styles come first in the cascade, so these win; inline styles need !important.
 REMAKE_MOBILE = ("<style>@media " + PHONE + "{"
-    ".toggle,#studyhub-nav{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px}"
+    ".toggle,#studyhub-nav{width:44px!important;height:44px!important}"
     "#studyhub-nav{transition:transform .2s}"
     ".part a,.prob summary,details.more summary,.b,label.opt,.done{min-height:44px}"
     ".part a,label.opt{align-items:center}"
@@ -55,7 +77,7 @@ REMAKE_MOBILE = ("<style>@media " + PHONE + "{"
     "label.chipbox{display:inline-flex;align-items:center;min-height:40px}"
     "input:not([type=radio]):not([type=checkbox]),select,textarea{font-size:16px!important}"
     "input:not([type=radio]):not([type=checkbox]),select{min-height:44px}"
-    ".toc-m{margin-top:8px;background:var(--surface);border:1px solid var(--line);border-radius:12px}"
+    ".toc-m{margin-top:8px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg)}"
     ".toc-m>summary{display:flex;align-items:center;min-height:48px;padding:0 16px;font-weight:600;cursor:pointer}"
     ".toc-m>.toc{border-top:1px solid var(--line);padding:14px 16px}"
     "[data-more]{-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 28px),transparent);"
@@ -215,6 +237,15 @@ def remake_base():
         return None
 
 
+def remake_theme():
+    try:
+        with open(REMAKE_TEMPLATE, encoding="utf-8") as f:
+            m = THEME_RE.search(f.read())
+        return m.group(0) if m else None
+    except OSError:
+        return None
+
+
 def lint_page(path, practice, base):
     """Warnings for a remake that breaks the shared template or the saving rules."""
     with open(path, encoding="utf-8", errors="replace") as f:
@@ -223,8 +254,6 @@ def lint_page(path, practice, base):
     m = BASE_RE.search(s)
     if not m:
         out.append("missing the study-hub:base styles from remake_template.html")
-    elif base and m.group(0) != base:
-        out.append("study-hub:base styles differ from remake_template.html (copy them verbatim)")
     if not THEME_RE.search(s) or 'id="theme-toggle"' not in s:
         out.append("missing the shared theme script or the theme-toggle button")
     if "localStorage" in THEME_RE.sub("", s):
@@ -262,8 +291,8 @@ def head_tags():
             '<link rel="manifest" href="/manifest.json" crossorigin="use-credentials">\n'
             '<link rel="icon" href="/assets/logo.svg" type="image/svg+xml">\n'
             '<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">\n'
-            '<meta name="theme-color" media="(prefers-color-scheme: light)" content="#F3F5FB">\n'
-            '<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0D1426">\n'
+            '<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f5f2">\n'
+            '<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#121211">\n'
             '<meta name="mobile-web-app-capable" content="yes">\n'
             '<meta name="apple-mobile-web-app-capable" content="yes">\n'
             f'<meta name="apple-mobile-web-app-title" content="{name}">\n'
@@ -281,7 +310,7 @@ def write_pwa(out_root):
     with open(os.path.join(out_root, "manifest.json"), "w", encoding="utf-8") as f:
         json.dump({
             "name": name, "short_name": name, "start_url": "/", "scope": "/", "display": "standalone",
-            "background_color": "#0D1426", "theme_color": "#0D1426",
+            "background_color": "#121211", "theme_color": "#121211",
             "icons": [
                 {"src": "/assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png"},
                 {"src": "/assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png"},
@@ -308,9 +337,19 @@ def write_pwa(out_root):
         f.write(tpl.replace("%%VERSION%%", digest.hexdigest()[:12]).replace("%%PRECACHE%%", json.dumps(urls)))
 
 
-def inject(src, dst, snippet):
+def normalize(text, base, theme):
+    """The look comes from the current template, whichever version a page was uploaded with."""
+    if base:
+        text = BASE_RE.sub(lambda m: base, text, count=1)
+    if theme:
+        text = THEME_RE.sub(lambda m: theme, text, count=1)
+    text = FONT_RE.sub(lambda m: FONT_LINK, text, count=1)
+    return TOGGLE_RE.sub(lambda m: m.group(1) + icon("sun-moon", "") + m.group(2), text, count=1)
+
+
+def inject(src, dst, snippet, base=None, theme=None):
     with open(src, "rb") as f:
-        data = f.read()
+        data = normalize(f.read().decode("utf-8", "surrogateescape"), base, theme).encode("utf-8", "surrogateescape")
     i = data.lower().rfind(b"</body>")
     data = data + snippet if i < 0 else data[:i] + snippet + data[i:]
     low = data.lower()
@@ -318,7 +357,7 @@ def inject(src, dst, snippet):
     if i < 0:  # the closing tag is optional in HTML, and uploaded pages sometimes omit it
         i = low.find(b"<body")
     if i >= 0:
-        data = data[:i] + (head_tags() + REMAKE_MOBILE).encode("utf-8") + data[i:]
+        data = data[:i] + (head_tags() + REMAKE_OVERRIDES + REMAKE_MOBILE).encode("utf-8") + data[i:]
     with open(dst, "wb") as f:
         f.write(data)
 
@@ -328,13 +367,13 @@ def back_button(module):
     contents like the toggle (PARK_SCRIPT). The body gets room at the top so it never covers the hero."""
     e = html.escape
     label = f'Back to {e(module["code"])}'
-    css = ("<style>body{padding-top:62px}#studyhub-nav:hover{border-color:var(--accent)}"
-           "@media print{#studyhub-nav{display:none}}</style>")
+    css = ("<style>body{padding-top:62px}#studyhub-nav svg{width:20px;height:20px}@media (hover:hover){#studyhub-nav:hover{background:var(--hover)}}"
+           "#studyhub-nav:active{transform:scale(.97)}@media print{#studyhub-nav{display:none}}</style>")
     return (f'{css}<a id="studyhub-nav" href="/{e(module["slug"])}/" data-no-save aria-label="{label}" '
-            f'title="{label}" style="{BACK_STYLE}">&larr;</a>\n<script>{PARK_SCRIPT}</script>')
+            f'title="{label}" style="{BACK_STYLE}">{icon("arrow-left")}</a>\n<script>{PARK_SCRIPT}</script>')
 
 
-def build_module(module, out_root, base, warnings):
+def build_module(module, out_root, base, warnings, theme=None):
     src = os.path.join(MODULES, module["slug"])
     dst = os.path.join(out_root, module["slug"])
     shutil.copytree(src, dst, ignore=shutil.ignore_patterns("module.json", ".*", "_*"))
@@ -358,7 +397,7 @@ def build_module(module, out_root, base, warnings):
                     snippet += (f'\n<script src="/assets/saver.js" data-module="{html.escape(module["slug"])}" '
                                 f'data-page="{html.escape(page)}"></script>')
                 inject(os.path.join(dirpath, f), os.path.join(dst, ch["slug"], rel),
-                       (snippet + "\n").encode("utf-8"))
+                       (snippet + "\n").encode("utf-8"), base, theme)
 
 
 def resource(href, kind, label, tag, key=None, new_tab=False):
@@ -366,7 +405,8 @@ def resource(href, kind, label, tag, key=None, new_tab=False):
     attrs = f' data-key="{e(key)}"' if key else ""
     attrs += ' target="_blank" rel="noopener"' if new_tab else ""
     badge = '<span class="badge" hidden></span>' if key else ""
-    return (f'<li><a class="res {kind}" href="{e(href)}"{attrs}><span class="ft">{e(tag)}</span>'
+    glyph = icon({"lesson": "book-open", "practice": "pencil-line"}.get(kind, "file-text"))
+    return (f'<li><a class="res {kind}" href="{e(href)}"{attrs}>{glyph}'
             f'<span>{e(label)}</span>{badge}</a></li>')
 
 
@@ -403,11 +443,48 @@ def plural(n, word):
     return f'<span><b>{n}</b> {word}{"" if n == 1 else "s"}</span>'
 
 
-ALL_MODULES = '<a class="pbtn back" href="/" aria-label="All modules" title="All modules">&larr;</a>'
+# The small neural network from the hub head, in the theme's colours.
+FIGURE = ('<svg class="figure" viewBox="0 0 200 150" role="img" aria-label="A small neural network">'
+          + "".join(f'<line class="w" x1="{a}" y1="{b}" x2="{c}" y2="{d}"/>' for a, ys, c, zs in
+                    ((32, (38, 75, 112), 100, (21, 57, 93, 129)), (100, (21, 57, 93, 129), 168, (57, 93)))
+                    for b in ys for d in zs)
+          + '<line class="hl" x1="32" y1="38" x2="100" y2="57"/><line class="hl" x1="32" y1="75" x2="100" y2="57"/>'
+            '<line class="hl" x1="100" y1="57" x2="168" y2="57"/>'
+          + "".join(f'<circle class="n{" na" if (x, y) in ((32, 38), (32, 75), (100, 57), (168, 57)) else ""}" cx="{x}" cy="{y}" r="11"/>'
+                    for x, ys in ((32, (38, 75, 112)), (100, (21, 57, 93, 129)), (168, (57, 93))) for y in ys)
+          + "</svg>")
 SAVED_STAT = '<span><b id="saved-total">0</b> <span id="saved-word">answers</span> saved</span>'
 
 
+def theme_tokens():
+    """The token block of remake_template.html: the one place colours, fonts and radii are defined."""
+    with open(REMAKE_TEMPLATE, encoding="utf-8") as f:
+        m = re.search(r"/\* tokens:.*?/\* /tokens \*/", f.read(), re.S)
+    return m.group(0) if m else ""
+
+
+def shell(nav, page="home", active=None):
+    """Sidebar and bottom tabs. `active` is the module slug on a module page."""
+    e = html.escape
+    item = lambda href, body, on: f'<a class="nav-item{" on" if on else ""}" href="{e(href)}">{body}</a>'
+    manage = "/upload/" + (f"?module={active}" if active else "")
+    side = item("/", icon("house") + "Home", page == "home")
+    if nav:
+        side += '<div class="nav-label">Modules</div>'
+        side += "".join(item(f'/{m["slug"]}/', f'<span class="nav-code">{e(m["code"])}</span>'
+                             f'<span class="nav-name">{e(m["title"] or m["code"])}</span>', m["slug"] == active) for m in nav)
+    tab = lambda href, name, label, on: (f'<a class="tab{" on" if on else ""}" href="{e(href)}"><span>{icon(name)}</span>{label}</a>')
+    return {
+        "SITENAME": html.escape(site_title()), "ICON_THEME": icon("sun-moon"), "SIDENAV": side,
+        "SIDEMANAGE": item(manage, icon("folder-cog") + "Manage modules", page == "manage"),
+        "TABS": tab("/", "house", "Home", page != "manage") + tab(manage, "folder-cog", "Manage", page == "manage"),
+        "TOKENS": theme_tokens(),
+    }
+
+
 def fill(tpl, **parts):
+    parts.setdefault("BODYATTR", "")
+    parts.setdefault("ASIDE", "")
     for k, v in parts.items():
         tpl = tpl.replace(f"%%{k}%%", v)
     return tpl.replace("</head>", head_tags() + "</head>", 1)
@@ -423,27 +500,25 @@ def render_hub(tpl, modules):
              + plural(n_practice, "practice sheet") + plural(n_docs, "PDF") + SAVED_STAT)
     cards = "\n".join(render_card(m) for m in modules) or \
         '<p class="empty">No modules yet. Add <code>modules/&lt;module&gt;/&lt;chapter&gt;/</code> and rebuild.</p>'
-    return fill(tpl, PAGETITLE=title, BACK="", ACTIONS='<a class="pbtn" href="/upload/">Manage modules</a>',
+    return fill(tpl, **shell(modules), ASIDE=FIGURE, PAGETITLE=title,
                 EYEBROW="Master Big Data Analytics · USTHB",
                 TITLE=f'<img class="logo" src="/assets/logo.svg" alt="">{title}',
                 SUB=html.escape(str(site.get("subtitle") or "Course remakes, practice sheets and the original PDFs")),
                 STATS=stats, MAIN=f'<main class="grid">\n{cards}\n</main>')
 
 
-def render_module_page(tpl, module):
+def render_module_page(tpl, module, nav):
     e = html.escape
     chs = module["chapters"]
     n_practice = sum(1 for c in chs for p in c["pages"] if p["kind"] == "practice")
     n_docs = sum(len(c["docs"][d]) for c in chs for d in DOC_DIRS)
     stats = plural(len(chs), "chapter") + plural(n_practice, "practice sheet") + plural(n_docs, "PDF") + SAVED_STAT
     chapters = "\n".join(render_chapter(module, c, open_=len(chs) == 1) for c in chs)
-    page = fill(tpl, PAGETITLE=f'{e(module["code"])} · {e(module["title"] or module["code"])}',
-                BACK=ALL_MODULES,
-                ACTIONS=f'<a class="pbtn" href="/upload/?module={e(module["slug"])}">Manage {e(module["code"])}</a>',
-                EYEBROW=e(module["code"]),
-                TITLE=e(module["title"] or module["code"]), SUB=e(module["blurb"]), STATS=stats,
+    return fill(tpl, **shell(nav, "module", module["slug"]), BODYATTR=f' data-module="{e(module["slug"])}"',
+                ASIDE=f'<a class="pbtn" href="/upload/?module={e(module["slug"])}">Manage {e(module["code"])}</a>',
+                PAGETITLE=f'{e(module["code"])} · {e(module["title"] or module["code"])}',
+                EYEBROW=e(module["code"]), TITLE=e(module["title"] or module["code"]), SUB=e(module["blurb"]), STATS=stats,
                 MAIN=f'<main class="chapters">\n{chapters}\n</main>')
-    return page.replace("<body>", f'<body data-module="{e(module["slug"])}">', 1)
 
 
 UPLOAD_MAIN = r"""<main class="up">
@@ -752,7 +827,7 @@ UPLOAD_MAIN = r"""<main class="up">
 </script>"""
 
 
-def render_upload(tpl, modules):
+def render_upload(tpl, modules, nav):
     def files(c):
         out = [{"path": p["file"], "kind": p["kind"], "label": p["kind"].capitalize() + " · " + p["file"]} for p in c["pages"]]
         for d in DOC_DIRS:
@@ -763,7 +838,7 @@ def render_upload(tpl, modules):
                           for c in m["chapters"]]}
             for m in modules]
     js = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
-    return fill(tpl, PAGETITLE=f"Manage modules · {html.escape(site_title())}", BACK=ALL_MODULES, ACTIONS="",
+    return fill(tpl, **shell(nav, "manage"), PAGETITLE=f"Manage modules · {html.escape(site_title())}",
                 EYEBROW=html.escape(site_title()), TITLE="Manage modules",
                 SUB="Upload lessons, practice sheets and PDFs, or delete them. Every change goes live and is committed to GitHub.",
                 STATS="", MAIN=UPLOAD_MAIN.replace("%%DATA%%", js))
@@ -787,7 +862,7 @@ def main():
     modules = [m for m in every if m["chapters"]]  # empty modules stay hidden (but can be deleted on /upload/)
     base, warnings = remake_base(), []
     for m in modules:
-        build_module(m, NEW, base, warnings)
+        build_module(m, NEW, base, warnings, remake_theme())
 
     with open(TEMPLATE, encoding="utf-8") as f:
         tpl = f.read()
@@ -795,10 +870,10 @@ def main():
         f.write(render_hub(tpl, modules))
     for m in modules:
         with open(os.path.join(NEW, m["slug"], "index.html"), "w", encoding="utf-8") as f:
-            f.write(render_module_page(tpl, m))
+            f.write(render_module_page(tpl, m, modules))
     os.makedirs(os.path.join(NEW, "upload"))
     with open(os.path.join(NEW, "upload", "index.html"), "w", encoding="utf-8") as f:
-        f.write(render_upload(tpl, every))
+        f.write(render_upload(tpl, every, modules))
     write_pwa(NEW)
 
     if os.path.exists(DIST):

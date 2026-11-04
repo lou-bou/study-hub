@@ -6,9 +6,11 @@ is dropped into my Study Hub site, so it must follow the rules below exactly.
 ## Output
 - Two standalone HTML files per chapter: `lesson.html` and `practice.html`. Give me each as one complete file.
 - Start from `remake_template.html`. Copy its `<head>` as is: the font links, the `study-hub:theme` script and the
-  whole `study-hub:base` `<style>` block, **verbatim, never edited**. Put anything page-specific (SVG classes,
-  extra colours) in the second `<style>` block, using the base variables (`--ink`, `--surface`, `--accent`, `--hi`,
-  `--ok`, `--line`, `--muted`, ...). Keep the theme toggle button as the first element of `<body>`.
+  whole `study-hub:base` `<style>` block, **verbatim, never edited**. Put anything page-specific (SVG classes)
+  in the second `<style>` block, using the base variables only (`--ink`, `--surface`, `--line`, `--muted`, `--hi`, `--ok`).
+  `--accent` is for text and strokes; fills use `--accent-fill` with `--on-accent` text. In figures, `--c1` to `--c4` tell
+  things apart, with dark text on them. No blue, purple or other hardcoded colours. Keep the theme toggle button
+  as the first element of `<body>`, and always close `</head>`.
 - Don't add your own theme switcher, fonts, colour palette or progress storage. No `localStorage`.
 - No external scripts or libraries. Inline SVG for every figure.
 

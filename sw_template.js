@@ -33,7 +33,7 @@ self.addEventListener("activate", function (e) {
 function offlinePage() {
   return new Response(
     '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
-    '<title>Offline</title><body style="font:16px system-ui,sans-serif;text-align:center;padding:64px 24px">' +
+    '<title>Offline</title><body style="color-scheme:light dark;background:Canvas;font:16px system-ui,sans-serif;text-align:center;padding:64px 24px">' +
     '<img src="/assets/logo.svg" width="72" height="72" alt=""><h1 style="font-size:1.4rem">You are offline</h1>' +
     '<p>This page needs a connection.</p><p><a href="/">Back to Acorn</a></p>',
     { status: 503, headers: { "Content-Type": "text/html; charset=utf-8" } });
