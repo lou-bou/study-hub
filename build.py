@@ -221,7 +221,10 @@ def inject(src, dst, snippet):
         data = f.read()
     i = data.lower().rfind(b"</body>")
     data = data + snippet if i < 0 else data[:i] + snippet + data[i:]
-    i = data.lower().find(b"</head>")
+    low = data.lower()
+    i = low.find(b"</head>")
+    if i < 0:  # the closing tag is optional in HTML, and uploaded pages sometimes omit it
+        i = low.find(b"<body")
     if i >= 0:
         data = data[:i] + ZOOM_STYLE.encode("utf-8") + data[i:]
     with open(dst, "wb") as f:
