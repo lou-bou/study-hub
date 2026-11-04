@@ -84,8 +84,8 @@
   .none{color:var(--muted);font-style:italic;font-size:.88rem;padding:7px 10px}
 
   /* upload page */
-  .up{display:grid;gap:18px;padding-top:28px;max-width:760px}
-  .up fieldset{border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:14px 20px 18px;margin:0;display:grid;gap:12px;min-width:0}
+  .up{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;padding-top:28px;max-width:760px}
+  .up fieldset{border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:14px 20px 18px;margin:0;display:grid;grid-template-columns:minmax(0,1fr);gap:12px;min-width:0}
   .up legend{font:600 .72rem var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:0 6px}
   .up .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
   .up label.f{display:grid;gap:4px;font-size:.88rem;color:var(--muted)}
@@ -97,7 +97,7 @@
   .kinds input{accent-color:var(--accent);margin:0}
   .drop{display:block;border:2px dashed var(--line);border-radius:12px;padding:22px 16px;text-align:center;color:var(--muted);cursor:pointer}
   .drop.over,.drop:hover{border-color:var(--accent);color:var(--accent)}
-  .drop input{display:block;margin:10px auto 0;max-width:100%}
+  .drop input{display:block;margin:10px auto 0;max-width:100%;min-width:0}
   .btn{font:600 .95rem var(--f-body);background:var(--accent);color:var(--surface);border:0;border-radius:999px;padding:10px 24px;cursor:pointer;justify-self:start}
   .btn:disabled{opacity:.45;cursor:default}
   .hint{font-size:.85rem;color:var(--muted);margin:0}
@@ -130,10 +130,16 @@
   .btn.sm{padding:6px 18px;font-size:.85rem}
   .del:disabled{opacity:.4;cursor:default}
 
-  @media (max-width:600px){
+  .logo{height:.95em;width:auto;vertical-align:-.08em;margin-right:.2em}
+  @media (max-width:700px){
+    .toggle,.pbtn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px}
     .hero{grid-template-columns:1fr}
-    .figure{width:150px;order:-1}
+    .figure{display:none}
     .grid{grid-template-columns:minmax(0,1fr)}
+    .res,.kinds label,.btn{min-height:44px}
+    .up input:not([type=radio]),.up select{font-size:16px;min-height:44px}
+    details.mod>summary,.tree-h,.tree-ch li{flex-wrap:wrap}
+    .edt,.del{min-height:40px;padding-inline:14px}
   }
 </style>
 </head>

@@ -189,6 +189,9 @@ Reboot once afterwards; it also proves every service comes back on its own.
 - **`curl` right after `systemctl restart` prints nothing.** The API needs a second to start; `sleep 2`.
 - **Remakes made in the claude.ai project** must use the current `remake_template.html`. When the template's
   base styles change, re-upload it to the project, or the build warns "base styles differ".
+- **Installing the app (PWA).** Android: Chrome menu → Install app. iPhone: Safari → Share → Add to Home Screen; it may need its own Access login. Every page already carries the manifest, so there's nothing to set up on the server.
+- **App won't install, or the manifest shows a login page.** The manifest link must keep `crossorigin="use-credentials"`, because Cloudflare Access guards `/manifest.json` too. If it still fails, add an Access Bypass policy for that path and `/assets/icons/`.
+- **Old page in the app.** Pages load from the network first; a saved copy only appears after a failure or a 3.5 s stall, so reopen once you have a connection. To test offline behaviour, use DevTools → Application → Service Workers.
 - **Site too small.** The build already zooms pages to 150% on wide screens; reset the browser zoom
   (Ctrl+0) or it stacks.
 

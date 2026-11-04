@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Acorn">
+  <path d="M32 11C32 7 34 4.500 37.500 3.500" fill="none" stroke="#7B4F2C" stroke-width="4" stroke-linecap="round"/>
+  <path d="M13 29C13 45 23 55 32 61C41 55 51 45 51 29Z" fill="#E0A458"/>
+  <path d="M19 35C20 42 23 47 27 51" fill="none" stroke="#F3CB8D" stroke-width="3.500" stroke-linecap="round"/>
+  <circle cx="26" cy="39" r="2.300" fill="#5A3A20"/>
+  <circle cx="38" cy="39" r="2.300" fill="#5A3A20"/>
+  <path d="M28.500 44.500C30 47 34 47 35.500 44.500" fill="none" stroke="#5A3A20" stroke-width="2.200" stroke-linecap="round"/>
+  <path d="M8 27C8 16 19 9.500 32 9.500C45 9.500 56 16 56 27C56 31 54 33 50.500 33H13.500C10 33 8 31 8 27Z" fill="#8F5F36"/>
+  <path d="M15.500 24C17.500 19 22 16 27 15" fill="none" stroke="#B1804F" stroke-width="3" stroke-linecap="round"/>
+</svg>

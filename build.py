@@ -10,6 +10,7 @@ Every page gets a "← <MODULE>" bar (plus links to the chapter's course PDFs);
 practice pages, and any HTML inside td/, also get the auto-save script.
 Source files are never modified.
 """
+import hashlib
 import html
 import json
 import os
@@ -23,6 +24,7 @@ ASSETS = os.path.join(ROOT, "assets")
 TEMPLATE = os.path.join(ROOT, "hub_template.html")
 REMAKE_TEMPLATE = os.path.join(ROOT, "remake_template.html")
 SITE_JSON = os.path.join(ROOT, "site.json")
+SW_TEMPLATE = os.path.join(ROOT, "sw_template.js")
 DIST = os.path.join(ROOT, "dist")
 NEW = os.path.join(ROOT, ".dist_new")
 OLD = os.path.join(ROOT, ".dist_old")
@@ -39,18 +41,55 @@ BACK_STYLE = (
 # Pages render bigger on wide screens, like a browser zoom of 125% / 150%; phones are unchanged.
 ZOOM_STYLE = ("<style>@media (min-width:1200px){html{zoom:1.25}}"
               "@media (min-width:1500px){html{zoom:1.5}}</style>\n")
+PHONE = "(max-width:700px)"
+# Remakes on phones. Page styles come first in the cascade, so these win; inline styles need !important.
+REMAKE_MOBILE = ("<style>@media " + PHONE + "{"
+    ".toggle,#studyhub-nav{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px}"
+    "#studyhub-nav{transition:transform .2s}"
+    ".part a,.prob summary,details.more summary,.b,label.opt,.done{min-height:44px}"
+    ".part a,label.opt{align-items:center}"
+    ".prob summary,details.more summary{display:flex;align-items:center;width:auto}"
+    "label.opt input{margin-top:0}"
+    ".done input{width:24px;height:24px}"
+    ".sec-h .back{padding:12px 0 12px 12px}"
+    "label.chipbox{display:inline-flex;align-items:center;min-height:40px}"
+    "input:not([type=radio]):not([type=checkbox]),select,textarea{font-size:16px!important}"
+    "input:not([type=radio]):not([type=checkbox]),select{min-height:44px}"
+    ".toc-m{margin-top:8px;background:var(--surface);border:1px solid var(--line);border-radius:12px}"
+    ".toc-m>summary{display:flex;align-items:center;min-height:48px;padding:0 16px;font-weight:600;cursor:pointer}"
+    ".toc-m>.toc{border-top:1px solid var(--line);padding:14px 16px}"
+    "[data-more]{-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 28px),transparent);"
+    "mask-image:linear-gradient(to right,#000 calc(100% - 28px),transparent)}"
+    "#studyhub-saver{right:10px!important;bottom:10px!important;font-size:12px!important}"
+    "#studyhub-saver[data-state=ready] span{display:none}"
+    "#studyhub-saver button{padding:9px 12px!important;min-height:40px}"
+    "}</style>\n")
 # The theme toggle and the nav bar follow the viewport until they reach the end of the contents
 # (.toc, else .hero), then each parks just below that line and scrolls away with the page.
 PARK_SCRIPT = (
-    '(function(){var els=[document.getElementById("theme-toggle"),document.getElementById("studyhub-nav")]'
-    '.filter(Boolean),orig=els.map(function(el){return el.style.cssText});'
-    'function park(){var a=document.querySelector(".toc")||document.querySelector(".hero");'
+    '(function(){var q=function(c){return document.querySelector(c);},nav=document.getElementById("studyhub-nav"),'
+    'els=[document.getElementById("theme-toggle"),nav].filter(Boolean),orig=els.map(function(el){return el.style.cssText}),'
+    'phone=matchMedia("' + PHONE + '"),last=scrollY,hidden=false;'
+    # phones: the contents collapse into a dropdown that closes when a link is tapped
+    'var toc=q(".toc");if(toc&&phone.matches){var d=document.createElement("details");d.className="toc-m";'
+    'd.innerHTML="<summary>Contents</summary>";toc.parentNode.insertBefore(d,toc);d.appendChild(toc);'
+    'toc.addEventListener("click",function(e){if(e.target.closest("a"))d.open=false;});}'
+    'function park(){var a=q(".toc-m")||q(".toc")||q(".hero");'
     'if(!a)return;var line=a.getBoundingClientRect().bottom+scrollY;els.forEach(function(el,i){'
-    'var s=el.style;s.cssText=orig[i];var r=el.getBoundingClientRect();if(!r.height)return;'
+    'var s=el.style;s.cssText=orig[i];'
+    # phones: an installed app has no back button, so ← hides on the way down and returns on the way up
+    'if(el===nav&&phone.matches){if(scrollY<=line||scrollY<last)hidden=false;else if(scrollY>last)hidden=true;'
+    's.transform=hidden?"translateY(-90px)":"";return;}'
+    'var r=el.getBoundingClientRect();if(!r.height)return;'
     # rects are in screen px, `top` in the page's px (divided by the html zoom); park 10px below the line
     'var k=1/(parseFloat(getComputedStyle(document.documentElement).zoom)||1);'
     'if(scrollY+r.top<line+10/k)return;s.setProperty("position","absolute","important");'
-    's.setProperty("top",line*k+10+"px","important");s.setProperty("bottom","auto","important");});}'
+    's.setProperty("top",line*k+10+"px","important");s.setProperty("bottom","auto","important");});last=scrollY;}'
+    # phones: fade the edge of anything that scrolls sideways, until its end is reached
+    'function fades(){if(!phone.matches)return;document.querySelectorAll(".scroll,figure.fig,.herofig,.eq,pre.algo")'
+    '.forEach(function(e){e.toggleAttribute("data-more",e.scrollWidth-e.clientWidth-e.scrollLeft>2);});}'
+    'document.addEventListener("scroll",fades,{passive:true,capture:true});addEventListener("load",fades);'
+    'addEventListener("resize",fades);fades();'
     'addEventListener("scroll",park,{passive:true});addEventListener("resize",park);park();})();'
 )
 
@@ -216,6 +255,59 @@ def lint_page(path, practice, base):
     return out
 
 
+def head_tags():
+    """Tags every generated page gets. The manifest needs credentials: Cloudflare Access guards it too."""
+    name = html.escape(site_title())
+    return (ZOOM_STYLE +
+            '<link rel="manifest" href="/manifest.json" crossorigin="use-credentials">\n'
+            '<link rel="icon" href="/assets/logo.svg" type="image/svg+xml">\n'
+            '<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">\n'
+            '<meta name="theme-color" media="(prefers-color-scheme: light)" content="#F3F5FB">\n'
+            '<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0D1426">\n'
+            '<meta name="mobile-web-app-capable" content="yes">\n'
+            '<meta name="apple-mobile-web-app-capable" content="yes">\n'
+            f'<meta name="apple-mobile-web-app-title" content="{name}">\n'
+            '<script>if("serviceWorker"in navigator)addEventListener("load",function(){'
+            'navigator.serviceWorker.register("/sw.js");});</script>\n')
+
+
+def site_title():
+    return str(load_json(SITE_JSON).get("title") or "Acorn")
+
+
+def write_pwa(out_root):
+    """manifest.json and sw.js. The version hashes everything precached, so any change updates the app."""
+    name = site_title()
+    with open(os.path.join(out_root, "manifest.json"), "w", encoding="utf-8") as f:
+        json.dump({
+            "name": name, "short_name": name, "start_url": "/", "scope": "/", "display": "standalone",
+            "background_color": "#0D1426", "theme_color": "#0D1426",
+            "icons": [
+                {"src": "/assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png"},
+                {"src": "/assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png"},
+                {"src": "/assets/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"},
+            ],
+        }, f, ensure_ascii=False, indent=2)
+    files = []
+    for dirpath, dirnames, filenames in os.walk(out_root):
+        rel = os.path.relpath(dirpath, out_root).replace(os.sep, "/")
+        dirnames[:] = [d for d in dirnames if not (rel == "." and d == "upload")]
+        for fn in filenames:
+            if fn.endswith((".html", ".js", ".svg", ".json", ".png")) and fn != "sw.js":
+                files.append("/" + (fn if rel == "." else f"{rel}/{fn}"))
+    files.sort()
+    with open(SW_TEMPLATE, encoding="utf-8") as f:
+        tpl = f.read()
+    digest = hashlib.sha256(tpl.encode("utf-8"))
+    for url in files:
+        digest.update(url.encode("utf-8"))
+        with open(os.path.join(out_root, url.lstrip("/")), "rb") as f:
+            digest.update(f.read())
+    urls = ["/" if u == "/index.html" else (u[:-10] if u.endswith("/index.html") else u) for u in files]
+    with open(os.path.join(out_root, "sw.js"), "w", encoding="utf-8") as f:
+        f.write(tpl.replace("%%VERSION%%", digest.hexdigest()[:12]).replace("%%PRECACHE%%", json.dumps(urls)))
+
+
 def inject(src, dst, snippet):
     with open(src, "rb") as f:
         data = f.read()
@@ -226,7 +318,7 @@ def inject(src, dst, snippet):
     if i < 0:  # the closing tag is optional in HTML, and uploaded pages sometimes omit it
         i = low.find(b"<body")
     if i >= 0:
-        data = data[:i] + ZOOM_STYLE.encode("utf-8") + data[i:]
+        data = data[:i] + (head_tags() + REMAKE_MOBILE).encode("utf-8") + data[i:]
     with open(dst, "wb") as f:
         f.write(data)
 
@@ -318,12 +410,12 @@ SAVED_STAT = '<span><b id="saved-total">0</b> <span id="saved-word">answers</spa
 def fill(tpl, **parts):
     for k, v in parts.items():
         tpl = tpl.replace(f"%%{k}%%", v)
-    return tpl.replace("</head>", ZOOM_STYLE + "</head>", 1)
+    return tpl.replace("</head>", head_tags() + "</head>", 1)
 
 
 def render_hub(tpl, modules):
     site = load_json(SITE_JSON)
-    title = html.escape(str(site.get("title") or "Study Hub"))
+    title = html.escape(site_title())
     chapters = [c for m in modules for c in m["chapters"]]
     n_practice = sum(1 for c in chapters for p in c["pages"] if p["kind"] == "practice")
     n_docs = sum(len(c["docs"][d]) for c in chapters for d in DOC_DIRS)
@@ -332,7 +424,8 @@ def render_hub(tpl, modules):
     cards = "\n".join(render_card(m) for m in modules) or \
         '<p class="empty">No modules yet. Add <code>modules/&lt;module&gt;/&lt;chapter&gt;/</code> and rebuild.</p>'
     return fill(tpl, PAGETITLE=title, BACK="", ACTIONS='<a class="pbtn" href="/upload/">Manage modules</a>',
-                EYEBROW="Master Big Data Analytics · USTHB", TITLE=title,
+                EYEBROW="Master Big Data Analytics · USTHB",
+                TITLE=f'<img class="logo" src="/assets/logo.svg" alt="">{title}',
                 SUB=html.escape(str(site.get("subtitle") or "Course remakes, practice sheets and the original PDFs")),
                 STATS=stats, MAIN=f'<main class="grid">\n{cards}\n</main>')
 
@@ -670,8 +763,8 @@ def render_upload(tpl, modules):
                           for c in m["chapters"]]}
             for m in modules]
     js = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
-    return fill(tpl, PAGETITLE="Manage modules · Study Hub", BACK=ALL_MODULES, ACTIONS="",
-                EYEBROW="Study Hub", TITLE="Manage modules",
+    return fill(tpl, PAGETITLE=f"Manage modules · {html.escape(site_title())}", BACK=ALL_MODULES, ACTIONS="",
+                EYEBROW=html.escape(site_title()), TITLE="Manage modules",
                 SUB="Upload lessons, practice sheets and PDFs, or delete them. Every change goes live and is committed to GitHub.",
                 STATS="", MAIN=UPLOAD_MAIN.replace("%%DATA%%", js))
 
@@ -687,7 +780,7 @@ def main():
     if os.path.isdir(MODULES):
         slugs = [d for d in os.listdir(MODULES) if visible(d) and os.path.isdir(os.path.join(MODULES, d))]
     for s in slugs:
-        if s in ("assets", "upload") or not NAME_RE.match(s):
+        if s in ("assets", "upload", "manifest.json", "sw.js") or not NAME_RE.match(s):
             sys.exit(f"error: module folder name {s!r} is reserved or invalid")
 
     every = sorted((load_module(s) for s in slugs), key=lambda m: (m["order"], m["code"].lower()))
@@ -706,6 +799,7 @@ def main():
     os.makedirs(os.path.join(NEW, "upload"))
     with open(os.path.join(NEW, "upload", "index.html"), "w", encoding="utf-8") as f:
         f.write(render_upload(tpl, every))
+    write_pwa(NEW)
 
     if os.path.exists(DIST):
         os.rename(DIST, OLD)

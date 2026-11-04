@@ -1,5 +1,7 @@
-/* Study Hub auto-save for practice pages.
+/* Acorn auto-save for practice pages.
  * Injected by build.py as <script src="/assets/saver.js" data-module=".." data-page="<chapter>/<file>">.
+ * Works offline: every edit waits in a device queue until the server confirms it, for any page,
+ * and a snapshot of each page's answers lets it restore without a connection. Last write wins.
  */
 (function () {
   "use strict";
@@ -12,10 +14,14 @@
   var SKIP_TYPES = { button: 1, submit: 1, reset: 1, hidden: 1, file: 1, password: 1, image: 1 };
   var DEBOUNCE_MS = 400;
 
-  var saved = {};          // key -> value as last known on the server
+  var QUEUE = "studyhub-queue";                         // '["module","page","key"]' -> value, sent when possible
+  var SNAPSHOT = "studyhub-answers:" + MODULE + "/" + PAGE;  // this page's answers, for offline loads
+  var RETRY_MS = 30000;
+
+  var saved = {};          // key -> value as last known here, local edits included
   var timers = {};         // key -> debounce timer
   var pending = {};        // key -> value waiting to be sent
-  var inflight = 0, failed = false;
+  var inflight = 0, failed = false, deferred = false, flushing = false;
   var restoring = false;
   var applied = typeof WeakSet === "function" ? new WeakSet() : null;
 
@@ -115,31 +121,86 @@
 
   // ---- network -------------------------------------------------------
 
-  function send(key, value, keepalive) {
-    inflight++;
-    setStatus("saving");
+  function readStore(name) {
+    try { return JSON.parse(localStorage.getItem(name)) || {}; } catch (e) { return {}; }
+  }
+
+  function writeStore(name, data) {
+    try { localStorage.setItem(name, JSON.stringify(data)); return true; } catch (e) { return false; }
+  }
+
+  function queueId(module, page, key) { return JSON.stringify([module, page, key]); }
+
+  // Removes the entry only if it still holds the sent value: a newer edit stays queued.
+  function dequeue(id, value) {
+    var q = readStore(QUEUE);
+    if (q[id] === value) { delete q[id]; writeStore(QUEUE, q); }
+  }
+
+  function remember(key, value) {
+    if (value === "") delete saved[key]; else saved[key] = value;
+    writeStore(SNAPSHOT, saved);
+  }
+
+  function put(module, page, key, value, keepalive) {
+    var id = queueId(module, page, key);
     return fetch(API, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ module: MODULE, page: PAGE, key: key, value: value }),
+      body: JSON.stringify({ module: module, page: page, key: key, value: value }),
       credentials: "same-origin",
       keepalive: !!keepalive
     }).then(function (r) {
+      // 4xx means the server will never accept it (too long, say): retrying can't help
+      if (r.status >= 400 && r.status < 500) { dequeue(id, value); failed = true; return; }
       if (!r.ok) throw new Error("HTTP " + r.status);
-      if (value === "") delete saved[key]; else saved[key] = value;
+      dequeue(id, value);
     }).catch(function () {
-      failed = true;
-    }).then(function () {
+      deferred = true;
+    });
+  }
+
+  function settle() {
+    if (inflight === 0 && !Object.keys(pending).length) {
+      setStatus(failed ? "error" : deferred ? "offline" : "saved");
+      failed = false; deferred = false;
+    }
+  }
+
+  function send(key, value, keepalive) {
+    inflight++;
+    setStatus("saving");
+    return put(MODULE, PAGE, key, value, keepalive).then(function () {
       inflight--;
-      if (inflight === 0 && !Object.keys(pending).length) {
-        setStatus(failed ? "error" : "saved");
-        failed = false;
-      }
+      settle();
+    });
+  }
+
+  // Sends whatever is still queued, from this page or any other.
+  function flushQueue() {
+    var q = readStore(QUEUE), ids = Object.keys(q);
+    if (flushing || !ids.length) return;
+    flushing = true;
+    inflight++;
+    var chain = Promise.resolve();
+    ids.forEach(function (id) {
+      var p = JSON.parse(id);
+      if (p[0] === MODULE && p[1] === PAGE && Object.prototype.hasOwnProperty.call(pending, p[2])) return;
+      chain = chain.then(function () { return put(p[0], p[1], p[2], q[id]); });
+    });
+    chain.then(function () {
+      flushing = false;
+      inflight--;
+      settle();
     });
   }
 
   function schedule(key, value) {
     pending[key] = value;
+    remember(key, value);
+    var q = readStore(QUEUE);
+    q[queueId(MODULE, PAGE, key)] = value;
+    if (!writeStore(QUEUE, q)) failed = true;
     setStatus("saving");
     clearTimeout(timers[key]);
     timers[key] = setTimeout(function () {
@@ -193,8 +254,15 @@
         method: "DELETE", credentials: "same-origin"
       }).then(function (r) {
         if (!r.ok) throw new Error("HTTP " + r.status);
+        var q = readStore(QUEUE);
+        Object.keys(q).forEach(function (id) {
+          var p = JSON.parse(id);
+          if (p[0] === MODULE && p[1] === PAGE) delete q[id];
+        });
+        writeStore(QUEUE, q);
+        writeStore(SNAPSHOT, {});
         location.reload();
-      }).catch(function () { setStatus("error"); });
+      }).catch(function () { alert("Reset needs a connection. Nothing was deleted."); });
     });
     pill.appendChild(label);
     pill.appendChild(reset);
@@ -208,10 +276,11 @@
       saved: "Saved ✓",
       restored: "Restored " + n + " answer" + (n === 1 ? "" : "s"),
       ready: "Answers auto-save",
+      offline: "Saved on this device",
       error: "Not saved ⚠"
     }[state];
     label.textContent = text;
-    pill.style.background = state === "error" ? "#b91c1c" : "#1f2937";
+    pill.style.background = state === "error" ? "#b91c1c" : state === "offline" ? "#92400e" : "#1f2937";
     pill.setAttribute("data-state", state);
   }
 
@@ -223,15 +292,21 @@
     document.addEventListener("change", onEdit, true);
     window.addEventListener("pagehide", flush);
 
-    fetch(API + "?module=" + encodeURIComponent(MODULE) + "&page=" + encodeURIComponent(PAGE), {
-      credentials: "same-origin", cache: "no-store"
-    }).then(function (r) {
-      if (!r.ok) throw new Error("HTTP " + r.status);
-      return r.json();
-    }).then(function (data) {
+    window.addEventListener("online", flushQueue);
+    setInterval(flushQueue, RETRY_MS);
+
+    function begin(data, offline) {
       saved = data || {};
+      // edits still queued for this page are newer than anything the server sent
+      var q = readStore(QUEUE);
+      Object.keys(q).forEach(function (id) {
+        var p = JSON.parse(id);
+        if (p[0] !== MODULE || p[1] !== PAGE) return;
+        if (q[id] === "") delete saved[p[2]]; else saved[p[2]] = q[id];
+      });
+      writeStore(SNAPSHOT, saved);
       var n = restoreInto(allFields());
-      setStatus(n ? "restored" : "ready", n);
+      setStatus(offline ? "offline" : n ? "restored" : "ready", n);
       // let page scripts react (e.g. re-check restored answers)
       document.dispatchEvent(new CustomEvent("studyhub:restored", { detail: { count: n } }));
       new MutationObserver(function (muts) {
@@ -239,8 +314,18 @@
         for (var i = 0; i < muts.length && !added; i++) if (muts[i].addedNodes.length) added = true;
         if (added) restoreInto(allFields());
       }).observe(document.body, { childList: true, subtree: true });
-    }).catch(function () {
-      setStatus("error");
+      if (!offline) flushQueue();
+    }
+
+    fetch(API + "?module=" + encodeURIComponent(MODULE) + "&page=" + encodeURIComponent(PAGE), {
+      credentials: "same-origin", cache: "no-store"
+    }).then(function (r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    }).then(function (data) {
+      begin(data, false);
+    }, function () {
+      begin(readStore(SNAPSHOT), true);
     });
   }
 
