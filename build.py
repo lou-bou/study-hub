@@ -631,12 +631,24 @@ UPLOAD_MAIN = r"""<main class="up">
     if(bad.length)return fail(bad[0].name+' is not a '+ext+' file.');
     if(ext==='.html'&&list.length>1)return fail('One HTML file at a time.');
     $('go').disabled=true;
-    // remember a new module/chapter so the next upload can pick it
     var m=DATA.filter(function(x){return x.slug===q.module;})[0];
-    if(!m){m={slug:q.module,code:q.module_code,title:q.module_title,chapters:[]};DATA.push(m);}
-    if(!m.chapters.some(function(c){return c.slug===q.chapter;}))m.chapters.push({slug:q.chapter,label:q.chapter,title:q.title||'',files:[]});
-    (function next(i){ if(i>=list.length){$('go').disabled=false;files.value='';fillModules(q.module);fillChapters(q.chapter);return;}
-      send(list[i],q,function(){next(i+1);}); })(0);
+    function start(){
+      // remember a new module/chapter so the next upload can pick it
+      if(!m){m={slug:q.module,code:q.module_code,title:q.module_title,chapters:[]};DATA.push(m);}
+      if(!m.chapters.some(function(c){return c.slug===q.chapter;}))m.chapters.push({slug:q.chapter,label:q.chapter,title:q.title||'',files:[]});
+      (function next(i){ if(i>=list.length){$('go').disabled=false;files.value='';fillModules(q.module);fillChapters(q.chapter);return;}
+        send(list[i],q,function(){next(i+1);}); })(0);
+    }
+    if(ext!=='.html')return start();
+    // ask before replacing a remake: the live site decides, because this page's list can be out of date
+    var path=k+'.html', c=m&&m.chapters.filter(function(x){return x.slug===q.chapter;})[0];
+    var listed=!!c&&c.files.some(function(f){return f.path===path;});
+    fetch('/'+encodeURIComponent(q.module)+'/'+encodeURIComponent(q.chapter)+'/'+path,{method:'HEAD',cache:'no-store'})
+      .then(function(r){return r.ok;},function(){return listed;})
+      .then(function(exists){
+        if(!exists||confirm((m?m.code:q.module)+' '+(c?c.label:q.chapter)+' already has a '+k+' page.\n\nReplace it with '+list[0].name+'?\n\nThe old version stays in git history.'))return start();
+        $('go').disabled=false; fail('Nothing uploaded: the current '+k+' page stays.');
+      });
   });
   var pre=new URLSearchParams(location.search).get('module');
   fillModules(DATA.some(function(m){return m.slug===pre;})?pre:(DATA[0]||{}).slug); setKind(); renderTree();
