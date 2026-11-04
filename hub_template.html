@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>%%PAGETITLE%%</title>
 <script>/* study-hub:theme */(function(){var r=document.documentElement;try{var t=localStorage.getItem("studyhub-theme");if(t)r.setAttribute("data-theme",t);}catch(e){}document.addEventListener("DOMContentLoaded",function(){var b=document.getElementById("theme-toggle");if(b)b.addEventListener("click",function(){var c=r.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");var n=c==="dark"?"light":"dark";r.setAttribute("data-theme",n);try{localStorage.setItem("studyhub-theme",n);}catch(e){}});});})();</script>
+<script>/* the splash plays once per app open */try{if(sessionStorage.getItem("cahier-splash"))document.documentElement.setAttribute("data-no-splash","");sessionStorage.setItem("cahier-splash","1");}catch(e){}</script>
 <style>
   *{box-sizing:border-box}
   html{-webkit-tap-highlight-color:transparent}
@@ -148,6 +149,40 @@
   .tree-ch .edit-form{margin:10px 0 var(--space-1)}
   .edit-actions{display:flex;gap:var(--space-2);align-items:center}
 
+  /* loading splash: the logo puts itself together, then splash.js flies it to the header.
+     The give-up animation only matters if splash.js never runs. */
+  html[data-no-splash] .splash{display:none}
+  .splash{position:fixed;inset:0;z-index:100;display:grid;place-items:center;animation:splash-give-up 1ms 7s forwards}
+  .splash-leaving{pointer-events:none}
+  .splash-bg{position:absolute;inset:0;background:var(--bg)}
+  .splash-mark{position:relative;width:6rem;height:6rem;overflow:visible;transform-origin:0 0}
+  .splash-mark g{transform-box:fill-box}
+  .splash-drop{animation:splash-drop 460ms both}
+  .splash-drop.second{animation-delay:120ms}
+  .splash-tick polyline{stroke-dasharray:1;animation:splash-tick 260ms 420ms var(--ease-out) both}
+  .splash-unfurl{transform-origin:50% 0;animation:splash-unfurl 360ms 520ms both}
+  .splash-sway{transform-origin:50% 0;animation:splash-sway 560ms 900ms ease-in-out infinite}
+  .splash-leaving .splash-sway{animation:none}
+  @keyframes splash-give-up{to{visibility:hidden}}
+  @keyframes splash-drop{
+    0%{opacity:0;transform:translateY(-260%) scale(.96,1.06);transform-origin:50% 100%;animation-timing-function:cubic-bezier(.5,0,.9,.5)}
+    15%{opacity:1}
+    55%{transform:translateY(0) scale(1.12,.82);transform-origin:50% 100%;animation-timing-function:ease-out}
+    78%{transform:translateY(-6%) scale(.97,1.05);transform-origin:50% 100%;animation-timing-function:ease-in-out}
+    100%{transform:none;transform-origin:50% 100%}
+  }
+  @keyframes splash-tick{from{stroke-dashoffset:1;opacity:0}1%{opacity:1}to{stroke-dashoffset:0;opacity:1}}
+  @keyframes splash-unfurl{
+    0%{transform:scaleY(0);animation-timing-function:ease-out}
+    60%{transform:scaleY(1.1);animation-timing-function:ease-in-out}
+    80%{transform:scaleY(.96)}
+    100%{transform:none}
+  }
+  @keyframes splash-sway{25%{transform:rotate(7deg)}75%{transform:rotate(-7deg)}}
+  @media (prefers-reduced-motion:reduce){
+    .splash-drop,.splash-tick polyline,.splash-unfurl,.splash-sway{animation:none}
+  }
+
   @media (hover:hover){
     .chapter>summary:hover,.pbtn:hover,.edt:hover,a.card:hover,a.row:hover,.continue:hover,.hit:hover,.offline-btn:hover,.icon-btn:hover{background:var(--surface-2)}
     .btn:hover:not(:disabled){opacity:.88}
@@ -173,6 +208,15 @@
 </style>
 </head>
 <body%%BODYATTR%%>
+<div id="splash" class="splash" role="img" aria-label="Cahier is loading">
+  <div class="splash-bg"></div>
+  <svg class="splash-mark" viewBox="0 0 160 160" aria-hidden="true">
+    <g class="splash-drop"><rect x="42" y="28" width="90" height="112" rx="6" fill="#F3EBDD" stroke="#1E2A44" stroke-width="2"/></g>
+    <g class="splash-drop second"><rect x="32" y="18" width="90" height="112" rx="6" fill="#1E2A44"/><line x1="44" y1="18" x2="44" y2="130" stroke="#F3EBDD" stroke-width="1.5" opacity="0.4"/></g>
+    <g class="splash-tick"><polyline points="56,76 68,88 90,62" pathLength="1" fill="none" stroke="#F3EBDD" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></g>
+    <g class="splash-unfurl"><g class="splash-sway"><polygon points="96,12 108,12 108,146 102,139 96,146" fill="#D9952B"/></g></g>
+  </svg>
+</div>
 %%SIDE%%
 <header class="topbar">
   <a class="brand" href="/"><img src="/assets/logo.svg" alt="">%%SITENAME%%</a>
@@ -186,5 +230,6 @@
 %%CATALOG%%
 <script>document.getElementById("theme-tab").addEventListener("click",function(){document.getElementById("theme-toggle").click();});</script>
 <script src="%%JS_HUB%%"></script>
+<script src="%%JS_SPLASH%%"></script>
 </body>
 </html>

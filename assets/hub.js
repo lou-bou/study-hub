@@ -129,6 +129,7 @@
     renderContinue(data);
     renderProgress(data);
     if (!cameByLink) openLastRead(data);
+    document.documentElement.setAttribute("data-hub-ready", "");  // the splash can leave
   }
 
   fetch("/api/progress", { cache: "no-store", credentials: "same-origin" })

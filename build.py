@@ -640,6 +640,7 @@ def fill(tpl, **parts):
     parts.setdefault("CATALOG", "")
     parts.setdefault("JS_HUB", asset("hub.js"))
     parts.setdefault("JS_VIEWER", asset("viewer.js"))
+    parts.setdefault("JS_SPLASH", asset("splash.js"))
     for k, v in parts.items():
         tpl = tpl.replace(f"%%{k}%%", v)
     return tpl.replace("</head>", head_tags() + "</head>", 1)
