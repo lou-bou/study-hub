@@ -220,9 +220,30 @@ class Handler(BaseHTTPRequestHandler):
     def summary(self, q):
         with connect() as conn:
             rows = conn.execute(
-                "SELECT module, page, COUNT(*) FROM answers GROUP BY module, page"
+                "SELECT module, page, COUNT(*) FROM answers WHERE key NOT LIKE 'p:%' GROUP BY module, page"
             ).fetchall()
         return {f"{c}/{p}": n for c, p, n in rows}
+
+    def progress(self, q):
+        """Per page: saved answers, the sheet's own "N/M" (p:progress), furthest percent read (p:read)."""
+        out = {}
+        with connect() as conn:
+            for c, p, n in conn.execute(
+                "SELECT module, page, COUNT(*) FROM answers WHERE key NOT LIKE 'p:%' GROUP BY module, page"
+            ):
+                out.setdefault(f"{c}/{p}", {})["saved"] = n
+            for c, p, k, v in conn.execute(
+                "SELECT module, page, key, value FROM answers WHERE key IN ('p:progress', 'p:read')"
+            ):
+                entry = out.setdefault(f"{c}/{p}", {})
+                if k == "p:progress":
+                    entry["done"] = v
+                else:
+                    try:
+                        entry["read"] = int(json.loads(v).get("m", 0))
+                    except (ValueError, TypeError, AttributeError):
+                        pass
+        return out
 
     def export(self, q):
         with connect() as conn:
@@ -334,6 +355,7 @@ ROUTES = {
     ("PUT", "/api/answers"): Handler.put_answer,
     ("DELETE", "/api/answers"): Handler.delete_page,
     ("GET", "/api/summary"): Handler.summary,
+    ("GET", "/api/progress"): Handler.progress,
     ("GET", "/api/export"): Handler.export,
     ("PUT", "/api/upload"): Handler.upload,
     ("GET", "/api/upload"): Handler.upload_status,

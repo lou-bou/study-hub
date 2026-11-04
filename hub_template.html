@@ -90,6 +90,14 @@
   .ft{flex-shrink:0;font:600 .625rem var(--f-body);letter-spacing:.04em;color:var(--muted);border:1px solid var(--line-strong);border-radius:var(--pill);padding:1px 7px}
   .badge{margin-left:auto;flex-shrink:0;font:600 .6875rem var(--f-body);font-variant-numeric:tabular-nums;color:var(--accent);background:var(--accent-soft);border-radius:var(--pill);padding:2px 8px}
   .none{color:var(--faint);font-size:.875rem;padding:8px 0}
+  .pg{display:flex;align-items:center;gap:10px;font-size:.75rem;color:var(--muted);font-variant-numeric:tabular-nums}
+  .pg-track{flex:1;min-width:48px;height:6px;border-radius:var(--pill);background:var(--line);overflow:hidden}
+  .pg-fill{display:block;height:100%;width:0;background:var(--accent-fill);border-radius:var(--pill);transition:width 360ms var(--ease)}
+  a.card .pg{margin-top:auto;padding-top:8px}
+  .page-in>.pg{padding-top:20px}
+  .page-in>.pg+.chapters{padding-top:12px}
+  details.chapter summary .pg-txt{flex-shrink:0;margin-left:auto;font-size:.75rem;color:var(--muted);font-variant-numeric:tabular-nums}
+  details.chapter summary:has(.pg-txt:not([hidden]))::after{margin-left:0}
 
   /* manage page */
   .up{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;padding-top:24px}
@@ -191,22 +199,43 @@
 document.getElementById("theme-tab").addEventListener("click", function () {
   document.getElementById("theme-toggle").click();
 });
-fetch("/api/summary", { cache: "no-store", credentials: "same-origin" })
+fetch("/api/progress", { cache: "no-store", credentials: "same-origin" })
   .then(function (r) { if (!r.ok) throw 0; return r.json(); })
-  .then(function (counts) {
+  .then(function (data) {
     var scope = document.body.getAttribute("data-module"), total = 0;
-    Object.keys(counts).forEach(function (k) {
-      if (!scope || k.indexOf(scope + "/") === 0) total += counts[k];
+    Object.keys(data).forEach(function (k) {
+      if (!scope || k.indexOf(scope + "/") === 0) total += data[k].saved || 0;
     });
     var t = document.getElementById("saved-total");
     if (t) t.textContent = total;
     var w = document.getElementById("saved-word");
     if (w) w.textContent = total === 1 ? "answer" : "answers";
+    // a sheet's own "N/M" wins; a sheet not opened since this feature counts from its build-time total
+    function sheet(key, fallback) {
+      var m = /^(\d+)\/(\d+)$/.exec((data[key] || {}).done || "");
+      return m ? [+m[1], +m[2]] : [0, fallback];
+    }
+    document.querySelectorAll("[data-pages]").forEach(function (el) {
+      var pages = JSON.parse(el.getAttribute("data-pages")), n = 0, of = 0;
+      Object.keys(pages).forEach(function (k) { var s = sheet(k, pages[k]); n += s[0]; of += s[1]; });
+      if (!of) return;
+      el.hidden = false;
+      var txt = el.classList.contains("pg-txt") ? el : el.querySelector(".pg-txt");
+      txt.textContent = n + " / " + of;
+      var fill = el.querySelector(".pg-fill");
+      if (fill) { fill.style.width = (100 * n / of) + "%"; txt.textContent += " problems done"; }
+    });
     document.querySelectorAll("a[data-key]").forEach(function (a) {
-      var n = counts[a.getAttribute("data-key")];
-      if (!n) return;
+      var key = a.getAttribute("data-key"), d = data[key] || {}, label = "";
+      if (a.classList.contains("practice")) {
+        var s = sheet(key, +a.getAttribute("data-total"));
+        label = d.done ? s[0] + " / " + s[1] + " done" : d.saved ? d.saved + " saved" : "";
+      } else if (d.read) {
+        label = d.read + "% read";
+      }
+      if (!label) return;
       var b = a.querySelector(".badge");
-      b.textContent = n + " saved";
+      b.textContent = label;
       b.hidden = false;
     });
   })

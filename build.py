@@ -176,13 +176,20 @@ def list_files(folder):
                    if visible(f) and os.path.isfile(os.path.join(folder, f))), key=natural_key)
 
 
+def count_problems(path):
+    """Problem cards on a practice sheet, shown until the sheet reports its own "N / M"."""
+    with open(path, encoding="utf-8", errors="replace") as f:
+        return len(re.findall(r'class="prob[ "]', f.read()))
+
+
 def load_chapter(mslug, cslug, titles):
     folder = os.path.join(MODULES, mslug, cslug)
     pages = []
     for f in list_files(folder):
         if f.lower().endswith(".html"):
             kind = "practice" if "practice" in f.lower() else "lesson"
-            pages.append({"file": f, "kind": kind, "title": page_title(os.path.join(folder, f), f)})
+            pages.append({"file": f, "kind": kind, "title": page_title(os.path.join(folder, f), f),
+                          "total": count_problems(os.path.join(folder, f)) if kind == "practice" else 0})
     pages.sort(key=lambda p: p["kind"] == "practice")  # stable: lessons first
     docs = {d: [{"file": f, "label": doc_label(f)[0], "type": doc_label(f)[1]}
                 for f in list_files(os.path.join(folder, d))] for d in DOC_DIRS}
@@ -396,13 +403,16 @@ def build_module(module, out_root, base, warnings, theme=None):
                 if practice:
                     snippet += (f'\n<script src="/assets/saver.js" data-module="{html.escape(module["slug"])}" '
                                 f'data-page="{html.escape(page)}"></script>')
+                else:
+                    snippet += (f'\n<script src="/assets/reading.js" data-module="{html.escape(module["slug"])}" '
+                                f'data-page="{html.escape(page)}"></script>')
                 inject(os.path.join(dirpath, f), os.path.join(dst, ch["slug"], rel),
                        (snippet + "\n").encode("utf-8"), base, theme)
 
 
-def resource(href, kind, label, tag, key=None, new_tab=False):
+def resource(href, kind, label, tag, key=None, new_tab=False, total=0):
     e = html.escape
-    attrs = f' data-key="{e(key)}"' if key else ""
+    attrs = f' data-key="{e(key)}" data-total="{total}"' if key else ""
     attrs += ' target="_blank" rel="noopener"' if new_tab else ""
     badge = '<span class="badge" hidden></span>' if key else ""
     glyph = icon({"lesson": "book-open", "practice": "pencil-line"}.get(kind, "file-text"))
@@ -415,7 +425,7 @@ def render_chapter(module, ch, open_):
     base = f"/{module['slug']}/{ch['slug']}/"
     remakes = [
         resource(base + p["file"], p["kind"], p["kind"].capitalize(), "HTML",
-                 key=f"{module['slug']}/{ch['slug']}/{p['file']}" if p["kind"] == "practice" else None)
+                 key=f"{module['slug']}/{ch['slug']}/{p['file']}", total=p["total"])
         for p in ch["pages"]
     ]
     groups = [("Remakes", remakes)]
@@ -427,16 +437,32 @@ def render_chapter(module, ch, open_):
         for name, items in groups
     )
     title = f'<span class="ct">{e(ch["title"])}</span>' if ch["title"] else ""
+    totals = sheet_totals(module, [ch])
+    title += f'<span class="pg-txt" data-pages="{e(json.dumps(totals))}" hidden></span>' if totals else ""
     return (f'<details class="chapter" id="{e(ch["slug"])}"{" open" if open_ else ""}>'
             f'<summary><span class="cl">{e(ch["label"])}</span>{title}</summary>'
             f'<div class="groups">{body}</div></details>')
+
+
+def sheet_totals(module, chapters):
+    """{"module/chapter/practice.html": problem count} for the practice sheets of these chapters."""
+    return {f'{module["slug"]}/{c["slug"]}/{p["file"]}': p["total"]
+            for c in chapters for p in c["pages"] if p["kind"] == "practice"}
+
+
+def progress_bar(module):
+    totals = sheet_totals(module, module["chapters"])
+    if not totals:
+        return ""
+    return (f'<div class="pg" data-pages="{html.escape(json.dumps(totals))}" hidden>'
+            '<span class="pg-track"><span class="pg-fill"></span></span><span class="pg-txt"></span></div>')
 
 
 def render_card(module):
     e = html.escape
     blurb = f'<p class="blurb">{e(module["blurb"])}</p>' if module["blurb"] else ""
     return (f'<a class="card" href="/{e(module["slug"])}/"><span class="chip">{e(module["code"])}</span>'
-            f'<h2>{e(module["title"] or module["code"])}</h2>{blurb}</a>')
+            f'<h2>{e(module["title"] or module["code"])}</h2>{blurb}{progress_bar(module)}</a>')
 
 
 def plural(n, word):
@@ -518,7 +544,7 @@ def render_module_page(tpl, module, nav):
                 ASIDE=f'<a class="pbtn" href="/upload/?module={e(module["slug"])}">Manage {e(module["code"])}</a>',
                 PAGETITLE=f'{e(module["code"])} · {e(module["title"] or module["code"])}',
                 EYEBROW=e(module["code"]), TITLE=e(module["title"] or module["code"]), SUB=e(module["blurb"]), STATS=stats,
-                MAIN=f'<main class="chapters">\n{chapters}\n</main>')
+                MAIN=f'{progress_bar(module)}<main class="chapters">\n{chapters}\n</main>')
 
 
 UPLOAD_MAIN = r"""<main class="up">

@@ -17,6 +17,7 @@
   var QUEUE = "studyhub-queue";                         // '["module","page","key"]' -> value, sent when possible
   var SNAPSHOT = "studyhub-answers:" + MODULE + "/" + PAGE;  // this page's answers, for offline loads
   var RETRY_MS = 30000;
+  var PROGRESS = "p:progress";                          // not a field: the sheet's own "N/M", for the hub pages
 
   var saved = {};          // key -> value as last known here, local edits included
   var timers = {};         // key -> debounce timer
@@ -316,6 +317,22 @@
         if (added) restoreInto(allFields());
       }).observe(document.body, { childList: true, subtree: true });
       if (!offline) flushQueue();
+      // after page scripts have re-checked what was restored
+      setTimeout(watchProgress, 300);
+    }
+
+    // Each sheet shows "N / M" in its own way (done boxes, correct answers); keep that for the hub pages.
+    function watchProgress() {
+      var el = document.getElementById("prog-txt");
+      if (!el) return;
+      function report() {
+        var m = /(\d+)\s*\/\s*(\d+)/.exec(el.textContent || "");
+        if (!m || m[2] === "0") return;
+        var value = m[1] === "0" ? "" : m[1] + "/" + m[2];
+        if (value !== (saved[PROGRESS] || "")) schedule(PROGRESS, value);
+      }
+      report();
+      new MutationObserver(report).observe(el, { childList: true, characterData: true, subtree: true });
     }
 
     fetch(API + "?module=" + encodeURIComponent(MODULE) + "&page=" + encodeURIComponent(PAGE), {
