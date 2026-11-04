@@ -19,18 +19,9 @@
   .code{font:400 var(--text-xs) var(--font-mono);color:var(--text-muted)}
   .label{font:600 var(--text-xs)/1.3 var(--font-body);color:var(--text-muted)}
 
-  /* shell: sidebar on desktop; top bar and bottom nav on phones */
-  .side{position:fixed;top:0;bottom:0;left:0;width:16rem;display:flex;flex-direction:column;gap:2px;padding:var(--space-4) var(--space-3);border-right:1px solid var(--border);overflow-y:auto}
+  /* shell: sidebar on desktop (assets/sidebar.css); top bar and bottom nav on phones */
   .brand{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-1) var(--space-3) var(--space-4);text-decoration:none;color:var(--text);font:600 var(--text-lg)/1.15 var(--font-display);font-variation-settings:"opsz" 72;letter-spacing:-.01em}
   .brand img{width:30px;height:30px}
-  .nav-item{display:flex;align-items:center;gap:10px;width:100%;min-height:40px;padding:6px var(--space-3);border:0;border-radius:var(--radius-sm);background:none;color:var(--text-muted);font:400 var(--text-sm) var(--font-body);text-align:left;text-decoration:none;cursor:pointer;transition:background var(--dur-fast) var(--ease-out)}
-  .nav-item.on{background:var(--surface-2);color:var(--text);font-weight:600}
-  .nav-code{flex-shrink:0;width:4.6em;font:400 var(--text-xs) var(--font-mono)}
-  .nav-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .nav-label{margin:var(--space-4) var(--space-3) var(--space-1);font:600 var(--text-xs) var(--font-body);color:var(--text-muted)}
-  .nav-sub{margin:0 0 var(--space-2) var(--space-5);padding-left:var(--space-2);border-left:1px solid var(--border);display:grid;gap:1px}
-  .nav-sub a{display:block;padding:4px var(--space-2);color:var(--text-muted);font-size:var(--text-xs);line-height:1.3;text-decoration:none;border-radius:var(--radius-sm)}
-  .side-foot{margin-top:auto;padding-top:var(--space-3);display:grid;gap:2px}
   .topbar{display:none;position:sticky;top:0;z-index:20;align-items:center;gap:var(--space-2);height:56px;padding:0 var(--space-2) 0 var(--space-4);background:var(--bg);border-bottom:1px solid var(--border)}
   .topbar .brand{padding:0;margin-right:auto;font-size:var(--text-lg)}
   .icon-btn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border:0;border-radius:var(--radius-sm);background:none;color:var(--text);cursor:pointer;text-decoration:none}
@@ -153,14 +144,12 @@
   .edit-actions{display:flex;gap:var(--space-2);align-items:center}
 
   @media (hover:hover){
-    .nav-item:hover,.nav-sub a:hover,.pbtn:hover,.edt:hover,a.card:hover,a.row:hover,.continue:hover,.hit:hover,.offline-btn:hover,.icon-btn:hover{background:var(--surface-2)}
-    .nav-item:hover{color:var(--text)}
+    .pbtn:hover,.edt:hover,a.card:hover,a.row:hover,.continue:hover,.hit:hover,.offline-btn:hover,.icon-btn:hover{background:var(--surface-2)}
     .btn:hover:not(:disabled){opacity:.88}
     .del:hover{border-color:var(--wrong)}
     .drop:hover{border-color:var(--text-muted)}
   }
   @media (max-width:700px){
-    .side{display:none}
     .topbar{display:flex}
     .tabs{display:flex}
     .page{margin-left:0;padding:var(--space-4) var(--space-4) calc(60px + var(--space-6) + env(safe-area-inset-bottom,0px))}
@@ -179,14 +168,7 @@
 </style>
 </head>
 <body%%BODYATTR%%>
-<aside class="side">
-  <a class="brand" href="/"><img src="/assets/logo.svg" alt="">%%SITENAME%%</a>
-  %%SIDENAV%%
-  <div class="side-foot">
-    %%SIDEMANAGE%%
-    <button class="nav-item" id="theme-toggle" type="button" aria-label="Toggle light or dark theme">%%ICON_THEME%%Theme</button>
-  </div>
-</aside>
+%%SIDE%%
 <header class="topbar">
   <a class="brand" href="/"><img src="/assets/logo.svg" alt="">%%SITENAME%%</a>
   %%TOPMANAGE%%

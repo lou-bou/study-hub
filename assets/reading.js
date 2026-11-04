@@ -90,9 +90,9 @@
   }
 
   function go(v, smooth) {
+    if (chip) { chip.remove(); chip = null; }  // first: it takes up height above the target
     var y = target(v);
     if (y !== null) window.scrollTo({ top: y, behavior: smooth && !reduced ? "smooth" : "instant" });
-    if (chip) { chip.remove(); chip = null; }
   }
 
   function offerResume(v) {

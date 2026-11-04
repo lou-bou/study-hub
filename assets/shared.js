@@ -4,6 +4,38 @@
   "use strict";
   var PINNED = "cahier-pinned";
 
+  // ---- desktop sidebar: open, or collapsed to one button. This runs in <head>, so the
+  // page never flashes the wrong state. Small windows start collapsed until I choose. --
+  var root = document.documentElement, SIDE = "cahier-side", stored = null, animTimer = null;
+  try { stored = localStorage.getItem(SIDE); } catch (e) {}
+  if (stored === "closed" || (!stored && window.innerWidth < 1000)) root.setAttribute("data-side", "closed");
+
+  function syncSide() {
+    var btn = document.getElementById("cahier-side-btn");
+    if (!btn) return;
+    var closed = root.getAttribute("data-side") === "closed", label = closed ? "Open sidebar" : "Collapse sidebar";
+    btn.setAttribute("aria-label", label);
+    btn.setAttribute("aria-expanded", closed ? "false" : "true");
+    btn.title = label;
+  }
+  function toggleSide() {
+    var closed = root.getAttribute("data-side") === "closed";
+    root.setAttribute("data-side-anim", "");
+    clearTimeout(animTimer);
+    animTimer = setTimeout(function () { root.removeAttribute("data-side-anim"); }, 400);
+    if (closed) root.removeAttribute("data-side"); else root.setAttribute("data-side", "closed");
+    try { localStorage.setItem(SIDE, closed ? "open" : "closed"); } catch (e) {}
+    syncSide();
+  }
+  document.addEventListener("click", function (e) {
+    var el = e.target.closest ? e.target.closest("#cahier-side-btn,#cahier-side-theme") : null;
+    if (!el) return;
+    if (el.id === "cahier-side-btn") { toggleSide(); return; }
+    var theme = document.getElementById("theme-toggle");  // on a remake, the page's own (hidden) toggle
+    if (theme) theme.click();
+  });
+  document.addEventListener("DOMContentLoaded", syncSide);
+
   // ---- offline note: muted, never blocks reading ----------------------
   var note = document.createElement("div");
   note.textContent = "Offline · progress saved on this device";

@@ -45,6 +45,7 @@ ICONS = {
     "book-open": '<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>',
     "pencil-line": '<path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/><path d="m15 5 3 3"/>',
     "file-text": '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
+    "panel-left": '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/>',
 }
 
 
@@ -88,6 +89,13 @@ REMAKE_MOBILE = ("<style>@media " + PHONE + "{"
     "#studyhub-saver{right:10px!important;bottom:10px!important;font-size:12px!important}"
     "#studyhub-saver[data-state=ready] span{display:none}"
     "#studyhub-saver button{padding:9px 12px!important;min-height:40px}"
+    "}</style>\n")
+# Remakes on desktop: the sidebar replaces the floating back and theme buttons, and pushes the page aside.
+# Collapsed, the page keeps clear of the one button left.
+REMAKE_DESKTOP = ("<style>@media screen and (min-width:701px){"
+    "#studyhub-nav,#theme-toggle{display:none!important}"
+    "html:not([data-side=closed]) body{margin-left:16rem}"
+    "html[data-side=closed] body{padding-inline:62px}"
     "}</style>\n")
 # The theme toggle and the nav bar follow the viewport until they reach the end of the contents
 # (.toc, else .hero), then each parks just below that line and scrolls away with the page.
@@ -299,6 +307,7 @@ def head_tags():
     needs credentials: Cloudflare Access guards it too."""
     name = html.escape(site_title())
     return ('<link rel="stylesheet" href="/assets/tokens.css">\n<link rel="stylesheet" href="/assets/fonts.css">\n'
+            '<link rel="stylesheet" href="/assets/sidebar.css">\n'
             + ZOOM_STYLE +
             '<link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials">\n'
             '<link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">\n'
@@ -363,17 +372,20 @@ def normalize(text, base, theme):
     return TOGGLE_RE.sub(lambda m: m.group(1) + icon("sun-moon", "") + m.group(2), text, count=1)
 
 
-def inject(src, dst, snippet, base=None, theme=None):
+def inject(src, dst, snippet, base=None, theme=None, top=b""):
+    """`snippet` goes before the last </body>, `top` right after <body> so it comes first when tabbing."""
     with open(src, "rb") as f:
         data = normalize(f.read().decode("utf-8", "surrogateescape"), base, theme).encode("utf-8", "surrogateescape")
     i = data.lower().rfind(b"</body>")
     data = data + snippet if i < 0 else data[:i] + snippet + data[i:]
+    m = re.search(rb"<body\b[^>]*>", data, re.I)
+    data = top + data if not m else data[:m.end()] + top + data[m.end():]
     low = data.lower()
     i = low.find(b"</head>")
     if i < 0:  # the closing tag is optional in HTML, and uploaded pages sometimes omit it
         i = low.find(b"<body")
     if i >= 0:
-        data = data[:i] + (head_tags() + REMAKE_MOBILE).encode("utf-8") + data[i:]
+        data = data[:i] + (head_tags() + REMAKE_MOBILE + REMAKE_DESKTOP).encode("utf-8") + data[i:]
     with open(dst, "wb") as f:
         f.write(data)
 
@@ -389,8 +401,8 @@ def back_button(module):
             f'title="{label}" style="{BACK_STYLE}">{icon("arrow-left")}</a>\n<script>{PARK_SCRIPT}</script>')
 
 
-def build_module(module, out_root, base, warnings, theme=None):
-    src = os.path.join(MODULES, module["slug"])
+def build_module(module, out_root, base, warnings, theme=None, nav=()):
+    src =os.path.join(MODULES, module["slug"])
     dst = os.path.join(out_root, module["slug"])
     shutil.copytree(src, dst, ignore=shutil.ignore_patterns("module.json", ".*", "_*"))
     for ch in module["chapters"]:
@@ -415,8 +427,10 @@ def build_module(module, out_root, base, warnings, theme=None):
                 else:
                     snippet += (f'\n<script src="/assets/reading.js" data-module="{html.escape(module["slug"])}" '
                                 f'data-page="{html.escape(page)}"></script>')
+                # a remake's own #theme-toggle stays in the page, hidden on desktop, and does the work
+                side = sidebar(nav, "module", module, current=page, theme_id="cahier-side-theme")
                 inject(os.path.join(dirpath, f), os.path.join(dst, ch["slug"], rel),
-                       (snippet + "\n").encode("utf-8"), base, theme)
+                       (snippet + "\n").encode("utf-8"), base, theme, (side + "\n").encode("utf-8"))
 
 
 ICON_CHECK = '<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>'
@@ -590,30 +604,50 @@ def render_viewer():
     return fill(tpl, ICON_BACK=icon("arrow-left"))
 
 
-def shell(nav, page="home", module=None):
-    '''Sidebar, top bar and bottom nav for hub-template pages. `module` is set on a course page.'''
+MAIN_NAV = (("/", "house", "Home", "home"), ("/courses/", "library", "Courses", "courses"),
+            ("/practice/", "pencil-line", "Practice", "practice"), ("/search/", "search", "Search", "search"))
+
+
+def sidebar(nav, page="home", module=None, current=None, theme_id="theme-toggle"):
+    '''The desktop sidebar and its collapse button (assets/sidebar.css). `module` opens that course's
+    list of pages; `current` is the "<chapter>/<file>" being read.'''
     e = html.escape
     active = module["slug"] if module else None
     item = lambda href, body, on: f'<a class="nav-item{" on" if on else ""}" href="{e(href)}">{body}</a>'
     manage = "/upload/" + (f"?module={active}" if active else "")
-    main = (("/", "house", "Home", "home"), ("/courses/", "library", "Courses", "courses"),
-            ("/practice/", "pencil-line", "Practice", "practice"), ("/search/", "search", "Search", "search"))
-    side = "".join(item(h, icon(i) + n, page == k) for h, i, n, k in main)
+    side = "".join(item(h, icon(i) + n, page == k) for h, i, n, k in MAIN_NAV)
     if nav:
         side += '<div class="nav-label">My courses</div>'
         for m in nav:
             side += item(f'/{m["slug"]}/', f'<span class="nav-code">{e(m["code"])}</span>'
                          f'<span class="nav-name">{e(m["title"] or m["code"])}</span>', m["slug"] == active)
             if m["slug"] == active:
-                links = "".join(f'<a href="/{e(m["slug"])}/{e(c["slug"])}/{e(p["file"])}">{e(c["title"] or c["label"])}</a>'
-                                for c in m["chapters"] for p in c["pages"] if p["kind"] == "lesson")
+                links = ""
+                for c in m["chapters"]:
+                    for p in c["pages"]:
+                        here = f'{c["slug"]}/{p["file"]}' == current
+                        name = (c["title"] or c["label"]) + (" · Practice" if p["kind"] == "practice" else "")
+                        links += (f'<a href="/{e(m["slug"])}/{e(c["slug"])}/{e(p["file"])}"'
+                                  + (' class="on" aria-current="page"' if here else "") + f'>{e(name)}</a>')
                 if links:
                     side += f'<div class="nav-sub">{links}</div>'
+    return (f'<button id="cahier-side-btn" type="button" data-no-save aria-controls="cahier-side" '
+            f'aria-label="Collapse sidebar" title="Collapse sidebar">{icon("panel-left", "")}</button>\n'
+            f'<aside id="cahier-side" data-no-save>'
+            f'<a class="brand" href="/"><img src="/assets/logo.svg" alt="">{e(site_title())}</a>{side}'
+            f'<div class="side-foot">{item(manage, icon("folder-cog") + "Manage modules", page == "manage")}'
+            f'<button class="nav-item" id="{theme_id}" type="button" aria-label="Toggle light or dark theme">'
+            f'{icon("sun-moon")}Theme</button></div></aside>')
+
+
+def shell(nav, page="home", module=None):
+    '''Sidebar, top bar and bottom nav for hub-template pages. `module` is set on a course page.'''
+    e = html.escape
+    manage = "/upload/" + (f'?module={module["slug"]}' if module else "")
     tab_on = lambda k: k == page or (k == "courses" and page == "module")
-    tabs = "".join(f'<a class="tab{" on" if tab_on(k) else ""}" href="{h}">{icon(i)}{n}</a>' for h, i, n, k in main)
+    tabs = "".join(f'<a class="tab{" on" if tab_on(k) else ""}" href="{h}">{icon(i)}{n}</a>' for h, i, n, k in MAIN_NAV)
     return {
-        "SITENAME": e(site_title()), "ICON_THEME": icon("sun-moon"), "SIDENAV": side,
-        "SIDEMANAGE": item(manage, icon("folder-cog") + "Manage modules", page == "manage"),
+        "SITENAME": e(site_title()), "ICON_THEME": icon("sun-moon"), "SIDE": sidebar(nav, page, module),
         "TOPMANAGE": f'<a class="icon-btn" href="{e(manage)}" aria-label="Manage modules">{icon("folder-cog")}</a>',
         "TABS": tabs,
     }
@@ -970,7 +1004,7 @@ def main():
     modules = [m for m in every if m["chapters"]]  # empty modules stay hidden (but can be deleted on /upload/)
     base, warnings = remake_base(), []
     for m in modules:
-        build_module(m, NEW, base, warnings, remake_theme())
+        build_module(m, NEW, base, warnings, remake_theme(), modules)
 
     with open(TEMPLATE, encoding="utf-8") as f:
         tpl = f.read()

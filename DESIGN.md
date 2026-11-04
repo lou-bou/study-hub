@@ -160,10 +160,11 @@ The spec above is the brand kit, with paths adjusted to this repo. These are the
 - PDF viewer: PDF.js, vendored in `assets/pdfjs/`, is what makes "remember last page" and viewing on phones possible.
 - Search: `/search/` runs in the browser over `search.json`, built from every section and PDF name, so it works offline. It doesn't search inside PDFs.
 - Manage modules isn't in the spec's navigation. It sits at the bottom of the sidebar and as an icon in the phone top bar.
+- Sidebar: collapsible on every desktop page (`assets/sidebar.css`), down to one panel button that stays in the same spot in both states. The choice is remembered per device (`localStorage` `cahier-side`); windows under 1000px start collapsed until I choose. On lessons and sheets it replaces the floating back and theme buttons, and the course's list also shows its practice sheets. The PDF viewer keeps its own back bar instead.
 - Position sync: one position per lesson, the newest wins, labelled with the device that saved it.
 
 **Deliberate differences**
-- Lessons and practice sheets have no sidebar or bottom nav, only a back button and theme button that park after the contents. I asked for that earlier because nav distracted me while reading.
+- On phones, lessons and practice sheets have no bottom nav, only a back button and theme button that park after the contents, so reading keeps the whole screen.
 - "Available offline" is only on PDFs. Lessons and sheets are always saved on install, so a toggle there would do nothing.
 - Page zoom stays (125% / 150% on wide screens), because I asked for it.
 - KaTeX isn't used: the remakes write maths as text and symbols, with no TeX to render. `--font-math` styles it.
