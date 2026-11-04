@@ -3,5 +3,8 @@
   "title": "Scheduling Theory",
   "blurb": "Théorie de l'ordonnancement.",
   "order": 3,
-  "chapters": {"ch1": "Introduction"}
+  "chapters": {
+    "ch1": "Introduction",
+    "ch2": "Ordonnancement sur une seule machine"
+  }
 }
