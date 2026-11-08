@@ -251,8 +251,8 @@ svg .unused{stroke:var(--muted);stroke-width:1.2;stroke-dasharray:4 4;fill:none}
   <div>
     <div class="eyebrow">OPL · Chapters 1–2 · Practice</div>
     <h1>Linear Programming Practice</h1>
-    <p class="lead">Short drills on the three skills this chapter tests: modelling, conversion, and the graphical method. Answers are hidden, and a quiz closes the sheet. <span class="fr">(Exercices)</span></p>
-    <div class="prog" aria-live="polite"><span id="prog-txt">0 / 12 done</span><span class="track"><span class="fill" id="prog-bar"></span></span></div>
+    <p class="lead">Short drills on the skills this chapter tests: modelling, conversion and the graphical method, then a quiz. Set E covers lesson sections 10 to 12 and checks your answers. <span class="fr">(Exercices)</span></p>
+    <div class="prog" aria-live="polite"><span id="prog-txt">0 / 18 done</span><span class="track"><span class="fill" id="prog-bar"></span></span></div>
   </div>
   <figure class="herofig">
     <svg viewBox="0 0 360 280" role="img" aria-label="Feasible polygon with the best objective line touching a corner">
@@ -273,7 +273,7 @@ svg .unused{stroke:var(--muted);stroke-width:1.2;stroke-dasharray:4 4;fill:none}
 
 <nav class="toc" aria-label="Contents">
 <div class="part"><h3>Sets A–B</h3><ul><li><a href="#a"><span class="n">A</span><span>Word problem to LP<small>4 problems</small></span></a></li><li><a href="#b"><span class="n">B</span><span>Conversion drills<small>4 problems</small></span></a></li></ul></div>
-<div class="part"><h3>Sets C–D</h3><ul><li><a href="#c"><span class="n">C</span><span>Graphical method<small>4 problems</small></span></a></li><li><a href="#d"><span class="n">D</span><span>Quiz<small>8 questions</small></span></a></li></ul></div>
+<div class="part"><h3>Sets C–E</h3><ul><li><a href="#c"><span class="n">C</span><span>Graphical method<small>4 problems</small></span></a></li><li><a href="#d"><span class="n">D</span><span>Quiz<small>11 questions</small></span></a></li><li><a href="#e"><span class="n">E</span><span>Reading the lines, special cases<small>6 problems, checked</small></span></a></li></ul></div>
 </nav>
 
 <!-- A -->
@@ -458,9 +458,36 @@ svg .unused{stroke:var(--muted);stroke-width:1.2;stroke-dasharray:4 4;fill:none}
 
 <!-- D -->
 <section class="sec" id="d"><div class="sec-h"><span class="num">D</span><h2>Quiz <span class="fr">(petit quiz)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
-  <div class="plain"><span class="tag">In plain words</span><p>Eight quick questions. Pick an answer to see the explanation right away; your score appears at the end.</p></div>
+  <div class="plain"><span class="tag">In plain words</span><p>Eleven quick questions. Pick an answer to see the explanation right away; your score appears at the end.</p></div>
   <div id="quiz"></div>
 <div class="actions"><span id="result" class="fb" hidden></span><button class="b" id="reset" type="button">Clear quiz answers</button></div>
+</section>
+
+<!-- E -->
+<section class="sec" id="e"><div class="sec-h"><span class="num">E</span><h2>Reading the lines, special cases <span class="fr">(droites d'iso-valeur, cas particuliers)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="plain"><span class="tag">In plain words</span><p>Sections 10 to 12 of the lesson: which way z grows, which side of a line to keep, empty and unbounded regions, minimizing, and reading the answer. Fill in the fields and press Check. Fractions such as 1/3 are accepted.</p></div>
+  <div class="aid"><b>Reminders.</b> The line <span class="m">a₀x₁ + b₀x₂ = p</span> is <span class="m">x₂ = −(a₀/b₀)x₁ + p/b₀</span>. The arrow <span class="m">n = (a₀, b₀)</span> points where z grows: slide along it to maximize, against it to minimize. Keep the side of a constraint's line that contains the origin only if (0, 0) satisfies it.</div>
+
+  <article class="prob" id="p-E1" data-check><div class="ph"><span class="pid">E1</span><h3 class="pt">Which way does z grow?</h3><label class="done"><input type="checkbox" id="done-E1"><span>done</span></label></div><div class="pq"><p>Take <span class="m">z = 3x₁ − 2x₂</span> and its lines <span class="m">3x₁ − 2x₂ = p</span>.</p><p>(a) These lines are:</p><div class="mc"><label class="opt"><input type="radio" name="q-E1-1" value="0" data-ok="1"><span>rising (going up to the right)</span></label><label class="opt"><input type="radio" name="q-E1-1" value="1" data-ok="0"><span>falling</span></label><label class="opt"><input type="radio" name="q-E1-1" value="2" data-ok="0"><span>horizontal</span></label><label class="opt"><input type="radio" name="q-E1-1" value="3" data-ok="0"><span>vertical</span></label></div><p>(b) When p increases, the line moves:</p><div class="mc"><label class="opt"><input type="radio" name="q-E1-2" value="0" data-ok="0"><span>up</span></label><label class="opt"><input type="radio" name="q-E1-2" value="1" data-ok="1"><span>down</span></label></div><p>(c) To maximize z, slide the line in the direction of:</p><div class="mc"><label class="opt"><input type="radio" name="q-E1-3" value="0" data-ok="0"><span>n = (3, 2)</span></label><label class="opt"><input type="radio" name="q-E1-3" value="1" data-ok="1"><span>n = (3, −2)</span></label><label class="opt"><input type="radio" name="q-E1-3" value="2" data-ok="0"><span>n = (−3, 2)</span></label><label class="opt"><input type="radio" name="q-E1-3" value="3" data-ok="0"><span>n = (2, 3)</span></label></div></div><div class="actions" data-no-save><button class="b chk" type="button">Check</button><button class="b rst" type="button">Clear</button><span class="fb" aria-live="polite"></span></div><details><summary>Show answer</summary><div class="sol"><p>Solve for x₂: <span class="m">x₂ = (3/2)x₁ − p/2</span>. (a) The slope 3/2 is positive, so the lines <b>rise</b>. (b) The intercept is <span class="m">−p/2</span>: here <span class="m">b₀ = −2 &lt; 0</span>, so a larger p gives a lower line: it moves <b>down</b>. (c) The arrow is made of the coefficients: <span class="res">n = (3, −2)</span>, right and down. This is the "b₀ &lt; 0" case of lesson section 10: the maximum is on the lowest line that still touches D.</p></div></details></article>
+
+  <article class="prob" id="p-E2" data-check><div class="ph"><span class="pid">E2</span><h3 class="pt">Which side do you keep?</h3><label class="done"><input type="checkbox" id="done-E2"><span>done</span></label></div><div class="pq"><p>For each constraint, test the origin, then decide which side of its line to keep.</p><p>(a) <span class="m">2x₁ + x₂ ≥ 6</span></p><div class="mc"><label class="opt"><input type="radio" name="q-E2-1" value="0" data-ok="0"><span>Keep the origin side</span></label><label class="opt"><input type="radio" name="q-E2-1" value="1" data-ok="1"><span>Keep the other side</span></label></div><p>(b) <span class="m">x₁ − x₂ ≤ 2</span></p><div class="mc"><label class="opt"><input type="radio" name="q-E2-2" value="0" data-ok="1"><span>Keep the origin side</span></label><label class="opt"><input type="radio" name="q-E2-2" value="1" data-ok="0"><span>Keep the other side</span></label></div><p>(c) <span class="m">−x₁ + 3x₂ ≥ −3</span></p><div class="mc"><label class="opt"><input type="radio" name="q-E2-3" value="0" data-ok="1"><span>Keep the origin side</span></label><label class="opt"><input type="radio" name="q-E2-3" value="1" data-ok="0"><span>Keep the other side</span></label></div></div><div class="actions" data-no-save><button class="b chk" type="button">Check</button><button class="b rst" type="button">Clear</button><span class="fb" aria-live="polite"></span></div><details><summary>Show answer</summary><div class="sol"><p>(a) 0 ≥ 6 is false, so keep the <b>other</b> side, away from the origin. (b) 0 ≤ 2 is true: keep the <b>origin</b> side. (c) 0 ≥ −3 is true: keep the <b>origin</b> side. A "≥" does not automatically mean "away from the origin"; only the test decides.</p></div></details></article>
+
+  <article class="prob" id="p-E3" data-check><div class="ph"><span class="pid">E3</span><h3 class="pt">Empty, bounded or unbounded?</h3><label class="done"><input type="checkbox" id="done-E3"><span>done</span></label></div><div class="pq"><p>All three also have <span class="m">x₁, x₂ ≥ 0</span>. What is the region D?</p><p>(a) <span class="m">x₁ + x₂ ≤ 4</span> and <span class="m">x₁ + x₂ ≥ 6</span></p><div class="mc"><label class="opt"><input type="radio" name="q-E3-1" value="0" data-ok="1"><span>Empty</span></label><label class="opt"><input type="radio" name="q-E3-1" value="1" data-ok="0"><span>Bounded</span></label><label class="opt"><input type="radio" name="q-E3-1" value="2" data-ok="0"><span>Unbounded</span></label></div><p>(b) <span class="m">x₁ + 2x₂ ≥ 4</span> and <span class="m">x₁ ≤ 5</span></p><div class="mc"><label class="opt"><input type="radio" name="q-E3-2" value="0" data-ok="0"><span>Empty</span></label><label class="opt"><input type="radio" name="q-E3-2" value="1" data-ok="0"><span>Bounded</span></label><label class="opt"><input type="radio" name="q-E3-2" value="2" data-ok="1"><span>Unbounded</span></label></div><p>(c) <span class="m">x₁ + x₂ ≤ 5</span> and <span class="m">x₁ − x₂ ≥ 1</span></p><div class="mc"><label class="opt"><input type="radio" name="q-E3-3" value="0" data-ok="0"><span>Empty</span></label><label class="opt"><input type="radio" name="q-E3-3" value="1" data-ok="1"><span>Bounded</span></label><label class="opt"><input type="radio" name="q-E3-3" value="2" data-ok="0"><span>Unbounded</span></label></div></div><div class="actions" data-no-save><button class="b chk" type="button">Check</button><button class="b rst" type="button">Clear</button><span class="fb" aria-live="polite"></span></div><details><summary>Show answer</summary><div class="sol"><p>(a) <b>Empty</b>: it asks for <span class="m">6 ≤ x₁ + x₂ ≤ 4</span>, which no point satisfies, so the LP has no feasible solution. (b) <b>Unbounded</b>: <span class="m">x₁</span> is capped at 5, but nothing stops <span class="m">x₂</span>; (0, 100) satisfies everything. Its corners are (0, 2), (4, 0) and (5, 0). (c) <b>Bounded</b>: a triangle with corners (1, 0), (5, 0) and (3, 2).</p></div></details></article>
+
+  <article class="prob" id="p-E4" data-check><div class="ph"><span class="pid">E4</span><h3 class="pt">An unbounded region</h3><label class="done"><input type="checkbox" id="done-E4"><span>done</span></label></div><div class="pq"><p>D is given by <span class="m">x₂ − x₁ ≤ 1</span>, <span class="m">x₁ − 2x₂ ≤ 2</span>, <span class="m">x₁, x₂ ≥ 0</span>.</p><figure class="fig" style="--maxw:260px"><svg viewBox="0 0 250 225" role="img" aria-label="The region of E4: a wedge that keeps growing up and to the right"><polygon class="dom" points="30,200 90,200 210,140 210,20 180,20 30,170"/><line class="ln" x1="30" y1="170" x2="180" y2="20"/><line class="ln" x1="90" y1="200" x2="210" y2="140"/><line class="ax" x1="30" y1="200" x2="222.0" y2="200"/><line class="ax" x1="30" y1="200" x2="30" y2="8.0"/><text x="90" y="215" class="mu" text-anchor="middle">2</text><text x="150" y="215" class="mu" text-anchor="middle">4</text><text x="210" y="215" class="mu" text-anchor="middle">6</text><text x="24" y="144" class="mu" text-anchor="end">2</text><text x="24" y="84" class="mu" text-anchor="end">4</text><text x="24" y="24" class="mu" text-anchor="end">6</text><text x="81.0" y="44.0" class="mu halo">x₂ − x₁ = 1</text><text x="135.0" y="183.5" class="mu halo">x₁ − 2x₂ = 2</text><text x="123.0" y="101.0" class="halo">D</text><text x="226.0" y="204" class="mu">x₁</text><text x="24" y="12.0" class="mu" text-anchor="end">x₂</text></svg><figcaption>Corners (0, 0), (2, 0) and (0, 1); between the two lines D keeps going up and to the right.</figcaption></figure><p>(a) Does <span class="m">max z = x₁ + x₂</span> have an optimal solution?</p><div class="mc"><label class="opt"><input type="radio" name="q-E4-1" value="0" data-ok="0"><span>Yes</span></label><label class="opt"><input type="radio" name="q-E4-1" value="1" data-ok="1"><span>No: z grows without limit</span></label></div><p>(b) Does <span class="m">min z = 2x₁ − x₂</span> have an optimal solution?</p><div class="mc"><label class="opt"><input type="radio" name="q-E4-2" value="0" data-ok="1"><span>Yes</span></label><label class="opt"><input type="radio" name="q-E4-2" value="1" data-ok="0"><span>No: z decreases without limit</span></label></div><p>(c) If it does, the minimum value z* = <input type="text" inputmode="decimal" id="q-E4-3" data-ans="-1" data-tol="0.01" aria-label="minimum value of 2x1 - x2"></p></div><div class="actions" data-no-save><button class="b chk" type="button">Check</button><button class="b rst" type="button">Clear</button><span class="fb" aria-live="polite"></span></div><details><summary>Show answer</summary><div class="sol"><p>(a) <b>No.</b> The points (3, 2), (30, 20), (300, 200) are all in D and give z = 5, 50, 500: there is no largest value. (b) <b>Yes.</b> Moving up and to the right inside D always raises <span class="m">2x₁ − x₂</span> (along (2, 1) it gains 3, along (1, 1) it gains 1), so the minimum is at a corner: (0, 0) → 0, (2, 0) → 4, (0, 1) → −1. (c) <span class="res">z* = −1 at (0, 1)</span>. An unbounded region can still have a minimum (lesson section 10).</p></div></details></article>
+
+  <article class="prob" id="p-E5" data-check><div class="ph"><span class="pid">E5</span><h3 class="pt">A small mixture problem (minimum)</h3><label class="done"><input type="checkbox" id="done-E5"><span>done</span></label></div><div class="pq"><p>A shop needs at least 4 kg of ingredient A and 6 kg of ingredient B. It can only buy two mixtures: one unit of P holds 1 kg of A and 1 kg of B and costs 2 dh; one unit of Q holds 1 kg of A and 3 kg of B and costs 3 dh. It buys at most 5 units of each.</p><div class="eq">min z = 2x₁ + 3x₂
+     x₁ + x₂ ≥ 4      (A)
+     x₁ + 3x₂ ≥ 6     (B)
+     x₁ ≤ 5,  x₂ ≤ 5
+     x₁, x₂ ≥ 0</div><div class="aid"><b>Aid.</b> The origin fails (A) and (B), so D lies away from it. Corners of D: (0, 4), (3, 1), (5, 1/3), (5, 5), (0, 5).</div><p>(a) The cost at each corner:</p><div class="scroll"><table class="t inp"><tr><th class="c">(0, 4)</th><th class="c">(3, 1)</th><th class="c">(5, 1/3)</th><th class="c">(5, 5)</th><th class="c">(0, 5)</th></tr><tr><td><input type="text" inputmode="decimal" id="q-E5-1" data-ans="12" data-tol="0.01" aria-label="z at (0, 4)"></td><td><input type="text" inputmode="decimal" id="q-E5-2" data-ans="9" data-tol="0.01" aria-label="z at (3, 1)"></td><td><input type="text" inputmode="decimal" id="q-E5-3" data-ans="11" data-tol="0.01" aria-label="z at (5, 1/3)"></td><td><input type="text" inputmode="decimal" id="q-E5-4" data-ans="25" data-tol="0.01" aria-label="z at (5, 5)"></td><td><input type="text" inputmode="decimal" id="q-E5-5" data-ans="15" data-tol="0.01" aria-label="z at (0, 5)"></td></tr></table></div><p>Minimum cost z* = <input type="text" inputmode="decimal" id="q-E5-6" data-ans="9" data-tol="0.01" aria-label="minimum cost"></p><p>(b) P now costs 3 dh, so <span class="m">z = 3x₁ + 3x₂</span>. Which plans are optimal?</p><div class="mc"><label class="opt"><input type="radio" name="q-E5-7" value="0" data-ok="0"><span>only (3, 1)</span></label><label class="opt"><input type="radio" name="q-E5-7" value="1" data-ok="0"><span>only (0, 4)</span></label><label class="opt"><input type="radio" name="q-E5-7" value="2" data-ok="1"><span>the whole edge from (0, 4) to (3, 1)</span></label><label class="opt"><input type="radio" name="q-E5-7" value="3" data-ok="0"><span>the whole edge from (3, 1) to (5, 1/3)</span></label></div><p>The new minimum cost z* = <input type="text" inputmode="decimal" id="q-E5-8" data-ans="12" data-tol="0.01" aria-label="new minimum cost"></p></div><div class="actions" data-no-save><button class="b chk" type="button">Check</button><button class="b rst" type="button">Clear</button><span class="fb" aria-live="polite"></span></div><details><summary>Show answer</summary><div class="sol"><div class="scroll"><table class="t grid"><tr><th>Corner</th><th class="c">(0, 4)</th><th class="c">(3, 1)</th><th class="c">(5, 1/3)</th><th class="c">(5, 5)</th><th class="c">(0, 5)</th></tr><tr><td>z = 2x₁ + 3x₂</td><td class="c">12</td><td class="c"><b>9</b></td><td class="c">11</td><td class="c">25</td><td class="c">15</td></tr></table></div><p>(a) <span class="res">z* = 9 at (3, 1)</span>: buy 3 units of P and 1 of Q, which gives exactly 4 kg of A and 6 kg of B. On the drawing it is the lowest isocost line still touching D. (b) <span class="m">3x₁ + 3x₂ = 3(x₁ + x₂)</span>, so the isocost lines are parallel to (A). (0, 4) and (3, 1) both cost 12, and so does every point between them: <span class="res">the whole edge, z* = 12</span>. The same thing happens in the lesson's mixture example (section 12).</p></div></details></article>
+
+  <article class="prob" id="p-E6" data-check><div class="ph"><span class="pid">E6</span><h3 class="pt">Reading the answer (maximum)</h3><label class="done"><input type="checkbox" id="done-E6"><span>done</span></label></div><div class="pq"><p>A workshop makes <span class="m">x₁</span> tables and <span class="m">x₂</span> shelves a day, for a profit of 2 and 3 (hundred dh). Machine M1 can make at most 3 tables, machine M2 at most 4 shelves, and assembly M3 handles at most 6 items in total.</p><div class="eq">max z = 2x₁ + 3x₂
+     x₁ ≤ 3           (M1)
+     x₂ ≤ 4           (M2)
+     x₁ + x₂ ≤ 6      (M3)
+     x₁, x₂ ≥ 0</div><div class="aid"><b>Aid.</b> Corners of D: (0, 0), (3, 0), (3, 3), (2, 4), (0, 4).</div><p>(a) The best profit z* = <input type="text" inputmode="decimal" id="q-E6-1" data-ans="16" data-tol="0.01" aria-label="best profit"></p><p>(b) Which constraints are used to the full at the optimum?</p><div class="chips-set" data-ans="M2,M3"><label class="chipbox"><input type="checkbox" id="q-E6-m1" data-id="M1"><span>M1</span></label><label class="chipbox"><input type="checkbox" id="q-E6-m2" data-id="M2"><span>M2</span></label><label class="chipbox"><input type="checkbox" id="q-E6-m3" data-id="M3"><span>M3</span></label></div><p>(c) How much of M1's capacity is left unused? <input type="text" inputmode="decimal" id="q-E6-2" data-ans="1" data-tol="0.01" aria-label="unused capacity of M1"> table</p></div><div class="actions" data-no-save><button class="b chk" type="button">Check</button><button class="b rst" type="button">Clear</button><span class="fb" aria-live="polite"></span></div><details><summary>Show answer</summary><div class="sol"><p>Corner values: (0, 0) → 0, (3, 0) → 6, (3, 3) → 15, (2, 4) → 16, (0, 4) → 12. (a) <span class="res">z* = 16 at (2, 4)</span>: 2 tables and 4 shelves. (b) At (2, 4): M2 makes 4 of 4 and M3 handles 2 + 4 = 6 of 6, so <b>M2 and M3</b> are full. The optimum is where their two lines cross. (c) M1 makes 2 of its 3 tables: <b>1</b> unused. The same reading as the window frames in lesson section 11, where workshops 2 and 3 are full.</p></div></details></article>
+
 </section>
 
 <footer class="foot">Practice for the OPL lesson, chapters 1–2. All answers recomputed by program.</footer>
@@ -501,7 +528,16 @@ svg .unused{stroke:var(--muted);stroke-width:1.2;stroke-dasharray:4 4;fill:none}
      a:2,w:"With a discount the total cost is no longer proportional to the quantity, so it is not a straight line in x."},
     {q:"The objective lines are parallel to an edge of the domain, and that edge touches the domain at the best level. How many optimal solutions are there?",
      o:["Exactly one","Exactly two","Infinitely many (the whole edge)","None"],
-     a:2,w:"Every point of that edge reaches the same maximum value of z, so the optimum is not unique."}
+     a:2,w:"Every point of that edge reaches the same maximum value of z, so the optimum is not unique."},
+    {q:"When z is a cost, what are the lines \"z = constant\" called?",
+     o:["Isoprofit lines","Isocost lines","Constraint lines","Axes"],
+     a:1,w:"Iso-value lines are isoprofit lines when z is a profit and isocost lines (droites d'isocoût) when z is a cost."},
+    {q:"max z = x₁ + x₂ on a region D that goes on forever up and to the right. What can you conclude?",
+     o:["The optimum is at the origin","There is no optimal solution: z grows without limit","D is empty","The optimum is on an edge"],
+     a:1,w:"Moving further up and to the right inside D keeps raising z, so no value is the largest. A minimum, on the other hand, may still exist."},
+    {q:"To minimize z = a₀x₁ + b₀x₂ graphically, you slide the iso-value line:",
+     o:["along the arrow n = (a₀, b₀)","against the arrow n = (a₀, b₀), until it last touches D","always toward the highest intercept","parallel to the x₁-axis"],
+     a:1,w:"The arrow n points where z grows. To minimize, go the other way; the last line still touching D gives the minimum."}
   ];
   var box=document.getElementById('quiz'), res=document.getElementById('result'), rs=document.getElementById('reset');
   function score(){
@@ -543,6 +579,55 @@ svg .unused{stroke:var(--muted);stroke-width:1.2;stroke-dasharray:4 4;fill:none}
     });
   });
   score();
+})();
+</script>
+<script>
+/* set E: Check grades every field of a card; a fully right card ticks its done box */
+(function(){
+  var cards=[].slice.call(document.querySelectorAll('#e .prob[data-check]'));
+  function parse(v){v=(v||'').trim().replace(',','.').replace('−','-');if(v==='')return NaN;
+    if(v.indexOf('/')>-1){var p=v.split('/');return parseFloat(p[0])/parseFloat(p[1]);}return Number(v);}
+  function fb(card,text,cls){var f=card.querySelector('.fb');f.textContent=text;f.className='fb '+(cls||'');}
+  function check(card){
+    var total=0,right=0,missing=false;
+    card.querySelectorAll('input[data-ans]').forEach(function(i){
+      total++;var v=parse(i.value);if(isNaN(v)){missing=true;return;}
+      var ok=Math.abs(v-parseFloat(i.dataset.ans))<=parseFloat(i.dataset.tol||'0.01');
+      i.classList.toggle('ok',ok);i.classList.toggle('bad',!ok);if(ok)right++;});
+    card.querySelectorAll('.mc').forEach(function(g){
+      total++;g.querySelectorAll('label.opt').forEach(function(l){l.classList.remove('ok','bad');});
+      var ch=g.querySelector('input:checked');if(!ch){missing=true;return;}
+      var ok=ch.dataset.ok==='1';ch.closest('label').classList.add(ok?'ok':'bad');if(ok)right++;});
+    card.querySelectorAll('.chips-set').forEach(function(g){
+      total++;var got=[].slice.call(g.querySelectorAll('input:checked')).map(function(i){return i.dataset.id;}).sort().join(',');
+      var ok=got===g.dataset.ans;g.classList.toggle('ok',ok);g.classList.toggle('bad',!ok);if(ok)right++;});
+    if(missing){fb(card,'Answer every part first.','bad');return;}
+    var all=right===total;
+    card.classList.remove('ok','bad');card.classList.add(all?'ok':'bad');
+    fb(card,all?'Correct':right+' of '+total+' right. Try again or show the answer.',all?'ok':'bad');
+    var done=card.querySelector('.done input');
+    if(all&&!done.checked){done.checked=true;done.dispatchEvent(new Event('change',{bubbles:true}));}  // saved like a tick by hand
+  }
+  function clear(card){
+    card.querySelectorAll('.pq input').forEach(function(i){
+      if(i.type==='text'){i.value='';i.classList.remove('ok','bad');i.dispatchEvent(new Event('input',{bubbles:true}));}
+      else if(i.checked){i.checked=false;i.dispatchEvent(new Event('change',{bubbles:true}));}});  // the site deletes the saved value
+    card.querySelectorAll('label.opt').forEach(function(l){l.classList.remove('ok','bad');});
+    card.querySelectorAll('.chips-set').forEach(function(g){g.classList.remove('ok','bad');});
+    card.classList.remove('ok','bad');fb(card,'','');
+  }
+  function answered(card){
+    var ok=true;
+    card.querySelectorAll('input[data-ans]').forEach(function(i){if(!i.value.trim())ok=false;});
+    card.querySelectorAll('.mc').forEach(function(g){if(!g.querySelector('input:checked'))ok=false;});
+    return ok;
+  }
+  cards.forEach(function(card){
+    card.querySelector('.chk').addEventListener('click',function(){check(card);});
+    card.querySelector('.rst').addEventListener('click',function(){clear(card);});
+    card.addEventListener('keydown',function(e){if(e.key==='Enter'&&e.target.type==='text')check(card);});
+  });
+  document.addEventListener('studyhub:restored',function(){cards.forEach(function(c){if(answered(c))check(c);});});
 })();
 </script>
 </body>
