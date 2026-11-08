@@ -4,6 +4,7 @@
   "blurb": "Optimisation linéaire: modelling, canonical and standard forms, graphical method.",
   "order": 2,
   "chapters": {
-    "ch1-2": "Linear programming (Programmation linéaire)"
+    "ch1-2": "Linear programming (Programmation linéaire)",
+    "ch3": "Simplex Method"
   }
 }
