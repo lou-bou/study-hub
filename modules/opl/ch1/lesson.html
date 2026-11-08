@@ -241,6 +241,32 @@ svg .halo{paint-order:stroke;stroke:var(--surface);stroke-width:4px}
 svg .node{fill:var(--surface);stroke:var(--accent);stroke-width:1.8}
 svg .used{stroke:var(--accent);stroke-width:3;fill:none}
 svg .unused{stroke:var(--muted);stroke-width:1.2;stroke-dasharray:4 4;fill:none}
+/* section 9: sliding the profit line (interactive) */
+#sl-fig .sl-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-5);align-items:start}
+#sl-fig svg{max-width:none;max-height:72vh}
+/* the page is zoomed 125% / 150% on wide screens: keep the whole plot on screen */
+@media (min-width:1200px){#sl-fig svg{max-height:58vh}}
+@media (min-width:1500px){#sl-fig svg{max-height:48vh}}
+#sl-fig svg text{font-size:10px;fill:var(--muted)}
+#sl-fig svg text.lab{font-size:11px;font-weight:600;fill:var(--ink)}
+#sl-fig svg text.big{font-size:16px;font-weight:600;fill:var(--fig)}
+#sl-fig svg text.ac{fill:var(--hi);font-weight:700;font-size:9.5px}
+#sl-fig .sl-side{display:grid;gap:var(--space-3);min-width:0}
+#sl-fig .aid{margin-top:0}
+#sl-fig .sl-z{display:flex;align-items:baseline;gap:var(--space-2);flex-wrap:wrap}
+#sl-fig .sl-z b{font:600 var(--text-xl) var(--font-mono);color:var(--hi);font-variant-numeric:tabular-nums}
+#sl-fig .actions{margin-top:0}
+#sl-fig input[type=range]{width:100%;margin:0;accent-color:var(--fig)}
+#sl-fig .sl-status{min-height:4.4em;padding:var(--space-2) var(--space-3);background:var(--surface-2);border-left:3px solid var(--fig);border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:var(--text-sm)}
+#sl-fig .sl-status.opt{border-color:var(--correct);background:var(--correct-bg)}
+#sl-fig .sl-status.out{border-color:var(--wrong);background:var(--wrong-bg)}
+#sl-fig .sl-status.opt b{color:var(--correct)}
+#sl-fig .sl-status.out b{color:var(--wrong)}
+#sl-fig table.t{width:100%;min-width:0}
+#sl-fig tr.hit td{color:var(--muted)}
+#sl-fig .sl-tag{font-size:var(--text-xs);color:var(--muted);white-space:nowrap}
+#sl-fig figcaption p{margin:var(--space-2) 0 0;max-width:var(--measure)}
+@media (max-width:700px){#sl-fig .sl-grid{grid-template-columns:minmax(0,1fr)}#sl-fig svg{max-height:60vh}}
 </style>
 </head>
 <body>
@@ -829,7 +855,143 @@ svg .unused{stroke:var(--muted);stroke-width:1.2;stroke-dasharray:4 4;fill:none}
         <br>• <b>B = (40, 240)</b>: the two lines meet. Multiply the M2 equation by 2 (80x<sub>1</sub> + 20x<sub>2</sub> = 8000) and subtract the M1 equation: 50x<sub>1</sub> = 2000, so x<sub>1</sub> = 40, then 20x<sub>2</sub> = 6000 − 1200, so x<sub>2</sub> = 240.
         <br>The other axis crossings, (200, 0) and (0, 400), are not vertices: (200, 0) breaks M2 (8000 &gt; 4000) and (0, 400) breaks M1 (8000 &gt; 6000).</li>
       <li><b>Understand the gradient.</b> The gradient of z is the vector of its coefficients, <span class="m">∇z = (400, 200)</span>. In plain words: one more unit of P1 adds 400, one more unit of P2 adds 200, so profit grows twice as fast along x<sub>1</sub> as along x<sub>2</sub>, which is the direction (2, 1) of the orange arrow. The lines "z = constant" are perpendicular to this arrow. The course states that z increases when you move perpendicularly to those lines in the same direction as the gradient.</li>
-      <li><b>Slide the line.</b> Start with a profit line such as <span class="m">400x<sub>1</sub> + 200x<sub>2</sub> = 20 000</span> (dashed), and push it in the direction of the gradient. The last vertex of D that it meets gives an optimal solution: here that is B.</li>
+      <li><b>Slide the line.</b> Start with a profit line such as <span class="m">400x<sub>1</sub> + 200x<sub>2</sub> = 20 000</span> (dashed), and push it in the direction of the gradient. The last vertex of D that it meets gives an optimal solution: here that is B.
+        <figure class="fig" id="sl-fig">
+          <div class="sl-grid">
+            <svg id="sl-plot" viewBox="0 0 284 476" role="img" aria-label="Domain OABC with the profit line sliding along the gradient until it last touches D at B"></svg>
+            <div class="sl-side" data-no-save>
+              <div class="aid">max z = 400x₁ + 200x₂<br>30x₁ + 20x₂ ≤ 6000 (M1)<br>40x₁ + 10x₂ ≤ 4000 (M2)<br>x₁, x₂ ≥ 0</div>
+              <div class="sl-z"><span class="tag">Current profit line</span><b id="sl-z">z = 20 000</b></div>
+              <div class="actions"><button class="b chk" id="sl-play" type="button">Play</button><button class="b" id="sl-reset" type="button">Reset</button></div>
+              <label class="tag" for="sl-range">Drag to move the line yourself</label>
+              <input id="sl-range" type="range" min="0" max="80000" step="100" value="20000">
+              <div id="sl-status" class="sl-status" aria-live="polite"></div>
+              <div class="scroll"><table class="t">
+                <thead><tr><th>Vertex</th><th>Point</th><th class="c">z there</th><th></th></tr></thead>
+                <tbody id="sl-vt"></tbody>
+              </table></div>
+            </div>
+          </div>
+          <figcaption>
+            <p>Try it: the red line is every plan earning the same profit z. Press Play and watch it move along the gradient, always at a right angle to itself, until it last touches the domain D.</p>
+            <p><b>The line never turns, it only slides.</b> Every line 400x₁ + 200x₂ = z has the same slope, so changing z just moves it parallel to itself.</p>
+            <p><b>Why perpendicular?</b> Walking <i>along</i> the line, for example by (−1, 2), changes z by 400·(−1) + 200·2 = 0. The gradient ∇z = (400, 200), same direction as (2, 1), is the direction where z grows fastest, and it makes a right angle with the line. The small square on the arrow marks that right angle.</p>
+            <p><b>The rule.</b> Push the line in the direction of the arrow. The thick part of the line is the set of feasible plans with that profit. When the thick part shrinks to a single point, that point is the optimum: B = (40, 240), z* = 64 000.</p>
+            <p>Both axes use the same scale here, so the right angle you see is real. On the course figure the axes are stretched, which is why the angle looks off there.</p>
+          </figcaption>
+        </figure>
+        <script>
+(function(){
+  var NS="http://www.w3.org/2000/svg", svg=document.getElementById("sl-plot");
+  if(!svg) return;
+  var ML=46, MT=14, W=224, H=424;
+  function X(x){return ML+x;} function Y(y){return MT+(H-y);}
+  function el(t,a,p){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);(p||svg).appendChild(e);return e;}
+  function lbl(s,x,y,a){var t=el("text",Object.assign({x:x,y:y},a||{}));t.textContent=s;return t;}
+
+  // grid paper and axes, same scale on both axes so the right angle is real
+  var g0=el("g",{});
+  for(var x=0;x<=200;x+=25) el("line",{x1:X(x),y1:Y(0),x2:X(x),y2:Y(H),stroke:"var(--line)","stroke-width":x%50?0.5:1},g0);
+  for(var y=0;y<=400;y+=25) el("line",{x1:X(0),y1:Y(y),x2:X(W),y2:Y(y),stroke:"var(--line)","stroke-width":y%50?0.5:1},g0);
+  el("line",{x1:X(0),y1:Y(0),x2:X(W),y2:Y(0),class:"ax"},g0);
+  el("line",{x1:X(0),y1:Y(0),x2:X(0),y2:Y(H),class:"ax"},g0);
+  for(x=50;x<=200;x+=50) lbl(String(x),X(x),Y(0)+13,{"text-anchor":"middle"});
+  for(y=100;y<=400;y+=100) lbl(String(y),X(0)-5,Y(y)+3,{"text-anchor":"end"});
+  lbl("x₁",X(W)-2,Y(0)+26,{"text-anchor":"end"}); lbl("x₂",X(0)-30,Y(H)+8);
+
+  // constraint lines and the domain
+  el("line",{x1:X(0),y1:Y(300),x2:X(200),y2:Y(0),class:"ln"});
+  el("line",{x1:X(0),y1:Y(400),x2:X(100),y2:Y(0),class:"ln"});
+  lbl("M1",X(186)+5,Y(21)-2); lbl("M2",X(75)+5,Y(100)+2);
+  el("polygon",{points:[[0,0],[100,0],[40,240],[0,300]].map(function(p){return X(p[0])+","+Y(p[1]);}).join(" "),class:"dom"});
+  lbl("D",X(35),Y(110),{class:"big"});
+
+  // earlier positions, then the level line: dashed across the paper, thick inside D
+  var ghosts=el("g",{});
+  var full=el("line",{stroke:"var(--hi)","stroke-width":1.5,"stroke-dasharray":"5 4"});
+  var seg=el("line",{stroke:"var(--hi)","stroke-width":5,"stroke-linecap":"round"});
+
+  // gradient arrow from the origin along (2, 1)
+  var mk=el("marker",{id:"sl-ah",viewBox:"0 0 10 10",refX:8,refY:5,markerWidth:7,markerHeight:7,orient:"auto-start-reverse"},el("defs",{}));
+  el("path",{d:"M0,0 L10,5 L0,10 z",fill:"var(--hi)"},mk);
+  el("line",{x1:X(0),y1:Y(0),x2:X(170),y2:Y(85),stroke:"var(--hi)","stroke-width":1.6,"marker-end":"url(#sl-ah)",opacity:.55});
+  lbl("∇z = (400, 200)",X(118),Y(85)+18,{class:"ac halo"});
+  var foot=el("circle",{r:4,fill:"var(--hi)"});
+  var sq=el("polyline",{fill:"none",stroke:"var(--hi)","stroke-width":1.2});
+
+  // vertices
+  var V=[["O",0,0],["A",100,0],["C",0,300],["B",40,240]].map(function(v){return {n:v[0],x:v[1],y:v[2],z:400*v[1]+200*v[2]};});
+  var OFF={O:[-12,12],A:[-4,-8],C:[6,-6],B:[8,-6]};
+  var dots=V.map(function(v){
+    var c=el("circle",{cx:X(v.x),cy:Y(v.y),r:4,fill:"var(--surface)",stroke:"var(--fig)","stroke-width":2});
+    lbl(v.n,X(v.x)+OFF[v.n][0],Y(v.y)+OFF[v.n][1],{class:"lab"});return c;});
+
+  // the part of the line p0 + s·d that satisfies every a·x <= b
+  function clip(p0,d,cons){var lo=-1e5,hi=1e5;
+    for(var i=0;i<cons.length;i++){var a1=cons[i][0],a2=cons[i][1],b=cons[i][2];
+      var num=b-(a1*p0[0]+a2*p0[1]),den=a1*d[0]+a2*d[1];
+      if(Math.abs(den)<1e-12){if(num<-1e-9)return null;continue;}
+      var s=num/den; if(den>0)hi=Math.min(hi,s); else lo=Math.max(lo,s);}
+    return lo<=hi+1e-9?[lo,hi]:null;}
+  var BOX=[[-1,0,0],[0,-1,0],[1,0,W],[0,1,H]], DOM=[[-1,0,0],[0,-1,0],[30,20,6000],[40,10,4000]], D=[-1,2];
+  function pt(p,s){return [p[0]+s*D[0],p[1]+s*D[1]];}
+  function setLine(l,a,c){l.setAttribute("x1",X(a[0]));l.setAttribute("y1",Y(a[1]));l.setAttribute("x2",X(c[0]));l.setAttribute("y2",Y(c[1]));}
+
+  var range=document.getElementById("sl-range"), zOut=document.getElementById("sl-z"), st=document.getElementById("sl-status"),
+      vt=document.getElementById("sl-vt"), playBtn=document.getElementById("sl-play");
+  function fmt(n){return Math.round(n).toLocaleString("fr-FR").replace(/[\s\u202f]/g,"\u00a0");}  // never split a number across lines
+
+  function draw(z){
+    var p0=[2*z/1000,z/1000], b=clip(p0,D,BOX), s=clip(p0,D,DOM);
+    if(b){setLine(full,pt(p0,b[0]),pt(p0,b[1]));full.style.display="";}else full.style.display="none";
+    if(s){setLine(seg,pt(p0,s[0]),pt(p0,s[1]));seg.style.display="";}else seg.style.display="none";
+    // foot of the perpendicular and the right-angle mark
+    var inBox=p0[0]<=W&&p0[1]<=H; foot.style.display=sq.style.display=inBox?"":"none";
+    foot.setAttribute("cx",X(p0[0]));foot.setAttribute("cy",Y(p0[1]));
+    if(z>2000){var r5=Math.sqrt(5),u=[-1/r5,2/r5],v=[-2/r5,-1/r5],a=9;
+      var q1=[p0[0]+u[0]*a,p0[1]+u[1]*a],q2=[q1[0]+v[0]*a,q1[1]+v[1]*a],q3=[p0[0]+v[0]*a,p0[1]+v[1]*a];
+      sq.setAttribute("points",[q1,q2,q3].map(function(q){return X(q[0])+","+Y(q[1]);}).join(" "));}
+    else sq.setAttribute("points","");
+    // a faint line every 8 000 below z
+    ghosts.replaceChildren();
+    for(var gz=8000;gz<z-500;gz+=8000){var g=[2*gz/1000,gz/1000],bb=clip(g,D,BOX);if(!bb)continue;
+      var gl=el("line",{stroke:"var(--hi)","stroke-width":1,opacity:.18},ghosts);setLine(gl,pt(g,bb[0]),pt(g,bb[1]));}
+    zOut.textContent="z = "+fmt(z);
+    var opt=Math.abs(z-64000)<1;
+    st.className="sl-status"+(opt?" opt":z>64000?" out":"");
+    if(opt) st.innerHTML="<b>✓ Last contact.</b> The line touches D only at B = (40, 240). Push any further and it leaves D. This is the optimum: z* = 64 000.";
+    else if(z>64000) st.innerHTML="<b>✕ The line has left D.</b> No feasible plan earns "+fmt(z)+". Go back to the last point it touched: B.";
+    else if(z===0) st.innerHTML="<b>Start.</b> z = 0 passes through O only. Press Play to push the line along the arrow.";
+    else st.innerHTML="<b>The line still crosses D.</b> Every plan on the thick part earns "+fmt(z)+". There is room left, so keep pushing along the arrow.";
+    vt.replaceChildren();
+    V.slice().sort(function(a,b){return a.z-b.z;}).forEach(function(v){
+      var tr=document.createElement("tr"), passed=z>v.z+1, here=Math.abs(z-v.z)<1;
+      if(v.n==="B"&&here)tr.className="best"; else if(passed)tr.className="hit";
+      tr.innerHTML="<td><b>"+v.n+"</b></td><td>("+v.x+", "+v.y+")</td><td class=\"c\">"+fmt(v.z)+"</td><td>"+
+        (here?'<span class="sl-tag">line on it</span>':passed?'<span class="sl-tag">passed</span>':"")+"</td>";
+      vt.appendChild(tr);});
+    dots.forEach(function(c,i){var here=Math.abs(z-V[i].z)<1;c.setAttribute("fill",here?"var(--hi)":"var(--surface)");c.setAttribute("r",here?6:4);});
+  }
+
+  var raf=null;
+  function stop(){if(raf){cancelAnimationFrame(raf);raf=null;}playBtn.textContent="Play";}
+  function play(){
+    if(raf){stop();return;}
+    var z=+range.value; if(z>=64000)z=0;
+    var speed=matchMedia("(prefers-reduced-motion: reduce)").matches?40000:12000, last=performance.now();  // z per second
+    playBtn.textContent="Pause";
+    function step(t){z=Math.min(64000,z+speed*(t-last)/1000);last=t;range.value=z;draw(z);
+      if(z<64000)raf=requestAnimationFrame(step);else stop();}
+    raf=requestAnimationFrame(step);
+  }
+  playBtn.addEventListener("click",play);
+  document.getElementById("sl-reset").addEventListener("click",function(){stop();range.value=0;draw(0);});
+  range.addEventListener("input",function(){stop();var z=+range.value;
+    for(var i=0;i<V.length;i++) if(Math.abs(z-V[i].z)<700){z=V[i].z;break;}  // snap onto a vertex
+    draw(z);});
+  draw(20000);
+})();
+        </script></li>
       <li><b>Cross-check with the corner values.</b>
         <div class="scroll"><table class="t grid">
           <tr><th>Vertex</th><th class="c">O (0, 0)</th><th class="c">A (100, 0)</th><th class="c">B (40, 240)</th><th class="c">C (0, 300)</th></tr>
