@@ -7,7 +7,7 @@ The site's name is **Cahier** (`site.json`, logo `assets/logo.svg`, spec in `DES
 I am a master's student (Big Data Analytics, USTHB) in Algeria. Be short, direct and opinionated. Lead with the answer. When I ask for a decision, give a concrete recommendation.
 
 ## Status
-Deployed. Modules in the repo: GBD ch1, OPL ch1 (lesson + practice) and ch2 (PDFs), THOR ch1 (lesson + practice + PDFs, TD sheets in thor/ch1/td), SSAD ch1 (practice only) and ch2-3 (lesson + practice), GP ch1 and PRAVAN ch1-4 (PDFs only, TP sheets in pravan/*/td). VT, ENG (`english`) and CPSI exist as module.json only: the hub hides a module until one of its chapters has a file, but the manage page lists them for uploads. Content changes mostly arrive as server commits from the upload page, so check `git log` for the current state. Do not invent course content.
+Deployed. Modules in the repo: GBD ch1, OPL ch1-2 (lesson + practice + PDFs) and ch3 (simplex method: title only, hidden until it has a file), THOR ch1 (lesson + practice + PDFs, TD sheets in thor/ch1/td), SSAD ch1 (practice only) and ch2-3 (lesson + practice), GP ch1 and PRAVAN ch1-4 (PDFs only, TP sheets in pravan/*/td). VT, ENG (`english`) and CPSI exist as module.json only: the hub hides a module until one of its chapters has a file, but the manage page lists them for uploads. Content changes mostly arrive as server commits from the upload page, so check `git log` for the current state. Do not invent course content.
 
 ## Decisions already made
 - Plain static site, no framework. Remakes are standalone HTML files and stay that way.
