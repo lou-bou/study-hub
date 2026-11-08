@@ -164,6 +164,7 @@ The spec above is the brand kit, with paths adjusted to this repo. These are the
 - Position sync: one position per lesson, the newest wins, labelled with the device that saved it.
 
 **Deliberate differences**
+- Live figures (`figure.fig.live`): animated walk-throughs of a process inside a worked example, as many as the lesson needs. They are lesson content, not interface chrome, so section 7's minimal-motion rule doesn't cover them; they still stop under reduced motion.
 - Loading splash, which section 7 doesn't cover: once per app open on hub pages, the logo assembles itself (pages drop, the tick draws, the ribbon unfurls and sways until the page is ready), then lands on the header logo. About 2 s, still and shorter under `prefers-reduced-motion`. Installed Android apps first show the system's static splash, which no page code can replace.
 - Navigation is Home and Search, plus Manage modules; the phone's bottom nav is Home · Search · Manage modules. The spec's Courses and Practice pages are gone because I didn't use them: Home already lists the courses.
 - Course pages are organized by chapter, each a collapsible section holding its lesson, practice and PDFs, not the spec's Lessons · Practice · PDFs tabs.

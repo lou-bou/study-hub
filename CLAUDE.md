@@ -113,6 +113,7 @@ A 3px amber bar at the top, and `p:read` = `{s, f, m, t, h, n, d, i}`: section i
 - Practice skeleton: same hero with `.prog` progress, `.prob` cards (`.ph` with `.pid` and a `.done` checkbox, `.pq` statement, `<details>` + `.sol`). Auto-checked fields use `.actions` with `.b` buttons, `.mc label.opt` for multiple choice.
 - Written in English with the French term in parentheses next to key terms. At least one example per concept, and redo the examples from the original course. Concise, not dense.
 - Verify every example by running a program before putting it in.
+- Live figures: wherever a lesson has a process worth watching (an algorithm's steps, a line sliding to the optimum), add a `figure.fig.live` from the template's skeleton after the static figure, as many as the lesson needs and none when nothing moves. Rules in REMAKE_BRIEF.md.
 - Practice pages: keep problems simple and show visual aids (alphabet for Caesar, lookup tables) in `.aid` boxes. The goal is to get used to the algorithm, not to compute by hand; exams don't require hand computation.
 - Give every practice field a stable `id` (`q-<problem>-<n>`, `done-<problem>`) and every radio a `value`, so saved answers survive edits. Use `data-no-save` on anything that must not be stored.
 - Put files in `modules/<module>/<chapter>/`, the source PDFs in its `cours/`, add the chapter title to `module.json`, run `python3 build.py`.

@@ -318,6 +318,25 @@ label.chipbox input{position:absolute;opacity:0;pointer-events:none}
 .solution>p,.expl>p{margin:6px 0}
 .expl{color:var(--text-muted)}
 
+/* live figure: a process played step by step (REMAKE_BRIEF.md, "Live figures") */
+.live-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-5);align-items:start}
+figure.fig.live svg{max-width:none;max-height:72vh}
+.live-side{display:grid;gap:var(--space-3);min-width:0}
+.live-side .aid,.live-side .actions{margin-top:0}
+.live-val{display:flex;align-items:baseline;gap:var(--space-2);flex-wrap:wrap}
+.live-val b{font:600 var(--text-xl) var(--font-mono);font-variant-numeric:tabular-nums;color:var(--text)}
+.live input[type=range]{width:100%;margin:0;accent-color:var(--fig)}
+.live-status{min-height:4.4em;padding:var(--space-2) var(--space-3);background:var(--surface-2);border-left:3px solid var(--fig);border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:var(--text-sm)}
+.live-status.ok{border-color:var(--correct);background:var(--correct-bg)}
+.live-status.bad{border-color:var(--wrong);background:var(--wrong-bg)}
+.live-status.ok b{color:var(--correct)} .live-status.bad b{color:var(--wrong)}
+.live table.t{width:100%;min-width:0}
+.live tr.past td{color:var(--text-muted)}
+.live figcaption p{margin:var(--space-2) 0 0;max-width:var(--measure)}
+/* the site zooms pages 125% / 150% on wide screens: keep the whole drawing on screen */
+@media (min-width:1200px){figure.fig.live svg{max-height:58vh}}
+@media (min-width:1500px){figure.fig.live svg{max-height:48vh}}
+
 @media (hover:hover){
   .toggle:hover,.b:hover,label.opt:hover,.prob summary:hover{background:var(--surface-2)}
   .b.chk:hover{background:var(--primary);opacity:.88}
@@ -326,6 +345,8 @@ label.chipbox input{position:absolute;opacity:0;pointer-events:none}
 }
 @media (max-width:820px){
   .hero{grid-template-columns:minmax(0,1fr)}
+  .live-grid{grid-template-columns:minmax(0,1fr)}
+  figure.fig.live svg{max-height:60vh}
   .intro{grid-template-columns:minmax(0,1fr)}
   .how li{flex-direction:column;gap:2px}
   body{padding-top:56px}
@@ -377,6 +398,52 @@ label.chipbox input{position:absolute;opacity:0;pointer-events:none}
   <figure class="fig"><svg viewBox="0 0 300 200" role="img" aria-label="…"></svg><figcaption>Caption.</figcaption></figure>
   <div class="calc"><span class="tag">Worked example</span>
     <ul class="ln"><li>step</li></ul>
+  <!-- live figure: only where the section has a process worth watching (REMAKE_BRIEF.md, "Live figures").
+       Copy it after the static figure, inside the worked example, and replace every "lf1" with a new prefix.
+  <figure class="fig live" id="lf1">
+    <div class="live-grid">
+      <svg id="lf1-svg" viewBox="0 0 300 220" role="img" aria-label="What the animation shows"></svg>
+      <div class="live-side" data-no-save>
+        <div class="live-val"><span class="tag">Step</span><b id="lf1-val">0 / 0</b></div>
+        <div class="actions"><button class="b chk" id="lf1-play" type="button">Play</button><button class="b" id="lf1-step" type="button">Step</button><button class="b" id="lf1-reset" type="button">Reset</button></div>
+        <label class="tag" for="lf1-range">Drag to any step</label>
+        <input id="lf1-range" type="range" min="0" max="0" step="1" value="0">
+        <div class="live-status" id="lf1-status" aria-live="polite"></div>
+        <div class="scroll"><table class="t"><thead><tr><th>…</th></tr></thead><tbody id="lf1-rows"></tbody></table></div>
+      </div>
+    </div>
+    <figcaption><p>What to watch, and why it works.</p></figcaption>
+  </figure>
+  <script>
+  (function(){
+    var $=function(id){return document.getElementById("lf1-"+id);};
+    // every state is computed here from the course's data, never typed in by hand
+    var STEPS=[{text:"Start: …"},{text:"…"},{text:"The answer: …",end:true}];
+    var i=0,timer=null,reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+    function draw(){
+      var s=STEPS[i];
+      // redraw the SVG and the table for step i here
+      $("val").textContent=i+" / "+(STEPS.length-1);
+      $("status").className="live-status"+(s.end?" ok":"");
+      $("status").innerHTML=(s.end?"<b>✓ Done.</b> ":"")+s.text;
+      $("range").value=i;
+    }
+    function stop(){clearInterval(timer);timer=null;$("play").textContent="Play";}
+    function go(n){i=Math.max(0,Math.min(STEPS.length-1,n));draw();if(i===STEPS.length-1)stop();}
+    $("play").addEventListener("click",function(){
+      if(timer){stop();return;}
+      if(i===STEPS.length-1)go(0);  // replay from the start
+      if(reduced){go(STEPS.length-1);return;}
+      $("play").textContent="Pause";timer=setInterval(function(){go(i+1);},900);
+    });
+    $("step").addEventListener("click",function(){stop();go(i+1);});
+    $("reset").addEventListener("click",function(){stop();go(0);});
+    $("range").max=STEPS.length-1;
+    $("range").addEventListener("input",function(){stop();go(+this.value);});
+    draw();
+  })();
+  </script>
+  -->
   </div>
 </section>
 
