@@ -308,6 +308,7 @@ svg .unused{stroke:var(--muted);stroke-width:1.2;stroke-dasharray:4 4;fill:none}
 <div class="part"><h3>A · Setting up</h3><ul><li><a href="#s1"><span class="n">1</span><span>What is a linear program?<small>Definitions and a full first example</small></span></a></li><li><a href="#s2"><span class="n">2</span><span>Modelling<small>Three classic problems</small></span></a></li></ul></div>
 <div class="part"><h3>B · Canonical form and its meaning</h3><ul><li><a href="#s3"><span class="n">3</span><span>Canonical form<small>And how to convert to it</small></span></a></li><li><a href="#s4"><span class="n">4</span><span>Geometric view<small>Half-planes and vertices</small></span></a></li><li><a href="#s5"><span class="n">5</span><span>Economic view<small>What the symbols mean</small></span></a></li><li><a href="#s6"><span class="n">6</span><span>The three assumptions<small>When an LP is valid</small></span></a></li></ul></div>
 <div class="part"><h3>C · Standard form and solving</h3><ul><li><a href="#s7"><span class="n">7</span><span>Standard form<small>Slack variables</small></span></a></li><li><a href="#s8"><span class="n">8</span><span>Matrix form<small>Feasible vs optimal</small></span></a></li><li><a href="#s9"><span class="n">9</span><span>Graphical resolution<small>The workshop problem, solved by drawing</small></span></a></li></ul></div>
+<div class="part"><h3>D · The graphical method in general</h3><ul><li><a href="#s10"><span class="n">10</span><span>Reading the objective lines<small>Iso-value lines, empty and unbounded regions</small></span></a></li><li><a href="#s11"><span class="n">11</span><span>Maximizing<small>The window-frame example</small></span></a></li><li><a href="#s12"><span class="n">12</span><span>Minimizing<small>The mixture example</small></span></a></li></ul></div>
 </nav>
 
 <!-- 1 -->
@@ -1013,6 +1014,509 @@ svg .unused{stroke:var(--muted);stroke-width:1.2;stroke-dasharray:4 4;fill:none}
   </div>
 </section>
 
+
+<section class="sec" id="s10"><div class="sec-h"><span class="num">10</span><h2>Reading the objective lines <span class="fr">(droites d'iso-valeur)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="plain"><span class="tag">In plain words</span><p>Fix the value of z and you get a straight line: every plan on it earns (or costs) exactly that much. Changing the value slides the line without turning it. The arrow made of the objective's coefficients tells you which way z grows, so you know which way to slide.</p></div>
+  <ul class="defs"><li><span class="term"><b class="en">Iso-value line</b> <span class="fr">(droite d'iso-valeur)</span></span><span class="mean">The line <span class="m">a<sub>0</sub>x<sub>1</sub> + b<sub>0</sub>x<sub>2</sub> = p</span>: all plans where z takes the value p. When z is a profit it is called an <b>isoprofit line</b> <span class="fr">(droite d'isoprofit)</span>, when z is a cost an <b>isocost line</b> <span class="fr">(droite d'isocoût)</span>.</span></li><li><span class="term"><b class="en">Direction of increasing z</b> <span class="fr">(sens des z croissants)</span></span><span class="mean">The normal vector <span class="m">n = (a<sub>0</sub>, b<sub>0</sub>)</span> of the iso-value lines, at a right angle to them. Moving along it raises z, moving against it lowers z. It is the gradient of section 9.</span></li><li><span class="term"><b class="en">Feasible region</b> <span class="fr">(région réalisable)</span></span><span class="mean">The region D of the plane where every constraint holds. In economics it is also called the <b>production set</b> <span class="fr">(ensemble de production)</span>.</span></li><li><span class="term"><b class="en">Bounded, unbounded, empty</b> <span class="fr">(bornée, non bornée, vide)</span></span><span class="mean">D is bounded if it fits inside some circle, unbounded if it goes on forever in some direction, and empty if no point satisfies all the constraints at once.</span></li></ul>
+
+  <p>The course writes every two-variable LP in one of two canonical shapes: a maximum with "≤" constraints, or a minimum with "≥" constraints.</p>
+  <div class="eq">(P)  max z = a₀x₁ + b₀x₂          (D)  min z = a₀x₁ + b₀x₂
+       a₁x₁ + b₁x₂ ≤ c₁                    a₁x₁ + b₁x₂ ≥ c₁
+       a₂x₁ + b₂x₂ ≤ c₂                    a₂x₁ + b₂x₂ ≥ c₂
+       …                                   …
+       x₁, x₂ ≥ 0                          x₁, x₂ ≥ 0</div>
+
+  <h3>Which way to slide: slope and intercept</h3>
+  <p>When <span class="m">b<sub>0</sub> ≠ 0</span>, solve the line <span class="m">a<sub>0</sub>x<sub>1</sub> + b<sub>0</sub>x<sub>2</sub> = p</span> for <span class="m">x<sub>2</sub></span>:</p>
+  <div class="eq">x₂ = −(a₀/b₀)·x₁ + p/b₀</div>
+  <p>The slope <span class="m">−a<sub>0</sub>/b<sub>0</sub></span> does not depend on p, so all these lines are parallel. Only the intercept <span class="fr">(ordonnée à l'origine)</span> <span class="m">y<sub>p</sub> = p/b<sub>0</sub></span> changes. The sign of <span class="m">b<sub>0</sub></span> decides which way it moves:</p>
+  <div class="scroll"><table class="t grid">
+    <tr><th>Case</th><th class="c">Lines</th><th class="c">Raising z moves the line</th><th class="c">The maximum is on the line with</th></tr>
+    <tr><td><span class="m">b<sub>0</sub> &gt; 0, a<sub>0</sub> &gt; 0</span></td><td class="c">falling</td><td class="c">up</td><td class="c">the highest intercept</td></tr>
+    <tr><td><span class="m">b<sub>0</sub> &gt; 0, a<sub>0</sub> &lt; 0</span></td><td class="c">rising</td><td class="c">up</td><td class="c">the highest intercept</td></tr>
+    <tr><td><span class="m">b<sub>0</sub> &lt; 0, a<sub>0</sub> &gt; 0</span></td><td class="c">rising</td><td class="c">down</td><td class="c">the lowest intercept</td></tr>
+    <tr><td><span class="m">b<sub>0</sub> &lt; 0, a<sub>0</sub> &lt; 0</span></td><td class="c">falling</td><td class="c">down</td><td class="c">the lowest intercept</td></tr>
+  </table></div>
+  <p>You do not need to learn the four cases: the arrow <span class="m">n = (a<sub>0</sub>, b<sub>0</sub>)</span> covers them all. To maximize, slide along it; to minimize, slide against it. The answer is the last line still touching D. For a minimum, the lowest intercept and the highest swap roles.</p>
+          <figure class="fig"><svg viewBox="0 0 420 210" role="img" aria-label="Two families of parallel objective lines and the arrow n showing where z grows: when b0 is positive z grows upward, when b0 is negative it grows downward">
+          <defs><marker id="m10" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--hi)"/></marker></defs>
+          <line class="ax" x1="26" y1="142" x2="186" y2="142"/>
+          <line class="ax" x1="26" y1="142" x2="26" y2="22"/>
+          <text x="66" y="157" class="mu" text-anchor="middle">2</text>
+          <text x="106" y="157" class="mu" text-anchor="middle">4</text>
+          <text x="146" y="157" class="mu" text-anchor="middle">6</text>
+          <text x="20" y="106" class="mu" text-anchor="end">2</text>
+          <text x="20" y="66" class="mu" text-anchor="end">4</text>
+          <text x="190" y="146" class="mu">x₁</text>
+          <text x="20" y="26" class="mu" text-anchor="end">x₂</text>
+          <line class="objd" x1="26" y1="102" x2="106" y2="142"/>
+          <text x="90" y="128" class="mu halo" text-anchor="middle">z = 4</text>
+          <line class="objd" x1="26" y1="62" x2="186" y2="142"/>
+          <text x="154" y="120" class="mu halo" text-anchor="middle">z = 8</text>
+          <line class="obj" x1="26" y1="22" x2="186" y2="102"/>
+          <text x="74" y="40" class="ac halo" text-anchor="middle">z = 12</text>
+          <line x1="106" y1="102" x2="123.89" y2="66.22" stroke="var(--hi)" stroke-width="2" marker-end="url(#m10)"/>
+          <text x="127.89" y="70.22" class="ac halo">n = (1, 2)</text>
+          <text x="26" y="176" class="halo">z = x₁ + 2x₂  (b₀ &gt; 0)</text>
+          <line class="ax" x1="238" y1="142" x2="398" y2="142"/>
+          <line class="ax" x1="238" y1="142" x2="238" y2="22"/>
+          <text x="278" y="157" class="mu" text-anchor="middle">2</text>
+          <text x="318" y="157" class="mu" text-anchor="middle">4</text>
+          <text x="358" y="157" class="mu" text-anchor="middle">6</text>
+          <text x="232" y="106" class="mu" text-anchor="end">2</text>
+          <text x="232" y="66" class="mu" text-anchor="end">4</text>
+          <text x="402" y="146" class="mu">x₁</text>
+          <text x="232" y="26" class="mu" text-anchor="end">x₂</text>
+          <line class="objd" x1="238" y1="62" x2="318" y2="22"/>
+          <text x="302" y="24" class="mu halo" text-anchor="middle">z = −8</text>
+          <line class="objd" x1="238" y1="102" x2="398" y2="22"/>
+          <text x="366" y="32" class="mu halo" text-anchor="middle">z = −4</text>
+          <line class="obj" x1="238" y1="142" x2="398" y2="62"/>
+          <text x="286" y="112" class="ac halo" text-anchor="middle">z = 0</text>
+          <line x1="318" y1="62" x2="335.89" y2="97.78" stroke="var(--hi)" stroke-width="2" marker-end="url(#m10)"/>
+          <text x="339.89" y="101.78" class="ac halo">n = (1, −2)</text>
+          <text x="238" y="176" class="halo">z = x₁ − 2x₂  (b₀ &lt; 0)</text>
+          </svg><figcaption>Left: raising z moves the line up (b₀ &gt; 0). Right: raising z moves it down (b₀ &lt; 0). Either way the arrow n = (a₀, b₀) points to where z grows, at a right angle to the lines.</figcaption></figure>
+
+  <div class="calc"><span class="tag">Worked example · when D is empty or unbounded</span>
+    <p>The course warns that D is "sometimes empty or unbounded". Two small cases show what that means for the answer.</p>
+    <ol>
+      <li><b>Empty.</b> The constraints <span class="m">x<sub>1</sub> + x<sub>2</sub> ≤ 2</span> and <span class="m">x<sub>1</sub> + x<sub>2</sub> ≥ 4</span> ask for <span class="m">4 ≤ x<sub>1</sub> + x<sub>2</sub> ≤ 2</span>, which is impossible. D is empty: the LP has no feasible solution, so there is nothing to optimize.</li>
+      <li><b>Unbounded.</b> Take <span class="m">x<sub>1</sub> − x<sub>2</sub> ≤ 1</span>, <span class="m">−x<sub>1</sub> + x<sub>2</sub> ≤ 1</span>, <span class="m">x<sub>1</sub>, x<sub>2</sub> ≥ 0</span>. Its corners are (0, 0), (1, 0) and (0, 1), but the strip between the two lines climbs forever: (10, 10), (100, 100) and (1000, 1000) all satisfy every constraint.
+          <figure class="fig" style="--maxw:300px"><svg viewBox="0 0 220 210" role="img" aria-label="An unbounded feasible region: a strip along the diagonal that never ends">
+          <polygon class="dom" points="30,174 50,174 190,34 190,14 170,14 30,154"/>
+          <line class="ln" x1="50" y1="174" x2="190" y2="34"/>
+          <line class="ln" x1="30" y1="154" x2="170" y2="14"/>
+          <line class="ax" x1="30" y1="174" x2="190" y2="174"/>
+          <line class="ax" x1="30" y1="174" x2="30" y2="14"/>
+          <text x="70" y="189" class="mu" text-anchor="middle">2</text>
+          <text x="110" y="189" class="mu" text-anchor="middle">4</text>
+          <text x="150" y="189" class="mu" text-anchor="middle">6</text>
+          <text x="24" y="138" class="mu" text-anchor="end">2</text>
+          <text x="24" y="98" class="mu" text-anchor="end">4</text>
+          <text x="24" y="58" class="mu" text-anchor="end">6</text>
+          <text x="194" y="178" class="mu">x₁</text>
+          <text x="24" y="18" class="mu" text-anchor="end">x₂</text>
+          <text x="122" y="122" class="mu halo">x₁ − x₂ = 1</text>
+          <text x="38" y="66" class="mu halo">−x₁ + x₂ = 1</text>
+          <text x="122" y="90" class="halo">D goes on forever</text>
+          </svg><figcaption>The strip between the two lines climbs without end, so D is unbounded (<i>non bornée</i>).</figcaption></figure></li>
+      <li><b>Maximizing can fail.</b> With <span class="m">max z = x<sub>1</sub> + x<sub>2</sub></span>, those three points give z = 20, 200 and 2000, and nothing stops z from growing. The LP has no optimal solution: z is unbounded.</li>
+      <li><b>Minimizing can still work.</b> With <span class="m">min z = x<sub>1</sub> + x<sub>2</sub></span> on the same D, the arrow (1, 1) points up and to the right, so slide the line down and to the left. The last line touching D passes through the corner (0, 0): <span class="res">z* = 0</span>. An unbounded region does not always mean an unbounded LP.</li>
+    </ol>
+  </div>
+</section>
+
+<section class="sec" id="s11"><div class="sec-h"><span class="num">11</span><h2>Course example: maximizing <span class="fr">(problème de maximisation)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="plain"><span class="tag">In plain words</span><p>The method of section 9 on the course's second full example. Draw the constraints one at a time, each one cutting away the side of its line where it fails. Then push the isoprofit line away from the origin until it is about to leave D.</p></div>
+
+  <div class="calc"><span class="tag">Course example, step by step · the window frames</span>
+    <p>A company plans to make two new window frames <span class="fr">(châssis)</span>: one in aluminium (type 1) and one in wood (type 2). The aluminium frame passes through workshop 1, where its frame is made, and workshop 3, where the glass is fitted. The wooden one passes through workshop 2, then workshop 3. Hours per frame, weekly capacity and profit per frame (dh = dirhams):</p>
+    <div class="scroll"><table class="t grid">
+      <tr><th></th><th class="c">Type 1 (aluminium)</th><th class="c">Type 2 (wood)</th><th class="c">Hours available per week</th></tr>
+      <tr><td>Workshop 1 <span class="fr">(atelier 1)</span></td><td class="c">1</td><td class="c">0</td><td class="c">4</td></tr>
+      <tr><td>Workshop 2</td><td class="c">0</td><td class="c">2</td><td class="c">12</td></tr>
+      <tr><td>Workshop 3</td><td class="c">3</td><td class="c">2</td><td class="c">18</td></tr>
+      <tr><td>Profit per frame</td><td class="c">300 dh</td><td class="c">500 dh</td><td class="c"></td></tr>
+    </table></div>
+    <ol>
+      <li><b>Name the unknowns.</b> <span class="m">x<sub>1</sub></span> and <span class="m">x<sub>2</sub></span>, the number of frames of type 1 and type 2 made per week. Each pair <span class="m">(x<sub>1</sub>, x<sub>2</sub>)</span> is a point of the plane and also a production plan.</li>
+      <li><b>Write the model.</b>
+        <div class="eq">(P)  max z = 300x₁ + 500x₂
+     x₁ ≤ 4              (A1)  workshop 1
+     2x₂ ≤ 12            (A2)  workshop 2
+     3x₁ + 2x₂ ≤ 18      (A3)  workshop 3
+     x₁ ≥ 0,  x₂ ≥ 0</div></li>
+      <li><b>Draw the constraints one at a time.</b> <span class="m">x<sub>1</sub>, x<sub>2</sub> ≥ 0</span> keep the first quadrant. (A1) becomes the vertical line (1) <span class="m">x<sub>1</sub> = 4</span>; the origin gives 0 ≤ 4, so keep its side, the left. (A2) becomes the horizontal line (2) <span class="m">x<sub>2</sub> = 6</span>, through (0, 6) and (8, 6); keep the side below. (A3) becomes line (3) <span class="m">3x<sub>1</sub> + 2x<sub>2</sub> = 18</span>, through (6, 0) and (0, 9); 0 ≤ 18, so keep the side below. Each time: two points with a zero coordinate, the line, then the origin test.</li>
+      <li><b>Read the corners of D.</b> What survives every cut is D, with five corners: (0, 0), (4, 0), (4, 3), (2, 6) and (0, 6). On line (1), put <span class="m">x<sub>1</sub> = 4</span> into (3): 12 + 2x<sub>2</sub> = 18, so x<sub>2</sub> = 3. On line (2), put <span class="m">x<sub>2</sub> = 6</span> into (3): 3x<sub>1</sub> + 12 = 18, so x<sub>1</sub> = 2.</li>
+      <li><b>Draw two isoprofit lines.</b> <span class="m">300x<sub>1</sub> + 500x<sub>2</sub> = 1000</span> crosses the axes at (3.33, 0) and (0, 2); <span class="m">= 2000</span> at (6.67, 0) and (0, 4). The second is further from the origin, so z grows up and to the right, along (300, 500).</li>
+      <li><b>Push to the last contact.</b> The highest isoprofit line still touching D passes through the corner (2, 6), where <span class="m">z = 300·2 + 500·6 = 3600</span>.
+          <figure class="fig"><svg viewBox="0 0 380 350" role="img" aria-label="Feasible region of the window-frame problem, isoprofit lines z = 1000, 2000 and 3600, optimum at (2, 6)">
+          <polygon class="dom" points="40,312 160,312 160,222 100,132 40,132"/>
+          <line class="ln" x1="160" y1="312" x2="160" y2="12"/>
+          <text x="164.5" y="33" class="mu halo">(1)</text>
+          <line class="ln" x1="40" y1="132" x2="340" y2="132"/>
+          <text x="298" y="124.5" class="mu halo">(2)</text>
+          <line class="ln" x1="40" y1="42" x2="220" y2="312"/>
+          <text x="55" y="45" class="mu halo">(3)</text>
+          <line class="objd" x1="40" y1="252" x2="140" y2="312"/>
+          <text x="136" y="306" class="mu halo" text-anchor="end">z = 1000</text>
+          <line class="objd" x1="40" y1="192" x2="240" y2="312"/>
+          <text x="236" y="306" class="mu halo" text-anchor="end">z = 2000</text>
+          <line class="obj" x1="40" y1="96" x2="340" y2="276"/>
+          <text x="336" y="270" class="ac halo" text-anchor="end">z = 3600</text>
+          <line class="ax" x1="40" y1="312" x2="340" y2="312"/>
+          <line class="ax" x1="40" y1="312" x2="40" y2="12"/>
+          <text x="100" y="327" class="mu" text-anchor="middle">2</text>
+          <text x="160" y="327" class="mu" text-anchor="middle">4</text>
+          <text x="220" y="327" class="mu" text-anchor="middle">6</text>
+          <text x="280" y="327" class="mu" text-anchor="middle">8</text>
+          <text x="34" y="256" class="mu" text-anchor="end">2</text>
+          <text x="34" y="196" class="mu" text-anchor="end">4</text>
+          <text x="34" y="136" class="mu" text-anchor="end">6</text>
+          <text x="34" y="76" class="mu" text-anchor="end">8</text>
+          <text x="344" y="316" class="mu">x₁</text>
+          <text x="34" y="16" class="mu" text-anchor="end">x₂</text>
+          <circle class="pt" cx="100" cy="132" r="6"/>
+          <text x="109" y="123" class="ac halo">(2, 6)</text>
+          <text x="76" y="246" class="halo">D</text>
+          </svg><figcaption>D is cut out by lines (1) x₁ = 4, (2) x₂ = 6 and (3) 3x₁ + 2x₂ = 18. Dashed: the isoprofit lines z = 1000 and 2000. Solid: z = 3600, the highest one still touching D, at (2, 6).</figcaption></figure>
+          
+        <figure class="fig live" id="lf1">
+          <div class="live-grid">
+            <svg id="lf1-svg" viewBox="0 0 380 350" role="img" aria-label="The window-frame region built one constraint at a time, then isoprofit lines pushed to the optimum"></svg>
+            <div class="live-side" data-no-save>
+              <div class="live-val"><span class="tag">Step</span><b id="lf1-val">0 / 0</b></div>
+              <div class="actions"><button class="b chk" id="lf1-play" type="button">Play</button><button class="b" id="lf1-step" type="button">Step</button><button class="b" id="lf1-reset" type="button">Reset</button></div>
+              <label class="tag" for="lf1-range">Drag to any step</label>
+              <input id="lf1-range" type="range" min="0" max="0" step="1" value="0">
+              <div class="live-status" id="lf1-status" aria-live="polite"></div>
+              <div class="scroll"><table class="t"><thead><tr><th>Corner</th><th class="c">z = 300x₁ + 500x₂</th><th></th></tr></thead><tbody id="lf1-rows"></tbody></table></div>
+            </div>
+          </div>
+          <figcaption><p>Step through the course's method: each constraint removes one side of its line, what is left is D, then the isoprofit lines move away from the origin until the last one still touching D.</p></figcaption>
+        </figure>
+        <script>
+(function(){
+  var NS="http://www.w3.org/2000/svg", svg=document.getElementById("lf1-svg");
+  if(!svg) return;
+  var $=function(id){return document.getElementById("lf1-"+id);};
+  var S=30, N=10, ML=40, MT=12;
+  function X(x){return ML+S*x;} function Y(y){return MT+S*(N-y);}
+  function el(t,a,p){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);(p||svg).appendChild(e);return e;}
+  function txt(s,x,y,a,p){var t=el("text",Object.assign({x:x,y:y},a||{}),p);t.textContent=s;return t;}
+
+  // the course's data: constraints a·x1 + b·x2 <= c, and the profit
+  var CONS=[
+    {name:"(A1)",a:1,b:0,c:4,line:"x₁ = 4",lab:[4.15,9.3]},
+    {name:"(A2)",a:0,b:2,c:12,line:"x₂ = 6",lab:[8.6,6.25]},
+    {name:"(A3)",a:3,b:2,c:18,line:"3x₁ + 2x₂ = 18",lab:[0.5,8.9]}];
+  var P=[300,500], ISO=[1000,2000];
+
+  // keep the part of a polygon where a·x + b·y <= c (Sutherland-Hodgman)
+  function clip(poly,a,b,c){
+    var out=[],e=1e-9;
+    for(var i=0;i<poly.length;i++){
+      var p=poly[i],q=poly[(i+1)%poly.length],fp=a*p[0]+b*p[1]-c,fq=a*q[0]+b*q[1]-c;
+      if(fp<=e) out.push(p);
+      if((fp<-e&&fq>e)||(fp>e&&fq<-e)){var t=fp/(fp-fq);out.push([p[0]+t*(q[0]-p[0]),p[1]+t*(q[1]-p[1])]);}
+    }
+    return out;
+  }
+  function region(k){var poly=[[0,0],[N,0],[N,N],[0,N]];for(var i=0;i<k;i++)poly=clip(poly,CONS[i].a,CONS[i].b,CONS[i].c);return poly;}
+  function z(p){return P[0]*p[0]+P[1]*p[1];}
+  function r2(v){return Math.round(v*100)/100;}
+  // the part of the line a·x + b·y = c inside a convex polygon
+  function chord(a,b,c,poly){
+    var pts=[];
+    for(var i=0;i<poly.length;i++){
+      var p=poly[i],q=poly[(i+1)%poly.length],fp=a*p[0]+b*p[1]-c,fq=a*q[0]+b*q[1]-c;
+      if(Math.abs(fp)<1e-9) pts.push(p);
+      else if(fp*fq<0){var t=fp/(fp-fq);pts.push([p[0]+t*(q[0]-p[0]),p[1]+t*(q[1]-p[1])]);}
+    }
+    if(!pts.length) return null;
+    pts.sort(function(u,v){return u[0]-v[0]||u[1]-v[1];});
+    return [pts[0],pts[pts.length-1]];
+  }
+  var BOX=[[0,0],[N,0],[N,N],[0,N]];
+
+  // D, its corners (rounded to kill float noise) and the best corner
+  var D=region(CONS.length).map(function(p){return [r2(p[0]),r2(p[1])];});
+  var best=D.reduce(function(m,p){return z(p)>z(m)?p:m;},D[0]), ZSTAR=z(best);
+
+  var STEPS=[{k:0,iso:[],text:"Start: x₁ ≥ 0 and x₂ ≥ 0 keep only the first quadrant."}];
+  CONS.forEach(function(c,i){
+    STEPS.push({k:i+1,iso:[],text:"<b>"+c.name+"</b> Draw "+c.line+". The origin satisfies it (0 ≤ "+c.c+"), so keep the origin side and cut the other side away."+
+      (i===CONS.length-1?" What is left is D, with "+D.length+" corners.":"")});
+  });
+  ISO.forEach(function(p,i){
+    STEPS.push({k:CONS.length,iso:ISO.slice(0,i+1),text:"Isoprofit line z = "+p+": every plan on the thick part earns "+p+" dh."+
+      (i===0?" Draw a second one to see which way z grows.":" It lies further from the origin than z = "+ISO[i-1]+", so z grows up and to the right.")});
+  });
+  STEPS.push({k:CONS.length,iso:ISO.concat([ZSTAR]),end:true,
+    text:"Optimum. The highest isoprofit line still touching D meets it only at ("+best[0]+", "+best[1]+"): z* = "+ZSTAR+" dh."});
+
+  // the paper: grid, axes, ticks
+  var paper=el("g",{});
+  for(var t=0;t<=N;t++){el("line",{x1:X(t),y1:Y(0),x2:X(t),y2:Y(N),stroke:"var(--line)","stroke-width":t%2?0.4:0.8},paper);
+    el("line",{x1:X(0),y1:Y(t),x2:X(N),y2:Y(t),stroke:"var(--line)","stroke-width":t%2?0.4:0.8},paper);}
+  el("line",{class:"ax",x1:X(0),y1:Y(0),x2:X(N),y2:Y(0)},paper); el("line",{class:"ax",x1:X(0),y1:Y(0),x2:X(0),y2:Y(N)},paper);
+  [2,4,6,8].forEach(function(v){txt(v,X(v),Y(0)+15,{class:"mu","text-anchor":"middle"},paper);txt(v,X(0)-6,Y(v)+4,{class:"mu","text-anchor":"end"},paper);});
+  txt("x₁",X(N)+4,Y(0)+4,{class:"mu"},paper); txt("x₂",X(0)+6,Y(N)+4,{class:"mu"},paper);
+  var layer=el("g",{});
+
+  function seg(pq,a){if(!pq)return;el("line",Object.assign({x1:X(pq[0][0]),y1:Y(pq[0][1]),x2:X(pq[1][0]),y2:Y(pq[1][1])},a),layer);}
+  var i=0,timer=null,reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function draw(){
+    var s=STEPS[i],poly=region(s.k);
+    layer.replaceChildren();
+    el("polygon",{class:"dom",points:poly.map(function(p){return X(p[0])+","+Y(p[1]);}).join(" ")},layer);
+    for(var c=0;c<s.k;c++){var C=CONS[c];seg(chord(C.a,C.b,C.c,BOX),{class:"ln"});txt(C.name,X(C.lab[0]),Y(C.lab[1]),{class:"mu halo"},layer);}
+    s.iso.forEach(function(p,j){
+      var last=j===s.iso.length-1;
+      seg(chord(P[0],P[1],p,BOX),{stroke:"var(--hi)","stroke-width":1.4,"stroke-dasharray":"5 4",opacity:last?1:.35});
+      if(last) seg(chord(P[0],P[1],p,poly),{stroke:"var(--hi)","stroke-width":5,"stroke-linecap":"round"});
+    });
+    if(s.k===CONS.length) D.forEach(function(p){
+      var hit=s.end&&p[0]===best[0]&&p[1]===best[1];
+      el("circle",{cx:X(p[0]),cy:Y(p[1]),r:hit?6:4,fill:hit?"var(--hi)":"var(--surface)",stroke:hit?"var(--bg)":"var(--fig)","stroke-width":2},layer);
+    });
+    if(s.k===CONS.length) txt("D",X(1.2),Y(2.2),{class:"halo"},layer);
+    $("val").textContent=i+" / "+(STEPS.length-1);
+    $("status").className="live-status"+(s.end?" ok":"");
+    $("status").innerHTML=(s.end?"<b>✓ "+s.text.replace("Optimum.","Optimum.</b>"):s.text);
+    $("range").value=i;
+    var rows=$("rows"); rows.replaceChildren();
+    if(s.k<CONS.length){var tr=document.createElement("tr");tr.innerHTML='<td colspan="3">The corners appear once every constraint is drawn.</td>';rows.appendChild(tr);}
+    else D.slice().sort(function(u,v){return z(u)-z(v);}).forEach(function(p){
+      var tr=document.createElement("tr"),top=s.iso.length?s.iso[s.iso.length-1]:-1,hit=s.end&&z(p)===ZSTAR;
+      if(hit) tr.className="best"; else if(z(p)<top) tr.className="past";
+      tr.innerHTML="<td>("+p[0]+", "+p[1]+")</td><td class=\"c\">"+z(p)+"</td><td>"+(hit?"optimum":z(p)<top?"passed":"")+"</td>";
+      rows.appendChild(tr);
+    });
+  }
+  function stop(){clearInterval(timer);timer=null;$("play").textContent="Play";}
+  function go(k){i=Math.max(0,Math.min(STEPS.length-1,k));draw();if(i===STEPS.length-1)stop();}
+  $("play").addEventListener("click",function(){
+    if(timer){stop();return;}
+    if(i===STEPS.length-1)go(0);  // replay from the start
+    if(reduced){go(STEPS.length-1);return;}
+    $("play").textContent="Pause";timer=setInterval(function(){go(i+1);},1100);
+  });
+  $("step").addEventListener("click",function(){stop();go(i+1);});
+  $("reset").addEventListener("click",function(){stop();go(0);});
+  $("range").max=STEPS.length-1;
+  $("range").addEventListener("input",function(){stop();go(+this.value);});
+  draw();
+})();
+        </script></li>
+      <li><b>Cross-check with the corners.</b>
+        <div class="scroll"><table class="t grid">
+          <tr><th>Corner</th><th class="c">(0, 0)</th><th class="c">(4, 0)</th><th class="c">(4, 3)</th><th class="c">(2, 6)</th><th class="c">(0, 6)</th></tr>
+          <tr><td>z = 300x<sub>1</sub> + 500x<sub>2</sub></td><td class="c">0</td><td class="c">1200</td><td class="c">2700</td><td class="c"><b>3600</b></td><td class="c">3000</td></tr>
+        </table></div></li>
+      <li><b>Answer.</b> One optimal plan: <span class="res">x<sub>1</sub>* = 2, x<sub>2</sub>* = 6, z* = 3600 dh</span>. Make 2 aluminium and 6 wooden frames a week. Workshops 2 and 3 are used to the full (12 of 12 hours, 18 of 18), while workshop 1 uses only 2 of its 4 hours. The course says workshops 1 and 2; see the notes.</li>
+    </ol>
+  </div>
+
+  <div class="calc"><span class="tag">Worked example · the same workshops when b₀ &lt; 0</span>
+    <p>My own variant, to see the case of section 10 where the intercept moves the other way: keep D but take <span class="m">max z = 2x<sub>1</sub> − x<sub>2</sub></span>.</p>
+    <ol>
+      <li><b>Write the lines.</b> <span class="m">2x<sub>1</sub> − x<sub>2</sub> = p</span> gives <span class="m">x<sub>2</sub> = 2x<sub>1</sub> − p</span>. Here <span class="m">b<sub>0</sub> = −1 &lt; 0</span>: raising p <i>lowers</i> the line, so the maximum is on the lowest line still touching D.</li>
+      <li><b>Follow the arrow.</b> <span class="m">n = (2, −1)</span> points right and slightly down. The last corner of D in that direction is (4, 0).</li>
+      <li><b>Check the corners.</b> (0, 0) → 0, (4, 0) → 8, (4, 3) → 5, (2, 6) → −2, (0, 6) → −6. <span class="res">z* = 8 at (4, 0)</span>.</li>
+    </ol>
+  </div>
+</section>
+
+<section class="sec" id="s12"><div class="sec-h"><span class="num">12</span><h2>Course example: minimizing <span class="fr">(problème de minimisation)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="plain"><span class="tag">In plain words</span><p>The drawing is the same, with two differences. Needs are often "at least" constraints (≥), so the origin is usually <i>outside</i> D. And you push the line toward the origin instead of away from it: the lowest isocost line still touching D gives the minimum.</p></div>
+
+  <div class="calc"><span class="tag">Course example, step by step · the mixtures</span>
+    <p>A company needs at least 14 kg of raw material A, 12 kg of B and 18 kg of C. It can only buy two mixtures <span class="fr">(mélanges)</span>, X and Y, and at most 14 kg of X and 16 kg of Y (as in the course's model; see the notes):</p>
+    <div class="scroll"><table class="t grid">
+      <tr><th>Per kg bought</th><th class="c">A</th><th class="c">B</th><th class="c">C</th><th class="c">Price</th></tr>
+      <tr><td>Mixture X</td><td class="c">2 kg</td><td class="c">1 kg</td><td class="c">1 kg</td><td class="c">20 dh</td></tr>
+      <tr><td>Mixture Y</td><td class="c">1 kg</td><td class="c">1 kg</td><td class="c">3 kg</td><td class="c">40 dh</td></tr>
+      <tr><td>Needed (at least)</td><td class="c">14 kg</td><td class="c">12 kg</td><td class="c">18 kg</td><td class="c"></td></tr>
+    </table></div>
+    <ol>
+      <li><b>Write the model.</b> <span class="m">x<sub>1</sub></span> and <span class="m">x<sub>2</sub></span> are the amounts of X and Y bought.
+        <div class="eq">(P)  min z = 20x₁ + 40x₂     (O)
+     2x₁ + x₂ ≥ 14            (A)
+     x₁ + x₂ ≥ 12             (B)
+     x₁ + 3x₂ ≥ 18            (C)
+     x₁ ≤ 14                  (L)
+     x₂ ≤ 16                  (K)
+     x₁, x₂ ≥ 0</div>
+        (A), (B) and (C) are "≥" because the needs are minimums: buying more is allowed.</li>
+      <li><b>Pick the sides.</b> Test the origin: 0 ≥ 14, 0 ≥ 12 and 0 ≥ 18 are false, so keep the side <i>away</i> from the origin for (A), (B) and (C). For (L) and (K), 0 ≤ 14 and 0 ≤ 16 hold, so keep the origin side. The origin itself is not feasible.</li>
+      <li><b>Read the corners of D = ABCDEF.</b>
+        <br>• <b>A = (14, 4/3)</b>: (L) meets (C), 14 + 3x<sub>2</sub> = 18.
+        <br>• <b>B = (9, 3)</b>: (B) meets (C). Subtract: 2x<sub>2</sub> = 6, so x<sub>2</sub> = 3 and x<sub>1</sub> = 9.
+        <br>• <b>C = (2, 10)</b>: (A) meets (B). Subtract: x<sub>1</sub> = 2, then x<sub>2</sub> = 10.
+        <br>• <b>D = (0, 14)</b>: (A) meets the x<sub>2</sub>-axis.
+        <br>• <b>E = (0, 16)</b> and <b>F = (14, 16)</b>: (K) meets the x<sub>2</sub>-axis and (L).</li>
+      <li><b>Slide toward the origin.</b> z grows along (20, 40), up and to the right, so to minimize push the isocost line down and to the left. z = 440 passes through C. The lowest line still touching D is z = 300, through B; any lower and it leaves D.
+          <figure class="fig"><svg viewBox="0 0 400 390" role="img" aria-label="Feasible region ABCDEF of the mixture problem, isocost lines z = 440 and z = 300, minimum at B (9, 3)">
+          <polygon class="dom" points="320,325.33 220,292 80,152 40,72 40,32 320,32"/>
+          <line class="ln" x1="40" y1="72" x2="180" y2="352"/>
+          <text x="178" y="334" class="mu halo">(A)</text>
+          <line class="ln" x1="40" y1="112" x2="280" y2="352"/>
+          <text x="264" y="342" class="mu halo">(B)</text>
+          <line class="ln" x1="40" y1="232" x2="360" y2="338.67"/>
+          <text x="340" y="320" class="mu halo">(C)</text>
+          <line class="ln" x1="320" y1="352" x2="320" y2="12"/>
+          <text x="324" y="20" class="mu halo">(L)</text>
+          <line class="ln" x1="40" y1="32" x2="360" y2="32"/>
+          <text x="80" y="26" class="mu halo">(K)</text>
+          <line class="objd" x1="40" y1="132" x2="360" y2="292"/>
+          <text x="46" y="124" class="mu halo">z = 440</text>
+          <line class="obj" x1="40" y1="202" x2="340" y2="352"/>
+          <text x="46" y="194" class="ac halo">z = 300</text>
+          <line class="ax" x1="40" y1="352" x2="360" y2="352"/>
+          <line class="ax" x1="40" y1="352" x2="40" y2="12"/>
+          <text x="120" y="367" class="mu" text-anchor="middle">4</text>
+          <text x="200" y="367" class="mu" text-anchor="middle">8</text>
+          <text x="280" y="367" class="mu" text-anchor="middle">12</text>
+          <text x="360" y="367" class="mu" text-anchor="middle">16</text>
+          <text x="34" y="276" class="mu" text-anchor="end">4</text>
+          <text x="34" y="196" class="mu" text-anchor="end">8</text>
+          <text x="34" y="116" class="mu" text-anchor="end">12</text>
+          <text x="34" y="36" class="mu" text-anchor="end">16</text>
+          <text x="364" y="356" class="mu">x₁</text>
+          <text x="34" y="16" class="mu" text-anchor="end">x₂</text>
+          <circle class="pt2" cx="320" cy="325.33" r="4"/>
+          <text x="328" y="339.33" class="halo">A</text>
+          <circle class="pt" cx="220" cy="292" r="6"/>
+          <text x="216" y="310" class="ac halo">B</text>
+          <circle class="pt2" cx="80" cy="152" r="4"/>
+          <text x="88" y="156" class="halo">C</text>
+          <circle class="pt2" cx="40" cy="72" r="4"/>
+          <text x="48" y="76" class="halo">D</text>
+          <circle class="pt2" cx="40" cy="32" r="4"/>
+          <text x="48" y="46" class="halo">E</text>
+          <circle class="pt2" cx="320" cy="32" r="4"/>
+          <text x="304" y="48" class="halo">F</text>
+          <text x="190" y="152" class="halo">D</text>
+          </svg><figcaption>The region ABCDEF (shaded) lies away from the origin: (A), (B) and (C) are "≥" constraints. Dashed: z = 440 through C. Solid: z = 300, the lowest isocost line still touching D, at B = (9, 3).</figcaption></figure>
+          
+        <figure class="fig live" id="lf2">
+          <div class="live-grid">
+            <svg id="lf2-svg" viewBox="0 0 400 390" role="img" aria-label="The isocost line of the mixture problem pushed toward the origin until it last touches the region"></svg>
+            <div class="live-side" data-no-save>
+              <div class="live-val"><span class="tag">Current isocost line</span><b id="lf2-val">z = 700</b></div>
+              <div class="actions"><button class="b chk" id="lf2-play" type="button">Play</button><button class="b" id="lf2-reset" type="button">Reset</button><button class="b" id="lf2-price" type="button" aria-pressed="false">Price of X: 20 dh</button></div>
+              <label class="tag" for="lf2-range">Drag to move the line yourself</label>
+              <input id="lf2-range" type="range" min="0" max="1000" step="5" value="700">
+              <div class="live-status" id="lf2-status" aria-live="polite"></div>
+              <div class="scroll"><table class="t"><thead><tr><th>Corner</th><th>Point</th><th class="c">z there</th><th></th></tr></thead><tbody id="lf2-rows"></tbody></table></div>
+            </div>
+          </div>
+          <figcaption><p>To minimize, slide the line <i>against</i> the arrow, toward the origin. Switch the price of X to 40 dh: the lines become parallel to (B) and the last contact is the whole edge [B, C].</p></figcaption>
+        </figure>
+        <script>
+(function(){
+  var NS="http://www.w3.org/2000/svg", svg=document.getElementById("lf2-svg");
+  if(!svg) return;
+  var $=function(id){return document.getElementById("lf2-"+id);};
+  var S=20, W=16, H=17, ML=40, MT=12;
+  function X(x){return ML+S*x;} function Y(y){return MT+S*(H-y);}
+  function el(t,a,p){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);(p||svg).appendChild(e);return e;}
+  function txt(s,x,y,a,p){var t=el("text",Object.assign({x:x,y:y},a||{}),p);t.textContent=s;return t;}
+
+  // the course's data, all written as a·x1 + b·x2 <= c
+  var CONS=[
+    {name:"(A)",a:-2,b:-1,c:-14,lab:[6.9,0.9]},{name:"(B)",a:-1,b:-1,c:-12,lab:[11.2,0.5]},
+    {name:"(C)",a:-1,b:-3,c:-18,lab:[15.0,1.6]},{name:"(L)",a:1,b:0,c:14,lab:[14.2,16.6]},
+    {name:"(K)",a:0,b:1,c:16,lab:[2.0,16.3]},{a:-1,b:0,c:0},{a:0,b:-1,c:0}];
+  var NAMES={"14,1.33":"A","9,3":"B","2,10":"C","0,14":"D","0,16":"E","14,16":"F"};
+  var price=20, Y_PRICE=40;   // z = price·x1 + 40·x2
+
+  function clip(poly,a,b,c){
+    var out=[],e=1e-9;
+    for(var i=0;i<poly.length;i++){
+      var p=poly[i],q=poly[(i+1)%poly.length],fp=a*p[0]+b*p[1]-c,fq=a*q[0]+b*q[1]-c;
+      if(fp<=e) out.push(p);
+      if((fp<-e&&fq>e)||(fp>e&&fq<-e)){var t=fp/(fp-fq);out.push([p[0]+t*(q[0]-p[0]),p[1]+t*(q[1]-p[1])]);}
+    }
+    return out;
+  }
+  function chord(a,b,c,poly){
+    var pts=[];
+    for(var i=0;i<poly.length;i++){
+      var p=poly[i],q=poly[(i+1)%poly.length],fp=a*p[0]+b*p[1]-c,fq=a*q[0]+b*q[1]-c;
+      if(Math.abs(fp)<1e-6) pts.push(p);
+      else if(fp*fq<0){var t=fp/(fp-fq);pts.push([p[0]+t*(q[0]-p[0]),p[1]+t*(q[1]-p[1])]);}
+    }
+    if(!pts.length) return null;
+    pts.sort(function(u,v){return u[0]-v[0]||u[1]-v[1];});
+    return [pts[0],pts[pts.length-1]];
+  }
+  var BOX=[[0,0],[W,0],[W,H],[0,H]], D=BOX;
+  CONS.forEach(function(c){D=clip(D,c.a,c.b,c.c);});
+  function r2(v){return Math.round(v*100)/100;}
+  var CORNERS=D.map(function(p){var q=[r2(p[0]),r2(p[1])];return {name:NAMES[q[0]+","+q[1]]||"?",x:q[0],y:q[1],ex:p};})
+    .sort(function(u,v){return u.name<v.name?-1:1;});
+  function z(p){return price*p.ex[0]+Y_PRICE*p.ex[1];}
+  function show(v){return Math.abs(v-Math.round(v))<1e-9?String(Math.round(v)):v.toFixed(2);}
+  function pt(p){return "("+p.x+", "+(p.y%1?"4/3":p.y)+")";}
+
+  // the paper
+  var paper=el("g",{});
+  for(var t=0;t<=W;t+=2) el("line",{x1:X(t),y1:Y(0),x2:X(t),y2:Y(H),stroke:"var(--line)","stroke-width":t%4?0.4:0.8},paper);
+  for(t=0;t<=H;t+=2) el("line",{x1:X(0),y1:Y(t),x2:X(W),y2:Y(t),stroke:"var(--line)","stroke-width":t%4?0.4:0.8},paper);
+  el("polygon",{class:"dom",points:D.map(function(p){return X(p[0])+","+Y(p[1]);}).join(" ")},paper);
+  CONS.forEach(function(c){if(!c.name)return;var s=chord(c.a,c.b,c.c,BOX);
+    el("line",{class:"ln",x1:X(s[0][0]),y1:Y(s[0][1]),x2:X(s[1][0]),y2:Y(s[1][1])},paper);txt(c.name,X(c.lab[0]),Y(c.lab[1]),{class:"mu halo"},paper);});
+  el("line",{class:"ax",x1:X(0),y1:Y(0),x2:X(W),y2:Y(0)},paper); el("line",{class:"ax",x1:X(0),y1:Y(0),x2:X(0),y2:Y(H)},paper);
+  [4,8,12,16].forEach(function(v){txt(v,X(v),Y(0)+15,{class:"mu","text-anchor":"middle"},paper);txt(v,X(0)-6,Y(v)+4,{class:"mu","text-anchor":"end"},paper);});
+  txt("x₁",X(W)+4,Y(0)+4,{class:"mu"},paper); txt("x₂",X(0)+6,Y(H)+4,{class:"mu"},paper);
+  var mk=el("marker",{id:"lf2-ah",viewBox:"0 0 10 10",refX:8,refY:5,markerWidth:7,markerHeight:7,orient:"auto-start-reverse"},el("defs",{},paper));
+  el("path",{d:"M0,0 L10,5 L0,10 z",fill:"var(--hi)"},mk);
+  var layer=el("g",{}), dots=el("g",{});
+  var OFF={A:[8,14],B:[-4,18],C:[8,4],D:[8,4],E:[8,14],F:[-16,16]};
+  CORNERS.forEach(function(p){p.dot=el("circle",{cx:X(p.x),cy:Y(p.y),r:4,fill:"var(--surface)",stroke:"var(--fig)","stroke-width":2},dots);
+    txt(p.name,X(p.x)+OFF[p.name][0],Y(p.y)+OFF[p.name][1],{class:"halo"},dots);});
+
+  function line(pq,a){if(pq)el("line",Object.assign({x1:X(pq[0][0]),y1:Y(pq[0][1]),x2:X(pq[1][0]),y2:Y(pq[1][1])},a),layer);}
+  function zmin(){return Math.min.apply(null,CORNERS.map(z));}
+  function zmax(){return Math.max.apply(null,CORNERS.map(z));}
+  function draw(p){
+    var lo=zmin(),hi=zmax(),best=Math.abs(p-lo)<1e-6,ties=CORNERS.filter(function(c){return Math.abs(z(c)-lo)<1e-6;});
+    layer.replaceChildren();
+    // the arrow: z grows along (price, 40); to minimize, go the other way
+    var k=2.4/Math.sqrt(price*price+Y_PRICE*Y_PRICE),ax=11,ay=10;
+    el("line",{x1:X(ax),y1:Y(ay),x2:X(ax+price*k),y2:Y(ay+Y_PRICE*k),stroke:"var(--hi)","stroke-width":1.6,"marker-end":"url(#lf2-ah)",opacity:.6},layer);
+    txt("z grows",X(ax+price*k)+4,Y(ay+Y_PRICE*k)+4,{class:"ac halo"},layer);
+    line(chord(price,Y_PRICE,p,BOX),{stroke:"var(--hi)","stroke-width":1.5,"stroke-dasharray":"5 4"});
+    line(chord(price,Y_PRICE,p,D),{stroke:"var(--hi)","stroke-width":5,"stroke-linecap":"round"});
+    CORNERS.forEach(function(c){var on=Math.abs(z(c)-p)<1e-6;c.dot.setAttribute("fill",on?"var(--hi)":"var(--surface)");c.dot.setAttribute("r",on?6:4);});
+    $("val").textContent="z = "+show(p);
+    var st=$("status");
+    if(best&&ties.length>1){st.className="live-status ok";st.innerHTML="<b>✓ Minimum, but not unique.</b> The line lies along the edge ["+ties.map(function(c){return c.name;}).sort().join(", ")+"]: every point of it costs "+show(lo)+" dh.";}
+    else if(best){st.className="live-status ok";st.innerHTML="<b>✓ Minimum.</b> The lowest isocost line still touching D meets it only at "+ties[0].name+" = "+pt(ties[0])+": z* = "+show(lo)+" dh.";}
+    else if(p<lo){st.className="live-status bad";st.innerHTML="<b>✕ The line has left D.</b> No plan costs only "+show(p)+" dh. Go back to the last contact.";}
+    else if(p>hi){st.className="live-status";st.innerHTML="<b>Beyond D.</b> Every plan costs less than "+show(p)+" dh. Slide the line toward the origin.";}
+    else{st.className="live-status";st.innerHTML="<b>The line still crosses D.</b> Every plan on the thick part costs "+show(p)+" dh. Keep pushing toward the origin.";}
+    var rows=$("rows");rows.replaceChildren();
+    CORNERS.slice().sort(function(u,v){return z(u)-z(v);}).forEach(function(c){
+      var tr=document.createElement("tr"),hit=best&&Math.abs(z(c)-lo)<1e-6,passed=p<z(c)-1e-6;
+      if(hit)tr.className="best";else if(passed)tr.className="past";
+      tr.innerHTML="<td><b>"+c.name+"</b></td><td>"+pt(c)+"</td><td class=\"c\">"+show(z(c))+"</td><td>"+(hit?"optimum":passed?"passed":"")+"</td>";
+      rows.appendChild(tr);});
+  }
+  var raf=null,cur=700,reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function set(p){cur=p;$("range").value=p;draw(p);}
+  function stop(){if(raf){cancelAnimationFrame(raf);raf=null;}$("play").textContent="Play";}
+  $("play").addEventListener("click",function(){
+    if(raf){stop();return;}
+    var lo=zmin(),p=cur<=lo+1e-6?700:cur;
+    if(reduced){set(lo);return;}
+    var last=performance.now();$("play").textContent="Pause";
+    function step(t){p=Math.max(lo,p-160*(t-last)/1000);last=t;set(p);if(p>lo)raf=requestAnimationFrame(step);else{set(lo);stop();}}
+    raf=requestAnimationFrame(step);
+  });
+  $("reset").addEventListener("click",function(){stop();set(700);});
+  $("range").addEventListener("input",function(){stop();var p=+this.value;
+    CORNERS.forEach(function(c){if(Math.abs(p-z(c))<6)p=z(c);});  // snap onto a corner
+    set(p);});
+  $("price").addEventListener("click",function(){stop();price=price===20?40:20;
+    this.textContent="Price of X: "+price+" dh";this.setAttribute("aria-pressed",price===40?"true":"false");set(cur);});
+  set(700);
+})();
+        </script></li>
+      <li><b>Cross-check with the corners.</b>
+        <div class="scroll"><table class="t grid">
+          <tr><th>Corner</th><th class="c">A (14, 4/3)</th><th class="c">B (9, 3)</th><th class="c">C (2, 10)</th><th class="c">D (0, 14)</th><th class="c">E (0, 16)</th><th class="c">F (14, 16)</th></tr>
+          <tr><td>z = 20x<sub>1</sub> + 40x<sub>2</sub></td><td class="c">333.33</td><td class="c"><b>300</b></td><td class="c">440</td><td class="c">560</td><td class="c">640</td><td class="c">920</td></tr>
+        </table></div></li>
+      <li><b>Answer.</b> <span class="res">x<sub>1</sub>* = 9, x<sub>2</sub>* = 3, z* = 300 dh</span>: buy 9 kg of X and 3 kg of Y. That gives 21 kg of A (more than the 14 needed), and exactly the 12 kg of B and 18 kg of C needed.</li>
+      <li><b>If X costs 40 dh.</b> Now <span class="m">z = 40x<sub>1</sub> + 40x<sub>2</sub> = 40(x<sub>1</sub> + x<sub>2</sub>)</span>, so the isocost lines are parallel to line (B). The lowest one lies along the whole edge [B, C]: B gives 40·12 = 480, C gives 480, and so does every point between them, such as (5.5, 6.5). There are infinitely many optimal solutions, with <span class="res">z* = 480</span> (the case of section 9). Try it with the price button in the figure above.</li>
+    </ol>
+  </div>
+</section>
+
 <!-- NOTES -->
 <section class="sec" id="notes"><div class="note errata"><span class="tag">Notes: errors and loose wording found in the original course</span>
   <ul>
@@ -1021,11 +1525,14 @@ svg .unused{stroke:var(--muted);stroke-width:1.2;stroke-dasharray:4 4;fill:none}
     <li><b>Transport problem needs a balance condition.</b> With equalities on both sides, the problem has a solution only if total stock equals total demand (<span class="m">Σa<sub>i</sub> = Σb<sub>j</sub></span>). The course never says so.</li>
     <li><b>Polytope vs polyhedron.</b> The graphical-resolution page says D is a "polytope convexe" in general and a "polyèdre convexe" when bounded. The usual convention is the other way round: a <i>polyhedron</i> is any intersection of half-planes (bounded or not), and a <i>polytope</i> is a bounded polyhedron. Use the course's wording in exams, but know the usual one.</li>
     <li><b>"Cas dégénéré".</b> The course uses "dégénéré" for the case of infinitely many optimal solutions (a whole edge). The usual name for that is <i>multiple</i> or <i>alternative optima</i>. In the simplex method "degenerate" normally means something else (a vertex where more constraints are tight than necessary). Use the course's word in exams.</li>
+    <li><b>Window frames: the wrong workshops.</b> The "Méthode graphique" PDF says the optimum (2, 6) uses workshops 1 and 2 to the full, then that workshop 1 has capacity to spare. The point lies on lines (2) and (3), so it is workshops 2 and 3 that are full (12 of 12 and 18 of 18 hours); workshop 1 uses 2 of its 4 hours.</li>
+    <li><b>Mixtures: corner A is wrong.</b> The PDF gives A = (14, 1) with z = 320. That point breaks (C): 14 + 3·1 = 17 &lt; 18. The real corner, where (L) meets (C), is A = (14, 4/3), with z = 1000/3 ≈ 333.33. The conclusion does not change: B = (9, 3), z = 300, is still the minimum.</li>
+    <li><b>Mixtures: the purchase limits.</b> The statement says "no more than 22 kg of X and ?? kg of Y", but the model uses x<sub>1</sub> ≤ 14 (L) and x<sub>2</sub> ≤ 16 (K). This page follows the model. The text also mentions isocost lines "z = 0, z = 100 and z = 440" while the figure shows z = 200; neither changes the answer.</li>
     <li><b>Typos.</b> "Maxixmiser" in the Problem 1 title; "A est le rang m" should read "A est de rang m".</li>
   </ul>
 </div></section>
 
-<footer class="foot">Based on the OPL course PDFs (Introduction, Programmation linéaire, Résolution graphique). All examples recomputed by program.</footer>
+<footer class="foot">Based on the OPL course PDFs (Introduction, Programmation linéaire, Résolution graphique, Méthode graphique). All examples recomputed by program.</footer>
 </div>
 
 </body>
