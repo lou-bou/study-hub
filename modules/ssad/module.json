@@ -4,7 +4,7 @@
   "blurb": "Sécurité: introduction, classical and modern symmetric cryptography.",
   "order": 6,
   "chapters": {
-    "ch1": "Introduction to computer security",
+    "ch1": "Introduction",
     "ch2": "Classical cryptography (Cryptographie classique)",
     "ch3": "Modern symmetric cryptography (Cryptographie moderne)"
   }
