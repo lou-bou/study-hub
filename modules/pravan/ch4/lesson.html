@@ -1,0 +1,1079 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PRAVAN · Ch 4 · Cheatsheet</title>
+<script>/* study-hub:theme */(function(){var r=document.documentElement;try{var t=localStorage.getItem("studyhub-theme");if(t)r.setAttribute("data-theme",t);}catch(e){}document.addEventListener("DOMContentLoaded",function(){var b=document.getElementById("theme-toggle");if(b)b.addEventListener("click",function(){var c=r.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");var n=c==="dark"?"light":"dark";r.setAttribute("data-theme",n);try{localStorage.setItem("studyhub-theme",n);}catch(e){}});});})();</script>
+<style>
+/* study-hub:base v3 — shared by every remake. build.py swaps in the current copy, so uploads never drift */
+/* tokens: a copy of assets/tokens.css so a page previews on its own; the build links the real file */
+/* Cahier design tokens. Light ("paper") is the default; dark ("night ink") follows.
+   Theme switch: <html data-theme="light|dark">; no attribute = follow the OS. */
+
+:root {
+  /* Brand (theme-independent) */
+  --brand-paper: #F3EBDD;
+  --brand-ink:   #1E2A44;
+  --brand-amber: #D9952B;   /* ribbon: progress, "resume", bookmarks */
+  --brand-green: #3D6B5A;   /* correct / completed */
+
+  /* Type */
+  --font-display: "Fraunces", Georgia, serif;          /* headings, lesson titles */
+  --font-body:    "Source Sans 3", system-ui, sans-serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, monospace;
+
+  --text-xs: 0.8125rem;  /* 13 */
+  --text-sm: 0.9375rem;  /* 15 */
+  --text-md: 1.0625rem;  /* 17 body — reading app, slightly larger */
+  --text-lg: 1.375rem;   /* 22 */
+  --text-xl: 1.875rem;   /* 30 */
+  --text-2xl: 2.5rem;    /* 40 lesson hero */
+  --leading-body: 1.65;
+  --measure: 68ch;       /* max line length for lesson text */
+
+  /* Spacing (4px grid) */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-5: 24px; --space-6: 32px; --space-7: 48px; --space-8: 72px;
+
+  /* Shape — quiet, paper-like */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Motion — minimal */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-fast: 120ms;
+  --dur-med: 200ms;
+
+  /* Light / paper (default) */
+  --bg:          #F7F1E6;
+  --surface:     #FFFCF6;
+  --surface-2:   #EFE6D6;
+  --border:      #E2D8C6;
+  --text:        #1E2A44;
+  --text-muted:  #5C6475;
+  --accent:      var(--brand-amber);   /* fills: ribbon, progress bars */
+  --accent-text: #8A5A12;              /* amber text/links on paper (AA) */
+  --link:        #1E4FA0;
+  --correct:     #3D6B5A;
+  --correct-bg:  #E3EEE8;
+  --wrong:       #B4443A;
+  --wrong-bg:    #F6E2DF;
+  --note-bg:     #FBF0D9;              /* "In plain words" / worked example boxes */
+  --focus:       #1E4FA0;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:          #141C2E;
+    --surface:     #1B2540;
+    --surface-2:   #233052;
+    --border:      #2E3A5C;
+    --text:        #F3EBDD;
+    --text-muted:  #A9B0C0;
+    --accent:      #E5A945;
+    --accent-text: #F0BE6A;
+    --link:        #8DB4F5;
+    --correct:     #6FA88F;
+    --correct-bg:  #1F3A33;
+    --wrong:       #E07A6E;
+    --wrong-bg:    #43262A;
+    --note-bg:     #2A2A3A;
+    --focus:       #8DB4F5;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg:          #141C2E;
+  --surface:     #1B2540;
+  --surface-2:   #233052;
+  --border:      #2E3A5C;
+  --text:        #F3EBDD;
+  --text-muted:  #A9B0C0;
+  --accent:      #E5A945;
+  --accent-text: #F0BE6A;
+  --link:        #8DB4F5;
+  --correct:     #6FA88F;
+  --correct-bg:  #1F3A33;
+  --wrong:       #E07A6E;
+  --wrong-bg:    #43262A;
+  --note-bg:     #2A2A3A;
+  --focus:       #8DB4F5;
+  color-scheme: dark;
+}
+
+/* Project additions, not in the brand kit. */
+:root {
+  /* Figures in lessons. Amber means "my place" only, so diagrams use these. */
+  --fig: #1E4FA0; --fig-soft: #DCE6F5;
+  --c1: #E8C98C; --c2: #E3AE9B; --c3: #AFCDB8; --c4: #B9C6E0;  /* dark text sits on all of them */
+  --font-math: "Cambria Math", "STIX Two Math", Georgia, serif;
+  --primary: var(--text); --on-primary: var(--bg);             /* main buttons: ink, never amber */
+  /* Names older remakes use in their own CSS, mapped onto this theme. */
+  --ink: var(--text); --muted: var(--text-muted); --faint: var(--text-muted);
+  --line: var(--border); --line-strong: var(--border); --sunken: var(--surface-2); --hover: var(--surface-2);
+  --code-bg: var(--surface-2); --ok: var(--correct); --ok-soft: var(--correct-bg); --hi: var(--wrong); --hi-soft: var(--wrong-bg);
+  --accent-soft: var(--fig-soft);
+  --f-display: var(--font-display); --f-body: var(--font-body); --f-mono: var(--font-mono); --f-math: var(--font-math);
+  --l0: #8FA8D3; --l1: #A9BDDF; --l2: #C2D1E8; --l3: #D9E3F1; --l4: #ECF1F8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --fig: #8DB4F5; --fig-soft: #233052; }
+}
+:root[data-theme="dark"] { --fig: #8DB4F5; --fig-soft: #233052; }
+/* /tokens */
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
+body{
+  background:var(--bg); color:var(--text); font-family:var(--font-body); font-size:var(--text-md); line-height:var(--leading-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:28px var(--space-8); margin:0;
+}
+.wrap{max-width:1040px;margin:0 auto}
+a{color:var(--link);text-decoration:underline;text-underline-offset:2px}
+a,button,label,summary,input,select{touch-action:manipulation}
+a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+code{font-family:var(--font-mono);font-size:.86em;background:var(--surface-2);padding:1px 5px;border-radius:var(--radius-sm)}
+.en{font-weight:600}
+.fr{color:var(--text-muted);font-style:italic;font-weight:400}
+sub,sup{line-height:0}
+.m{font-family:var(--font-math);font-style:italic}
+.ov{text-decoration:overline}
+.eq{font-family:var(--font-math);font-size:var(--text-md);background:var(--surface-2);border-radius:var(--radius-sm);padding:var(--space-3) var(--space-4);margin:var(--space-3) 0;overflow-x:auto;white-space:pre}
+.res{display:inline-block;background:var(--correct-bg);color:var(--text);border-radius:var(--radius-sm);padding:1px 7px;font-weight:600;font-variant-numeric:tabular-nums}
+.toggle{position:fixed;top:14px;right:max(14px,env(safe-area-inset-right,0px));z-index:20;display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;padding:0;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:var(--radius-md);cursor:pointer;transition:background var(--dur-fast) var(--ease-out)}
+.toggle svg{width:20px;height:20px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:var(--space-6);align-items:center;padding-bottom:var(--space-6)}
+.hero.solo{grid-template-columns:minmax(0,1fr)}
+.eyebrow{font:600 var(--text-xs)/1.3 var(--font-body);color:var(--text-muted)}
+h1{font-family:var(--font-display);font-weight:600;font-variation-settings:"opsz" 72;font-size:clamp(1.875rem,4.4vw,var(--text-2xl));line-height:1.12;letter-spacing:-.01em;margin:var(--space-2) 0 var(--space-3);text-wrap:balance}
+.lead{font-size:var(--text-lg);line-height:1.4;color:var(--text-muted);max-width:var(--measure);margin:0 0 var(--space-4)}
+.how{display:grid;gap:var(--space-2);margin:0;padding:0;list-style:none;max-width:var(--measure)}
+.how li{display:flex;gap:var(--space-3);align-items:baseline;font-size:var(--text-sm)}
+.how .tag{flex:0 0 auto;min-width:10em}
+.pills{display:flex;flex-wrap:wrap;gap:var(--space-2);margin:0}
+.pill{background:var(--surface-2);color:var(--text);border-radius:var(--radius-sm);padding:2px 10px;font:600 var(--text-xs) var(--font-body);font-variant-numeric:tabular-nums}
+.herofig{margin:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4);min-width:0;overflow-x:auto}
+.herofig svg{display:block;width:100%;height:auto;min-width:var(--minw,0)}
+.herofig figcaption{font-size:var(--text-xs);color:var(--text-muted);margin-top:var(--space-2)}
+
+/* resume chip: the ribbon marks my place */
+.resume-chip{display:inline-flex;align-items:center;gap:var(--space-2);min-height:44px;margin:0 0 var(--space-5);padding:var(--space-2) var(--space-4) var(--space-2) var(--space-3);background:var(--note-bg);border:1px solid var(--border);border-radius:var(--radius-md);color:var(--text);font:600 var(--text-sm)/1.3 var(--font-body);text-align:left;cursor:pointer}
+.resume-chip svg{flex-shrink:0;width:9px;height:22px}
+
+/* contents */
+.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:var(--space-5);padding-block:var(--space-5) var(--space-2);border-top:1px solid var(--border)}
+.part h3{font:600 var(--text-xs)/1.3 var(--font-body);color:var(--text-muted);margin:0 0 var(--space-2)}
+.part ul{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.part a{display:flex;gap:var(--space-3);text-decoration:none;color:var(--text);padding:var(--space-1) 0;font-size:var(--text-sm)}
+.part a small{display:block;color:var(--text-muted);font-size:var(--text-xs);line-height:1.35}
+.part .n{font:400 var(--text-xs)/1.9 var(--font-mono);color:var(--text-muted);min-width:1.6em}
+.part .sc{margin-left:auto;font:400 var(--text-xs)/1.9 var(--font-mono);color:var(--text-muted);white-space:nowrap}
+
+/* sections */
+.sec{margin-top:var(--space-7);padding-top:var(--space-6);border-top:1px solid var(--border);scroll-margin-top:var(--space-3)}
+.sec-h{display:flex;align-items:baseline;gap:var(--space-3);flex-wrap:wrap}
+.num{font:600 var(--text-xl)/1.15 var(--font-display);color:var(--text-muted)}
+.sec h2{font-family:var(--font-display);font-weight:600;font-size:var(--text-xl);line-height:1.15;margin:0;text-wrap:balance;min-width:0}
+.sec h2 .fr{font-family:var(--font-body);font-size:.6em}
+.sec h3{font-family:var(--font-display);font-weight:500;font-size:var(--text-lg);line-height:1.2;margin:var(--space-5) 0 var(--space-2)}
+.sec h3 .fr{font-family:var(--font-body);font-size:.75em}
+.sec>p,.sec>ul,.sec>ol{max-width:var(--measure)}
+.back{margin-left:auto;font-size:var(--text-xs);color:var(--text-muted);text-decoration:none}
+.secscore{font:400 var(--text-sm) var(--font-mono);color:var(--text-muted)}
+.tag{display:inline-block;font:600 var(--text-xs)/1.3 var(--font-body);color:var(--text-muted)}
+.intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-5);margin-top:var(--space-5)}
+.plain{margin-top:var(--space-5);background:var(--note-bg);border-left:3px solid var(--accent);border-radius:0 var(--radius-md) var(--radius-md) 0;padding:var(--space-3) var(--space-4)}
+.intro .plain{margin-top:0;align-self:start}
+.plain p{margin:var(--space-2) 0 0;max-width:var(--measure)}
+.defs{list-style:none;margin:var(--space-5) 0 0;padding:0;display:grid;gap:var(--space-3);min-width:0}
+.intro .defs{margin-top:0}
+.defs li{display:grid;gap:1px;font-size:var(--text-sm)}
+.defs .mean{color:var(--text-muted)}
+.defs .eg{color:var(--text-muted);font-size:var(--text-sm)}
+.defs .eg::before{content:"e.g. ";font-weight:600;color:var(--text)}
+.callout{margin-top:var(--space-5);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4)}
+.callout>b:first-child{color:var(--text)}
+.callout ol,.callout ul{margin:6px 0 2px;padding-left:22px}
+.callout li{margin:var(--space-1) 0}
+details.more{margin-top:var(--space-3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:var(--space-2) var(--space-4);background:var(--surface)}
+details.more summary{cursor:pointer;font-weight:600}
+
+/* figures */
+.figs{display:flex;flex-wrap:wrap;gap:var(--space-4);margin-top:var(--space-5)}
+.figs figure{flex:1 1 250px;max-width:430px;min-width:0;margin:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4) var(--space-4) var(--space-3)}
+figure.fig{margin:var(--space-5) 0 0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4) var(--space-4) var(--space-3);overflow-x:auto}
+figure.fig svg{display:block;width:100%;height:auto;min-width:var(--minw,0);max-width:var(--maxw,560px);margin-inline:auto}
+figcaption{font-size:var(--text-xs);color:var(--text-muted);margin-top:var(--space-2);line-height:1.45}
+
+/* worked example */
+.calc{margin-top:var(--space-5);background:var(--note-bg);border-radius:var(--radius-md);padding:var(--space-4)}
+.calc>.tag{color:var(--text)}
+.calc>p{margin:10px 0 0}
+.calc ol{margin:10px 0 0;padding-left:22px}
+.calc li{margin:var(--space-2) 0}
+.calc li>b:first-child{color:var(--text)}
+.calc figure.fig,.calc .figs figure{background:var(--surface)}
+.calc code{background:var(--surface)}
+ul.ln{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:var(--space-2);font-size:var(--text-sm)}
+ul.ln li{padding-left:1.1em;text-indent:-1.1em;overflow-wrap:anywhere}
+ul.ln li::before{content:"\203A\00a0";color:var(--text-muted);font-weight:600}
+
+/* tables */
+.scroll{overflow-x:auto;margin-top:var(--space-3);max-width:100%}
+table.t{border-collapse:collapse;font:400 var(--text-sm)/1.45 var(--font-body);font-variant-numeric:tabular-nums;min-width:260px}
+table.t th{font-weight:600;text-align:left;color:var(--text-muted)}
+table.t th,table.t td{padding:6px 14px 6px 0;border-bottom:1px solid var(--border);vertical-align:top}
+table.t.mono{font-family:var(--font-mono);font-size:var(--text-xs)}
+table.t.mono th,table.t.mono td{white-space:nowrap}
+table.t.grid th,table.t.grid td{padding:6px 10px;border:1px solid var(--border)}
+table.t.grid th{background:var(--surface-2);color:var(--text)}
+table.t .c,table.t.center th,table.t.center td{text-align:center}
+table.t.center .l{text-align:left}
+table.t td.ok{color:var(--correct);font-weight:600}
+table.t td.bad,table.t td.x{color:var(--wrong);font-weight:600}
+table.t tr.best td{background:var(--correct-bg);font-weight:600}
+
+/* notes and footer */
+.note{margin-top:var(--space-5);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4)}
+.note.errata{background:var(--surface-2);border-color:transparent;color:var(--text-muted)}
+.note.errata>.tag{color:var(--text-muted)}
+.note ul,.note ol{margin:var(--space-2) 0 0;padding-left:1.2em;display:grid;gap:var(--space-2);font-size:var(--text-sm)}
+.foot{margin-top:var(--space-7);padding-top:var(--space-4);border-top:1px solid var(--border);font-size:var(--text-xs);color:var(--text-muted)}
+
+/* practice */
+.prog{display:flex;align-items:center;gap:var(--space-3);max-width:460px;margin-top:var(--space-4);font:400 var(--text-sm) var(--font-mono);color:var(--text-muted)}
+.prog .track{flex:1;height:6px;border-radius:var(--radius-sm);background:var(--surface-2);overflow:hidden}
+.prog .fill{display:block;height:100%;width:0;background:var(--accent);transition:width var(--dur-med) var(--ease-out)}
+.legend{display:flex;gap:var(--space-2) var(--space-4);flex-wrap:wrap;margin-top:var(--space-4);font-size:var(--text-sm);color:var(--text-muted)}
+.setmeta{margin:6px 0 0;color:var(--text-muted);font-size:var(--text-sm)}
+.prob{margin-top:var(--space-4);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4);scroll-margin-top:var(--space-3);transition:border-color var(--dur-med) var(--ease-out)}
+.prob.ok{border-color:var(--correct)}
+.prob.bad{border-color:var(--wrong)}
+.ph{display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap}
+.pid{font:400 var(--text-sm) var(--font-mono);color:var(--text-muted)}
+.ph .pt{font:600 var(--text-md)/1.35 var(--font-body);margin:0;min-width:0;flex:1 1 16em}
+.lvl{font:600 var(--text-xs)/1 var(--font-body);padding:4px 8px;border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text-muted)}
+.lw,.ls,.lc{background:var(--surface-2);color:var(--text-muted)}
+.lc{color:var(--text)}
+.done{margin-left:auto;display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs);color:var(--text-muted);cursor:pointer}
+.done input{width:18px;height:18px;accent-color:var(--correct);cursor:pointer}
+.pq{margin-top:10px;max-width:var(--measure)}
+.pq>p,.prob>p{margin:10px 0 0}
+.parts{margin:var(--space-2) 0 0;padding-left:1.4em;display:grid;gap:var(--space-1)}
+.pfs{display:flex;flex-wrap:wrap;gap:var(--space-3);margin-top:var(--space-3)}
+.pfs figure{flex:1 1 200px;max-width:340px;min-width:0;margin:0;background:var(--surface-2);border-radius:var(--radius-sm);padding:var(--space-3) var(--space-3) var(--space-2)}
+.prob details{margin-top:var(--space-3)}
+.prob summary{cursor:pointer;display:inline-flex;align-items:center;gap:var(--space-2);font:600 var(--text-sm) var(--font-body);color:var(--text);padding:var(--space-1) var(--space-3) var(--space-1) var(--space-2);border-radius:var(--radius-sm);list-style:none}
+.prob summary::-webkit-details-marker{display:none}
+.prob summary::before{content:"\203A";font-size:1.2em;line-height:1;color:var(--text-muted);transition:transform var(--dur-fast) var(--ease-out)}
+.prob details[open]>summary::before{transform:rotate(90deg)}
+.sol{margin-top:var(--space-2);background:var(--surface-2);border-radius:var(--radius-sm);padding:var(--space-2) var(--space-4) var(--space-3);font-size:var(--text-sm)}
+.sol p{margin:10px 0 0;max-width:var(--measure)}
+.sol li>b:first-child{color:var(--text)}
+.sol .pfs figure,.sol .eq{background:var(--surface)}
+.sol code{background:var(--surface)}
+.aid{margin-top:var(--space-3);background:var(--surface-2);border-radius:var(--radius-sm);padding:10px var(--space-3);font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;overflow-x:auto}
+.aid>b:first-child{color:var(--text)}
+.prob input[type=text]{width:100%;min-width:56px;max-width:90px;font:inherit;font-variant-numeric:tabular-nums;text-align:center;padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text)}
+.prob textarea{width:100%;font:inherit;padding:var(--space-2) var(--space-3);border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text)}
+.prob select{font:inherit;padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text)}
+.prob input.ok,.prob select.ok{border-color:var(--correct);background:var(--correct-bg)}
+.prob input.bad,.prob select.bad{border-color:var(--wrong);background:var(--wrong-bg)}
+table.t.inp td{padding:3px 6px 3px 0}
+.scalars{display:flex;flex-wrap:wrap;gap:var(--space-3) var(--space-4);margin:var(--space-3) 0 0}
+label.sc{display:flex;align-items:center;gap:var(--space-2)}
+label.sc>span{font-weight:600;min-width:34px}
+label.sc small{color:var(--text-muted);font-size:var(--text-xs)}
+.mc{display:grid;gap:var(--space-2);margin:var(--space-3) 0 0}
+label.opt{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;background:var(--surface);transition:background var(--dur-fast) var(--ease-out),border-color var(--dur-med) var(--ease-out)}
+label.opt.ok{border-color:var(--correct);background:var(--correct-bg)}
+label.opt.bad{border-color:var(--wrong);background:var(--wrong-bg)}
+label.opt.reveal{border-color:var(--correct)}
+/* correct and wrong are never colour alone */
+label.opt.ok::after{content:"\2713\00a0 Correct";margin-left:auto;font-size:var(--text-xs);font-weight:600;color:var(--correct)}
+label.opt.bad::after{content:"\2715\00a0Wrong";margin-left:auto;font-size:var(--text-xs);font-weight:600;color:var(--wrong)}
+.prob.ok>.ph::after{content:"\2713\00a0 Correct";font-size:var(--text-xs);font-weight:600;color:var(--correct)}
+.prob.bad>.ph::after{content:"\2715\00a0Wrong";font-size:var(--text-xs);font-weight:600;color:var(--wrong)}
+.fb.ok::before{content:"\2713\00a0"}
+.fb.bad::before{content:"\2715\00a0"}
+label.opt input{margin-top:6px;accent-color:var(--primary)}
+.chips-set{display:inline-flex;flex-wrap:wrap;gap:6px;vertical-align:middle}
+label.chipbox{position:relative;border:1px solid var(--border);border-radius:var(--radius-sm);padding:3px 12px;cursor:pointer;background:var(--surface);font-size:var(--text-sm)}
+label.chipbox:has(input:checked){border-color:var(--text);background:var(--text);color:var(--bg)}
+label.chipbox input{position:absolute;opacity:0;pointer-events:none}
+.chips-set.ok label.chipbox:has(input:checked){border-color:var(--correct);background:var(--correct-bg);color:var(--correct)}
+.chips-set.bad{outline:2px solid var(--wrong);outline-offset:3px;border-radius:var(--radius-sm)}
+.actions{display:flex;flex-wrap:wrap;gap:var(--space-2);align-items:center;margin-top:var(--space-3)}
+.b{font:600 var(--text-sm) var(--font-body);min-height:36px;padding:6px var(--space-4);border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;transition:background var(--dur-fast) var(--ease-out)}
+.b.chk{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.fb{font-size:var(--text-sm);font-weight:600}
+.fb.ok{color:var(--correct)} .fb.bad{color:var(--wrong)}
+.solution,.expl{margin-top:var(--space-3);border-top:1px solid var(--border);padding-top:10px;font-size:var(--text-sm)}
+.solution>p,.expl>p{margin:6px 0}
+.expl{color:var(--text-muted)}
+
+/* live figure: a process played step by step (REMAKE_BRIEF.md, "Live figures") */
+.live-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-5);align-items:start}
+figure.fig.live svg{max-width:none;max-height:72vh}
+.live-side{display:grid;gap:var(--space-3);min-width:0}
+.live-side .aid,.live-side .actions{margin-top:0}
+.live-val{display:flex;align-items:baseline;gap:var(--space-2);flex-wrap:wrap}
+.live-val b{font:600 var(--text-xl) var(--font-mono);font-variant-numeric:tabular-nums;color:var(--text)}
+.live input[type=range]{width:100%;margin:0;accent-color:var(--fig)}
+.live-status{min-height:4.4em;padding:var(--space-2) var(--space-3);background:var(--surface-2);border-left:3px solid var(--fig);border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:var(--text-sm)}
+.live-status.ok{border-color:var(--correct);background:var(--correct-bg)}
+.live-status.bad{border-color:var(--wrong);background:var(--wrong-bg)}
+.live-status.ok b{color:var(--correct)} .live-status.bad b{color:var(--wrong)}
+.live table.t{width:100%;min-width:0}
+.live tr.past td{color:var(--text-muted)}
+.live figcaption p{margin:var(--space-2) 0 0;max-width:var(--measure)}
+/* the site zooms pages 125% / 150% on wide screens: keep the whole drawing on screen */
+@media (min-width:1200px){figure.fig.live svg{max-height:58vh}}
+@media (min-width:1500px){figure.fig.live svg{max-height:48vh}}
+
+@media (hover:hover){
+  .toggle:hover,.b:hover,label.opt:hover,.prob summary:hover{background:var(--surface-2)}
+  .b.chk:hover{background:var(--primary);opacity:.88}
+  .part a:hover,.back:hover{color:var(--link)}
+  label.opt.ok:hover{background:var(--correct-bg)} label.opt.bad:hover{background:var(--wrong-bg)}
+}
+@media (max-width:820px){
+  .hero{grid-template-columns:minmax(0,1fr)}
+  .live-grid{grid-template-columns:minmax(0,1fr)}
+  figure.fig.live svg{max-height:60vh}
+  .intro{grid-template-columns:minmax(0,1fr)}
+  .how li{flex-direction:column;gap:2px}
+  body{padding-top:56px}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{.toggle{display:none}body{background:#fff}}
+/* /study-hub:base */
+</style>
+<style>
+/* page-specific: cheatsheet cards and code, tokens only */
+.cs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,430px),1fr));gap:var(--space-4);margin-top:var(--space-4);align-items:start;grid-auto-flow:row dense}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-3);min-width:0;display:grid;gap:var(--space-3)}
+.card.wide{grid-column:1/-1}
+.card>h3{font:600 var(--text-sm)/1.3 var(--font-body);margin:0;color:var(--text)}
+.card .scroll{margin-top:0}
+.card table.t{width:100%;min-width:0}
+.card table.t td,.card table.t th{font-size:var(--text-xs)}
+.card table.t code{white-space:nowrap}
+pre.code{margin:0;font:400 11.5px/1.6 var(--font-mono);background:var(--surface-2);color:var(--text);border-radius:var(--radius-sm);padding:var(--space-2) 10px;overflow-x:auto;white-space:pre;tab-size:2;font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
+pre.code code{background:none;padding:0;font-size:inherit}
+pre.code .cm{color:var(--text-muted)}
+pre.code .out{color:var(--fig);font-weight:600}
+pre.code .nt{color:var(--text-muted);font-weight:400}
+p.k{margin:0;font-size:var(--text-xs);color:var(--text-muted);line-height:1.5}
+.sec .sec-h h2{font-size:var(--text-lg)}
+.sec{margin-top:var(--space-6);padding-top:var(--space-5)}
+figure.fig.side svg{--maxw:460px}
+svg .nd{fill:var(--surface-2);stroke:var(--border)}
+svg .nd.sel{fill:var(--c3);stroke:var(--text)}
+svg .nd.par{fill:var(--c2)}
+svg .nd.kid{fill:var(--c1)}
+svg .nd.top{fill:var(--c4)}
+svg .tx{fill:var(--text);font:500 11px var(--font-mono);text-anchor:middle;dominant-baseline:central}
+svg .nd.sel+.tx,svg .nd.par+.tx,svg .nd.kid+.tx,svg .nd.top+.tx{fill:var(--brand-ink)}
+svg .ln{stroke:var(--text-muted);stroke-width:1.2;fill:none}
+svg .ar{stroke:var(--fig);stroke-width:1.5;fill:none}
+svg .al{fill:var(--fig);font:600 10px var(--font-mono);text-anchor:middle}
+svg .hd{fill:var(--fig)}
+</style>
+</head>
+<body>
+<button class="toggle" id="theme-toggle" type="button" aria-label="Toggle light or dark theme"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8a2.83 2.83 0 0 0 4 4 4 4 0 1 1-4-4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.9 4.9 1.4 1.4"/><path d="m17.7 17.7 1.4 1.4"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.3 17.7-1.4 1.4"/><path d="m19.1 4.9-1.4 1.4"/></svg></button>
+<div class="wrap">
+<header class="hero" id="top"><div>
+<div class="eyebrow">PRAVAN · Chapter 4 · Cheatsheet</div>
+<h1>JavaScript quick reference</h1>
+<p class="lead">Syntax, DOM, BOM and events on one page. Values after <code>// →</code> were produced by running the line. <span class="fr">(JavaScript, Site Interactif)</span></p>
+</div>
+<figure class="herofig"><svg viewBox="0 0 480 300" role="img" aria-label="DOM tree of the example page with navigation properties from div#box"><defs><marker id="hf-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="hd" d="M0 0L10 5L0 10z"/></marker></defs><line class="ln" x1="210" y1="33" x2="210" y2="57"/><line class="ln" x1="210" y1="79" x2="110" y2="103"/><line class="ln" x1="210" y1="79" x2="300" y2="103"/><line class="ln" x1="300" y1="125" x2="170" y2="157"/><line class="ln" x1="300" y1="125" x2="300" y2="157"/><line class="ln" x1="300" y1="125" x2="420" y2="157"/><line class="ln" x1="300" y1="179" x2="200" y2="227"/><line class="ln" x1="300" y1="179" x2="300" y2="227"/><line class="ln" x1="300" y1="179" x2="400" y2="227"/><rect class="nd top" x="168.0" y="11" width="84" height="22" rx="4"/><text class="tx" x="210" y="22">document</text><rect class="nd " x="182.0" y="57" width="56" height="22" rx="4"/><text class="tx" x="210" y="68">html</text><rect class="nd " x="82.0" y="103" width="56" height="22" rx="4"/><text class="tx" x="110" y="114">head</text><rect class="nd par" x="272.0" y="103" width="56" height="22" rx="4"/><text class="tx" x="300" y="114">body</text><rect class="nd " x="122.0" y="157" width="96" height="22" rx="4"/><text class="tx" x="170" y="168">h1#compt_H1</text><rect class="nd sel" x="262.0" y="157" width="76" height="22" rx="4"/><text class="tx" x="300" y="168">div#box</text><rect class="nd " x="400.0" y="157" width="40" height="22" rx="4"/><text class="tx" x="420" y="168">p</text><rect class="nd kid" x="168.0" y="227" width="64" height="22" rx="4"/><text class="tx" x="200" y="238">h2</text><rect class="nd kid" x="268.0" y="227" width="64" height="22" rx="4"/><text class="tx" x="300" y="238">h2</text><rect class="nd kid" x="368.0" y="227" width="64" height="22" rx="4"/><text class="tx" x="400" y="238">h2</text><path class="ar" d="M338 160 C 372 140 372 128 330 118" marker-end="url(#hf-ah)"/><text class="al" x="400" y="134">parentNode</text><path class="ar" d="M232 252 Q 250 272 268 252" marker-end="url(#hf-ah)"/><text class="al" x="250" y="286">nextElementSibling</text><path class="ar" d="M270 178 Q 222 194 204 224" marker-end="url(#hf-ah)"/><text class="al" x="172" y="208">firstElementChild</text><path class="ar" d="M330 178 Q 378 194 396 224" marker-end="url(#hf-ah)"/><text class="al" x="428" y="208">lastElementChild</text></svg><figcaption>The example page as a tree. From <code>div#box</code> (green): <code>parentNode</code> is body (pink), <code>children</code> are the three h2 (yellow).</figcaption></figure>
+</header>
+<nav class="toc" aria-label="Contents">
+<div class="part"><h3>A · Setup</h3><ul>
+<li><a href="#s1"><span class="n">1</span><span>Adding scripts<small>inline, &lt;script&gt;, file, defer</small></span></a></li>
+</ul></div>
+<div class="part"><h3>B · Language</h3><ul>
+<li><a href="#s2"><span class="n">2</span><span>Types and conversion<small>typeof, coercion, falsy, strings</small></span></a></li>
+<li><a href="#s3"><span class="n">3</span><span>Arrays<small>methods, map/filter/reduce, destructuring</small></span></a></li>
+<li><a href="#s4"><span class="n">4</span><span>Objects and JSON<small>properties, this, destructuring, JSON</small></span></a></li>
+<li><a href="#s5"><span class="n">5</span><span>Operators<small>arithmetic, comparison, logical</small></span></a></li>
+<li><a href="#s6"><span class="n">6</span><span>Conditions and loops<small>if, switch, for, forEach limits</small></span></a></li>
+<li><a href="#s7"><span class="n">7</span><span>Functions<small>default, arrow, IIFE, callbacks</small></span></a></li>
+<li><a href="#s8"><span class="n">8</span><span>Asynchronous code<small>Promise, async/await, event loop</small></span></a></li>
+<li><a href="#s9"><span class="n">9</span><span>Scope<small>let, const, var, hoisting, strict mode</small></span></a></li>
+</ul></div>
+<div class="part"><h3>C · DOM</h3><ul>
+<li><a href="#s10"><span class="n">10</span><span>Selecting elements<small>getElementBy…, querySelector</small></span></a></li>
+<li><a href="#s11"><span class="n">11</span><span>Navigating the tree<small>parentNode, children, siblings</small></span></a></li>
+<li><a href="#s12"><span class="n">12</span><span>Content, attributes, style<small>innerHTML, setAttribute, style, classList</small></span></a></li>
+<li><a href="#s13"><span class="n">13</span><span>Adding and removing<small>createElement, append, remove, replace</small></span></a></li>
+</ul></div>
+<div class="part"><h3>D · Browser</h3><ul>
+<li><a href="#s14"><span class="n">14</span><span>BOM<small>window, screen, location, history, navigator</small></span></a></li>
+<li><a href="#s15"><span class="n">15</span><span>Events<small>onclick, addEventListener, event object</small></span></a></li>
+</ul></div>
+<div class="part"><h3>E · Course</h3><ul><li><a href="#notes"><span class="n">·</span><span>Notes on the original course</span></a></li></ul></div>
+</nav>
+<section class="sec" id="s1"><div class="sec-h"><span class="num">1</span><h2>Adding scripts <span class="fr">(intégrer un script)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+<div class="cs">
+<div class="card"><h3>Three places</h3>
+<pre class="code"><code><span class="cm">&lt;!-- 1. inline: code in an event attribute --&gt;</span>
+&lt;button onclick=&quot;doIncrement()&quot;&gt;Incrémenter&lt;/button&gt;
+
+<span class="cm">&lt;!-- 2. &lt;script&gt; element, best at the end of &lt;body&gt; --&gt;</span>
+&lt;body&gt;
+  &lt;h1 id=&quot;compt_H1&quot;&gt;Compteur=0&lt;/h1&gt;
+  &lt;script&gt;
+    document.getElementById(&quot;compt_H1&quot;).innerText = &quot;Compteur=1&quot;;
+  &lt;/script&gt;
+&lt;/body&gt;
+
+<span class="cm">&lt;!-- 3. external file, as many as needed --&gt;</span>
+&lt;script src=&quot;mon_script.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;https://cdn.example.com/lib.min.js&quot;&gt;&lt;/script&gt;</code></pre>
+</div>
+<div class="card"><h3>When does it run?</h3>
+<div class="scroll"><table class="t"><thead><tr><th>Where</th><th>Runs</th><th>DOM ready?</th></tr></thead><tbody><tr><td><code>&lt;script&gt;</code> in &lt;head&gt;</td><td>as soon as parsed</td><td>No: <code>getElementById</code> gives <code>null</code></td></tr><tr><td><code>&lt;script&gt;</code> at end of &lt;body&gt;</td><td>after the elements above it</td><td>Yes</td></tr><tr><td><code>&lt;script defer src&gt;</code></td><td>after full parse, in order</td><td>Yes (external files only)</td></tr><tr><td><code>&lt;script async src&gt;</code></td><td>as soon as downloaded, any order</td><td>Not guaranteed</td></tr></tbody></table></div>
+<pre class="code"><code>&lt;head&gt;
+  &lt;script src=&quot;script.js&quot; defer&gt;&lt;/script&gt;
+&lt;/head&gt;</code></pre>
+<pre class="code"><code>document.addEventListener(&quot;DOMContentLoaded&quot;, () =&gt; {
+  <span class="cm">// HTML parsed: safe to select elements</span>
+});
+window.addEventListener(&quot;load&quot;, () =&gt; {
+  <span class="cm">// also images, CSS, iframes loaded</span>
+});</code></pre>
+</div>
+<div class="card"><h3>Output and comments</h3>
+<pre class="code"><code>console.log(&quot;x =&quot;, 5);  <span class="cm">// dev tools → Console tab</span>
+console.table([{ a: 1 }, { a: 2 }]);
+console.error(&quot;oops&quot;);
+alert(&quot;Bonjour&quot;);       <span class="cm">// blocking pop-up</span>
+el.innerText = &quot;Hi&quot;;    <span class="cm">// into the page</span>
+<span class="cm">// one line</span>
+/* several
+   lines */</code></pre>
+<p class="k">Semicolons <code>;</code> are optional but recommended. No <code>main()</code>: code runs top to bottom.</p>
+</div>
+</div></section>
+<section class="sec" id="s2"><div class="sec-h"><span class="num">2</span><h2>Types and conversion <span class="fr">(types)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+<div class="cs">
+<div class="card"><h3>Primitive types</h3>
+<pre class="code"><code>let n = 42;
+let s = &quot;hi&quot;;
+let b = true;
+let u;
+let z = null;
+typeof n            <span class="out">// → &quot;number&quot;</span> <span class="nt">← ints and floats alike</span>
+typeof s            <span class="out">// → &quot;string&quot;</span>
+typeof b            <span class="out">// → &quot;boolean&quot;</span>
+typeof u            <span class="out">// → &quot;undefined&quot;</span>
+typeof z            <span class="out">// → &quot;object&quot;</span> <span class="nt">← old bug, null is primitive</span>
+typeof 10n          <span class="out">// → &quot;bigint&quot;</span>
+typeof Symbol()     <span class="out">// → &quot;symbol&quot;</span>
+typeof [1, 2]       <span class="out">// → &quot;object&quot;</span>
+typeof {}           <span class="out">// → &quot;object&quot;</span>
+typeof (() =&gt; 1)    <span class="out">// → &quot;function&quot;</span>
+Array.isArray([1])  <span class="out">// → true</span></code></pre>
+</div>
+<div class="card"><h3>Coercion (weak typing)</h3>
+<pre class="code"><code>2 + &quot;2&quot;               <span class="out">// → &quot;22&quot;</span> <span class="nt">← + concatenates strings</span>
+&quot;6&quot; * &quot;2&quot;             <span class="out">// → 12</span>
+&quot;5&quot; - 2               <span class="out">// → 3</span>
+&quot;abc&quot; * 2             <span class="out">// → NaN</span>
+Number(&quot;3.5&quot;)         <span class="out">// → 3.5</span>
+Number(&quot;&quot;)            <span class="out">// → 0</span>
+parseInt(&quot;42px&quot;)      <span class="out">// → 42</span>
+parseFloat(&quot;3.5kg&quot;)   <span class="out">// → 3.5</span>
+String(7)             <span class="out">// → &quot;7&quot;</span>
+(3.14159).toFixed(2)  <span class="out">// → &quot;3.14&quot;</span>
+Boolean(&quot;0&quot;)          <span class="out">// → true</span> <span class="nt">← non-empty string</span>
+Boolean(&quot;&quot;)           <span class="out">// → false</span></code></pre>
+<p class="k">Falsy: <code>false</code>, <code>0</code>, <code>-0</code>, <code>0n</code>, <code>""</code>, <code>null</code>, <code>undefined</code>, <code>NaN</code>. Everything else is truthy, including <code>[]</code> and <code>{}</code>.</p>
+</div>
+<div class="card"><h3>Strings</h3>
+<pre class="code"><code>const nom = &quot;Lou&quot;;
+`Bonjour ${nom} !`               <span class="out">// → &quot;Bonjour Lou !&quot;</span>
+nom.length                       <span class="out">// → 3</span>
+nom.toUpperCase()                <span class="out">// → &quot;LOU&quot;</span>
+&quot;a,b,c&quot;.split(&quot;,&quot;)               <span class="out">// → [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;]</span>
+&quot;  hi  &quot;.trim()                  <span class="out">// → &quot;hi&quot;</span>
+&quot;JavaScript&quot;.slice(0, 4)         <span class="out">// → &quot;Java&quot;</span>
+&quot;JavaScript&quot;.includes(&quot;Script&quot;)  <span class="out">// → true</span>
+&quot;JavaScript&quot;.indexOf(&quot;S&quot;)        <span class="out">// → 4</span>
+&quot;7&quot;.padStart(3, &quot;0&quot;)             <span class="out">// → &quot;007&quot;</span>
+&quot;ab&quot;.repeat(3)                   <span class="out">// → &quot;ababab&quot;</span>
+&quot;a-b-c&quot;.replaceAll(&quot;-&quot;, &quot;/&quot;)     <span class="out">// → &quot;a/b/c&quot;</span></code></pre>
+</div>
+</div></section>
+<section class="sec" id="s3"><div class="sec-h"><span class="num">3</span><h2>Arrays <span class="fr">(tableaux)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+<div class="cs">
+<div class="card"><h3>Basics (mutating)</h3>
+<pre class="code"><code>const a = [3, 1, 2];
+a.length           <span class="out">// → 3</span>
+a[0]               <span class="out">// → 3</span>
+a.at(-1)           <span class="out">// → 2</span>
+a.push(4)          <span class="out">// → 4</span> <span class="nt">← returns new length</span>
+a.pop()            <span class="out">// → 4</span>
+a.unshift(0)       <span class="out">// → 4</span> <span class="nt">← add at start</span>
+a.shift()          <span class="out">// → 0</span> <span class="nt">← remove first</span>
+a.indexOf(2)       <span class="out">// → 2</span>
+a.includes(5)      <span class="out">// → false</span>
+a.join(&quot;-&quot;)        <span class="out">// → &quot;3-1-2&quot;</span>
+a.reverse()        <span class="out">// → [2, 1, 3]</span>
+const b = [1, 2, 3, 4];
+b.splice(1, 2)     <span class="out">// → [2, 3]</span> <span class="nt">← remove 2 items at index 1</span>
+b                  <span class="out">// → [1, 4]</span>
+b.splice(1, 0, 9)  <span class="out">// → []</span> <span class="nt">← insert 9 at index 1</span>
+b                  <span class="out">// → [1, 9, 4]</span></code></pre>
+</div>
+<div class="card"><h3>Callbacks (new array or value)</h3>
+<pre class="code"><code>const n = [1, 2, 3, 4];
+n.map(x =&gt; x * 2)                 <span class="out">// → [2, 4, 6, 8]</span>
+n.filter(x =&gt; x % 2 === 0)        <span class="out">// → [2, 4]</span>
+n.reduce((s, x) =&gt; s + x, 0)      <span class="out">// → 10</span>
+n.find(x =&gt; x &gt; 2)                <span class="out">// → 3</span>
+n.findIndex(x =&gt; x &gt; 2)           <span class="out">// → 2</span>
+n.some(x =&gt; x &gt; 3)                <span class="out">// → true</span>
+n.every(x =&gt; x &gt; 0)               <span class="out">// → true</span>
+n.slice(1, 3)                     <span class="out">// → [2, 3]</span> <span class="nt">← copy, n unchanged</span>
+n.concat([5])                     <span class="out">// → [1, 2, 3, 4, 5]</span>
+[[1, 2], [3]].flat()              <span class="out">// → [1, 2, 3]</span>
+[10, 9, 1].sort()                 <span class="out">// → [1, 10, 9]</span> <span class="nt">← string order!</span>
+[10, 9, 1].sort((x, y) =&gt; x - y)  <span class="out">// → [1, 9, 10]</span>
+Array.from(&quot;abc&quot;)                 <span class="out">// → [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;]</span>
+Array(3).fill(0)                  <span class="out">// → [0, 0, 0]</span></code></pre>
+<p class="k">Mutate the array: <code>push</code>, <code>pop</code>, <code>shift</code>, <code>unshift</code>, <code>splice</code>, <code>sort</code>, <code>reverse</code>, <code>fill</code>. The rest return something new.</p>
+</div>
+<div class="card"><h3>Destructuring and spread</h3>
+<pre class="code"><code>const [x, y, ...rest] = [10, 20, 30, 40];
+x                       <span class="out">// → 10</span>
+rest                    <span class="out">// → [30, 40]</span>
+const [, second] = [1, 2, 3];
+second                  <span class="out">// → 2</span>
+let p = 1, q = 2;
+[p, q] = [q, p];        <span class="cm">// swap</span>
+p                       <span class="out">// → 2</span>
+const tout = [...[1, 2], ...[3]];
+tout                    <span class="out">// → [1, 2, 3]</span>
+Math.max(...[4, 9, 2])  <span class="out">// → 9</span></code></pre>
+</div>
+</div></section>
+<section class="sec" id="s4"><div class="sec-h"><span class="num">4</span><h2>Objects and JSON <span class="fr">(objets)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+<div class="cs">
+<div class="card"><h3>Object literal</h3>
+<pre class="code"><code>const etudiant = { nom: &quot;Ali&quot;, age: 20 };
+etudiant.nom              <span class="out">// → &quot;Ali&quot;</span>
+etudiant[&quot;age&quot;]           <span class="out">// → 20</span>
+etudiant.ville = &quot;Oran&quot;;  <span class="cm">// add</span>
+delete etudiant.age;      <span class="cm">// remove</span>
+Object.keys(etudiant)     <span class="out">// → [&quot;nom&quot;, &quot;ville&quot;]</span>
+Object.values(etudiant)   <span class="out">// → [&quot;Ali&quot;, &quot;Oran&quot;]</span>
+Object.entries({ a: 1 })  <span class="out">// → [[&quot;a&quot;, 1]]</span>
+&quot;nom&quot; in etudiant         <span class="out">// → true</span>
+etudiant.tel              <span class="out">// → undefined</span>
+etudiant.tel?.fixe        <span class="out">// → undefined</span> <span class="nt">← no error</span>
+const cle = &quot;nom&quot;;
+etudiant[cle]             <span class="out">// → &quot;Ali&quot;</span></code></pre>
+</div>
+<div class="card"><h3>Methods, shorthand, this</h3>
+<pre class="code"><code>const nom = &quot;Sara&quot;, age = 19;
+const s = {
+  nom, age,                       <span class="cm">// = nom: nom, age: age</span>
+  saluer() { return `Salut ${this.nom}`; },
+};
+s.saluer()                        <span class="out">// → &quot;Salut Sara&quot;</span>
+const copie = { ...s, age: 21 };  <span class="cm">// shallow copy + override</span>
+copie.age                         <span class="out">// → 21</span>
+s.age                             <span class="out">// → 19</span></code></pre>
+</div>
+<div class="card"><h3>Destructuring</h3>
+<pre class="code"><code>const src = { nom: &quot;Sara&quot;, ville: &quot;Alger&quot; };
+const { nom, age = 18, ...autres } = src;
+nom                                 <span class="out">// → &quot;Sara&quot;</span>
+age                                 <span class="out">// → 18</span> <span class="nt">← default used</span>
+autres                              <span class="out">// → { ville: &quot;Alger&quot; }</span>
+const { nom: n } = { nom: &quot;Ali&quot; };  <span class="cm">// rename</span>
+n                                   <span class="out">// → &quot;Ali&quot;</span>
+function afficher({ nom, note }) { return `${nom}: ${note}`; }
+afficher({ nom: &quot;Ali&quot;, note: 15 })  <span class="out">// → &quot;Ali: 15&quot;</span></code></pre>
+</div>
+<div class="card wide"><h3>Array of objects and JSON</h3>
+<pre class="code"><code>const etudiants = [
+  { nom: &quot;Ali&quot;, note: 15 },
+  { nom: &quot;Sara&quot;, note: 12 },
+];
+etudiants.map(e =&gt; e.nom)          <span class="out">// → [&quot;Ali&quot;, &quot;Sara&quot;]</span>
+etudiants.filter(e =&gt; e.note &gt;= 14).length  <span class="out">// → 1</span>
+const json = JSON.stringify(etudiants);
+json                               <span class="out">// → &#x27;[{&quot;nom&quot;:&quot;Ali&quot;,&quot;note&quot;:15},{&quot;nom&quot;:&quot;Sara&quot;,&quot;note&quot;:12}]&#x27;</span>
+JSON.parse(json)[1].note           <span class="out">// → 12</span>
+JSON.stringify({ a: 1 }, null, 2)  <span class="out">// → &#x27;{\n  &quot;a&quot;: 1\n}&#x27;</span> <span class="nt">← pretty print</span></code></pre>
+<p class="k">JSON: keys and strings in double quotes, no functions, no <code>undefined</code>, no trailing commas.</p>
+</div>
+</div></section>
+<section class="sec" id="s5"><div class="sec-h"><span class="num">5</span><h2>Operators <span class="fr">(opérateurs)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+<div class="cs">
+<div class="card"><h3>Arithmetic and assignment</h3>
+<pre class="code"><code>7 / 2              <span class="out">// → 3.5</span> <span class="nt">← no integer division</span>
+Math.floor(7 / 2)  <span class="out">// → 3</span>
+7 % 3              <span class="out">// → 1</span>
+2 ** 10            <span class="out">// → 1024</span>
+0.1 + 0.2          <span class="out">// → 0.30000000000000004</span>
+1 / 0              <span class="out">// → Infinity</span>
+let i = 5;
+i++                <span class="out">// → 5</span> <span class="nt">← returns old value</span>
+++i                <span class="out">// → 7</span>
+i += 3;            <span class="cm">// also -= *= /= %= **=</span>
+i                  <span class="out">// → 10</span>
+Math.round(2.5)    <span class="out">// → 3</span>
+Math.abs(-4)       <span class="out">// → 4</span>
+Math.min(3, 1, 2)  <span class="out">// → 1</span></code></pre>
+<p class="k"><code>Math.random()</code> gives [0, 1). Integer 1–6: <code>Math.floor(Math.random() * 6) + 1</code>.</p>
+</div>
+<div class="card"><h3>Comparison (relational)</h3>
+<pre class="code"><code>5 == &quot;5&quot;            <span class="out">// → true</span> <span class="nt">← converts types</span>
+5 === &quot;5&quot;           <span class="out">// → false</span> <span class="nt">← strict: use this</span>
+5 !== &quot;5&quot;           <span class="out">// → true</span>
+null == undefined   <span class="out">// → true</span>
+null === undefined  <span class="out">// → false</span>
+NaN === NaN         <span class="out">// → false</span>
+Number.isNaN(NaN)   <span class="out">// → true</span>
+&quot;10&quot; &lt; &quot;9&quot;          <span class="out">// → true</span> <span class="nt">← string order</span>
+10 &lt; 9              <span class="out">// → false</span>
+[1] === [1]         <span class="out">// → false</span> <span class="nt">← objects by reference</span></code></pre>
+</div>
+<div class="card"><h3>Logical</h3>
+<pre class="code"><code>true &amp;&amp; false                    <span class="out">// → false</span>
+true || false                    <span class="out">// → true</span>
+!true                            <span class="out">// → false</span>
+&quot;a&quot; &amp;&amp; &quot;b&quot;                       <span class="out">// → &quot;b&quot;</span> <span class="nt">← returns an operand</span>
+0 || &quot;défaut&quot;                    <span class="out">// → &quot;défaut&quot;</span>
+0 ?? &quot;défaut&quot;                    <span class="out">// → 0</span> <span class="nt">← only null/undefined</span>
+null ?? &quot;défaut&quot;                 <span class="out">// → &quot;défaut&quot;</span>
+let c = null;
+c ??= 5;                         <span class="cm">// also ||=  &amp;&amp;=</span>
+c                                <span class="out">// → 5</span>
+const age = 20;
+age &gt;= 18 ? &quot;majeur&quot; : &quot;mineur&quot;  <span class="out">// → &quot;majeur&quot;</span></code></pre>
+</div>
+</div></section>
+<section class="sec" id="s6"><div class="sec-h"><span class="num">6</span><h2>Conditions and loops <span class="fr">(conditions, boucles)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+<div class="cs">
+<div class="card"><h3>if / else if / else</h3>
+<pre class="code"><code>function mention(note) {
+  if (note &gt;= 16) {
+    return &quot;Très bien&quot;;
+  } else if (note &gt;= 14) {
+    return &quot;Bien&quot;;
+  } else if (note &gt;= 10) {
+    return &quot;Passable&quot;;
+  } else {
+    return &quot;Ajourné&quot;;
+  }
+}
+mention(15)  <span class="out">// → &quot;Bien&quot;</span>
+mention(9)   <span class="out">// → &quot;Ajourné&quot;</span></code></pre>
+</div>
+<div class="card"><h3>switch</h3>
+<pre class="code"><code>function action(feu) {
+  let t;
+  switch (feu) {  <span class="cm">// compares with ===</span>
+    case &quot;rouge&quot;:
+      t = &quot;stop&quot;;
+      break;      <span class="cm">// without break: falls through</span>
+    case &quot;orange&quot;:
+    case &quot;jaune&quot;:
+      t = &quot;ralentir&quot;;
+      break;
+    default:
+      t = &quot;passer&quot;;
+  }
+  return t;
+}
+action(&quot;jaune&quot;)   <span class="out">// → &quot;ralentir&quot;</span>
+action(&quot;vert&quot;)    <span class="out">// → &quot;passer&quot;</span></code></pre>
+</div>
+<div class="card"><h3>Loops</h3>
+<pre class="code"><code>const notes = [12, 8, 15];
+let s = 0;
+for (let i = 0; i &lt; notes.length; i++) s += notes[i];
+s                           <span class="out">// → 35</span>
+for (const v of notes) console.log(v);  <span class="cm">// values: 12, 8, 15</span>
+for (const k in { a: 1, b: 2 }) console.log(k);  <span class="cm">// keys: a, b</span>
+notes.forEach((v, i) =&gt; console.log(i, v));  <span class="cm">// 0 12, 1 8, 2 15</span>
+let i = 0;
+while (i &lt; 3) i++;
+i                           <span class="out">// → 3</span>
+do { i--; } while (i &gt; 5);  <span class="cm">// body runs at least once</span>
+i                           <span class="out">// → 2</span>
+for (const v of notes) {
+  if (v &lt; 10) continue;     <span class="cm">// skip this one</span>
+  if (v &gt; 14) break;        <span class="cm">// stop the loop</span>
+}</code></pre>
+</div>
+<div class="card wide"><h3>forEach limits</h3>
+<div class="scroll"><table class="t"><thead><tr><th></th><th><code>for</code>, <code>for…of</code></th><th><code>forEach</code></th></tr></thead><tbody><tr><td><code>break</code></td><td>yes</td><td>no (SyntaxError)</td></tr><tr><td><code>continue</code></td><td>yes</td><td>no; <code>return</code> skips to the next item</td></tr><tr><td><code>return</code> from outer function</td><td>yes</td><td>no, only leaves the callback</td></tr><tr><td><code>await</code> one after another</td><td>yes</td><td>no</td></tr></tbody></table></div>
+<pre class="code"><code>[1, 2, 3].forEach(x =&gt; { if (x === 2) return; console.log(x); });  <span class="cm">// 1, 3</span>
+[1, 2, 3].forEach(x =&gt; { break; });  <span class="out">// ✕ SyntaxError</span>
+[1, 2, 3].some(x =&gt; x === 2)  <span class="out">// → true</span> <span class="nt">← stops early</span></code></pre>
+</div>
+</div></section>
+<section class="sec" id="s7"><div class="sec-h"><span class="num">7</span><h2>Functions <span class="fr">(fonctions)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+<div class="cs">
+<div class="card"><h3>Declaring</h3>
+<pre class="code"><code>function aire(l, h = l) { return l * h; }  <span class="cm">// declaration, hoisted</span>
+aire(3)                             <span class="out">// → 9</span> <span class="nt">← h defaults to l</span>
+aire(3, 2)                          <span class="out">// → 6</span>
+const carre = function (x) { return x * x; };  <span class="cm">// expression</span>
+const double = x =&gt; x * 2;          <span class="cm">// arrow, implicit return</span>
+const somme = (a, b) =&gt; a + b;
+const vide = () =&gt; ({ ok: true });  <span class="cm">// object: wrap in ( )</span>
+double(4)                           <span class="out">// → 8</span>
+somme(2, 3)                         <span class="out">// → 5</span>
+vide()                              <span class="out">// → { ok: true }</span>
+const total = (...nums) =&gt; nums.reduce((s, x) =&gt; s + x, 0);
+total(1, 2, 3)                      <span class="out">// → 6</span> <span class="nt">← rest parameter</span>
+function f(a) { return a; }
+f()                                 <span class="out">// → undefined</span> <span class="nt">← missing arg</span></code></pre>
+</div>
+<div class="card"><h3>Classic vs arrow vs IIFE</h3>
+<div class="scroll"><table class="t"><thead><tr><th></th><th><code>function</code></th><th>arrow <code>=&gt;</code></th><th>IIFE</th></tr></thead><tbody><tr><td>Hoisted</td><td>yes (declaration)</td><td>no</td><td>no</td></tr><tr><td><code>this</code></td><td>its own (the caller)</td><td>the parent's</td><td>its own</td></tr><tr><td><code>arguments</code></td><td>yes</td><td>no (use <code>...rest</code>)</td><td>yes</td></tr><tr><td>Use</td><td>methods, reusable code</td><td>short callbacks</td><td>run once, private scope</td></tr></tbody></table></div>
+<pre class="code"><code>const o = {
+  nom: &quot;o&quot;,
+  normal() { return this.nom; },
+  fleche: () =&gt; this.nom,        <span class="cm">// parent scope&#x27;s this</span>
+};
+o.normal()                       <span class="out">// → &quot;o&quot;</span>
+o.fleche()                       <span class="out">// → undefined</span>
+const compteur = (function () {  <span class="cm">// IIFE: runs immediately</span>
+  let n = 0;                     <span class="cm">// private</span>
+  return { inc: () =&gt; ++n };
+})();
+compteur.inc()                   <span class="out">// → 1</span>
+compteur.inc()                   <span class="out">// → 2</span></code></pre>
+</div>
+<div class="card"><h3>Callbacks</h3>
+<pre class="code"><code>function traiter(x, callback) { return callback(x); }
+traiter(5, n =&gt; n * 10)  <span class="out">// → 50</span>
+setTimeout(() =&gt; console.log(&quot;plus tard&quot;), 1000);  <span class="cm">// after 1 s</span>
+console.log(&quot;d&#x27;abord&quot;);
+<span class="cm">// logs: d&#x27;abord, then plus tard</span>
+const id = setInterval(() =&gt; {}, 500);  <span class="cm">// every 500 ms</span>
+clearInterval(id);       <span class="cm">// stop it (clearTimeout too)</span></code></pre>
+</div>
+</div></section>
+<section class="sec" id="s8"><div class="sec-h"><span class="num">8</span><h2>Asynchronous code <span class="fr">(asynchrone)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+<div class="cs">
+<div class="card wide"><h3>Promise</h3>
+<pre class="code"><code>function charger(ok) {
+  return new Promise((resolve, reject) =&gt; {
+    setTimeout(() =&gt; ok ? resolve(&quot;données&quot;) : reject(new Error(&quot;échec&quot;)), 500);
+  });
+}
+charger(true)
+  .then(d =&gt; console.log(d))  <span class="cm">// données</span>
+  .catch(e =&gt; console.log(e.message))  <span class="cm">// runs if rejected</span>
+  .finally(() =&gt; console.log(&quot;fini&quot;));  <span class="cm">// always</span></code></pre>
+<p class="k">States: pending → fulfilled (<code>resolve</code>) or rejected (<code>reject</code>). <code>Promise.all([p1, p2])</code> waits for all, fails if one fails.</p>
+</div>
+<div class="card"><h3>async / await</h3>
+<pre class="code"><code>async function main() {      <span class="cm">// always returns a Promise</span>
+  try {
+    const d = await charger(false);  <span class="cm">// pauses main only</span>
+    console.log(d);
+  } catch (e) {
+    console.log(e.message);  <span class="cm">// échec</span>
+  }
+}
+main();</code></pre>
+<pre class="code"><code>const res = await fetch(&quot;/api/etudiants&quot;);
+if (!res.ok) throw new Error(res.status);
+const data = await res.json();</code></pre>
+</div>
+<div class="card"><h3>Event loop order</h3>
+<pre class="code"><code>console.log(&quot;1&quot;);
+setTimeout(() =&gt; console.log(&quot;2&quot;), 0);  <span class="cm">// task queue</span>
+Promise.resolve().then(() =&gt; console.log(&quot;3&quot;));  <span class="cm">// microtask queue</span>
+console.log(&quot;4&quot;);
+<span class="cm">// logs 1, 4, 3, 2</span></code></pre>
+<div class="scroll"><table class="t"><thead><tr><th>Part</th><th>Role</th></tr></thead><tbody><tr><td>Call stack</td><td>runs synchronous code, one frame at a time (single thread)</td></tr><tr><td>Heap</td><td>memory for objects</td></tr><tr><td>Web APIs</td><td>timers, fetch, DOM events run outside JS</td></tr><tr><td>Queues</td><td>microtasks (promises) first, then callbacks (tasks), once the stack is empty</td></tr></tbody></table></div>
+</div>
+</div></section>
+<section class="sec" id="s9"><div class="sec-h"><span class="num">9</span><h2>Scope <span class="fr">(portée)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+<div class="cs">
+<div class="card"><h3>let / const / var</h3>
+<div class="scroll"><table class="t"><thead><tr><th></th><th><code>let</code></th><th><code>const</code></th><th><code>var</code></th></tr></thead><tbody><tr><td>Scope</td><td>block <code>{ }</code></td><td>block</td><td>function (ignores blocks)</td></tr><tr><td>Before declaration</td><td>ReferenceError</td><td>ReferenceError</td><td><code>undefined</code> (hoisted)</td></tr><tr><td>Re-declare</td><td>no</td><td>no</td><td>yes</td></tr><tr><td>Re-assign</td><td>yes</td><td>no</td><td>yes</td></tr></tbody></table></div>
+<pre class="code"><code>a           <span class="out">// → undefined</span> <span class="nt">← var hoisted</span>
+var a = 1;
+b           <span class="out">// ✕ ReferenceError</span>
+let b = 2;
+if (true) { var v = 1; let l = 2; }
+v           <span class="out">// → 1</span>
+l           <span class="out">// ✕ ReferenceError</span>
+const t = [1];
+t.push(2);  <span class="cm">// OK: content can change</span>
+t = [];     <span class="out">// ✕ TypeError</span>
+hello()     <span class="out">// → &quot;hi&quot;</span> <span class="nt">← declarations are hoisted</span>
+function hello() { return &quot;hi&quot;; }</code></pre>
+</div>
+<div class="card"><h3>Global vs local, strict mode</h3>
+<pre class="code"><code>let g = &quot;global&quot;;
+function f() {
+  let loc = &quot;local&quot;;
+  return g + &quot; &quot; + loc;      <span class="cm">// inner sees outer</span>
+}
+f()                          <span class="out">// → &quot;global local&quot;</span>
+function oubli() { x = 5; }  <span class="cm">// no keyword: implicit global</span>
+oubli();
+window.x                     <span class="out">// → 5</span>
+function strict() { &quot;use strict&quot;; y = 5; }
+strict()                     <span class="out">// ✕ ReferenceError</span></code></pre>
+<p class="k">Put <code>"use strict";</code> as the first line of a file or function. Use <code>const</code> by default, <code>let</code> when it changes, never <code>var</code>.</p>
+</div>
+</div></section>
+<section class="sec" id="s10"><div class="sec-h"><span class="num">10</span><h2>Selecting elements <span class="fr">(sélectionner)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+<div class="cs">
+<div class="card"><h3>Page used in the DOM examples</h3>
+<pre class="code"><code>&lt;h1 id=&quot;compt_H1&quot;&gt;Compteur=0&lt;/h1&gt;
+&lt;div id=&quot;box&quot;&gt;
+  &lt;h2 class=&quot;titre&quot;&gt;Titre1&lt;/h2&gt;
+  &lt;h2 class=&quot;titre&quot;&gt;Titre2&lt;/h2&gt;
+  &lt;h2 class=&quot;titre&quot;&gt;Titre3&lt;/h2&gt;
+&lt;/div&gt;
+&lt;p class=&quot;info&quot;&gt;Texte&lt;/p&gt;
+&lt;img id=&quot;logo&quot; src=&quot;img/logo.png&quot; alt=&quot;logo&quot;&gt;
+&lt;button id=&quot;btn&quot;&gt;Incrémenter&lt;/button&gt;</code></pre>
+</div>
+<div class="card wide"><h3>Selectors</h3>
+<div class="scroll"><table class="t"><thead><tr><th>Method</th><th>Returns</th></tr></thead><tbody><tr><td><code>getElementById("id")</code></td><td>one element or <code>null</code></td></tr><tr><td><code>getElementsByTagName("h2")</code></td><td>HTMLCollection, live, always a collection</td></tr><tr><td><code>getElementsByClassName("titre")</code></td><td>HTMLCollection, live</td></tr><tr><td><code>querySelector("css")</code></td><td>first match or <code>null</code></td></tr><tr><td><code>querySelectorAll("css")</code></td><td>NodeList, static, has <code>forEach</code></td></tr></tbody></table></div>
+<pre class="code"><code>const h1 = document.getElementById(&quot;compt_H1&quot;);  <span class="cm">// no #</span>
+h1.innerText                       <span class="out">// → &quot;Compteur=0&quot;</span>
+document.getElementsByTagName(&quot;h1&quot;)[0].id  <span class="out">// → &quot;compt_H1&quot;</span> <span class="nt">← [0]</span>
+document.getElementsByTagName(&quot;h2&quot;).length  <span class="out">// → 3</span>
+document.getElementsByClassName(&quot;titre&quot;)[1].innerText  <span class="out">// → &quot;Titre2&quot;</span>
+document.querySelector(&quot;#box .titre&quot;).innerText  <span class="out">// → &quot;Titre1&quot;</span>
+document.querySelectorAll(&quot;div &gt; h2&quot;).length  <span class="out">// → 3</span>
+document.querySelector(&quot;.absent&quot;)  <span class="out">// → null</span>
+document.getElementById(&quot;box&quot;).querySelector(&quot;h2&quot;).innerText  <span class="out">// → &quot;Titre1&quot;</span></code></pre>
+<p class="k">Also works from any element, not only <code>document</code>: <code>box.getElementsByTagName("h2")</code>.</p>
+</div>
+<div class="card wide"><h3>Looping over a collection</h3>
+<pre class="code"><code>const h2s = document.getElementsByTagName(&quot;h2&quot;);
+for (let i = 0; i &lt; h2s.length; i++) h2s[i].style.color = &quot;red&quot;;
+for (const h of h2s) h.style.color = &quot;red&quot;;
+document.querySelectorAll(&quot;h2&quot;).forEach(h =&gt; h.style.color = &quot;red&quot;);
+h2s.forEach      <span class="out">// → undefined</span> <span class="nt">← HTMLCollection</span>
+Array.from(h2s).map(h =&gt; h.innerText)  <span class="out">// → [&quot;Titre1&quot;, &quot;Titre2&quot;, &quot;Titre3&quot;]</span>
+[...h2s].length  <span class="out">// → 3</span></code></pre>
+</div>
+<div class="card"><h3>Live vs static</h3>
+<pre class="code"><code>const live = document.getElementsByTagName(&quot;h2&quot;);
+const fixe = document.querySelectorAll(&quot;h2&quot;);
+const box = document.getElementById(&quot;box&quot;);
+box.append(document.createElement(&quot;h2&quot;));
+live.length  <span class="out">// → 4</span> <span class="nt">← updates by itself</span>
+fixe.length  <span class="out">// → 3</span></code></pre>
+</div>
+</div></section>
+<section class="sec" id="s11"><div class="sec-h"><span class="num">11</span><h2>Navigating the tree <span class="fr">(parcourir l'arbre)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+<div class="cs">
+<div class="card"><h3>From one element</h3>
+<pre class="code"><code>const box = document.getElementById(&quot;box&quot;);
+box.parentNode.tagName           <span class="out">// → &quot;BODY&quot;</span>
+box.children.length              <span class="out">// → 3</span>
+box.children[2].innerText        <span class="out">// → &quot;Titre3&quot;</span>
+box.firstElementChild.innerText  <span class="out">// → &quot;Titre1&quot;</span>
+box.lastElementChild.innerText   <span class="out">// → &quot;Titre3&quot;</span>
+const t1 = box.firstElementChild, t3 = box.lastElementChild;
+t1.nextElementSibling.innerText  <span class="out">// → &quot;Titre2&quot;</span>
+t3.previousElementSibling.innerText  <span class="out">// → &quot;Titre2&quot;</span>
+box.lastElementChild.nextElementSibling  <span class="out">// → null</span>
+box.childNodes.length            <span class="out">// → 7</span> <span class="nt">← + text nodes</span>
+box.firstChild.nodeType          <span class="out">// → 3</span> <span class="nt">← 3 text, 1 element</span>
+box.firstElementChild.closest(&quot;div&quot;).id  <span class="out">// → &quot;box&quot;</span></code></pre>
+</div>
+<div class="card"><h3>Elements only vs all nodes</h3>
+<div class="scroll"><table class="t"><thead><tr><th>Elements only</th><th>All nodes (text, comments too)</th></tr></thead><tbody><tr><td><code>children</code></td><td><code>childNodes</code></td></tr><tr><td><code>firstElementChild</code></td><td><code>firstChild</code></td></tr><tr><td><code>lastElementChild</code></td><td><code>lastChild</code></td></tr><tr><td><code>nextElementSibling</code></td><td><code>nextSibling</code></td></tr><tr><td><code>previousElementSibling</code></td><td><code>previousSibling</code></td></tr><tr><td><code>parentElement</code></td><td><code>parentNode</code></td></tr></tbody></table></div>
+<p class="k">Use the left column unless you need text nodes.</p>
+</div>
+</div></section>
+<section class="sec" id="s12"><div class="sec-h"><span class="num">12</span><h2>Content, attributes, style <span class="fr">(contenu, attributs, style)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+<div class="cs">
+<div class="card"><h3>innerHTML vs innerText</h3>
+<pre class="code"><code>const h1 = document.getElementById(&quot;compt_H1&quot;);
+h1.innerHTML = &quot;Compteur=&lt;b&gt;1&lt;/b&gt;&quot;;  <span class="cm">// parsed as HTML</span>
+h1.innerText                <span class="out">// → &quot;Compteur=1&quot;</span>
+h1.children.length          <span class="out">// → 1</span> <span class="nt">← the &lt;b&gt;</span>
+h1.innerText = &quot;&lt;b&gt;2&lt;/b&gt;&quot;;  <span class="cm">// plain text, shown literally</span>
+h1.innerHTML                <span class="out">// → &quot;&amp;lt;b&amp;gt;2&amp;lt;/b&amp;gt;&quot;</span>
+h1.innerHTML += &quot; !&quot;;       <span class="cm">// append (re-parses everything)</span>
+h1.textContent              <span class="out">// → &quot;&lt;b&gt;2&lt;/b&gt; !&quot;</span></code></pre>
+<p class="k"><code>innerText</code> is what is visible (respects CSS). <code>textContent</code> is all the text. Never put user input in <code>innerHTML</code>.</p>
+</div>
+<div class="card wide"><h3>Attributes</h3>
+<pre class="code"><code>const img = document.getElementById(&quot;logo&quot;);
+img.getAttribute(&quot;src&quot;)          <span class="out">// → &quot;img/logo.png&quot;</span> <span class="nt">← exact text</span>
+img.src                          <span class="cm">// full URL: &quot;http://site/img/logo.png&quot;</span>
+img.id                           <span class="out">// → &quot;logo&quot;</span> <span class="nt">← many attributes are properties</span>
+img.alt = &quot;Logo&quot;;
+img.setAttribute(&quot;width&quot;, &quot;120&quot;);
+img.hasAttribute(&quot;width&quot;)        <span class="out">// → true</span>
+img.getAttribute(&quot;width&quot;)        <span class="out">// → &quot;120&quot;</span> <span class="nt">← always a string</span>
+img.removeAttribute(&quot;width&quot;);
+img.hasAttribute(&quot;width&quot;)        <span class="out">// → false</span>
+img.dataset.taille = &quot;xl&quot;;       <span class="cm">// data-taille=&quot;xl&quot;</span>
+img.getAttribute(&quot;data-taille&quot;)  <span class="out">// → &quot;xl&quot;</span></code></pre>
+</div>
+<div class="card"><h3>Inline style</h3>
+<pre class="code"><code>const h1 = document.getElementById(&quot;compt_H1&quot;);
+h1.style.color = &quot;red&quot;;
+h1.style.backgroundColor = &quot;yellow&quot;;  <span class="cm">// background-color</span>
+h1.style.fontSize = &quot;2rem&quot;;   <span class="cm">// font-size</span>
+h1.style.color                <span class="out">// → &quot;red&quot;</span>
+h1.style.color = &quot;&quot;;          <span class="cm">// remove that inline style</span>
+getComputedStyle(h1).display  <span class="out">// → &quot;block&quot;</span> <span class="nt">← final value</span></code></pre>
+<div class="scroll"><table class="t"><thead><tr><th>CSS</th><th>JS <code>style.</code></th></tr></thead><tbody><tr><td>background-color</td><td><code>backgroundColor</code></td></tr><tr><td>font-size</td><td><code>fontSize</code></td></tr><tr><td>border-top-width</td><td><code>borderTopWidth</code></td></tr><tr><td>z-index</td><td><code>zIndex</code></td></tr><tr><td>float</td><td><code>cssFloat</code></td></tr></tbody></table></div>
+</div>
+<div class="card"><h3>classList</h3>
+<pre class="code"><code>const h1 = document.getElementById(&quot;compt_H1&quot;);
+h1.classList.add(&quot;rouge&quot;, &quot;gras&quot;);
+h1.classList.remove(&quot;gras&quot;);
+h1.classList.contains(&quot;rouge&quot;)  <span class="out">// → true</span>
+h1.classList.toggle(&quot;actif&quot;)    <span class="out">// → true</span> <span class="nt">← added</span>
+h1.classList.toggle(&quot;actif&quot;)    <span class="out">// → false</span> <span class="nt">← removed</span>
+h1.className                    <span class="out">// → &quot;rouge&quot;</span>
+h1.classList.replace(&quot;rouge&quot;, &quot;vert&quot;);
+h1.className                    <span class="out">// → &quot;vert&quot;</span></code></pre>
+</div>
+</div></section>
+<section class="sec" id="s13"><div class="sec-h"><span class="num">13</span><h2>Adding and removing <span class="fr">(ajouter, supprimer)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+<div class="cs">
+<div class="card wide"><h3>Create and insert</h3>
+<pre class="code"><code>const box = document.getElementById(&quot;box&quot;);
+const p = document.createElement(&quot;p&quot;);
+p.innerText = &quot;Nouveau&quot;;
+p.className = &quot;info&quot;;
+box.appendChild(p);               <span class="cm">// one node, returns it</span>
+box.append(&quot;texte&quot;, document.createElement(&quot;hr&quot;));  <span class="cm">// nodes or strings, several</span>
+box.prepend(document.createElement(&quot;h3&quot;));  <span class="cm">// at the start</span>
+box.lastElementChild.tagName      <span class="out">// → &quot;HR&quot;</span>
+box.firstElementChild.tagName     <span class="out">// → &quot;H3&quot;</span>
+box.children.length               <span class="out">// → 6</span>
+box.innerHTML += &quot;&lt;p&gt;Autre&lt;/p&gt;&quot;;  <span class="cm">// works but rebuilds box, drops listeners</span></code></pre>
+<pre class="code"><code>ref.before(node);  ref.after(node);  <span class="cm">// next to ref</span>
+parent.insertBefore(node, ref);
+el.insertAdjacentHTML(&quot;beforeend&quot;, &quot;&lt;li&gt;x&lt;/li&gt;&quot;);  <span class="cm">// beforebegin, afterbegin, afterend</span>
+const clone = el.cloneNode(true);  <span class="cm">// true = with children</span></code></pre>
+</div>
+<div class="card wide"><h3>Remove and replace</h3>
+<pre class="code"><code>const box = document.getElementById(&quot;box&quot;);
+const [t1, t2, t3] = box.children;
+box.removeChild(t2);  <span class="cm">// parent.removeChild(child)</span>
+t3.remove();          <span class="cm">// the element removes itself</span>
+box.children.length   <span class="out">// → 1</span>
+box.removeChild(box.querySelector(&quot;h2 + h2&quot;))  <span class="out">// ✕ TypeError</span> <span class="nt">← nothing left: null</span></code></pre>
+<pre class="code"><code>const box = document.getElementById(&quot;box&quot;);
+const [t1, t2] = box.children;
+box.replaceChild(t1, t2);  <span class="cm">// replaceChild(new, old): Titre1 MOVES into Titre2&#x27;s place</span>
+[...box.children].map(h =&gt; h.innerText)  <span class="out">// → [&quot;Titre1&quot;, &quot;Titre3&quot;]</span>
+t2.replaceWith(t1);        <span class="cm">// newer form: old.replaceWith(new)</span></code></pre>
+<p class="k">A node is in one place only: appending or replacing with an existing node moves it.</p>
+</div>
+<div class="card"><h3>append vs appendChild</h3>
+<div class="scroll"><table class="t"><thead><tr><th></th><th><code>append()</code></th><th><code>appendChild()</code></th></tr></thead><tbody><tr><td>Strings</td><td>yes</td><td>no (nodes only)</td></tr><tr><td>Several at once</td><td>yes</td><td>no</td></tr><tr><td>Returns</td><td><code>undefined</code></td><td>the node</td></tr></tbody></table></div>
+</div>
+</div></section>
+<section class="sec" id="s14"><div class="sec-h"><span class="num">14</span><h2>BOM <span class="fr">(Browser Object Model)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+<figure class="fig"><svg viewBox="0 0 480 120" role="img" aria-label="window is the root object; document, screen, location, history and navigator are its children"><rect class="nd top" x="200.0" y="11" width="80" height="22" rx="4"/><text class="tx" x="240" y="22">window</text><path class="ln" d="M240 33 L240 56 L60 56 L60 81"/><rect class="nd sel" x="19.0" y="81" width="82" height="22" rx="4"/><text class="tx" x="60" y="92">document</text><path class="ln" d="M240 33 L240 56 L150 56 L150 81"/><rect class="nd " x="109.0" y="81" width="82" height="22" rx="4"/><text class="tx" x="150" y="92">screen</text><path class="ln" d="M240 33 L240 56 L240 56 L240 81"/><rect class="nd " x="199.0" y="81" width="82" height="22" rx="4"/><text class="tx" x="240" y="92">location</text><path class="ln" d="M240 33 L240 56 L330 56 L330 81"/><rect class="nd " x="289.0" y="81" width="82" height="22" rx="4"/><text class="tx" x="330" y="92">history</text><path class="ln" d="M240 33 L240 56 L420 56 L420 81"/><rect class="nd " x="379.0" y="81" width="82" height="22" rx="4"/><text class="tx" x="420" y="92">navigator</text></svg><figcaption><code>document</code> (the DOM) is one child of <code>window</code>; the others make up the BOM.</figcaption></figure>
+<div class="cs">
+<div class="card wide"><h3>window (global object)</h3>
+<pre class="code"><code>alert(&quot;Bonjour&quot;);                   <span class="cm">// = window.alert</span>
+const nom = prompt(&quot;Votre nom ?&quot;, &quot;Lou&quot;);  <span class="cm">// string, or null if cancelled</span>
+const ok = confirm(&quot;Supprimer ?&quot;);  <span class="cm">// true / false</span>
+window.innerWidth; window.innerHeight;  <span class="cm">// viewport size in px</span>
+window.scrollTo(0, 0);              <span class="cm">// to a position</span>
+window.scrollBy(0, 200);            <span class="cm">// by an offset</span>
+window.scrollTo({ top: 0, behavior: &quot;smooth&quot; });
+window.open(&quot;https://example.com&quot;);  window.close();</code></pre>
+<p class="k">Globals live on <code>window</code>: <code>window.document</code>, <code>window.setTimeout</code> … so <code>window.</code> can be left out.</p>
+</div>
+<div class="card"><h3>screen, location, history, navigator</h3>
+<div class="scroll"><table class="t"><thead><tr><th>Object</th><th>Useful members</th></tr></thead><tbody><tr><td><code>screen</code></td><td><code>width</code>, <code>height</code>, <code>availWidth</code>, <code>availHeight</code>, <code>orientation.type</code> (e.g. "landscape-primary")</td></tr><tr><td><code>location</code></td><td><code>href</code> (read, or assign to navigate), <code>hostname</code>, <code>pathname</code>, <code>search</code>, <code>hash</code>, <code>reload()</code>, <code>assign(url)</code>, <code>replace(url)</code></td></tr><tr><td><code>history</code></td><td><code>back()</code>, <code>forward()</code>, <code>go(-2)</code>, <code>length</code></td></tr><tr><td><code>navigator</code></td><td><code>platform</code>, <code>userAgent</code>, <code>language</code>, <code>onLine</code>, <code>geolocation</code>, <code>clipboard</code></td></tr></tbody></table></div>
+<pre class="code"><code><span class="cm">// on https://site.dz/cours/js.html?ch=4#dom</span>
+location.pathname              <span class="cm">// &quot;/cours/js.html&quot;</span>
+location.search                <span class="cm">// &quot;?ch=4&quot;</span>
+location.hash                  <span class="cm">// &quot;#dom&quot;</span>
+new URLSearchParams(location.search).get(&quot;ch&quot;)  <span class="cm">// &quot;4&quot;</span>
+location.href = &quot;page2.html&quot;;  <span class="cm">// go to another page</span></code></pre>
+</div>
+</div></section>
+<section class="sec" id="s15"><div class="sec-h"><span class="num">15</span><h2>Events <span class="fr">(événements)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+<div class="cs">
+<div class="card wide"><h3>Three ways to attach</h3>
+<pre class="code"><code><span class="cm">&lt;!-- 1. HTML attribute --&gt;</span>
+&lt;button onclick=&quot;doTraitement()&quot;&gt;Incrémenter&lt;/button&gt;
+&lt;h2 onmouseover=&quot;this.style.color=&#x27;red&#x27;&quot;
+    onmouseleave=&quot;this.style.color=&#x27;&#x27;&quot;&gt;Titre1&lt;/h2&gt;</code></pre>
+<pre class="code"><code>const btn = document.getElementById(&quot;btn&quot;);
+btn.onclick = doTraitement;  <span class="cm">// 2. property: one handler only</span>
+btn.addEventListener(&quot;click&quot;, doTraitement);  <span class="cm">// 3. listener: many, removable</span>
+btn.removeEventListener(&quot;click&quot;, doTraitement);  <span class="cm">// same function reference</span>
+btn.addEventListener(&quot;click&quot;, f, { once: true });  <span class="cm">// runs once</span></code></pre>
+<p class="k">Attribute and property use <code>on</code> + name (<code>onclick</code>). <code>addEventListener</code> uses the bare name (<code>"click"</code>).</p>
+</div>
+<div class="card"><h3>Course counter</h3>
+<pre class="code"><code>let compteur = 0;
+const h1 = document.getElementById(&quot;compt_H1&quot;);
+function doIncrement() {
+  compteur++;
+  h1.innerText = `Compteur=${compteur}`;
+  if (compteur &gt; 5) h1.style.color = &quot;red&quot;;
+}
+const btn = document.getElementById(&quot;btn&quot;);
+btn.addEventListener(&quot;click&quot;, doIncrement);</code></pre>
+</div>
+<div class="card wide"><h3>The event object</h3>
+<pre class="code"><code>el.addEventListener(&quot;click&quot;, e =&gt; {
+  e.type;                <span class="cm">// &quot;click&quot;</span>
+  e.target;              <span class="cm">// element actually clicked (may be a child)</span>
+  e.currentTarget;       <span class="cm">// element the listener is on</span>
+  e.clientX; e.clientY;  <span class="cm">// mouse position</span>
+  e.preventDefault();    <span class="cm">// cancel default: link, submit, right-click menu</span>
+  e.stopPropagation();   <span class="cm">// stop bubbling to parents</span>
+});
+document.addEventListener(&quot;keydown&quot;, e =&gt; console.log(e.key));  <span class="cm">// &quot;Enter&quot;, &quot;a&quot;</span>
+input.addEventListener(&quot;input&quot;, e =&gt; console.log(e.target.value));
+form.addEventListener(&quot;submit&quot;, e =&gt; { e.preventDefault(); /* validate */ });</code></pre>
+</div>
+<div class="card"><h3>Delegation (one listener for many children)</h3>
+<pre class="code"><code>document.getElementById(&quot;box&quot;).addEventListener(&quot;click&quot;, e =&gt; {
+  if (e.target.matches(&quot;h2&quot;)) e.target.classList.toggle(&quot;actif&quot;);
+});</code></pre>
+<p class="k">Works for children added later. Events bubble from the target up to <code>document</code>.</p>
+</div>
+<div class="card wide"><h3>Common events</h3>
+<div class="scroll"><table class="t"><thead><tr><th>Group</th><th>Events</th></tr></thead><tbody><tr><td>Mouse</td><td><code>click</code>, <code>dblclick</code>, <code>contextmenu</code> (right click), <code>mousedown</code>/<code>mouseup</code>, <code>mousemove</code>, <code>mouseover</code>/<code>mouseout</code> (bubble), <code>mouseenter</code>/<code>mouseleave</code> (don't)</td></tr><tr><td>Keyboard</td><td><code>keydown</code>, <code>keyup</code> (<code>e.key</code>, <code>e.code</code>)</td></tr><tr><td>Form</td><td><code>input</code> (each change), <code>change</code> (on commit), <code>submit</code>, <code>focus</code>, <code>blur</code>, <code>reset</code></td></tr><tr><td>Page</td><td><code>DOMContentLoaded</code> (document), <code>load</code>, <code>resize</code>, <code>scroll</code>, <code>beforeunload</code> (window)</td></tr><tr><td>Drag</td><td><code>dragstart</code>, <code>dragover</code> (call <code>preventDefault()</code> to allow a drop), <code>drop</code></td></tr></tbody></table></div>
+<pre class="code"><code>div.addEventListener(&quot;dblclick&quot;, () =&gt; console.log(&quot;Double clic&quot;));
+div.addEventListener(&quot;contextmenu&quot;, e =&gt; { e.preventDefault(); alert(&quot;Clic droit !&quot;); });
+input.addEventListener(&quot;focus&quot;, () =&gt; input.style.background = &quot;yellow&quot;);
+input.addEventListener(&quot;blur&quot;, () =&gt; input.style.background = &quot;&quot;);
+window.addEventListener(&quot;load&quot;, () =&gt; console.log(&quot;Page chargée&quot;));
+zone.addEventListener(&quot;dragover&quot;, e =&gt; e.preventDefault());
+zone.addEventListener(&quot;drop&quot;, e =&gt; console.log(&quot;Déposé !&quot;));</code></pre>
+</div>
+</div></section>
+<section class="sec" id="notes"><div class="note errata"><span class="tag">Notes on the original course</span><ul><li>Slide 30 says “JavaScript (anciennement ECMAScript)”. It is the other way round: ECMAScript is the name of the standard JavaScript follows; the language was first called Mocha, then LiveScript.</li><li>Slide 41 heads the comparison operators “Rationnels”. They are relational operators (relationnels).</li><li>Slide 51 says <code>var</code> becomes global because of hoisting. <code>var</code> is function-scoped (it ignores blocks); hoisting only moves the declaration to the top of the function, with the value <code>undefined</code>. It is global only when declared outside any function.</li><li>Slide 139 lists the event as “dbclick”. The name is <code>dblclick</code> (the slide's own code uses the right one).</li><li>Slide 140 names the attributes “onmousover” and “onmousleave”. They are <code>onmouseover</code> and <code>onmouseleave</code>.</li></ul></div></section>
+<footer class="foot">Based on PRAVAN (Programmation Avancée) Chapter 4, “JavaScript: Site Interactif”, Dr. M. Boubenia, 2025. Every <code>// →</code> value and logged output was checked by running the snippets in Chromium.</footer>
+</div>
+</body>
+</html>
