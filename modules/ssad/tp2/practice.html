@@ -1,0 +1,958 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SSAD · Ch 2 · Practice</title>
+<script>/* study-hub:theme */(function(){var r=document.documentElement;try{var t=localStorage.getItem("studyhub-theme");if(t)r.setAttribute("data-theme",t);}catch(e){}document.addEventListener("DOMContentLoaded",function(){var b=document.getElementById("theme-toggle");if(b)b.addEventListener("click",function(){var c=r.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");var n=c==="dark"?"light":"dark";r.setAttribute("data-theme",n);try{localStorage.setItem("studyhub-theme",n);}catch(e){}});});})();</script>
+<style>
+/* study-hub:base v3 — shared by every remake. build.py swaps in the current copy, so uploads never drift */
+/* tokens: a copy of assets/tokens.css so a page previews on its own; the build links the real file */
+/* Cahier design tokens. Light ("paper") is the default; dark ("night ink") follows.
+   Theme switch: <html data-theme="light|dark">; no attribute = follow the OS. */
+
+:root {
+  /* Brand (theme-independent) */
+  --brand-paper: #F3EBDD;
+  --brand-ink:   #1E2A44;
+  --brand-amber: #D9952B;   /* ribbon: progress, "resume", bookmarks */
+  --brand-green: #3D6B5A;   /* correct / completed */
+
+  /* Type */
+  --font-display: "Fraunces", Georgia, serif;          /* headings, lesson titles */
+  --font-body:    "Source Sans 3", system-ui, sans-serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, monospace;
+
+  --text-xs: 0.8125rem;  /* 13 */
+  --text-sm: 0.9375rem;  /* 15 */
+  --text-md: 1.0625rem;  /* 17 body — reading app, slightly larger */
+  --text-lg: 1.375rem;   /* 22 */
+  --text-xl: 1.875rem;   /* 30 */
+  --text-2xl: 2.5rem;    /* 40 lesson hero */
+  --leading-body: 1.65;
+  --measure: 68ch;       /* max line length for lesson text */
+
+  /* Spacing (4px grid) */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-5: 24px; --space-6: 32px; --space-7: 48px; --space-8: 72px;
+
+  /* Shape — quiet, paper-like */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Motion — minimal */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-fast: 120ms;
+  --dur-med: 200ms;
+
+  /* Light / paper (default) */
+  --bg:          #F7F1E6;
+  --surface:     #FFFCF6;
+  --surface-2:   #EFE6D6;
+  --border:      #E2D8C6;
+  --text:        #1E2A44;
+  --text-muted:  #5C6475;
+  --accent:      var(--brand-amber);   /* fills: ribbon, progress bars */
+  --accent-text: #8A5A12;              /* amber text/links on paper (AA) */
+  --link:        #1E4FA0;
+  --correct:     #3D6B5A;
+  --correct-bg:  #E3EEE8;
+  --wrong:       #B4443A;
+  --wrong-bg:    #F6E2DF;
+  --note-bg:     #FBF0D9;              /* "In plain words" / worked example boxes */
+  --focus:       #1E4FA0;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:          #141C2E;
+    --surface:     #1B2540;
+    --surface-2:   #233052;
+    --border:      #2E3A5C;
+    --text:        #F3EBDD;
+    --text-muted:  #A9B0C0;
+    --accent:      #E5A945;
+    --accent-text: #F0BE6A;
+    --link:        #8DB4F5;
+    --correct:     #6FA88F;
+    --correct-bg:  #1F3A33;
+    --wrong:       #E07A6E;
+    --wrong-bg:    #43262A;
+    --note-bg:     #2A2A3A;
+    --focus:       #8DB4F5;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg:          #141C2E;
+  --surface:     #1B2540;
+  --surface-2:   #233052;
+  --border:      #2E3A5C;
+  --text:        #F3EBDD;
+  --text-muted:  #A9B0C0;
+  --accent:      #E5A945;
+  --accent-text: #F0BE6A;
+  --link:        #8DB4F5;
+  --correct:     #6FA88F;
+  --correct-bg:  #1F3A33;
+  --wrong:       #E07A6E;
+  --wrong-bg:    #43262A;
+  --note-bg:     #2A2A3A;
+  --focus:       #8DB4F5;
+  color-scheme: dark;
+}
+
+/* Project additions, not in the brand kit. */
+:root {
+  /* Figures in lessons. Amber means "my place" only, so diagrams use these. */
+  --fig: #1E4FA0; --fig-soft: #DCE6F5;
+  --c1: #E8C98C; --c2: #E3AE9B; --c3: #AFCDB8; --c4: #B9C6E0;  /* dark text sits on all of them */
+  --font-math: "Cambria Math", "STIX Two Math", Georgia, serif;
+  --primary: var(--text); --on-primary: var(--bg);             /* main buttons: ink, never amber */
+  /* Names older remakes use in their own CSS, mapped onto this theme. */
+  --ink: var(--text); --muted: var(--text-muted); --faint: var(--text-muted);
+  --line: var(--border); --line-strong: var(--border); --sunken: var(--surface-2); --hover: var(--surface-2);
+  --code-bg: var(--surface-2); --ok: var(--correct); --ok-soft: var(--correct-bg); --hi: var(--wrong); --hi-soft: var(--wrong-bg);
+  --accent-soft: var(--fig-soft);
+  --f-display: var(--font-display); --f-body: var(--font-body); --f-mono: var(--font-mono); --f-math: var(--font-math);
+  --l0: #8FA8D3; --l1: #A9BDDF; --l2: #C2D1E8; --l3: #D9E3F1; --l4: #ECF1F8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --fig: #8DB4F5; --fig-soft: #233052; }
+}
+:root[data-theme="dark"] { --fig: #8DB4F5; --fig-soft: #233052; }
+/* /tokens */
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
+body{
+  background:var(--bg); color:var(--text); font-family:var(--font-body); font-size:var(--text-md); line-height:var(--leading-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:28px var(--space-8); margin:0;
+}
+.wrap{max-width:1040px;margin:0 auto}
+a{color:var(--link);text-decoration:underline;text-underline-offset:2px}
+a,button,label,summary,input,select{touch-action:manipulation}
+a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+code{font-family:var(--font-mono);font-size:.86em;background:var(--surface-2);padding:1px 5px;border-radius:var(--radius-sm)}
+.en{font-weight:600}
+.fr{color:var(--text-muted);font-style:italic;font-weight:400}
+sub,sup{line-height:0}
+.m{font-family:var(--font-math);font-style:italic}
+.ov{text-decoration:overline}
+.eq{font-family:var(--font-math);font-size:var(--text-md);background:var(--surface-2);border-radius:var(--radius-sm);padding:var(--space-3) var(--space-4);margin:var(--space-3) 0;overflow-x:auto;white-space:pre}
+.res{display:inline-block;background:var(--correct-bg);color:var(--text);border-radius:var(--radius-sm);padding:1px 7px;font-weight:600;font-variant-numeric:tabular-nums}
+.toggle{position:fixed;top:14px;right:max(14px,env(safe-area-inset-right,0px));z-index:20;display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;padding:0;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:var(--radius-md);cursor:pointer;transition:background var(--dur-fast) var(--ease-out)}
+.toggle svg{width:20px;height:20px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:var(--space-6);align-items:center;padding-bottom:var(--space-6)}
+.hero.solo{grid-template-columns:minmax(0,1fr)}
+.eyebrow{font:600 var(--text-xs)/1.3 var(--font-body);color:var(--text-muted)}
+h1{font-family:var(--font-display);font-weight:600;font-variation-settings:"opsz" 72;font-size:clamp(1.875rem,4.4vw,var(--text-2xl));line-height:1.12;letter-spacing:-.01em;margin:var(--space-2) 0 var(--space-3);text-wrap:balance}
+.lead{font-size:var(--text-lg);line-height:1.4;color:var(--text-muted);max-width:var(--measure);margin:0 0 var(--space-4)}
+.how{display:grid;gap:var(--space-2);margin:0;padding:0;list-style:none;max-width:var(--measure)}
+.how li{display:flex;gap:var(--space-3);align-items:baseline;font-size:var(--text-sm)}
+.how .tag{flex:0 0 auto;min-width:10em}
+.pills{display:flex;flex-wrap:wrap;gap:var(--space-2);margin:0}
+.pill{background:var(--surface-2);color:var(--text);border-radius:var(--radius-sm);padding:2px 10px;font:600 var(--text-xs) var(--font-body);font-variant-numeric:tabular-nums}
+.herofig{margin:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4);min-width:0;overflow-x:auto}
+.herofig svg{display:block;width:100%;height:auto;min-width:var(--minw,0)}
+.herofig figcaption{font-size:var(--text-xs);color:var(--text-muted);margin-top:var(--space-2)}
+
+/* resume chip: the ribbon marks my place */
+.resume-chip{display:inline-flex;align-items:center;gap:var(--space-2);min-height:44px;margin:0 0 var(--space-5);padding:var(--space-2) var(--space-4) var(--space-2) var(--space-3);background:var(--note-bg);border:1px solid var(--border);border-radius:var(--radius-md);color:var(--text);font:600 var(--text-sm)/1.3 var(--font-body);text-align:left;cursor:pointer}
+.resume-chip svg{flex-shrink:0;width:9px;height:22px}
+
+/* contents */
+.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:var(--space-5);padding-block:var(--space-5) var(--space-2);border-top:1px solid var(--border)}
+.part h3{font:600 var(--text-xs)/1.3 var(--font-body);color:var(--text-muted);margin:0 0 var(--space-2)}
+.part ul{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.part a{display:flex;gap:var(--space-3);text-decoration:none;color:var(--text);padding:var(--space-1) 0;font-size:var(--text-sm)}
+.part a small{display:block;color:var(--text-muted);font-size:var(--text-xs);line-height:1.35}
+.part .n{font:400 var(--text-xs)/1.9 var(--font-mono);color:var(--text-muted);min-width:1.6em}
+.part .sc{margin-left:auto;font:400 var(--text-xs)/1.9 var(--font-mono);color:var(--text-muted);white-space:nowrap}
+
+/* sections */
+.sec{margin-top:var(--space-7);padding-top:var(--space-6);border-top:1px solid var(--border);scroll-margin-top:var(--space-3)}
+.sec-h{display:flex;align-items:baseline;gap:var(--space-3);flex-wrap:wrap}
+.num{font:600 var(--text-xl)/1.15 var(--font-display);color:var(--text-muted)}
+.sec h2{font-family:var(--font-display);font-weight:600;font-size:var(--text-xl);line-height:1.15;margin:0;text-wrap:balance;min-width:0}
+.sec h2 .fr{font-family:var(--font-body);font-size:.6em}
+.sec h3{font-family:var(--font-display);font-weight:500;font-size:var(--text-lg);line-height:1.2;margin:var(--space-5) 0 var(--space-2)}
+.sec h3 .fr{font-family:var(--font-body);font-size:.75em}
+.sec>p,.sec>ul,.sec>ol{max-width:var(--measure)}
+.back{margin-left:auto;font-size:var(--text-xs);color:var(--text-muted);text-decoration:none}
+.secscore{font:400 var(--text-sm) var(--font-mono);color:var(--text-muted)}
+.tag{display:inline-block;font:600 var(--text-xs)/1.3 var(--font-body);color:var(--text-muted)}
+.intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-5);margin-top:var(--space-5)}
+.plain{margin-top:var(--space-5);background:var(--note-bg);border-left:3px solid var(--accent);border-radius:0 var(--radius-md) var(--radius-md) 0;padding:var(--space-3) var(--space-4)}
+.intro .plain{margin-top:0;align-self:start}
+.plain p{margin:var(--space-2) 0 0;max-width:var(--measure)}
+.defs{list-style:none;margin:var(--space-5) 0 0;padding:0;display:grid;gap:var(--space-3);min-width:0}
+.intro .defs{margin-top:0}
+.defs li{display:grid;gap:1px;font-size:var(--text-sm)}
+.defs .mean{color:var(--text-muted)}
+.defs .eg{color:var(--text-muted);font-size:var(--text-sm)}
+.defs .eg::before{content:"e.g. ";font-weight:600;color:var(--text)}
+.callout{margin-top:var(--space-5);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4)}
+.callout>b:first-child{color:var(--text)}
+.callout ol,.callout ul{margin:6px 0 2px;padding-left:22px}
+.callout li{margin:var(--space-1) 0}
+details.more{margin-top:var(--space-3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:var(--space-2) var(--space-4);background:var(--surface)}
+details.more summary{cursor:pointer;font-weight:600}
+
+/* figures */
+.figs{display:flex;flex-wrap:wrap;gap:var(--space-4);margin-top:var(--space-5)}
+.figs figure{flex:1 1 250px;max-width:430px;min-width:0;margin:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4) var(--space-4) var(--space-3)}
+figure.fig{margin:var(--space-5) 0 0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4) var(--space-4) var(--space-3);overflow-x:auto}
+figure.fig svg{display:block;width:100%;height:auto;min-width:var(--minw,0);max-width:var(--maxw,560px);margin-inline:auto}
+figcaption{font-size:var(--text-xs);color:var(--text-muted);margin-top:var(--space-2);line-height:1.45}
+
+/* worked example */
+.calc{margin-top:var(--space-5);background:var(--note-bg);border-radius:var(--radius-md);padding:var(--space-4)}
+.calc>.tag{color:var(--text)}
+.calc>p{margin:10px 0 0}
+.calc ol{margin:10px 0 0;padding-left:22px}
+.calc li{margin:var(--space-2) 0}
+.calc li>b:first-child{color:var(--text)}
+.calc figure.fig,.calc .figs figure{background:var(--surface)}
+.calc code{background:var(--surface)}
+ul.ln{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:var(--space-2);font-size:var(--text-sm)}
+ul.ln li{padding-left:1.1em;text-indent:-1.1em;overflow-wrap:anywhere}
+ul.ln li::before{content:"\203A\00a0";color:var(--text-muted);font-weight:600}
+
+/* tables */
+.scroll{overflow-x:auto;margin-top:var(--space-3);max-width:100%}
+table.t{border-collapse:collapse;font:400 var(--text-sm)/1.45 var(--font-body);font-variant-numeric:tabular-nums;min-width:260px}
+table.t th{font-weight:600;text-align:left;color:var(--text-muted)}
+table.t th,table.t td{padding:6px 14px 6px 0;border-bottom:1px solid var(--border);vertical-align:top}
+table.t.mono{font-family:var(--font-mono);font-size:var(--text-xs)}
+table.t.mono th,table.t.mono td{white-space:nowrap}
+table.t.grid th,table.t.grid td{padding:6px 10px;border:1px solid var(--border)}
+table.t.grid th{background:var(--surface-2);color:var(--text)}
+table.t .c,table.t.center th,table.t.center td{text-align:center}
+table.t.center .l{text-align:left}
+table.t td.ok{color:var(--correct);font-weight:600}
+table.t td.bad,table.t td.x{color:var(--wrong);font-weight:600}
+table.t tr.best td{background:var(--correct-bg);font-weight:600}
+
+/* notes and footer */
+.note{margin-top:var(--space-5);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4)}
+.note.errata{background:var(--surface-2);border-color:transparent;color:var(--text-muted)}
+.note.errata>.tag{color:var(--text-muted)}
+.note ul,.note ol{margin:var(--space-2) 0 0;padding-left:1.2em;display:grid;gap:var(--space-2);font-size:var(--text-sm)}
+.foot{margin-top:var(--space-7);padding-top:var(--space-4);border-top:1px solid var(--border);font-size:var(--text-xs);color:var(--text-muted)}
+
+/* practice */
+.prog{display:flex;align-items:center;gap:var(--space-3);max-width:460px;margin-top:var(--space-4);font:400 var(--text-sm) var(--font-mono);color:var(--text-muted)}
+.prog .track{flex:1;height:6px;border-radius:var(--radius-sm);background:var(--surface-2);overflow:hidden}
+.prog .fill{display:block;height:100%;width:0;background:var(--accent);transition:width var(--dur-med) var(--ease-out)}
+.legend{display:flex;gap:var(--space-2) var(--space-4);flex-wrap:wrap;margin-top:var(--space-4);font-size:var(--text-sm);color:var(--text-muted)}
+.setmeta{margin:6px 0 0;color:var(--text-muted);font-size:var(--text-sm)}
+.prob{margin-top:var(--space-4);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4);scroll-margin-top:var(--space-3);transition:border-color var(--dur-med) var(--ease-out)}
+.prob.ok{border-color:var(--correct)}
+.prob.bad{border-color:var(--wrong)}
+.ph{display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap}
+.pid{font:400 var(--text-sm) var(--font-mono);color:var(--text-muted)}
+.ph .pt{font:600 var(--text-md)/1.35 var(--font-body);margin:0;min-width:0;flex:1 1 16em}
+.lvl{font:600 var(--text-xs)/1 var(--font-body);padding:4px 8px;border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text-muted)}
+.lw,.ls,.lc{background:var(--surface-2);color:var(--text-muted)}
+.lc{color:var(--text)}
+.done{margin-left:auto;display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs);color:var(--text-muted);cursor:pointer}
+.done input{width:18px;height:18px;accent-color:var(--correct);cursor:pointer}
+.pq{margin-top:10px;max-width:var(--measure)}
+.pq>p,.prob>p{margin:10px 0 0}
+.parts{margin:var(--space-2) 0 0;padding-left:1.4em;display:grid;gap:var(--space-1)}
+.pfs{display:flex;flex-wrap:wrap;gap:var(--space-3);margin-top:var(--space-3)}
+.pfs figure{flex:1 1 200px;max-width:340px;min-width:0;margin:0;background:var(--surface-2);border-radius:var(--radius-sm);padding:var(--space-3) var(--space-3) var(--space-2)}
+.prob details{margin-top:var(--space-3)}
+.prob summary{cursor:pointer;display:inline-flex;align-items:center;gap:var(--space-2);font:600 var(--text-sm) var(--font-body);color:var(--text);padding:var(--space-1) var(--space-3) var(--space-1) var(--space-2);border-radius:var(--radius-sm);list-style:none}
+.prob summary::-webkit-details-marker{display:none}
+.prob summary::before{content:"\203A";font-size:1.2em;line-height:1;color:var(--text-muted);transition:transform var(--dur-fast) var(--ease-out)}
+.prob details[open]>summary::before{transform:rotate(90deg)}
+.sol{margin-top:var(--space-2);background:var(--surface-2);border-radius:var(--radius-sm);padding:var(--space-2) var(--space-4) var(--space-3);font-size:var(--text-sm)}
+.sol p{margin:10px 0 0;max-width:var(--measure)}
+.sol li>b:first-child{color:var(--text)}
+.sol .pfs figure,.sol .eq{background:var(--surface)}
+.sol code{background:var(--surface)}
+.aid{margin-top:var(--space-3);background:var(--surface-2);border-radius:var(--radius-sm);padding:10px var(--space-3);font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;overflow-x:auto}
+.aid>b:first-child{color:var(--text)}
+.prob input[type=text]{width:100%;min-width:56px;max-width:90px;font:inherit;font-variant-numeric:tabular-nums;text-align:center;padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text)}
+.prob textarea{width:100%;font:inherit;padding:var(--space-2) var(--space-3);border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text)}
+.prob select{font:inherit;padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text)}
+.prob input.ok,.prob select.ok{border-color:var(--correct);background:var(--correct-bg)}
+.prob input.bad,.prob select.bad{border-color:var(--wrong);background:var(--wrong-bg)}
+table.t.inp td{padding:3px 6px 3px 0}
+.scalars{display:flex;flex-wrap:wrap;gap:var(--space-3) var(--space-4);margin:var(--space-3) 0 0}
+label.sc{display:flex;align-items:center;gap:var(--space-2)}
+label.sc>span{font-weight:600;min-width:34px}
+label.sc small{color:var(--text-muted);font-size:var(--text-xs)}
+.mc{display:grid;gap:var(--space-2);margin:var(--space-3) 0 0}
+label.opt{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;background:var(--surface);transition:background var(--dur-fast) var(--ease-out),border-color var(--dur-med) var(--ease-out)}
+label.opt.ok{border-color:var(--correct);background:var(--correct-bg)}
+label.opt.bad{border-color:var(--wrong);background:var(--wrong-bg)}
+label.opt.reveal{border-color:var(--correct)}
+/* correct and wrong are never colour alone */
+label.opt.ok::after{content:"\2713\00a0 Correct";margin-left:auto;font-size:var(--text-xs);font-weight:600;color:var(--correct)}
+label.opt.bad::after{content:"\2715\00a0Wrong";margin-left:auto;font-size:var(--text-xs);font-weight:600;color:var(--wrong)}
+.prob.ok>.ph::after{content:"\2713\00a0 Correct";font-size:var(--text-xs);font-weight:600;color:var(--correct)}
+.prob.bad>.ph::after{content:"\2715\00a0Wrong";font-size:var(--text-xs);font-weight:600;color:var(--wrong)}
+.fb.ok::before{content:"\2713\00a0"}
+.fb.bad::before{content:"\2715\00a0"}
+label.opt input{margin-top:6px;accent-color:var(--primary)}
+.chips-set{display:inline-flex;flex-wrap:wrap;gap:6px;vertical-align:middle}
+label.chipbox{position:relative;border:1px solid var(--border);border-radius:var(--radius-sm);padding:3px 12px;cursor:pointer;background:var(--surface);font-size:var(--text-sm)}
+label.chipbox:has(input:checked){border-color:var(--text);background:var(--text);color:var(--bg)}
+label.chipbox input{position:absolute;opacity:0;pointer-events:none}
+.chips-set.ok label.chipbox:has(input:checked){border-color:var(--correct);background:var(--correct-bg);color:var(--correct)}
+.chips-set.bad{outline:2px solid var(--wrong);outline-offset:3px;border-radius:var(--radius-sm)}
+.actions{display:flex;flex-wrap:wrap;gap:var(--space-2);align-items:center;margin-top:var(--space-3)}
+.b{font:600 var(--text-sm) var(--font-body);min-height:36px;padding:6px var(--space-4);border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;transition:background var(--dur-fast) var(--ease-out)}
+.b.chk{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.fb{font-size:var(--text-sm);font-weight:600}
+.fb.ok{color:var(--correct)} .fb.bad{color:var(--wrong)}
+.solution,.expl{margin-top:var(--space-3);border-top:1px solid var(--border);padding-top:10px;font-size:var(--text-sm)}
+.solution>p,.expl>p{margin:6px 0}
+.expl{color:var(--text-muted)}
+
+/* live figure: a process played step by step (REMAKE_BRIEF.md, "Live figures") */
+.live-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-5);align-items:start}
+figure.fig.live svg{max-width:none;max-height:72vh}
+.live-side{display:grid;gap:var(--space-3);min-width:0}
+.live-side .aid,.live-side .actions{margin-top:0}
+.live-val{display:flex;align-items:baseline;gap:var(--space-2);flex-wrap:wrap}
+.live-val b{font:600 var(--text-xl) var(--font-mono);font-variant-numeric:tabular-nums;color:var(--text)}
+.live input[type=range]{width:100%;margin:0;accent-color:var(--fig)}
+.live-status{min-height:4.4em;padding:var(--space-2) var(--space-3);background:var(--surface-2);border-left:3px solid var(--fig);border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:var(--text-sm)}
+.live-status.ok{border-color:var(--correct);background:var(--correct-bg)}
+.live-status.bad{border-color:var(--wrong);background:var(--wrong-bg)}
+.live-status.ok b{color:var(--correct)} .live-status.bad b{color:var(--wrong)}
+.live table.t{width:100%;min-width:0}
+.live tr.past td{color:var(--text-muted)}
+.live figcaption p{margin:var(--space-2) 0 0;max-width:var(--measure)}
+/* the site zooms pages 125% / 150% on wide screens: keep the whole drawing on screen */
+@media (min-width:1200px){figure.fig.live svg{max-height:58vh}}
+@media (min-width:1500px){figure.fig.live svg{max-height:48vh}}
+
+@media (hover:hover){
+  .toggle:hover,.b:hover,label.opt:hover,.prob summary:hover{background:var(--surface-2)}
+  .b.chk:hover{background:var(--primary);opacity:.88}
+  .part a:hover,.back:hover{color:var(--link)}
+  label.opt.ok:hover{background:var(--correct-bg)} label.opt.bad:hover{background:var(--wrong-bg)}
+}
+@media (max-width:820px){
+  .hero{grid-template-columns:minmax(0,1fr)}
+  .live-grid{grid-template-columns:minmax(0,1fr)}
+  figure.fig.live svg{max-height:60vh}
+  .intro{grid-template-columns:minmax(0,1fr)}
+  .how li{flex-direction:column;gap:2px}
+  body{padding-top:56px}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{.toggle{display:none}body{background:#fff}}
+/* /study-hub:base */
+</style>
+<style>
+
+/* page-specific: terminal blocks, cheatsheet cards, figure classes. Tokens only. */
+pre.code{margin:var(--space-3) 0 0;font:400 12px/1.6 var(--font-mono);background:var(--surface-2);color:var(--text);border-radius:var(--radius-sm);padding:var(--space-2) 12px;overflow-x:auto;white-space:pre;tab-size:2;font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
+.calc pre.code,.sol pre.code{background:var(--surface)}
+pre.code code{background:none;padding:0;font-size:inherit}
+pre.code .pr{color:var(--text-muted);user-select:none}
+pre.code .out{color:var(--fig)}
+pre.code .cm{color:var(--text-muted);font-style:italic}
+.cs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:var(--space-4);margin-top:var(--space-5);align-items:start}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-3) var(--space-4) var(--space-4);min-width:0}
+.card.wide{grid-column:1/-1}
+.card>h3{font:600 var(--text-sm)/1.3 var(--font-body);margin:0;color:var(--text)}
+.card>p{margin:var(--space-2) 0 0;font-size:var(--text-sm);color:var(--text-muted)}
+.card pre.code{background:var(--surface-2)}
+.card table.t{width:100%;min-width:0}
+.card table.t td,.card table.t th{font-size:var(--text-xs)}
+.card table.t td:first-child code{white-space:nowrap}
+.steps{margin:var(--space-3) 0 0;padding-left:1.4em;display:grid;gap:var(--space-2);max-width:var(--measure)}
+.calc .scroll table.t{background:transparent}
+.k{font-family:var(--font-mono);font-size:.86em;overflow-wrap:anywhere;word-break:break-all}
+.live-status code{overflow-wrap:anywhere;word-break:break-all}
+/* svg */
+svg .t{fill:var(--text);font:500 12px var(--font-body)}
+svg .tm{fill:var(--text-muted);font:400 11px var(--font-body)}
+svg .mono{font-family:var(--font-mono);white-space:pre}
+svg .sm{font-size:10px}
+svg .b{font-weight:700}
+svg .mid{text-anchor:middle}
+svg .end{text-anchor:end}
+svg .dk{fill:var(--brand-ink)}
+svg .box{fill:var(--surface-2);stroke:var(--border)}
+svg .pane{fill:var(--surface);stroke:var(--border)}
+svg .c1{fill:var(--c1)} svg .c2{fill:var(--c2)} svg .c3{fill:var(--c3)} svg .c4{fill:var(--c4)}
+svg .soft{fill:var(--fig-soft);stroke:var(--fig)}
+svg .ln{stroke:var(--text-muted);stroke-width:1.2;fill:none}
+svg .dash{stroke-dasharray:4 4}
+svg .ar{stroke:var(--fig);stroke-width:1.6;fill:none}
+svg .arw{stroke:var(--wrong);stroke-width:1.6;fill:none}
+svg .hd{fill:var(--fig)}
+svg .hdw{fill:var(--wrong)}
+svg .hdm{fill:var(--text-muted)}
+svg .hi{fill:none;stroke:var(--wrong);stroke-width:2.2}
+svg .figt{fill:var(--fig)}
+svg .ok{fill:var(--correct)}
+svg .dim{opacity:.28}
+svg .fadein{transition:opacity var(--dur-med) var(--ease-out)}
+
+.prob input.w{max-width:100%;text-align:left;font-family:var(--font-mono);font-size:var(--text-sm)}
+label.sc.pw{flex:1 1 220px;margin-top:var(--space-3)}
+label.sc.pw>span{min-width:auto;white-space:nowrap}
+.tmr{display:inline-flex;align-items:center;gap:var(--space-2);font:400 var(--text-xs) var(--font-mono);color:var(--text-muted)}
+.tmr .tb{min-height:28px;padding:2px 10px;font-size:var(--text-xs)}
+.tmr .el{min-width:3.2em;font-variant-numeric:tabular-nums;color:var(--text)}
+.tmr.over .el{color:var(--wrong);font-weight:600}
+.tmr.over .el::after{content:" over"}
+.ph .done{margin-left:0}
+.codewrap{position:relative}
+.codewrap:has(.cp) pre.code{padding-top:36px}
+.codewrap .cp{position:absolute;top:6px;right:6px;min-height:28px;padding:2px 10px;font-size:var(--text-xs)}
+.aid .codewrap pre.code{background:var(--surface)}
+.aid>b{display:block;margin-top:var(--space-2)}
+.prob .mc code,.prob label.sc code{white-space:nowrap}
+
+</style>
+</head>
+<body>
+<button class="toggle" id="theme-toggle" type="button" aria-label="Toggle light or dark theme"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8a2.83 2.83 0 0 0 4 4 4 4 0 1 1-4-4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.9 4.9 1.4 1.4"/><path d="m17.7 17.7 1.4 1.4"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.3 17.7-1.4 1.4"/><path d="m19.1 4.9-1.4 1.4"/></svg></button>
+<div class="wrap">
+
+<header class="hero" id="top">
+  <div>
+    <div class="eyebrow">SSAD · Chapter 2 · Practice</div>
+    <h1>OpenSSL: timed tasks</h1>
+    <p class="lead">Competition-style drills for TP 2: decrypt, fix the trap, identify the cipher, hash, sign, certify, connect, and move files between machines. Each task has a target time; press Start and beat it. <span class="fr">(Exercices chronométrés)</span></p>
+    <div class="prog" aria-live="polite"><span id="prog-txt">0 / 0 done</span><span class="track"><span class="fill" id="prog-bar"></span></span></div>
+    <p class="setmeta">Work in a terminal on Ubuntu (or a VM) with OpenSSL 3. Every answer was checked by running the same commands with OpenSSL 3.0.13 30 Jan 2024. Timers are not saved; double-click a time to reset it.</p>
+  </div>
+  <figure class="herofig"><svg viewBox="0 0 300 170" role="img" aria-label="A stopwatch next to a terminal" xmlns="http://www.w3.org/2000/svg">
+    <rect x="8" y="20" width="180" height="130" rx="8" class="pane"/><rect x="8" y="20" width="180" height="22" rx="8" class="box"/>
+    <text x="20" y="66" class="t mono sm">$ openssl enc -d …</text><text x="20" y="86" class="t mono sm figt">bad decrypt</text><text x="20" y="106" class="t mono sm">$ openssl enc -d -pbkdf2 …</text><text x="20" y="126" class="t mono sm ok">Hello Prof Nacer</text>
+    <circle cx="246" cy="92" r="40" class="soft"/><line x1="246" y1="92" x2="246" y2="64" class="ar"/><line x1="246" y1="92" x2="266" y2="100" class="ar"/><rect x="238" y="40" width="16" height="8" rx="2" class="box"/>
+    <text x="246" y="152" class="tm mid sm">target 3 min</text></svg><figcaption>Read the error, fix one flag, try again: the whole TP in one loop.</figcaption></figure>
+</header>
+<nav class="toc" aria-label="Contents">
+  <div class="part"><h3>Basics</h3><ul>
+    <li><a href="#a"><span class="n">A</span><span>Warm-up: the tool</span></a></li>
+    <li><a href="#b"><span class="n">B</span><span>Encrypt / decrypt loops</span></a></li>
+    <li><a href="#c"><span class="n">C</span><span>Trap fixing</span></a></li></ul></div>
+  <div class="part"><h3>Analysis</h3><ul>
+    <li><a href="#d"><span class="n">D</span><span>Identify the cipher</span></a></li>
+    <li><a href="#e"><span class="n">E</span><span>Hashes and HMAC</span></a></li>
+    <li><a href="#f"><span class="n">F</span><span>RSA</span></a></li></ul></div>
+  <div class="part"><h3>Network</h3><ul>
+    <li><a href="#g"><span class="n">G</span><span>Certificates</span></a></li>
+    <li><a href="#h"><span class="n">H</span><span>TLS tests</span></a></li>
+    <li><a href="#i"><span class="n">I</span><span>Between machines</span></a></li>
+    <li><a href="#j"><span class="n">J</span><span>Mock round</span></a></li></ul></div>
+</nav>
+
+<section class="sec" id="a">
+  <div class="sec-h"><span class="num">A</span><h2>Warm-up: the tool <span class="fr">(prise en main)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <p class="setmeta">Two-minute reflexes. Unless a task says otherwise, <code>message.txt</code> is the course file: the line <code>Hello Prof Nacer</code> and a newline (17 bytes). Make it with <code>printf 'Hello Prof Nacer\n' &gt; message.txt</code>.</p>
+  
+  <article class="prob" id="p-A1">
+    <div class="ph"><span class="pid">A1</span><span class="pt">List the ciphers</span><span class="lvl lw">Warm-up</span>
+      <span class="tmr" data-no-save data-min="1"><span class="tgt">target 1 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for A1">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-A1"><span>done</span></label></div>
+    <div class="pq"><p>In OpenSSL 3 (Ubuntu 24.04), which command lists the cipher names <code>enc</code> accepts?</p><div class="mc" data-ans="1" data-name="q-A1-1"><label class="opt"><input type="radio" name="q-A1-1" id="q-A1-1-0" value="0"><span><code>openssl list-cipher-commands</code></span></label><label class="opt"><input type="radio" name="q-A1-1" id="q-A1-1-1" value="1"><span><code>openssl list -cipher-commands</code></span></label><label class="opt"><input type="radio" name="q-A1-1" id="q-A1-1-2" value="2"><span><code>openssl help ciphers</code></span></label><label class="opt"><input type="radio" name="q-A1-1" id="q-A1-1-3" value="3"><span><code>Openssl list</code></span></label></div></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p><code>openssl list -cipher-commands</code> (or <code>openssl enc -list</code>). The one-word form is the 1.x spelling and gives <code>Invalid command 'list-cipher-commands'</code>. <code>Openssl</code> with a capital is not found at all.</p></div></details>
+  </article>
+  <article class="prob" id="p-A2">
+    <div class="ph"><span class="pid">A2</span><span class="pt">Count random bytes</span><span class="lvl lw">Warm-up</span>
+      <span class="tmr" data-no-save data-min="2"><span class="tgt">target 2 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for A2">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-A2"><span>done</span></label></div>
+    <div class="pq"><p>Without guessing, run them and count: (1) how many characters does <code>openssl rand -hex 16</code> print (newline not counted)? (2) what size in bytes is <code>k.bin</code> after <code>openssl rand -out k.bin 32</code>?</p><div class="scalars"><label class="sc pw"><span>(1)</span><input type="text" id="q-A2-1" class="" aria-label="answer" placeholder="" autocomplete="off" spellcheck="false" data-ans="32"></label><label class="sc pw"><span>(2)</span><input type="text" id="q-A2-2" class="" aria-label="answer" placeholder="" autocomplete="off" spellcheck="false" data-ans="32"></label></div></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p>(1) <b>32</b>: 16 bytes, two hex characters each. (2) <b>32</b> bytes: <code>rand</code> counts in bytes, never bits. Check with <code>openssl rand -hex 16 | tr -d '\n' | wc -c</code> and <code>wc -c k.bin</code>.</p></div></details>
+  </article>
+  <article class="prob" id="p-A3">
+    <div class="ph"><span class="pid">A3</span><span class="pt">Decode base64</span><span class="lvl lw">Warm-up</span>
+      <span class="tmr" data-no-save data-min="1"><span class="tgt">target 1 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for A3">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-A3"><span>done</span></label></div>
+    <div class="pq"><p>What text is hidden in <code>U1NBRCBUUDI=</code>?</p><input type="text" id="q-A3-1" class="w" aria-label="answer" placeholder="" autocomplete="off" spellcheck="false" data-ans="SSAD TP2" data-cs="1"></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p><code>echo U1NBRCBUUDI= | openssl base64 -d</code> prints <b>SSAD TP2</b>. (base64 is an encoding, not encryption: no password needed.)</p></div></details>
+  </article>
+</section>
+<section class="sec" id="b">
+  <div class="sec-h"><span class="num">B</span><h2>Encrypt / decrypt loops <span class="fr">(boucles chiffrer / déchiffrer)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <p class="setmeta">Paste the block into your terminal to create the file, then find the plaintext. Every ciphertext here was made with OpenSSL 3.0.13 and decrypted again to check it.</p>
+  
+  <article class="prob" id="p-B1">
+    <div class="ph"><span class="pid">B1</span><span class="pt">Decrypt the professor's message</span><span class="lvl ls">Standard</span>
+      <span class="tmr" data-no-save data-min="3"><span class="tgt">target 3 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for B1">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-B1"><span>done</span></label></div>
+    <div class="pq"><p>The professor sends this file, encrypted with AES-256-CBC, <code>-pbkdf2</code>, as base64 text, password <code>nacer2026</code>. What does it say?</p><div class="aid"><div class="codewrap"><button class="b cp" type="button" data-no-save>Copy</button><pre class="code"><code>cat &gt; b1.b64 &lt;&lt;'EOF'
+U2FsdGVkX18lHaOTt+SzebC3fEZMIQ71NOB4oL0XJ3+bEHf+ZoN5K618Afm7Hh/R
+EOF</code></pre></div></div><input type="text" id="q-B1-1" class="w" aria-label="answer" placeholder="" autocomplete="off" spellcheck="false" data-ans="RDV salle 12 a 10h" data-cs="1"></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p><code>openssl enc -aes-256-cbc -pbkdf2 -base64 -d -in b1.b64 -pass pass:nacer2026</code> → <b>RDV salle 12 a 10h</b></p></div></details>
+  </article>
+  <article class="prob" id="p-B2">
+    <div class="ph"><span class="pid">B2</span><span class="pt">Round trip and size</span><span class="lvl ls">Standard</span>
+      <span class="tmr" data-no-save data-min="3"><span class="tgt">target 3 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for B2">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-B2"><span>done</span></label></div>
+    <div class="pq"><p>Encrypt <code>message.txt</code> with AES-256-CBC and <code>-pbkdf2</code>, <b>without</b> <code>-base64</code>, into <code>m.enc</code>; decrypt it into <code>back.txt</code>; check <code>cmp message.txt back.txt</code> prints nothing. How many bytes is <code>m.enc</code>?</p><input type="text" id="q-B2-1" class="" aria-label="answer" placeholder="" autocomplete="off" spellcheck="false" data-ans="48"></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><div class="codewrap"><pre class="code"><code>openssl enc -aes-256-cbc -pbkdf2 -in message.txt -out m.enc -pass pass:tp2
+openssl enc -aes-256-cbc -pbkdf2 -d -in m.enc -out back.txt -pass pass:tp2
+cmp message.txt back.txt &amp;&amp; echo same
+wc -c m.enc</code></pre></div><p><b>48</b> = 8 (<code>Salted__</code>) + 8 (salt) + 32 (17 bytes padded to two 16-byte blocks).</p></div></details>
+  </article>
+  <article class="prob" id="p-B3">
+    <div class="ph"><span class="pid">B3</span><span class="pt">Password file loop</span><span class="lvl ls">Standard</span>
+      <span class="tmr" data-no-save data-min="3"><span class="tgt">target 3 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for B3">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-B3"><span>done</span></label></div>
+    <div class="pq"><p>Make a password file with <code>openssl rand -hex 32 &gt; k.hex</code>, encrypt <code>message.txt</code> with it, decrypt with it. How many bytes is <code>k.hex</code>? And which pair of options reads the password <b>from the file</b>?</p><label class="sc pw"><span>bytes</span><input type="text" id="q-B3-1" class="" aria-label="answer" placeholder="" autocomplete="off" spellcheck="false" data-ans="65"></label><div class="mc" data-ans="1" data-name="q-B3-2"><label class="opt"><input type="radio" name="q-B3-2" id="q-B3-2-0" value="0"><span><code>-k k.hex</code> to encrypt, <code>-k k.hex</code> to decrypt</span></label><label class="opt"><input type="radio" name="q-B3-2" id="q-B3-2-1" value="1"><span><code>-kfile k.hex</code> to encrypt, <code>-pass file:k.hex</code> to decrypt</span></label><label class="opt"><input type="radio" name="q-B3-2" id="q-B3-2-2" value="2"><span><code>-pass k.hex</code> on both</span></label></div></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p><b>65</b> bytes: 64 hex characters + a newline (ignored by enc). <code>-kfile</code> and <code>-pass file:</code> both read the first line, so they mix fine. <code>-k k.hex</code> would use the 5 letters <code>k.hex</code> as password (it still "works" on both sides, but the file is useless). <code>-pass k.hex</code> is an error: <code>-pass</code> needs <code>pass:</code>, <code>file:</code>, <code>env:</code>...</p><div class="codewrap"><pre class="code"><code>openssl enc -aes-256-cbc -pbkdf2 -in message.txt -out m.enc -kfile k.hex
+openssl enc -aes-256-cbc -pbkdf2 -d -in m.enc -pass file:k.hex</code></pre></div></div></details>
+  </article>
+  <article class="prob" id="p-B4">
+    <div class="ph"><span class="pid">B4</span><span class="pt">Raw key, no password</span><span class="lvl lc">Competition</span>
+      <span class="tmr" data-no-save data-min="4"><span class="tgt">target 4 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for B4">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-B4"><span>done</span></label></div>
+    <div class="pq"><p>This one was made with <code>-aes-128-cbc</code>, a raw key and IV (no password, no salt), as base64. Key <code>3e6d6d27ea825e8f6ad2ffa725f4c2bc</code>, IV <code>49103112ed1dda998b5d5ad3851f8d20</code>. Plaintext?</p><div class="aid"><div class="codewrap"><button class="b cp" type="button" data-no-save>Copy</button><pre class="code"><code>cat &gt; b4.b64 &lt;&lt;'EOF'
+i0gKgjZfgDBe2iExlrn2Yw==
+EOF</code></pre></div></div><input type="text" id="q-B4-1" class="w" aria-label="answer" placeholder="" autocomplete="off" spellcheck="false" data-ans="cle brute OK" data-cs="1"></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p><code>openssl enc -aes-128-cbc -d -base64 -K 3e6d6d27ea825e8f6ad2ffa725f4c2bc -iv 49103112ed1dda998b5d5ad3851f8d20 -in b4.b64</code> → <b>cle brute OK</b>. No <code>-pbkdf2</code> here: there is no password to stretch, and the text does not start with <code>U2FsdGVkX1</code> (no <code>Salted__</code> header).</p></div></details>
+  </article>
+  <article class="prob" id="p-B5">
+    <div class="ph"><span class="pid">B5</span><span class="pt">The iteration count</span><span class="lvl lc">Competition</span>
+      <span class="tmr" data-no-save data-min="4"><span class="tgt">target 4 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for B5">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-B5"><span>done</span></label></div>
+    <div class="pq"><p>AES-256-CBC, <code>-pbkdf2</code>, base64, password <code>usthb</code>. With the default settings you get <code>bad decrypt</code>. The sender's note says "200 000". Plaintext?</p><div class="aid"><div class="codewrap"><button class="b cp" type="button" data-no-save>Copy</button><pre class="code"><code>cat &gt; b5.b64 &lt;&lt;'EOF'
+U2FsdGVkX1/SnekjptHk/q6vZBRYeAomOcjEENang7NAfz7/xup1sPc4jnZX+86p
+EOF</code></pre></div></div><input type="text" id="q-B5-1" class="w" aria-label="answer" placeholder="" autocomplete="off" spellcheck="false" data-ans="les iterations comptent" data-cs="1"></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p><code>openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -base64 -d -in b5.b64 -pass pass:usthb</code> → <b>les iterations comptent</b>. <code>-iter</code> must match too; the default is 10 000.</p></div></details>
+  </article>
+</section>
+<section class="sec" id="c">
+  <div class="sec-h"><span class="num">C</span><h2>Trap fixing <span class="fr">(pièges)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <p class="setmeta">Each task shows a real command and the real OpenSSL output. The file <code>crypted</code> was made with <code>openssl enc -aes-256-cbc -pbkdf2 -base64 -in message.txt -out crypted -pass pass:tp2</code>.</p>
+  
+  <article class="prob" id="p-C1">
+    <div class="ph"><span class="pid">C1</span><span class="pt">Fix the command</span><span class="lvl ls">Standard</span>
+      <span class="tmr" data-no-save data-min="1"><span class="tgt">target 1 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for C1">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-C1"><span>done</span></label></div>
+    <div class="pq"><p>A teammate runs this and gets the output shown. What is the fix?</p><div class="codewrap"><pre class="code"><code>$ openssl enc -aes-256-cc -base64 -in message.txt -out crypted -pass pass:tp2
+enc: Unknown cipher: aes-256-cc
+enc: Use -help for summary.</code></pre></div><div class="mc" data-ans="1" data-name="q-C1-1"><label class="opt"><input type="radio" name="q-C1-1" id="q-C1-1-0" value="0"><span>Add -pbkdf2</span></label><label class="opt"><input type="radio" name="q-C1-1" id="q-C1-1-1" value="1"><span>Write -aes-256-cbc</span></label><label class="opt"><input type="radio" name="q-C1-1" id="q-C1-1-2" value="2"><span>Install the legacy provider</span></label></div></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p>"Unknown cipher" = the name is wrong. The handout's <code>-aes-256-cc</code> is a typo for <code>-aes-256-cbc</code>.</p></div></details>
+  </article>
+  <article class="prob" id="p-C2">
+    <div class="ph"><span class="pid">C2</span><span class="pt">Fix the command</span><span class="lvl ls">Standard</span>
+      <span class="tmr" data-no-save data-min="2"><span class="tgt">target 2 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for C2">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-C2"><span>done</span></label></div>
+    <div class="pq"><p>A teammate runs this and gets the output shown. What is the fix?</p><div class="codewrap"><pre class="code"><code>$ openssl enc -aes-256-cbc -pbkdf2 -base64 -in crypted -out clear.txt -pass pass:tp2; head -c 24 clear.txt
+U2FsdGVkX1/yiYHWEya0iXSI</code></pre></div><div class="mc" data-ans="1" data-name="q-C2-1"><label class="opt"><input type="radio" name="q-C2-1" id="q-C2-1-0" value="0"><span>Wrong password</span></label><label class="opt"><input type="radio" name="q-C2-1" id="q-C2-1-1" value="1"><span>Missing -d: the file was encrypted a second time</span></label><label class="opt"><input type="radio" name="q-C2-1" id="q-C2-1-2" value="2"><span>Missing -base64</span></label></div></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p>No error and the "decrypted" file starts with <code>U2FsdGVkX1</code> (= <code>Salted__</code>): it is a fresh ciphertext. Add <code>-d</code>.</p></div></details>
+  </article>
+  <article class="prob" id="p-C3">
+    <div class="ph"><span class="pid">C3</span><span class="pt">Fix the command</span><span class="lvl ls">Standard</span>
+      <span class="tmr" data-no-save data-min="1"><span class="tgt">target 1 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for C3">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-C3"><span>done</span></label></div>
+    <div class="pq"><p>A teammate runs this and gets the output shown. What is the fix?</p><div class="codewrap"><pre class="code"><code>$ openssl enc -aes-256-cbc -pbkdf2 -d -in crypted -pass pass:tp2
+bad magic number</code></pre></div><div class="mc" data-ans="0" data-name="q-C3-1"><label class="opt"><input type="radio" name="q-C3-1" id="q-C3-1-0" value="0"><span>Add -base64</span></label><label class="opt"><input type="radio" name="q-C3-1" id="q-C3-1-1" value="1"><span>Remove -pbkdf2</span></label><label class="opt"><input type="radio" name="q-C3-1" id="q-C3-1-2" value="2"><span>Use -kfile</span></label></div></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p>"bad magic number" = no <code>Salted__</code> at the start of what was read: the file is base64 text. Add <code>-base64</code>.</p></div></details>
+  </article>
+  <article class="prob" id="p-C4">
+    <div class="ph"><span class="pid">C4</span><span class="pt">Fix the command</span><span class="lvl ls">Standard</span>
+      <span class="tmr" data-no-save data-min="2"><span class="tgt">target 2 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for C4">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-C4"><span>done</span></label></div>
+    <div class="pq"><p>A teammate runs this and gets the output shown. What is the fix?</p><div class="codewrap"><pre class="code"><code>$ openssl enc -aes-256-cbc -base64 -d -in crypted -pass pass:tp2
+*** WARNING : deprecated key derivation used.
+Using -iter or -pbkdf2 would be better.
+bad decrypt</code></pre></div><div class="mc" data-ans="0" data-name="q-C4-1"><label class="opt"><input type="radio" name="q-C4-1" id="q-C4-1-0" value="0"><span>Add -pbkdf2</span></label><label class="opt"><input type="radio" name="q-C4-1" id="q-C4-1-1" value="1"><span>Add -nosalt</span></label><label class="opt"><input type="radio" name="q-C4-1" id="q-C4-1-2" value="2"><span>Use -aes-128-cbc</span></label></div></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p>The warning says the old derivation is in use on <b>this</b> side; the sender used <code>-pbkdf2</code>, so the keys differ and the padding check fails. Add <code>-pbkdf2</code>.</p></div></details>
+  </article>
+  <article class="prob" id="p-C5">
+    <div class="ph"><span class="pid">C5</span><span class="pt">Fix the command</span><span class="lvl ls">Standard</span>
+      <span class="tmr" data-no-save data-min="2"><span class="tgt">target 2 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for C5">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-C5"><span>done</span></label></div>
+    <div class="pq"><p>A teammate runs this and gets the output shown. What is the fix?</p><div class="codewrap"><pre class="code"><code>$ openssl enc -aes-256-cbc -pbkdf2 -d -in c2.bin -k cle.key
+bad decrypt</code></pre></div><div class="mc" data-ans="1" data-name="q-C5-1"><label class="opt"><input type="radio" name="q-C5-1" id="q-C5-1-0" value="0"><span>cle.key is corrupt</span></label><label class="opt"><input type="radio" name="q-C5-1" id="q-C5-1-1" value="1"><span>Use -kfile cle.key (or -pass file:cle.key): -k takes the word itself</span></label><label class="opt"><input type="radio" name="q-C5-1" id="q-C5-1-2" value="2"><span>Add -base64</span></label></div></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p><code>c2.bin</code> was encrypted with <code>-kfile cle.key</code>. <code>-k cle.key</code> uses the 7 letters <code>cle.key</code> as password, so the key is wrong.</p></div></details>
+  </article>
+  <article class="prob" id="p-C6">
+    <div class="ph"><span class="pid">C6</span><span class="pt">Fix the command</span><span class="lvl ls">Standard</span>
+      <span class="tmr" data-no-save data-min="1"><span class="tgt">target 1 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for C6">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-C6"><span>done</span></label></div>
+    <div class="pq"><p>A teammate runs this and gets the output shown. What is the fix?</p><div class="codewrap"><pre class="code"><code>$ openssl enc –aes-256-cbc -in message.txt -pass pass:tp2
+enc: Use -help for summary.</code></pre></div><div class="mc" data-ans="0" data-name="q-C6-1"><label class="opt"><input type="radio" name="q-C6-1" id="q-C6-1-0" value="0"><span>Retype the dash: – (copied from the PDF) is not -</span></label><label class="opt"><input type="radio" name="q-C6-1" id="q-C6-1-1" value="1"><span>aes-256-cbc does not exist</span></label><label class="opt"><input type="radio" name="q-C6-1" id="q-C6-1-2" value="2"><span>Add -out</span></label></div></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p>The long dash from the PDF is a different character; OpenSSL sees an unknown argument and prints its usage line. Retype every <code>-</code> by hand.</p></div></details>
+  </article>
+  <article class="prob" id="p-C7">
+    <div class="ph"><span class="pid">C7</span><span class="pt">Fix the command</span><span class="lvl ls">Standard</span>
+      <span class="tmr" data-no-save data-min="2"><span class="tgt">target 2 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for C7">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-C7"><span>done</span></label></div>
+    <div class="pq"><p>A teammate runs this and gets the output shown. What is the fix?</p><div class="codewrap"><pre class="code"><code>$ openssl enc -des-cbc -pbkdf2 -in message.txt -out d.bin -pass pass:tp2
+Error setting cipher DES-CBC</code></pre></div><div class="mc" data-ans="1" data-name="q-C7-1"><label class="opt"><input type="radio" name="q-C7-1" id="q-C7-1-0" value="0"><span>DES needs -nosalt</span></label><label class="opt"><input type="radio" name="q-C7-1" id="q-C7-1-1" value="1"><span>DES is off in OpenSSL 3: add -provider legacy -provider default, or use -des3 / AES</span></label><label class="opt"><input type="radio" name="q-C7-1" id="q-C7-1-2" value="2"><span>Write -des-ecb</span></label></div></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p>OpenSSL 3 moved DES, Blowfish, RC4... to the legacy provider. <code>openssl enc -des-cbc -provider legacy -provider default -pbkdf2 -in message.txt -out d.bin -pass pass:tp2</code> works (40 bytes).</p></div></details>
+  </article>
+  <article class="prob" id="p-C8">
+    <div class="ph"><span class="pid">C8</span><span class="pt">Fix the command</span><span class="lvl ls">Standard</span>
+      <span class="tmr" data-no-save data-min="2"><span class="tgt">target 2 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for C8">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-C8"><span>done</span></label></div>
+    <div class="pq"><p>A teammate runs this and gets the output shown. What is the fix?</p><div class="codewrap"><pre class="code"><code>$ openssl enc -aes-256-ctr -pbkdf2 -d -in cctr -pass pass:wrong -out junk.txt; echo "exit code $?"
+exit code 0</code></pre></div><div class="mc" data-ans="1" data-name="q-C8-1"><label class="opt"><input type="radio" name="q-C8-1" id="q-C8-1-0" value="0"><span>The file is fine: exit code 0 means it worked</span></label><label class="opt"><input type="radio" name="q-C8-1" id="q-C8-1-1" value="1"><span>CTR has no padding, so a wrong password is not detected: look at the output, it is garbage</span></label><label class="opt"><input type="radio" name="q-C8-1" id="q-C8-1-2" value="2"><span>Add -base64</span></label></div></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p>Only padded modes (CBC, ECB) can say <code>bad decrypt</code>. Stream modes (CTR, chacha20) decrypt to garbage silently. Always <code>cat</code> the result.</p></div></details>
+  </article>
+  <article class="prob" id="p-C9">
+    <div class="ph"><span class="pid">C9</span><span class="pt">Fix the command</span><span class="lvl ls">Standard</span>
+      <span class="tmr" data-no-save data-min="1"><span class="tgt">target 1 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for C9">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-C9"><span>done</span></label></div>
+    <div class="pq"><p>A teammate runs this and gets the output shown. What is the fix?</p><div class="codewrap"><pre class="code"><code>$ openssl -out key 1024
+Invalid command '-out'; type "help" for a list.</code></pre></div><div class="mc" data-ans="0" data-name="q-C9-1"><label class="opt"><input type="radio" name="q-C9-1" id="q-C9-1-0" value="0"><span>Missing the command: openssl rand -out key 1024</span></label><label class="opt"><input type="radio" name="q-C9-1" id="q-C9-1-1" value="1"><span>Add sudo</span></label><label class="opt"><input type="radio" name="q-C9-1" id="q-C9-1-2" value="2"><span>Use -in instead of -out</span></label></div></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p>The handout's line has no command. <code>openssl rand -hex 32 &gt; key</code> is the better form for a password file.</p></div></details>
+  </article>
+</section>
+<section class="sec" id="d">
+  <div class="sec-h"><span class="num">D</span><h2>Identify the cipher <span class="fr">(identifier l'algorithme)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <p class="setmeta">Clues: the <code>U2FsdGVkX1</code> start, the output size, and which cipher decrypts without an error.</p>
+  
+  <article class="prob" id="p-D1">
+    <div class="ph"><span class="pid">D1</span><span class="pt">Sizes give it away</span><span class="lvl ls">Standard</span>
+      <span class="tmr" data-no-save data-min="2"><span class="tgt">target 2 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for D1">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-D1"><span>done</span></label></div>
+    <div class="pq"><p>Three teams encrypted the same 17-byte <code>message.txt</code> with <code>-pbkdf2</code> (no base64). Their files are 48, 40 and 33 bytes. Which cipher made each?</p><div class="scalars"><label class="sc pw"><span>48 B</span><select id="q-D1-1" data-ans="0" aria-label="48 bytes"><option value="">choose…</option><option value="0">aes-256-cbc</option><option value="1">des-ede3-cbc</option><option value="2">aes-256-ctr</option></select></label><label class="sc pw"><span>40 B</span><select id="q-D1-2" data-ans="1" aria-label="40 bytes"><option value="">choose…</option><option value="0">aes-256-cbc</option><option value="1">des-ede3-cbc</option><option value="2">aes-256-ctr</option></select></label><label class="sc pw"><span>33 B</span><select id="q-D1-3" data-ans="2" aria-label="33 bytes"><option value="">choose…</option><option value="0">aes-256-cbc</option><option value="1">des-ede3-cbc</option><option value="2">aes-256-ctr</option></select></label></div></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p>Header 16 bytes in all cases. AES blocks are 16 bytes: 17 → 32, total <b>48</b>. Triple DES blocks are 8 bytes: 17 → 24, total <b>40</b>. CTR is a stream mode: 17 → 17, total <b>33</b>.</p></div></details>
+  </article>
+  <article class="prob" id="p-D2">
+    <div class="ph"><span class="pid">D2</span><span class="pt">Which cipher?</span><span class="lvl lc">Competition</span>
+      <span class="tmr" data-no-save data-min="5"><span class="tgt">target 5 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for D2">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-D2"><span>done</span></label></div>
+    <div class="pq"><p>Password <code>m1bigdata</code>, <code>-pbkdf2</code>, base64. The cipher is one of <code>aes-128-cbc</code>, <code>aes-256-cbc</code>, <code>camellia-256-cbc</code>, <code>aria-256-cbc</code>. Which one, and what is the message?</p><div class="aid"><div class="codewrap"><button class="b cp" type="button" data-no-save>Copy</button><pre class="code"><code>cat &gt; d2.b64 &lt;&lt;'EOF'
+U2FsdGVkX182irNsPDFoIdFrw+BpSV4fDQhRuTHkqIQ=
+EOF</code></pre></div></div><label class="sc pw"><span>cipher</span><select id="q-D2-1" data-ans="2" aria-label="cipher"><option value="">choose…</option><option value="0">aes-128-cbc</option><option value="1">aes-256-cbc</option><option value="2">camellia-256-cbc</option><option value="3">aria-256-cbc</option></select></label><label class="sc pw"><span>message</span><input type="text" id="q-D2-2" class="w" aria-label="answer" placeholder="" autocomplete="off" spellcheck="false" data-ans="camellia gagne" data-cs="1"></label></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p>Try them in a loop; the wrong ones fail with <code>bad decrypt</code>:</p><div class="codewrap"><pre class="code"><code>for c in aes-128-cbc aes-256-cbc camellia-256-cbc aria-256-cbc; do
+  echo "== $c"; openssl enc -$c -pbkdf2 -base64 -d -in d2.b64 -pass pass:m1bigdata 2&gt;/dev/null
+done</code></pre></div><p>Only <b>camellia-256-cbc</b> gives text: <b>camellia gagne</b>. (Checked: the three others all fail.)</p></div></details>
+  </article>
+  <article class="prob" id="p-D3">
+    <div class="ph"><span class="pid">D3</span><span class="pt">What U2FsdGVkX1 tells you</span><span class="lvl lw">Warm-up</span>
+      <span class="tmr" data-no-save data-min="1"><span class="tgt">target 1 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for D3">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-D3"><span>done</span></label></div>
+    <div class="pq"><p>A base64 ciphertext starts with <code>U2FsdGVkX1</code>. What do you learn?</p><div class="mc" data-ans="1" data-name="q-D3-1"><label class="opt"><input type="radio" name="q-D3-1" id="q-D3-1-0" value="0"><span>It is AES-256</span></label><label class="opt"><input type="radio" name="q-D3-1" id="q-D3-1-1" value="1"><span>It was made by openssl enc with a password (Salted__ + salt follow); the cipher is not written anywhere</span></label><label class="opt"><input type="radio" name="q-D3-1" id="q-D3-1-2" value="2"><span>It is a base64 RSA key</span></label></div></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p><code>echo U2FsdGVkX1 | openssl base64 -d</code> starts with <code>Salted__</code>. The cipher name is never stored: you must know it or try candidates (D2).</p></div></details>
+  </article>
+</section>
+<section class="sec" id="e">
+  <div class="sec-h"><span class="num">E</span><h2>Hashes and HMAC <span class="fr">(empreintes et HMAC)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <p class="setmeta">Type the first 8 hex characters.</p>
+  
+  <article class="prob" id="p-E1">
+    <div class="ph"><span class="pid">E1</span><span class="pt">SHA-256 of a word</span><span class="lvl lw">Warm-up</span>
+      <span class="tmr" data-no-save data-min="1"><span class="tgt">target 1 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for E1">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-E1"><span>done</span></label></div>
+    <div class="pq"><p>SHA-256 of the 4 letters <code>SSAD</code>, no newline. First 8 hex characters?</p><input type="text" id="q-E1-1" class="" aria-label="answer" placeholder="" autocomplete="off" spellcheck="false" data-ans="d7de2a03"></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p><code>printf 'SSAD' | openssl dgst -sha256</code> → <code>d7de2a03b973d4d92d36838b7c44ae802776d0a9112e448eebadca2eefc56725</code></p></div></details>
+  </article>
+  <article class="prob" id="p-E2">
+    <div class="ph"><span class="pid">E2</span><span class="pt">The newline trap</span><span class="lvl ls">Standard</span>
+      <span class="tmr" data-no-save data-min="2"><span class="tgt">target 2 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for E2">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-E2"><span>done</span></label></div>
+    <div class="pq"><p>Your teammate gets <code>eb0079a1a7c37d1f…</code> as SHA-256 of <code>SSAD</code>, you got the E1 value. Who is right?</p><div class="mc" data-ans="1" data-name="q-E2-1"><label class="opt"><input type="radio" name="q-E2-1" id="q-E2-1-0" value="0"><span>The teammate: OpenSSL versions differ</span></label><label class="opt"><input type="radio" name="q-E2-1" id="q-E2-1-1" value="1"><span>Both: the teammate used echo, which adds a newline, so they hashed 5 bytes</span></label><label class="opt"><input type="radio" name="q-E2-1" id="q-E2-1-2" value="2"><span>Nobody: SHA-256 is random</span></label></div></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p><code>echo SSAD | openssl dgst -sha256</code> → <code>eb0079a1a7c37d1fbb483310fd2943da37038a6a187712ed2a862c46d2c31114</code>. <code>echo</code> adds <code>\n</code>; <code>printf</code> or <code>echo -n</code> does not. Different input, totally different hash.</p></div></details>
+  </article>
+  <article class="prob" id="p-E3">
+    <div class="ph"><span class="pid">E3</span><span class="pt">HMAC</span><span class="lvl ls">Standard</span>
+      <span class="tmr" data-no-save data-min="2"><span class="tgt">target 2 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for E3">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-E3"><span>done</span></label></div>
+    <div class="pq"><p>HMAC-SHA256 of <code>transfer 100</code> (no newline) with the key <code>k3y</code>. First 8 hex characters?</p><input type="text" id="q-E3-1" class="" aria-label="answer" placeholder="" autocomplete="off" spellcheck="false" data-ans="7880a628"></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p><code>printf 'transfer 100' | openssl dgst -sha256 -hmac k3y</code> → <code>7880a62805ee574c67d2ff1dd1da25e4be6376d93424bcdbae2befb63d30f435</code></p></div></details>
+  </article>
+  <article class="prob" id="p-E4">
+    <div class="ph"><span class="pid">E4</span><span class="pt">Digest lengths</span><span class="lvl lw">Warm-up</span>
+      <span class="tmr" data-no-save data-min="1"><span class="tgt">target 1 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for E4">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-E4"><span>done</span></label></div>
+    <div class="pq"><p>How many hex characters does a SHA-256 digest have? And an MD5 one?</p><div class="scalars"><label class="sc pw"><span>SHA-256</span><input type="text" id="q-E4-1" class="" aria-label="answer" placeholder="" autocomplete="off" spellcheck="false" data-ans="64"></label><label class="sc pw"><span>MD5</span><input type="text" id="q-E4-2" class="" aria-label="answer" placeholder="" autocomplete="off" spellcheck="false" data-ans="32"></label></div></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p><b>64</b> (256 bits / 4) and <b>32</b> (128 bits / 4). MD5 is broken; use SHA-256 to check transfers.</p></div></details>
+  </article>
+</section>
+<section class="sec" id="f">
+  <div class="sec-h"><span class="num">F</span><h2>RSA: sign, verify, encrypt <span class="fr">(RSA)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <p class="setmeta">Make a key pair first: <code>openssl genrsa -out priv.pem 2048</code> then <code>openssl rsa -in priv.pem -pubout -out pub.pem</code>.</p>
+  
+  <article class="prob" id="p-F1">
+    <div class="ph"><span class="pid">F1</span><span class="pt">Sign and verify</span><span class="lvl ls">Standard</span>
+      <span class="tmr" data-no-save data-min="3"><span class="tgt">target 3 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for F1">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-F1"><span>done</span></label></div>
+    <div class="pq"><p>Sign <code>message.txt</code> with SHA-256 and your private key, then verify with the public key. What exactly is printed on success?</p><input type="text" id="q-F1-1" class="w" aria-label="answer" placeholder="" autocomplete="off" spellcheck="false" data-ans="Verified OK" data-cs="1"></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><div class="codewrap"><pre class="code"><code>openssl dgst -sha256 -sign priv.pem -out message.sig message.txt
+openssl dgst -sha256 -verify pub.pem -signature message.sig message.txt</code></pre></div><p>→ <b>Verified OK</b></p></div></details>
+  </article>
+  <article class="prob" id="p-F2">
+    <div class="ph"><span class="pid">F2</span><span class="pt">Tampered file</span><span class="lvl ls">Standard</span>
+      <span class="tmr" data-no-save data-min="2"><span class="tgt">target 2 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for F2">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-F2"><span>done</span></label></div>
+    <div class="pq"><p>Change one character of <code>message.txt</code> (add a dot), verify the same signature again. What is printed, and what exit code does <code>echo $?</code> show?</p><label class="sc pw"><span>printed</span><input type="text" id="q-F2-1" class="w" aria-label="answer" placeholder="" autocomplete="off" spellcheck="false" data-ans="Verification failure" data-cs="1"></label><label class="sc pw"><span>exit code</span><input type="text" id="q-F2-2" class="" aria-label="answer" placeholder="" autocomplete="off" spellcheck="false" data-ans="1"></label></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p><b>Verification failure</b>, exit code <b>1</b> (plus error lines). One changed byte changes the hash, so the signature no longer matches.</p></div></details>
+  </article>
+  <article class="prob" id="p-F3">
+    <div class="ph"><span class="pid">F3</span><span class="pt">How much can RSA encrypt?</span><span class="lvl lc">Competition</span>
+      <span class="tmr" data-no-save data-min="3"><span class="tgt">target 3 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for F3">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-F3"><span>done</span></label></div>
+    <div class="pq"><p>With a 2048-bit key and <code>pkeyutl -encrypt</code> (default padding), what is the largest input in bytes? Test with <code>head -c N /dev/urandom &gt; b.bin</code>.</p><input type="text" id="q-F3-1" class="" aria-label="answer" placeholder="" autocomplete="off" spellcheck="false" data-ans="245"></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p><b>245</b> = 256 − 11 bytes of PKCS#1 padding. 245 works, 246 gives <code>data too large for key size</code> (both tested). For bigger files: encrypt a random password with RSA and the file with <code>enc</code> (hybrid, lesson section 12).</p></div></details>
+  </article>
+  <article class="prob" id="p-F4">
+    <div class="ph"><span class="pid">F4</span><span class="pt">Wrong key file</span><span class="lvl ls">Standard</span>
+      <span class="tmr" data-no-save data-min="1"><span class="tgt">target 1 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for F4">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-F4"><span>done</span></label></div>
+    <div class="pq"><p><code>openssl dgst -sha256 -verify priv.pem -signature message.sig message.txt</code> prints <code>Could not read public key from priv.pem</code>. Fix?</p><div class="mc" data-ans="1" data-name="q-F4-1"><label class="opt"><input type="radio" name="q-F4-1" id="q-F4-1-0" value="0"><span>Regenerate priv.pem</span></label><label class="opt"><input type="radio" name="q-F4-1" id="q-F4-1-1" value="1"><span>Use pub.pem with -verify (or -prverify priv.pem)</span></label><label class="opt"><input type="radio" name="q-F4-1" id="q-F4-1-2" value="2"><span>Add -base64</span></label></div></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p><code>-verify</code> expects a public key. <code>-prverify priv.pem</code> also works since the public key is inside the private one.</p></div></details>
+  </article>
+  <article class="prob" id="p-F5">
+    <div class="ph"><span class="pid">F5</span><span class="pt">Hybrid hand-off</span><span class="lvl lc">Competition</span>
+      <span class="tmr" data-no-save data-min="6"><span class="tgt">target 6 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for F5">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-F5"><span>done</span></label></div>
+    <div class="pq"><p>Bob gives you <code>bob_pub.pem</code>. Send him <code>report.pdf</code> so that only he can read it, using a random AES password. Write the commands, then let your teammate play Bob and decrypt.</p><textarea id="q-F5-1" rows="5" aria-label="your commands"></textarea></div>
+    
+    <details><summary>Show solution</summary><div class="sol"><div class="codewrap"><pre class="code"><code>openssl rand -hex 32 &gt; pw.txt
+openssl enc -aes-256-cbc -pbkdf2 -in report.pdf -out report.enc -pass file:pw.txt
+openssl pkeyutl -encrypt -pubin -inkey bob_pub.pem -in pw.txt -out pw.enc
+# send report.enc and pw.enc. Bob:
+openssl pkeyutl -decrypt -inkey bob_priv.pem -in pw.enc -out pw.txt
+openssl enc -aes-256-cbc -pbkdf2 -d -in report.enc -out report.pdf -pass file:pw.txt</code></pre></div></div></details>
+  </article>
+</section>
+<section class="sec" id="g">
+  <div class="sec-h"><span class="num">G</span><h2>Certificates <span class="fr">(certificats)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <p class="setmeta"></p>
+  
+  <article class="prob" id="p-G1">
+    <div class="ph"><span class="pid">G1</span><span class="pt">Self-signed</span><span class="lvl lw">Warm-up</span>
+      <span class="tmr" data-no-save data-min="2"><span class="tgt">target 2 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for G1">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-G1"><span>done</span></label></div>
+    <div class="pq"><p>Make a self-signed certificate with <code>openssl req -x509 -newkey rsa:2048 -nodes -keyout s.key -out s.crt -days 365 -subj /CN=vm1</code> and print subject and issuer. What do you notice?</p><div class="mc" data-ans="1" data-name="q-G1-1"><label class="opt"><input type="radio" name="q-G1-1" id="q-G1-1-0" value="0"><span>The issuer is empty</span></label><label class="opt"><input type="radio" name="q-G1-1" id="q-G1-1-1" value="1"><span>Subject and issuer are the same (CN = vm1)</span></label><label class="opt"><input type="radio" name="q-G1-1" id="q-G1-1-2" value="2"><span>The issuer is Ubuntu's CA</span></label></div></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><pre class="code"><code>subject=CN = vm1
+issuer=CN = vm1</code></pre><p>Self-signed: it vouches for itself.</p></div></details>
+  </article>
+  <article class="prob" id="p-G2">
+    <div class="ph"><span class="pid">G2</span><span class="pt">verify on a self-signed cert</span><span class="lvl lw">Warm-up</span>
+      <span class="tmr" data-no-save data-min="1"><span class="tgt">target 1 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for G2">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-G2"><span>done</span></label></div>
+    <div class="pq"><p><code>openssl verify s.crt</code> fails. What error number does it print?</p><input type="text" id="q-G2-1" class="" aria-label="answer" placeholder="" autocomplete="off" spellcheck="false" data-ans="18"></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><pre class="code"><code>CN = vm1
+error 18 at 0 depth lookup: self-signed certificate
+error s.crt: verification failed</code></pre><p><b>18</b>. With <code>-CAfile s.crt</code> (trusting it explicitly) it passes.</p></div></details>
+  </article>
+  <article class="prob" id="p-G3">
+    <div class="ph"><span class="pid">G3</span><span class="pt">A tiny CA</span><span class="lvl lc">Competition</span>
+      <span class="tmr" data-no-save data-min="6"><span class="tgt">target 6 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for G3">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-G3"><span>done</span></label></div>
+    <div class="pq"><p>Create a CA, a CSR for <code>vm2</code>, sign it with the CA, verify it. Which file does <code>-CAcreateserial</code> create, and what does the final <code>verify</code> print?</p><label class="sc pw"><span>file</span><input type="text" id="q-G3-1" class="" aria-label="answer" placeholder="" autocomplete="off" spellcheck="false" data-ans="ca.srl"></label><label class="sc pw"><span>verify</span><input type="text" id="q-G3-2" class="w" aria-label="answer" placeholder="" autocomplete="off" spellcheck="false" data-ans="vm2.crt: OK" data-cs="1"></label></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><div class="codewrap"><pre class="code"><code>openssl req -x509 -newkey rsa:2048 -nodes -keyout ca.key -out ca.crt -days 365 -subj '/CN=SSAD Test CA'
+openssl req -new -newkey rsa:2048 -nodes -keyout vm2.key -out vm2.csr -subj '/CN=vm2'
+openssl x509 -req -in vm2.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out vm2.crt -days 30
+openssl verify -CAfile ca.crt vm2.crt</code></pre></div><p><b>ca.srl</b> (the serial number counter) and <b>vm2.crt: OK</b>.</p></div></details>
+  </article>
+</section>
+<section class="sec" id="h">
+  <div class="sec-h"><span class="num">H</span><h2>TLS with s_server and s_client <span class="fr">(tests TLS)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <p class="setmeta">Do these between VM1 (client) and VM2 (server, 192.168.1.22 in the examples), or in two terminals on one machine with <code>localhost</code>. Use G3's files.</p>
+  
+  <article class="prob" id="p-H1">
+    <div class="ph"><span class="pid">H1</span><span class="pt">First connection</span><span class="lvl ls">Standard</span>
+      <span class="tmr" data-no-save data-min="4"><span class="tgt">target 4 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for H1">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-H1"><span>done</span></label></div>
+    <div class="pq"><p>On VM2: <code>openssl s_server -accept 4433 -cert vm2.crt -key vm2.key</code>. On VM1: <code>openssl s_client -connect 192.168.1.22:4433 -CAfile ca.crt -brief</code>. Which protocol version line do you see?</p><input type="text" id="q-H1-1" class="" aria-label="answer" placeholder="" autocomplete="off" spellcheck="false" data-ans="TLSv1.3" data-re="^(protocol version:\s*)?tlsv?1\.3$"></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><pre class="code"><code>CONNECTION ESTABLISHED
+Protocol version: TLSv1.3
+Ciphersuite: TLS_AES_256_GCM_SHA384
+Peer certificate: CN = vm2
+Hash used: SHA256
+Signature type: RSA-PSS
+Verification: OK
+Server Temp Key: X25519, 253 bits
+DONE</code></pre><p><b>TLSv1.3</b>. Type a line in one terminal: it appears in the other.</p></div></details>
+  </article>
+  <article class="prob" id="p-H2">
+    <div class="ph"><span class="pid">H2</span><span class="pt">Read the handshake</span><span class="lvl ls">Standard</span>
+      <span class="tmr" data-no-save data-min="2"><span class="tgt">target 2 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for H2">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-H2"><span>done</span></label></div>
+    <div class="pq"><p>Reconnect with <code>-tls1_2 -msg</code>. Which message carries VM2's certificate, and which one carries VM1's half of the key exchange?</p><label class="sc pw"><span>certificate</span><select id="q-H2-1" data-ans="2" aria-label="certificate message"><option value="">choose…</option><option value="0">ClientHello</option><option value="1">ServerHello</option><option value="2">Certificate</option><option value="3">ServerKeyExchange</option><option value="4">ClientKeyExchange</option><option value="5">Finished</option></select></label><label class="sc pw"><span>VM1's half</span><select id="q-H2-2" data-ans="4" aria-label="client key exchange message"><option value="">choose…</option><option value="0">ClientHello</option><option value="1">ServerHello</option><option value="2">Certificate</option><option value="3">ServerKeyExchange</option><option value="4">ClientKeyExchange</option><option value="5">Finished</option></select></label></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><pre class="code"><code>&gt;&gt;&gt; TLS 1.2, Handshake [length 00b7], ClientHello
+&lt;&lt;&lt; TLS 1.2, Handshake [length 0041], ServerHello
+&lt;&lt;&lt; TLS 1.2, Handshake [length 02ba], Certificate
+&lt;&lt;&lt; TLS 1.2, Handshake [length 012c], ServerKeyExchange
+&lt;&lt;&lt; TLS 1.2, Handshake [length 0004], ServerHelloDone
+&gt;&gt;&gt; TLS 1.2, Handshake [length 0025], ClientKeyExchange
+&gt;&gt;&gt; TLS 1.2, ChangeCipherSpec [length 0001]
+&gt;&gt;&gt; TLS 1.2, Handshake [length 0010], Finished
+&lt;&lt;&lt; TLS 1.2, Handshake [length 00ba], NewSessionTicket
+&lt;&lt;&lt; TLS 1.2, Handshake [length 0010], Finished
+&gt;&gt;&gt; TLS 1.2, Alert [length 0002], warning close_notify</code></pre><p><b>Certificate</b> (server → client) and <b>ClientKeyExchange</b>.</p></div></details>
+  </article>
+  <article class="prob" id="p-H3">
+    <div class="ph"><span class="pid">H3</span><span class="pt">Forgot -CAfile</span><span class="lvl ls">Standard</span>
+      <span class="tmr" data-no-save data-min="1"><span class="tgt">target 1 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for H3">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-H3"><span>done</span></label></div>
+    <div class="pq"><p>Connect again without <code>-CAfile ca.crt</code>. What number follows <code>Verify return code:</code>?</p><input type="text" id="q-H3-1" class="" aria-label="answer" placeholder="" autocomplete="off" spellcheck="false" data-ans="21"></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><pre class="code"><code>Verify return code: 21 (unable to verify the first certificate)</code></pre><p>The connection still opens (s_client only reports), but VM1 cannot check who VM2 is.</p></div></details>
+  </article>
+  <article class="prob" id="p-H4">
+    <div class="ph"><span class="pid">H4</span><span class="pt">Connection refused</span><span class="lvl lw">Warm-up</span>
+      <span class="tmr" data-no-save data-min="1"><span class="tgt">target 1 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for H4">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-H4"><span>done</span></label></div>
+    <div class="pq"><p>s_client prints <code>Connection refused</code>. Which is <b>not</b> a possible cause?</p><div class="mc" data-ans="2" data-name="q-H4-1"><label class="opt"><input type="radio" name="q-H4-1" id="q-H4-1-0" value="0"><span>s_server is not running on VM2</span></label><label class="opt"><input type="radio" name="q-H4-1" id="q-H4-1-1" value="1"><span>Wrong port or IP</span></label><label class="opt"><input type="radio" name="q-H4-1" id="q-H4-1-2" value="2"><span>Wrong password in -pass</span></label><label class="opt"><input type="radio" name="q-H4-1" id="q-H4-1-3" value="3"><span>A firewall (ufw) blocks 4433</span></label></div></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p>s_server/s_client use no <code>-pass</code> here. "Refused" = nothing listens at that address and port.</p></div></details>
+  </article>
+</section>
+<section class="sec" id="i">
+  <div class="sec-h"><span class="num">I</span><h2>Moving files between machines <span class="fr">(entre machines)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <p class="setmeta">Example set-up: user <code>lou</code> on both VMs, VM1 = 192.168.1.21, VM2 = 192.168.1.42.</p>
+  
+  <article class="prob" id="p-I1">
+    <div class="ph"><span class="pid">I1</span><span class="pt">Send a file</span><span class="lvl lw">Warm-up</span>
+      <span class="tmr" data-no-save data-min="1"><span class="tgt">target 1 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for I1">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-I1"><span>done</span></label></div>
+    <div class="pq"><p>On VM1, type the command that copies <code>secret.enc</code> into lou's home folder on VM2 (192.168.1.42).</p><input type="text" id="q-I1-1" class="w" aria-label="answer" placeholder="scp …" autocomplete="off" spellcheck="false" data-re="^scp\s+(\./)?secret\.enc\s+lou@192\.168\.1\.42:(~/?|/home/lou/?)?$"></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p><code>scp secret.enc lou@192.168.1.42:~/</code> (the <code>~/</code> may be left out: <code>lou@192.168.1.42:</code> also means home).</p></div></details>
+  </article>
+  <article class="prob" id="p-I2">
+    <div class="ph"><span class="pid">I2</span><span class="pt">Fetch a file</span><span class="lvl lw">Warm-up</span>
+      <span class="tmr" data-no-save data-min="1"><span class="tgt">target 1 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for I2">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-I2"><span>done</span></label></div>
+    <div class="pq"><p>Still on VM1, fetch <code>reply.enc</code> from lou's home on VM2 into the current folder.</p><input type="text" id="q-I2-1" class="w" aria-label="answer" placeholder="scp …" autocomplete="off" spellcheck="false" data-re="^scp\s+lou@192\.168\.1\.42:(~/|/home/lou/)?reply\.enc\s+\.(/)?$"></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p><code>scp lou@192.168.1.42:~/reply.enc .</code> The final dot means "here".</p></div></details>
+  </article>
+  <article class="prob" id="p-I3">
+    <div class="ph"><span class="pid">I3</span><span class="pt">Same address twice</span><span class="lvl ls">Standard</span>
+      <span class="tmr" data-no-save data-min="2"><span class="tgt">target 2 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for I3">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-I3"><span>done</span></label></div>
+    <div class="pq"><p>You cloned VM1 into VM2 and both show the same IP with <code>hostname -I</code>. Why?</p><div class="mc" data-ans="1" data-name="q-I3-1"><label class="opt"><input type="radio" name="q-I3-1" id="q-I3-1-0" value="0"><span>Bridged mode never works with two VMs</span></label><label class="opt"><input type="radio" name="q-I3-1" id="q-I3-1-1" value="1"><span>The clone kept VM1's MAC address and/or machine-id, so DHCP gave it the same lease</span></label><label class="opt"><input type="radio" name="q-I3-1" id="q-I3-1-2" value="2"><span>OpenSSL is not installed</span></label></div></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><p>Clone with <i>Generate new MAC addresses</i>, then in the clone: <code>sudo rm /etc/machine-id && sudo systemd-machine-id-setup</code>, reboot. Or install VM2 from the ISO.</p></div></details>
+  </article>
+  <article class="prob" id="p-I4">
+    <div class="ph"><span class="pid">I4</span><span class="pt">The full loop</span><span class="lvl lc">Competition</span>
+      <span class="tmr" data-no-save data-min="8"><span class="tgt">target 8 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for I4">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-I4"><span>done</span></label></div>
+    <div class="pq"><p>VM1 encrypts <code>message.txt</code> (AES-256-CBC, <code>-pbkdf2</code>, base64, password agreed aloud), sends it to VM2, VM2 decrypts and both compare SHA-256 fingerprints. Paste the two fingerprints.</p><label class="sc pw"><span>VM1</span><input type="text" id="q-I4-1" class="w" aria-label="VM1 fingerprint" placeholder="" autocomplete="off" spellcheck="false"></label><label class="sc pw"><span>VM2</span><input type="text" id="q-I4-2" class="w" aria-label="VM2 fingerprint" placeholder="" autocomplete="off" spellcheck="false"></label></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><div class="codewrap"><pre class="code"><code># VM1
+openssl enc -aes-256-cbc -pbkdf2 -base64 -in message.txt -out crypted -pass pass:tp2
+scp crypted lou@192.168.1.42:~/
+openssl dgst -sha256 message.txt
+# VM2
+openssl enc -aes-256-cbc -pbkdf2 -base64 -d -in crypted -out message.txt -pass pass:tp2
+openssl dgst -sha256 message.txt</code></pre></div><p>For the course <code>message.txt</code> both print <code>f71760ba2451d83a4cbb8a35c3d81e3b371111cbf8c73bc84f95aa2a1b00804d</code>. The Check button only compares your two values.</p></div></details>
+  </article>
+</section>
+<section class="sec" id="j">
+  <div class="sec-h"><span class="num">J</span><h2>Mock round <span class="fr">(épreuve blanche)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <p class="setmeta">One chained task, competition style. Start the timer and go.</p>
+  
+  <article class="prob" id="p-J1">
+    <div class="ph"><span class="pid">J1</span><span class="pt">Treasure hunt</span><span class="lvl lc">Competition</span>
+      <span class="tmr" data-no-save data-min="8"><span class="tgt">target 8 min</span><button class="b tb" type="button" aria-label="Start or stop the timer for J1">Start</button><span class="el">0:00</span></span>
+      <label class="done"><input type="checkbox" id="done-J1"><span>done</span></label></div>
+    <div class="pq"><p>Stage 1 was encrypted with AES-256-CBC, <code>-pbkdf2</code>, base64, password <code>ssad</code>. Its plaintext tells you how to open stage 2. Type the flag.</p><div class="aid"><b>stage 1</b><div class="codewrap"><button class="b cp" type="button" data-no-save>Copy</button><pre class="code"><code>cat &gt; s1.b64 &lt;&lt;'EOF'
+U2FsdGVkX19V87ysG+owrE1W5BYhzYEHBYOEBKK9HlBStdwX/q7OYIISpFPNxB+3
+EOF</code></pre></div><b>stage 2</b><div class="codewrap"><button class="b cp" type="button" data-no-save>Copy</button><pre class="code"><code>cat &gt; s2.b64 &lt;&lt;'EOF'
+U2FsdGVkX181XVezpRAwLhkBgeTQIEoAV3wwaHNYkUxgAtEpHS9A
+EOF</code></pre></div></div><input type="text" id="q-J1-1" class="w" aria-label="answer" placeholder="FLAG{…}" autocomplete="off" spellcheck="false" data-ans="FLAG{tls-handshake-ok}" data-cs="1"></div>
+    <div class="actions" data-no-save><button class="b chk" type="button">Check</button><span class="fb" aria-live="polite"></span></div>
+    <details><summary>Show solution</summary><div class="sol"><div class="codewrap"><pre class="code"><code>openssl enc -aes-256-cbc -pbkdf2 -base64 -d -in s1.b64 -pass pass:ssad</code></pre></div><p>→ <code>next: aes-256-ctr pass=vm2-key</code></p><div class="codewrap"><pre class="code"><code>openssl enc -aes-256-ctr -pbkdf2 -base64 -d -in s2.b64 -pass pass:vm2-key</code></pre></div><p>→ <b>FLAG{tls-handshake-ok}</b>. (CTR: a wrong password would give garbage, not an error.)</p></div></details>
+  </article>
+</section>
+<footer class="foot">Based on Prof H. Nacer's TP 2 handouts (SSAD, M1, USTHB, 2026/2027). Ciphertexts made and decrypted again with OpenSSL 3.0.13 30 Jan 2024; IP addresses and user names are examples.</footer>
+</div>
+
+<script>
+/* auto-check: text (data-ans exact, || alternatives, data-re regex), select (value), .mc (checked radio value) */
+(function(){
+  function norm(s,cs){s=(s||"").trim().replace(/\s+/g," ");return cs?s:s.toLowerCase();}
+  function fieldOk(f){
+    if(f.classList.contains("mc")){var r=f.querySelector("input:checked");return r?r.value===f.dataset.ans:null;}
+    var v=f.value;if(!v||!v.trim())return null;
+    if(f.dataset.re){return new RegExp(f.dataset.re,"i").test(norm(v));}
+    var cs=!!f.dataset.cs;return f.dataset.ans.split("||").some(function(a){return norm(a,cs)===norm(v,cs);});
+  }
+  function check(p,quiet){
+    var fs=p.querySelectorAll("[data-ans],[data-re]"),all=true,any=false,fb=p.querySelector(".fb");
+    if(p.id==="p-I4"){var a=p.querySelector("#q-I4-1"),b=p.querySelector("#q-I4-2"),va=norm(a.value).replace(/^.*= */,""),vb=norm(b.value).replace(/^.*= */,"");
+      if(!va||!vb){if(!quiet&&fb){fb.className="fb bad";fb.textContent="Paste both fingerprints.";}return;}
+      var ok=/^[0-9a-f]{64}$/.test(va)&&va===vb;[a,b].forEach(function(x){x.classList.toggle("ok",ok);x.classList.toggle("bad",!ok);});
+      p.classList.toggle("ok",ok);p.classList.toggle("bad",!ok);if(fb){fb.className="fb "+(ok?"ok":"bad");fb.textContent=ok?"Identical: the transfer worked.":"Not the same 64-hex fingerprint.";}return;}
+    fs.forEach(function(f){var r=fieldOk(f);if(r===null){all=false;return;}any=true;if(!r)all=false;
+      if(f.classList.contains("mc")){f.querySelectorAll("label.opt").forEach(function(l){var i=l.querySelector("input");l.classList.remove("ok","bad");if(i.checked)l.classList.add(r?"ok":"bad");});}
+      else{f.classList.toggle("ok",r);f.classList.toggle("bad",!r);}});
+    if(!any){if(!quiet&&fb){fb.className="fb bad";fb.textContent="Answer first.";}p.classList.remove("ok","bad");return;}
+    p.classList.toggle("ok",all);p.classList.toggle("bad",!all);
+    if(fb){fb.className="fb "+(all?"ok":"bad");fb.textContent=all?"Correct":"Not yet: check the highlighted answers";}
+  }
+  document.querySelectorAll(".prob").forEach(function(p){var b=p.querySelector(".actions .chk");if(b)b.addEventListener("click",function(){check(p);});
+    p.querySelectorAll("input[type=text]").forEach(function(i){i.addEventListener("keydown",function(ev){if(ev.key==="Enter"&&b)check(p);});});});
+  function recheck(){document.querySelectorAll(".prob").forEach(function(p){var has=false;p.querySelectorAll("input[type=text],select").forEach(function(f){if(f.value)has=true;});
+    if(p.querySelector(".mc input:checked"))has=true;if(has&&p.querySelector(".actions .chk"))check(p,true);});}
+  document.addEventListener("studyhub:restored",recheck);
+  /* per-task timers: shown only, never saved */
+  document.querySelectorAll(".tmr").forEach(function(t){var b=t.querySelector(".tb"),el=t.querySelector(".el"),lim=+t.dataset.min*60,s=0,iv=null;
+    function show(){el.textContent=Math.floor(s/60)+":"+("0"+s%60).slice(-2);t.classList.toggle("over",s>lim);}
+    b.addEventListener("click",function(){if(iv){clearInterval(iv);iv=null;b.textContent=s?"Resume":"Start";return;}
+      if(b.textContent==="Again"){s=0;show();}iv=setInterval(function(){s++;show();},1000);b.textContent="Stop";});
+    el.addEventListener("dblclick",function(){if(!iv){s=0;show();b.textContent="Start";}});
+    t.addEventListener("contextmenu",function(){});
+  });
+  /* copy buttons for the heredoc blocks */
+  document.querySelectorAll(".codewrap .cp").forEach(function(b){b.addEventListener("click",function(){var t=b.parentNode.querySelector("pre").textContent;
+    function done(){b.textContent="Copied";setTimeout(function(){b.textContent="Copy";},1200);}
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(done,function(){});else{var r=document.createRange();r.selectNodeContents(b.parentNode.querySelector("pre"));var s=getSelection();s.removeAllRanges();s.addRange(r);}});});
+})();
+</script>
+<script>
+/* study-hub:progress — practice pages: counts ticked .done boxes */
+(function(){
+  var boxes=document.querySelectorAll('.done input'), txt=document.getElementById('prog-txt'), bar=document.getElementById('prog-bar');
+  if(!boxes.length||!txt) return;
+  function upd(){var n=0;boxes.forEach(function(b){if(b.checked)n++;});txt.textContent=n+' / '+boxes.length+' done';bar.style.width=(100*n/boxes.length)+'%';}
+  boxes.forEach(function(b){b.addEventListener('change',upd);});
+  upd();
+})();
+</script>
+</body>
+</html>
