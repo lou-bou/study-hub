@@ -5,7 +5,7 @@
   "order": 6,
   "chapters": {
     "ch1": "Introduction",
-    "ch2": "Classical cryptography (Cryptographie classique)",
+    "ch2": "Classical Cryptography",
     "ch3": "Modern symmetric cryptography (Cryptographie moderne)",
     "tp2": "OpenSSL"
   }
