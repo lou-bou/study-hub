@@ -1,0 +1,1225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SSAD · Ch 2 · Lesson</title>
+<script>/* study-hub:theme */(function(){var r=document.documentElement;try{var t=localStorage.getItem("studyhub-theme");if(t)r.setAttribute("data-theme",t);}catch(e){}document.addEventListener("DOMContentLoaded",function(){var b=document.getElementById("theme-toggle");if(b)b.addEventListener("click",function(){var c=r.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");var n=c==="dark"?"light":"dark";r.setAttribute("data-theme",n);try{localStorage.setItem("studyhub-theme",n);}catch(e){}});});})();</script>
+<style>
+/* study-hub:base v3 — shared by every remake. build.py swaps in the current copy, so uploads never drift */
+/* tokens: a copy of assets/tokens.css so a page previews on its own; the build links the real file */
+/* Cahier design tokens. Light ("paper") is the default; dark ("night ink") follows.
+   Theme switch: <html data-theme="light|dark">; no attribute = follow the OS. */
+
+:root {
+  /* Brand (theme-independent) */
+  --brand-paper: #F3EBDD;
+  --brand-ink:   #1E2A44;
+  --brand-amber: #D9952B;   /* ribbon: progress, "resume", bookmarks */
+  --brand-green: #3D6B5A;   /* correct / completed */
+
+  /* Type */
+  --font-display: "Fraunces", Georgia, serif;          /* headings, lesson titles */
+  --font-body:    "Source Sans 3", system-ui, sans-serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, monospace;
+
+  --text-xs: 0.8125rem;  /* 13 */
+  --text-sm: 0.9375rem;  /* 15 */
+  --text-md: 1.0625rem;  /* 17 body — reading app, slightly larger */
+  --text-lg: 1.375rem;   /* 22 */
+  --text-xl: 1.875rem;   /* 30 */
+  --text-2xl: 2.5rem;    /* 40 lesson hero */
+  --leading-body: 1.65;
+  --measure: 68ch;       /* max line length for lesson text */
+
+  /* Spacing (4px grid) */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-5: 24px; --space-6: 32px; --space-7: 48px; --space-8: 72px;
+
+  /* Shape — quiet, paper-like */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Motion — minimal */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-fast: 120ms;
+  --dur-med: 200ms;
+
+  /* Light / paper (default) */
+  --bg:          #F7F1E6;
+  --surface:     #FFFCF6;
+  --surface-2:   #EFE6D6;
+  --border:      #E2D8C6;
+  --text:        #1E2A44;
+  --text-muted:  #5C6475;
+  --accent:      var(--brand-amber);   /* fills: ribbon, progress bars */
+  --accent-text: #8A5A12;              /* amber text/links on paper (AA) */
+  --link:        #1E4FA0;
+  --correct:     #3D6B5A;
+  --correct-bg:  #E3EEE8;
+  --wrong:       #B4443A;
+  --wrong-bg:    #F6E2DF;
+  --note-bg:     #FBF0D9;              /* "In plain words" / worked example boxes */
+  --focus:       #1E4FA0;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:          #141C2E;
+    --surface:     #1B2540;
+    --surface-2:   #233052;
+    --border:      #2E3A5C;
+    --text:        #F3EBDD;
+    --text-muted:  #A9B0C0;
+    --accent:      #E5A945;
+    --accent-text: #F0BE6A;
+    --link:        #8DB4F5;
+    --correct:     #6FA88F;
+    --correct-bg:  #1F3A33;
+    --wrong:       #E07A6E;
+    --wrong-bg:    #43262A;
+    --note-bg:     #2A2A3A;
+    --focus:       #8DB4F5;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg:          #141C2E;
+  --surface:     #1B2540;
+  --surface-2:   #233052;
+  --border:      #2E3A5C;
+  --text:        #F3EBDD;
+  --text-muted:  #A9B0C0;
+  --accent:      #E5A945;
+  --accent-text: #F0BE6A;
+  --link:        #8DB4F5;
+  --correct:     #6FA88F;
+  --correct-bg:  #1F3A33;
+  --wrong:       #E07A6E;
+  --wrong-bg:    #43262A;
+  --note-bg:     #2A2A3A;
+  --focus:       #8DB4F5;
+  color-scheme: dark;
+}
+
+/* Project additions, not in the brand kit. */
+:root {
+  /* Figures in lessons. Amber means "my place" only, so diagrams use these. */
+  --fig: #1E4FA0; --fig-soft: #DCE6F5;
+  --c1: #E8C98C; --c2: #E3AE9B; --c3: #AFCDB8; --c4: #B9C6E0;  /* dark text sits on all of them */
+  --font-math: "Cambria Math", "STIX Two Math", Georgia, serif;
+  --primary: var(--text); --on-primary: var(--bg);             /* main buttons: ink, never amber */
+  /* Names older remakes use in their own CSS, mapped onto this theme. */
+  --ink: var(--text); --muted: var(--text-muted); --faint: var(--text-muted);
+  --line: var(--border); --line-strong: var(--border); --sunken: var(--surface-2); --hover: var(--surface-2);
+  --code-bg: var(--surface-2); --ok: var(--correct); --ok-soft: var(--correct-bg); --hi: var(--wrong); --hi-soft: var(--wrong-bg);
+  --accent-soft: var(--fig-soft);
+  --f-display: var(--font-display); --f-body: var(--font-body); --f-mono: var(--font-mono); --f-math: var(--font-math);
+  --l0: #8FA8D3; --l1: #A9BDDF; --l2: #C2D1E8; --l3: #D9E3F1; --l4: #ECF1F8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --fig: #8DB4F5; --fig-soft: #233052; }
+}
+:root[data-theme="dark"] { --fig: #8DB4F5; --fig-soft: #233052; }
+/* /tokens */
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
+body{
+  background:var(--bg); color:var(--text); font-family:var(--font-body); font-size:var(--text-md); line-height:var(--leading-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:28px var(--space-8); margin:0;
+}
+.wrap{max-width:1040px;margin:0 auto}
+a{color:var(--link);text-decoration:underline;text-underline-offset:2px}
+a,button,label,summary,input,select{touch-action:manipulation}
+a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+code{font-family:var(--font-mono);font-size:.86em;background:var(--surface-2);padding:1px 5px;border-radius:var(--radius-sm)}
+.en{font-weight:600}
+.fr{color:var(--text-muted);font-style:italic;font-weight:400}
+sub,sup{line-height:0}
+.m{font-family:var(--font-math);font-style:italic}
+.ov{text-decoration:overline}
+.eq{font-family:var(--font-math);font-size:var(--text-md);background:var(--surface-2);border-radius:var(--radius-sm);padding:var(--space-3) var(--space-4);margin:var(--space-3) 0;overflow-x:auto;white-space:pre}
+.res{display:inline-block;background:var(--correct-bg);color:var(--text);border-radius:var(--radius-sm);padding:1px 7px;font-weight:600;font-variant-numeric:tabular-nums}
+.toggle{position:fixed;top:14px;right:max(14px,env(safe-area-inset-right,0px));z-index:20;display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;padding:0;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:var(--radius-md);cursor:pointer;transition:background var(--dur-fast) var(--ease-out)}
+.toggle svg{width:20px;height:20px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:var(--space-6);align-items:center;padding-bottom:var(--space-6)}
+.hero.solo{grid-template-columns:minmax(0,1fr)}
+.eyebrow{font:600 var(--text-xs)/1.3 var(--font-body);color:var(--text-muted)}
+h1{font-family:var(--font-display);font-weight:600;font-variation-settings:"opsz" 72;font-size:clamp(1.875rem,4.4vw,var(--text-2xl));line-height:1.12;letter-spacing:-.01em;margin:var(--space-2) 0 var(--space-3);text-wrap:balance}
+.lead{font-size:var(--text-lg);line-height:1.4;color:var(--text-muted);max-width:var(--measure);margin:0 0 var(--space-4)}
+.how{display:grid;gap:var(--space-2);margin:0;padding:0;list-style:none;max-width:var(--measure)}
+.how li{display:flex;gap:var(--space-3);align-items:baseline;font-size:var(--text-sm)}
+.how .tag{flex:0 0 auto;min-width:10em}
+.pills{display:flex;flex-wrap:wrap;gap:var(--space-2);margin:0}
+.pill{background:var(--surface-2);color:var(--text);border-radius:var(--radius-sm);padding:2px 10px;font:600 var(--text-xs) var(--font-body);font-variant-numeric:tabular-nums}
+.herofig{margin:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4);min-width:0;overflow-x:auto}
+.herofig svg{display:block;width:100%;height:auto;min-width:var(--minw,0)}
+.herofig figcaption{font-size:var(--text-xs);color:var(--text-muted);margin-top:var(--space-2)}
+
+/* resume chip: the ribbon marks my place */
+.resume-chip{display:inline-flex;align-items:center;gap:var(--space-2);min-height:44px;margin:0 0 var(--space-5);padding:var(--space-2) var(--space-4) var(--space-2) var(--space-3);background:var(--note-bg);border:1px solid var(--border);border-radius:var(--radius-md);color:var(--text);font:600 var(--text-sm)/1.3 var(--font-body);text-align:left;cursor:pointer}
+.resume-chip svg{flex-shrink:0;width:9px;height:22px}
+
+/* contents */
+.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:var(--space-5);padding-block:var(--space-5) var(--space-2);border-top:1px solid var(--border)}
+.part h3{font:600 var(--text-xs)/1.3 var(--font-body);color:var(--text-muted);margin:0 0 var(--space-2)}
+.part ul{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.part a{display:flex;gap:var(--space-3);text-decoration:none;color:var(--text);padding:var(--space-1) 0;font-size:var(--text-sm)}
+.part a small{display:block;color:var(--text-muted);font-size:var(--text-xs);line-height:1.35}
+.part .n{font:400 var(--text-xs)/1.9 var(--font-mono);color:var(--text-muted);min-width:1.6em}
+.part .sc{margin-left:auto;font:400 var(--text-xs)/1.9 var(--font-mono);color:var(--text-muted);white-space:nowrap}
+
+/* sections */
+.sec{margin-top:var(--space-7);padding-top:var(--space-6);border-top:1px solid var(--border);scroll-margin-top:var(--space-3)}
+.sec-h{display:flex;align-items:baseline;gap:var(--space-3);flex-wrap:wrap}
+.num{font:600 var(--text-xl)/1.15 var(--font-display);color:var(--text-muted)}
+.sec h2{font-family:var(--font-display);font-weight:600;font-size:var(--text-xl);line-height:1.15;margin:0;text-wrap:balance;min-width:0}
+.sec h2 .fr{font-family:var(--font-body);font-size:.6em}
+.sec h3{font-family:var(--font-display);font-weight:500;font-size:var(--text-lg);line-height:1.2;margin:var(--space-5) 0 var(--space-2)}
+.sec h3 .fr{font-family:var(--font-body);font-size:.75em}
+.sec>p,.sec>ul,.sec>ol{max-width:var(--measure)}
+.back{margin-left:auto;font-size:var(--text-xs);color:var(--text-muted);text-decoration:none}
+.secscore{font:400 var(--text-sm) var(--font-mono);color:var(--text-muted)}
+.tag{display:inline-block;font:600 var(--text-xs)/1.3 var(--font-body);color:var(--text-muted)}
+.intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-5);margin-top:var(--space-5)}
+.plain{margin-top:var(--space-5);background:var(--note-bg);border-left:3px solid var(--accent);border-radius:0 var(--radius-md) var(--radius-md) 0;padding:var(--space-3) var(--space-4)}
+.intro .plain{margin-top:0;align-self:start}
+.plain p{margin:var(--space-2) 0 0;max-width:var(--measure)}
+.defs{list-style:none;margin:var(--space-5) 0 0;padding:0;display:grid;gap:var(--space-3);min-width:0}
+.intro .defs{margin-top:0}
+.defs li{display:grid;gap:1px;font-size:var(--text-sm)}
+.defs .mean{color:var(--text-muted)}
+.defs .eg{color:var(--text-muted);font-size:var(--text-sm)}
+.defs .eg::before{content:"e.g. ";font-weight:600;color:var(--text)}
+.callout{margin-top:var(--space-5);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4)}
+.callout>b:first-child{color:var(--text)}
+.callout ol,.callout ul{margin:6px 0 2px;padding-left:22px}
+.callout li{margin:var(--space-1) 0}
+details.more{margin-top:var(--space-3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:var(--space-2) var(--space-4);background:var(--surface)}
+details.more summary{cursor:pointer;font-weight:600}
+
+/* figures */
+.figs{display:flex;flex-wrap:wrap;gap:var(--space-4);margin-top:var(--space-5)}
+.figs figure{flex:1 1 250px;max-width:430px;min-width:0;margin:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4) var(--space-4) var(--space-3)}
+figure.fig{margin:var(--space-5) 0 0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4) var(--space-4) var(--space-3);overflow-x:auto}
+figure.fig svg{display:block;width:100%;height:auto;min-width:var(--minw,0);max-width:var(--maxw,560px);margin-inline:auto}
+figcaption{font-size:var(--text-xs);color:var(--text-muted);margin-top:var(--space-2);line-height:1.45}
+
+/* worked example */
+.calc{margin-top:var(--space-5);background:var(--note-bg);border-radius:var(--radius-md);padding:var(--space-4)}
+.calc>.tag{color:var(--text)}
+.calc>p{margin:10px 0 0}
+.calc ol{margin:10px 0 0;padding-left:22px}
+.calc li{margin:var(--space-2) 0}
+.calc li>b:first-child{color:var(--text)}
+.calc figure.fig,.calc .figs figure{background:var(--surface)}
+.calc code{background:var(--surface)}
+ul.ln{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:var(--space-2);font-size:var(--text-sm)}
+ul.ln li{padding-left:1.1em;text-indent:-1.1em;overflow-wrap:anywhere}
+ul.ln li::before{content:"\203A\00a0";color:var(--text-muted);font-weight:600}
+
+/* tables */
+.scroll{overflow-x:auto;margin-top:var(--space-3);max-width:100%}
+table.t{border-collapse:collapse;font:400 var(--text-sm)/1.45 var(--font-body);font-variant-numeric:tabular-nums;min-width:260px}
+table.t th{font-weight:600;text-align:left;color:var(--text-muted)}
+table.t th,table.t td{padding:6px 14px 6px 0;border-bottom:1px solid var(--border);vertical-align:top}
+table.t.mono{font-family:var(--font-mono);font-size:var(--text-xs)}
+table.t.mono th,table.t.mono td{white-space:nowrap}
+table.t.grid th,table.t.grid td{padding:6px 10px;border:1px solid var(--border)}
+table.t.grid th{background:var(--surface-2);color:var(--text)}
+table.t .c,table.t.center th,table.t.center td{text-align:center}
+table.t.center .l{text-align:left}
+table.t td.ok{color:var(--correct);font-weight:600}
+table.t td.bad,table.t td.x{color:var(--wrong);font-weight:600}
+table.t tr.best td{background:var(--correct-bg);font-weight:600}
+
+/* notes and footer */
+.note{margin-top:var(--space-5);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4)}
+.note.errata{background:var(--surface-2);border-color:transparent;color:var(--text-muted)}
+.note.errata>.tag{color:var(--text-muted)}
+.note ul,.note ol{margin:var(--space-2) 0 0;padding-left:1.2em;display:grid;gap:var(--space-2);font-size:var(--text-sm)}
+.foot{margin-top:var(--space-7);padding-top:var(--space-4);border-top:1px solid var(--border);font-size:var(--text-xs);color:var(--text-muted)}
+
+/* practice */
+.prog{display:flex;align-items:center;gap:var(--space-3);max-width:460px;margin-top:var(--space-4);font:400 var(--text-sm) var(--font-mono);color:var(--text-muted)}
+.prog .track{flex:1;height:6px;border-radius:var(--radius-sm);background:var(--surface-2);overflow:hidden}
+.prog .fill{display:block;height:100%;width:0;background:var(--accent);transition:width var(--dur-med) var(--ease-out)}
+.legend{display:flex;gap:var(--space-2) var(--space-4);flex-wrap:wrap;margin-top:var(--space-4);font-size:var(--text-sm);color:var(--text-muted)}
+.setmeta{margin:6px 0 0;color:var(--text-muted);font-size:var(--text-sm)}
+.prob{margin-top:var(--space-4);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4);scroll-margin-top:var(--space-3);transition:border-color var(--dur-med) var(--ease-out)}
+.prob.ok{border-color:var(--correct)}
+.prob.bad{border-color:var(--wrong)}
+.ph{display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap}
+.pid{font:400 var(--text-sm) var(--font-mono);color:var(--text-muted)}
+.ph .pt{font:600 var(--text-md)/1.35 var(--font-body);margin:0;min-width:0;flex:1 1 16em}
+.lvl{font:600 var(--text-xs)/1 var(--font-body);padding:4px 8px;border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text-muted)}
+.lw,.ls,.lc{background:var(--surface-2);color:var(--text-muted)}
+.lc{color:var(--text)}
+.done{margin-left:auto;display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs);color:var(--text-muted);cursor:pointer}
+.done input{width:18px;height:18px;accent-color:var(--correct);cursor:pointer}
+.pq{margin-top:10px;max-width:var(--measure)}
+.pq>p,.prob>p{margin:10px 0 0}
+.parts{margin:var(--space-2) 0 0;padding-left:1.4em;display:grid;gap:var(--space-1)}
+.pfs{display:flex;flex-wrap:wrap;gap:var(--space-3);margin-top:var(--space-3)}
+.pfs figure{flex:1 1 200px;max-width:340px;min-width:0;margin:0;background:var(--surface-2);border-radius:var(--radius-sm);padding:var(--space-3) var(--space-3) var(--space-2)}
+.prob details{margin-top:var(--space-3)}
+.prob summary{cursor:pointer;display:inline-flex;align-items:center;gap:var(--space-2);font:600 var(--text-sm) var(--font-body);color:var(--text);padding:var(--space-1) var(--space-3) var(--space-1) var(--space-2);border-radius:var(--radius-sm);list-style:none}
+.prob summary::-webkit-details-marker{display:none}
+.prob summary::before{content:"\203A";font-size:1.2em;line-height:1;color:var(--text-muted);transition:transform var(--dur-fast) var(--ease-out)}
+.prob details[open]>summary::before{transform:rotate(90deg)}
+.sol{margin-top:var(--space-2);background:var(--surface-2);border-radius:var(--radius-sm);padding:var(--space-2) var(--space-4) var(--space-3);font-size:var(--text-sm)}
+.sol p{margin:10px 0 0;max-width:var(--measure)}
+.sol li>b:first-child{color:var(--text)}
+.sol .pfs figure,.sol .eq{background:var(--surface)}
+.sol code{background:var(--surface)}
+.aid{margin-top:var(--space-3);background:var(--surface-2);border-radius:var(--radius-sm);padding:10px var(--space-3);font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;overflow-x:auto}
+.aid>b:first-child{color:var(--text)}
+.prob input[type=text]{width:100%;min-width:56px;max-width:90px;font:inherit;font-variant-numeric:tabular-nums;text-align:center;padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text)}
+.prob textarea{width:100%;font:inherit;padding:var(--space-2) var(--space-3);border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text)}
+.prob select{font:inherit;padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text)}
+.prob input.ok,.prob select.ok{border-color:var(--correct);background:var(--correct-bg)}
+.prob input.bad,.prob select.bad{border-color:var(--wrong);background:var(--wrong-bg)}
+table.t.inp td{padding:3px 6px 3px 0}
+.scalars{display:flex;flex-wrap:wrap;gap:var(--space-3) var(--space-4);margin:var(--space-3) 0 0}
+label.sc{display:flex;align-items:center;gap:var(--space-2)}
+label.sc>span{font-weight:600;min-width:34px}
+label.sc small{color:var(--text-muted);font-size:var(--text-xs)}
+.mc{display:grid;gap:var(--space-2);margin:var(--space-3) 0 0}
+label.opt{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;background:var(--surface);transition:background var(--dur-fast) var(--ease-out),border-color var(--dur-med) var(--ease-out)}
+label.opt.ok{border-color:var(--correct);background:var(--correct-bg)}
+label.opt.bad{border-color:var(--wrong);background:var(--wrong-bg)}
+label.opt.reveal{border-color:var(--correct)}
+/* correct and wrong are never colour alone */
+label.opt.ok::after{content:"\2713\00a0 Correct";margin-left:auto;font-size:var(--text-xs);font-weight:600;color:var(--correct)}
+label.opt.bad::after{content:"\2715\00a0Wrong";margin-left:auto;font-size:var(--text-xs);font-weight:600;color:var(--wrong)}
+.prob.ok>.ph::after{content:"\2713\00a0 Correct";font-size:var(--text-xs);font-weight:600;color:var(--correct)}
+.prob.bad>.ph::after{content:"\2715\00a0Wrong";font-size:var(--text-xs);font-weight:600;color:var(--wrong)}
+.fb.ok::before{content:"\2713\00a0"}
+.fb.bad::before{content:"\2715\00a0"}
+label.opt input{margin-top:6px;accent-color:var(--primary)}
+.chips-set{display:inline-flex;flex-wrap:wrap;gap:6px;vertical-align:middle}
+label.chipbox{position:relative;border:1px solid var(--border);border-radius:var(--radius-sm);padding:3px 12px;cursor:pointer;background:var(--surface);font-size:var(--text-sm)}
+label.chipbox:has(input:checked){border-color:var(--text);background:var(--text);color:var(--bg)}
+label.chipbox input{position:absolute;opacity:0;pointer-events:none}
+.chips-set.ok label.chipbox:has(input:checked){border-color:var(--correct);background:var(--correct-bg);color:var(--correct)}
+.chips-set.bad{outline:2px solid var(--wrong);outline-offset:3px;border-radius:var(--radius-sm)}
+.actions{display:flex;flex-wrap:wrap;gap:var(--space-2);align-items:center;margin-top:var(--space-3)}
+.b{font:600 var(--text-sm) var(--font-body);min-height:36px;padding:6px var(--space-4);border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;transition:background var(--dur-fast) var(--ease-out)}
+.b.chk{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.fb{font-size:var(--text-sm);font-weight:600}
+.fb.ok{color:var(--correct)} .fb.bad{color:var(--wrong)}
+.solution,.expl{margin-top:var(--space-3);border-top:1px solid var(--border);padding-top:10px;font-size:var(--text-sm)}
+.solution>p,.expl>p{margin:6px 0}
+.expl{color:var(--text-muted)}
+
+/* live figure: a process played step by step (REMAKE_BRIEF.md, "Live figures") */
+.live-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-5);align-items:start}
+figure.fig.live svg{max-width:none;max-height:72vh}
+.live-side{display:grid;gap:var(--space-3);min-width:0}
+.live-side .aid,.live-side .actions{margin-top:0}
+.live-val{display:flex;align-items:baseline;gap:var(--space-2);flex-wrap:wrap}
+.live-val b{font:600 var(--text-xl) var(--font-mono);font-variant-numeric:tabular-nums;color:var(--text)}
+.live input[type=range]{width:100%;margin:0;accent-color:var(--fig)}
+.live-status{min-height:4.4em;padding:var(--space-2) var(--space-3);background:var(--surface-2);border-left:3px solid var(--fig);border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:var(--text-sm)}
+.live-status.ok{border-color:var(--correct);background:var(--correct-bg)}
+.live-status.bad{border-color:var(--wrong);background:var(--wrong-bg)}
+.live-status.ok b{color:var(--correct)} .live-status.bad b{color:var(--wrong)}
+.live table.t{width:100%;min-width:0}
+.live tr.past td{color:var(--text-muted)}
+.live figcaption p{margin:var(--space-2) 0 0;max-width:var(--measure)}
+/* the site zooms pages 125% / 150% on wide screens: keep the whole drawing on screen */
+@media (min-width:1200px){figure.fig.live svg{max-height:58vh}}
+@media (min-width:1500px){figure.fig.live svg{max-height:48vh}}
+
+@media (hover:hover){
+  .toggle:hover,.b:hover,label.opt:hover,.prob summary:hover{background:var(--surface-2)}
+  .b.chk:hover{background:var(--primary);opacity:.88}
+  .part a:hover,.back:hover{color:var(--link)}
+  label.opt.ok:hover{background:var(--correct-bg)} label.opt.bad:hover{background:var(--wrong-bg)}
+}
+@media (max-width:820px){
+  .hero{grid-template-columns:minmax(0,1fr)}
+  .live-grid{grid-template-columns:minmax(0,1fr)}
+  figure.fig.live svg{max-height:60vh}
+  .intro{grid-template-columns:minmax(0,1fr)}
+  .how li{flex-direction:column;gap:2px}
+  body{padding-top:56px}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{.toggle{display:none}body{background:#fff}}
+/* /study-hub:base */
+</style>
+<style>
+
+/* page-specific: terminal blocks, cheatsheet cards, figure classes. Tokens only. */
+pre.code{margin:var(--space-3) 0 0;font:400 12px/1.6 var(--font-mono);background:var(--surface-2);color:var(--text);border-radius:var(--radius-sm);padding:var(--space-2) 12px;overflow-x:auto;white-space:pre;tab-size:2;font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
+.calc pre.code,.sol pre.code{background:var(--surface)}
+pre.code code{background:none;padding:0;font-size:inherit}
+pre.code .pr{color:var(--text-muted);user-select:none}
+pre.code .out{color:var(--fig)}
+pre.code .cm{color:var(--text-muted);font-style:italic}
+.cs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:var(--space-4);margin-top:var(--space-5);align-items:start}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-3) var(--space-4) var(--space-4);min-width:0}
+.card.wide{grid-column:1/-1}
+.card>h3{font:600 var(--text-sm)/1.3 var(--font-body);margin:0;color:var(--text)}
+.card>p{margin:var(--space-2) 0 0;font-size:var(--text-sm);color:var(--text-muted)}
+.card pre.code{background:var(--surface-2)}
+.card table.t{width:100%;min-width:0}
+.card table.t td,.card table.t th{font-size:var(--text-xs)}
+.card table.t td:first-child code{white-space:nowrap}
+.steps{margin:var(--space-3) 0 0;padding-left:1.4em;display:grid;gap:var(--space-2);max-width:var(--measure)}
+.calc .scroll table.t{background:transparent}
+.k{font-family:var(--font-mono);font-size:.86em;overflow-wrap:anywhere;word-break:break-all}
+.live-status code{overflow-wrap:anywhere;word-break:break-all}
+/* svg */
+svg .t{fill:var(--text);font:500 12px var(--font-body)}
+svg .tm{fill:var(--text-muted);font:400 11px var(--font-body)}
+svg .mono{font-family:var(--font-mono);white-space:pre}
+svg .sm{font-size:10px}
+svg .b{font-weight:700}
+svg .mid{text-anchor:middle}
+svg .end{text-anchor:end}
+svg .dk{fill:var(--brand-ink)}
+svg .box{fill:var(--surface-2);stroke:var(--border)}
+svg .pane{fill:var(--surface);stroke:var(--border)}
+svg .c1{fill:var(--c1)} svg .c2{fill:var(--c2)} svg .c3{fill:var(--c3)} svg .c4{fill:var(--c4)}
+svg .soft{fill:var(--fig-soft);stroke:var(--fig)}
+svg .ln{stroke:var(--text-muted);stroke-width:1.2;fill:none}
+svg .dash{stroke-dasharray:4 4}
+svg .ar{stroke:var(--fig);stroke-width:1.6;fill:none}
+svg .arw{stroke:var(--wrong);stroke-width:1.6;fill:none}
+svg .hd{fill:var(--fig)}
+svg .hdw{fill:var(--wrong)}
+svg .hdm{fill:var(--text-muted)}
+svg .hi{fill:none;stroke:var(--wrong);stroke-width:2.2}
+svg .figt{fill:var(--fig)}
+svg .ok{fill:var(--correct)}
+svg .dim{opacity:.28}
+svg .fadein{transition:opacity var(--dur-med) var(--ease-out)}
+
+</style>
+</head>
+<body>
+<button class="toggle" id="theme-toggle" type="button" aria-label="Toggle light or dark theme"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8a2.83 2.83 0 0 0 4 4 4 4 0 1 1-4-4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.9 4.9 1.4 1.4"/><path d="m17.7 17.7 1.4 1.4"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.3 17.7-1.4 1.4"/><path d="m19.1 4.9-1.4 1.4"/></svg></button>
+<div class="wrap">
+
+<header class="hero" id="top">
+  <div>
+    <div class="eyebrow">SSAD · Chapter 2 · Lesson</div>
+    <h1>OpenSSL: encrypt files and talk securely</h1>
+    <p class="lead">TP 2 in one page: what SSL/TLS does, how to drive the <code>openssl</code> tool, how to encrypt and decrypt a file with a password, how to build the three lab set-ups, and a cheatsheet of every command you will need. <span class="fr">(Prise en main d'OpenSSL · chiffrement symétrique)</span></p>
+    <ul class="how">
+      <li><span class="tag">In plain words</span><span>What each idea means, without jargon.</span></li>
+      <li><span class="tag">Keywords</span><span><b class="en">term</b> <span class="fr">(terme)</span>: English first, French after.</span></li>
+      <li><span class="tag">Worked example</span><span>Every command and output was run for real with OpenSSL 3.0.13 30 Jan 2024, the version Ubuntu 24.04 ships.</span></li>
+      <li><span class="tag">Cheatsheet</span><span>Part D (sections 10 to 14): every command, grouped by job.</span></li>
+    </ul>
+  </div>
+  <figure class="herofig"><svg viewBox="0 0 360 196" role="img" aria-label="VM1 encrypts message.txt, sends the encrypted file to VM2, which decrypts it" xmlns="http://www.w3.org/2000/svg"><defs><marker id="hf-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker><marker id="hf-aw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hdw"/></marker></defs><rect x="8" y="30" width="120" height="140" rx="8" class="pane" /><text x="18" y="48" class="t b" >VM1</text><text x="18" y="63" class="tm mono sm" >192.168.1.21</text><rect x="232" y="30" width="120" height="140" rx="8" class="pane" /><text x="242" y="48" class="t b" >VM2</text><text x="242" y="63" class="tm mono sm" >192.168.1.22</text><rect x="20" y="72" width="96" height="28" rx="6" class="c4" /><text x="68" y="90" class="t dk mid mono sm" >message.txt</text><rect x="20" y="128" width="96" height="28" rx="6" class="c3" /><text x="68" y="146" class="t dk mid mono sm" >crypted</text><line x1="68" y1="101" x2="68" y2="126" class="ar" marker-end="url(#hf-ah)"/><text x="76" y="117" class="tm mono sm" >enc</text><rect x="244" y="128" width="96" height="28" rx="6" class="c3" /><text x="292" y="146" class="t dk mid mono sm" >crypted</text><rect x="244" y="72" width="96" height="28" rx="6" class="c4" /><text x="292" y="90" class="t dk mid mono sm" >message.txt</text><line x1="292" y1="126" x2="292" y2="102" class="ar" marker-end="url(#hf-ah)"/><text x="300" y="117" class="tm mono sm" >enc -d</text><rect x="128" y="132" width="104" height="20" class="soft"/><line x1="130" y1="142" x2="228" y2="142" class="ar" marker-end="url(#hf-ah)"/><text x="180" y="126" class="tm mid" >scp / TLS</text><text x="180" y="168" class="tm mid mono sm" >U2FsdGVkX1…</text><text x="180" y="186" class="tm mid sm" >the wire only sees scrambled bytes</text></svg><figcaption>The loop the whole TP is about: encrypt on one machine, send, decrypt on the other.</figcaption></figure>
+</header>
+
+<nav class="toc" aria-label="Contents">
+  <div class="part"><h3>A · OpenSSL and TLS</h3><ul>
+    <li><a href="#s1"><span class="n">1</span><span>What OpenSSL is<small>SSL, TLS and the openssl tool</small></span></a></li>
+    <li><a href="#s2"><span class="n">2</span><span>The handshake, then the talk<small>the two steps of TLS</small></span></a></li>
+    <li><a href="#s3"><span class="n">3</span><span>Typing commands and getting help<small>openssl &lt;command&gt; &lt;options&gt;</small></span></a></li>
+  </ul></div>
+  <div class="part"><h3>B · Encrypting files (TP 2)</h3><ul>
+    <li><a href="#s4"><span class="n">4</span><span>Encrypt a file with enc<small>password, salt, key</small></span></a></li>
+    <li><a href="#s5"><span class="n">5</span><span>Where the password comes from<small>rand, -k, -kfile, -pass</small></span></a></li>
+    <li><a href="#s6"><span class="n">6</span><span>Decrypt, and read the errors<small>-d and what must match</small></span></a></li>
+  </ul></div>
+  <div class="part"><h3>C · The three set-ups</h3><ul>
+    <li><a href="#s7"><span class="n">7</span><span>Three set-ups, one exercise<small>no VM, two VMs, two PCs</small></span></a></li>
+    <li><a href="#s8"><span class="n">8</span><span>Build the lab<small>Ubuntu, VirtualBox, bridged network</small></span></a></li>
+    <li><a href="#s9"><span class="n">9</span><span>Move files with ssh and scp<small>the full loop between machines</small></span></a></li>
+  </ul></div>
+  <div class="part"><h3>D · Cheatsheet</h3><ul>
+    <li><a href="#s10"><span class="n">10</span><span>enc: every option</span></a></li>
+    <li><a href="#s11"><span class="n">11</span><span>rand, base64, hashes, HMAC</span></a></li>
+    <li><a href="#s12"><span class="n">12</span><span>RSA keys, encrypt, sign</span></a></li>
+    <li><a href="#s13"><span class="n">13</span><span>Certificates and a small CA</span></a></li>
+    <li><a href="#s14"><span class="n">14</span><span>TLS tests, list and help</span></a></li>
+    <li><a href="#notes"><span class="n">!</span><span>Notes on the original course</span></a></li>
+  </ul></div>
+</nav>
+
+<section class="sec" id="s1">
+  <div class="sec-h"><span class="num">1</span><h2>What OpenSSL is <span class="fr">(Qu'est-ce qu'OpenSSL)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>OpenSSL is a free toolbox for cryptography (the science of hiding and protecting data). It comes in two parts:</p>
+ <p><b>a library</b>, code that other programs call: web servers, <code>curl</code> and many others use it to protect their connections;</p>
+ <p><b>a command-line tool</b>, the program <code>openssl</code> you type in a terminal. It can encrypt files, make keys, compute fingerprints, make certificates and test secure connections. TP 2 uses this tool.</p>
+ <p>The name comes from <b>SSL</b>, the old protocol that protects a network connection. Its modern version is called <b>TLS</b>. People still say "SSL" out of habit.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">protocol</b> <span class="fr">(protocole)</span></span><span class="mean">A fixed list of messages two programs send each other, in a fixed order, so they understand each other.</span></li><li><span class="term"><b class="en">SSL</b> <span class="fr">(Secure Sockets Layer)</span></span><span class="mean">Netscape's protocol from the 1990s to protect a TCP connection. Every SSL version is now broken and switched off.</span></li><li><span class="term"><b class="en">TLS</b> <span class="fr">(Transport Layer Security)</span></span><span class="mean">The successor of SSL, run by the IETF (the group that writes Internet standards). TLS 1.2 and 1.3 protect every HTTPS site today.</span></li><li><span class="term"><b class="en">TCP/IP</b></span><span class="mean">The network layers that carry bytes from one machine to another. They hide nothing: anyone on the path can read the bytes.</span></li><li><span class="term"><b class="en">fingerprint</b> <span class="fr">(empreinte)</span></span><span class="mean">A short code computed from a file (a hash). Change one letter of the file and the fingerprint changes completely.</span><span class="eg">SHA-256, MD5</span></li></ul>
+  </div>
+  <figure class="fig"><svg viewBox="0 0 520 222" role="img" aria-label="Two network stacks: TLS sits between the application and TCP and creates an encrypted channel" style="--minw:440px" xmlns="http://www.w3.org/2000/svg"><defs><marker id="f1-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker><marker id="f1-aw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hdw"/></marker></defs><text x="105" y="20" class="t b mid" >VM1 (client)</text><rect x="20" y="30" width="170" height="36" rx="5" class="c4" /><text x="30" y="46" class="t b dk" >Application</text><text x="30" y="60" class="tm sm dk" >s_client, browser, curl</text><rect x="20" y="74" width="170" height="36" rx="5" class="c3" /><text x="30" y="90" class="t b dk" >TLS (ex-SSL)</text><text x="30" y="104" class="tm sm dk" >encrypts + checks</text><rect x="20" y="118" width="170" height="36" rx="5" class="box" /><text x="30" y="134" class="t b" >TCP</text><text x="30" y="148" class="tm sm" >reliable byte stream</text><rect x="20" y="162" width="170" height="36" rx="5" class="box" /><text x="30" y="178" class="t b" >IP</text><text x="30" y="192" class="tm sm" >addresses, routing</text><text x="415" y="20" class="t b mid" >VM2 (server)</text><rect x="330" y="30" width="170" height="36" rx="5" class="c4" /><text x="340" y="46" class="t b dk" >Application</text><text x="340" y="60" class="tm sm dk" >s_client, browser, curl</text><rect x="330" y="74" width="170" height="36" rx="5" class="c3" /><text x="340" y="90" class="t b dk" >TLS (ex-SSL)</text><text x="340" y="104" class="tm sm dk" >encrypts + checks</text><rect x="330" y="118" width="170" height="36" rx="5" class="box" /><text x="340" y="134" class="t b" >TCP</text><text x="340" y="148" class="tm sm" >reliable byte stream</text><rect x="330" y="162" width="170" height="36" rx="5" class="box" /><text x="340" y="178" class="t b" >IP</text><text x="340" y="192" class="tm sm" >addresses, routing</text><rect x="190" y="78" width="140" height="28" class="soft"/><line x1="192" y1="92" x2="328" y2="92" class="ar" marker-end="url(#f1-ah)" marker-start="url(#f1-ah)"/><text x="260" y="72" class="tm mid" >encrypted channel</text><line x1="190" y1="180" x2="330" y2="180" class="ln dash"/><text x="260" y="200" class="tm mid sm" >the network: anyone on it</text><text x="260" y="213" class="tm mid sm" >can read raw bytes</text></svg><figcaption>TLS sits between your program and TCP. The program hands it plain data; TLS encrypts it before TCP carries it across the network, and decrypts it on the other side.</figcaption></figure>
+  
+  <div class="calc"><span class="tag">Worked example</span>
+<p>The course lists what the tool can do. Here is each item with the command that does it:</p>
+ <div class="scroll"><table class="t"><thead><tr><th>What the course lists</th><th>Command</th><th>Section</th></tr></thead><tbody><tr><td>Make RSA, DSA keys ("key forge", for signatures)</td><td><code>genrsa</code>, <code>genpkey</code>, <code>rsa</code></td><td>12</td></tr><tr><td>Make X.509 certificates (identification)</td><td><code>req</code>, <code>x509</code>, <code>verify</code></td><td>13</td></tr><tr><td>Compute fingerprints (MD5, SHA, RIPEMD160)</td><td><code>dgst</code></td><td>11</td></tr><tr><td>Symmetric and asymmetric encryption</td><td><code>enc</code> (one shared password), <code>pkeyutl</code> (RSA keys)</td><td>4, 10, 12</td></tr><tr><td>Test SSL/TLS clients and servers</td><td><code>s_client</code>, <code>s_server</code></td><td>2, 14</td></tr><tr><td>Sign and encrypt emails (S/MIME)</td><td><code>smime</code>, <code>cms</code></td><td>not in this TP</td></tr></tbody></table></div>
+ <p>First thing to type on a fresh Ubuntu, to know which version you have:</p>
+ <pre class="code"><code><span class="pr">$ </span>openssl version
+<span class="out">OpenSSL 3.0.13 30 Jan 2024 (Library: OpenSSL 3.0.13 30 Jan 2024)</span></code></pre>
+ <p>Version 3 changed some commands compared with the 1.x versions the handout was written for. This lesson always gives the version-3 form and flags the differences.</p>
+  </div>
+</section>
+<section class="sec" id="s2">
+  <div class="sec-h"><span class="num">2</span><h2>The handshake, then the talk <span class="fr">(poignée de main, puis communication)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>Before any secret data travels, client and server hold a short conversation called the <b>handshake</b>. In it they:</p>
+ <p>1. say hello and agree on which algorithms to use;<br>2. the server shows its <b>certificate</b>, a kind of ID card, so the client knows who it is talking to;<br>3. both sides compute the same fresh secret key, the <b>session key</b>, without ever sending it.</p>
+ <p>Then comes the <b>communication step</b>: every chunk of data is encrypted with the session key and carries a tag that shows whether anyone changed it on the way.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">handshake</b> <span class="fr">(poignée de main)</span></span><span class="mean">The opening messages of a TLS connection, before any real data.</span></li><li><span class="term"><b class="en">cipher suite</b> <span class="fr">(suite cryptographique)</span></span><span class="mean">The set of algorithms both sides agree on, written as one name.</span><span class="eg">TLS_AES_256_GCM_SHA384 = encrypt with AES-256 in GCM mode, hash with SHA-384</span></li><li><span class="term"><b class="en">certificate</b> <span class="fr">(certificat)</span></span><span class="mean">A file holding a public key and a name, signed by an authority that vouches the key belongs to that name (section 13).</span></li><li><span class="term"><b class="en">key exchange</b> <span class="fr">(échange de clés)</span></span><span class="mean">Each side mixes its own secret number with a public value from the other side. Both get the same result; a spy who saw only the public values cannot.</span><span class="eg">X25519</span></li><li><span class="term"><b class="en">session key</b> <span class="fr">(clé de session)</span></span><span class="mean">The shared secret the key exchange produced. It lives only for this connection.</span></li><li><span class="term"><b class="en">record</b> <span class="fr">(enregistrement)</span></span><span class="mean">One encrypted chunk of data in the communication step, with its integrity tag.</span></li></ul>
+  </div>
+  <figure class="fig"><svg viewBox="0 0 540 306" role="img" aria-label="Sequence diagram: four handshake messages, then encrypted data in both directions" style="--minw:480px" xmlns="http://www.w3.org/2000/svg"><defs><marker id="f2-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker><marker id="f2-aw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hdw"/></marker></defs><text x="120" y="18" class="t b mid" >VM1 · client</text><text x="420" y="18" class="t b mid" >VM2 · server</text><line x1="120" y1="26" x2="120" y2="300" class="ln"/><line x1="420" y1="26" x2="420" y2="300" class="ln"/><rect x="4" y="34" width="532" height="166" rx="6" class="pane" style="fill:none"/><text x="10" y="48" class="tm b" >Step 1 · handshake</text><line x1="120" y1="68" x2="420" y2="68" class="ar" marker-end="url(#f2-ah)"/><text x="270" y="63" class="t mid sm" >1  Hello: the TLS versions and cipher suites I know</text><line x1="420" y1="98" x2="120" y2="98" class="ar" marker-end="url(#f2-ah)"/><text x="270" y="93" class="t mid sm" >2  Hello: I pick this suite. Here is my certificate</text><line x1="120" y1="128" x2="420" y2="128" class="ar" marker-end="url(#f2-ah)" marker-start="url(#f2-ah)"/><text x="270" y="123" class="t mid sm" >3  Key exchange: both sides compute the same secret</text><line x1="120" y1="158" x2="420" y2="158" class="ar" marker-end="url(#f2-ah)"/><text x="270" y="153" class="t mid sm" >4  Finished: checksum of everything so far</text><line x1="420" y1="186" x2="120" y2="186" class="ar" marker-end="url(#f2-ah)"/><text x="270" y="181" class="t mid sm" >4  Finished: my checksum too</text><rect x="4" y="210" width="532" height="92" rx="6" class="soft" /><text x="10" y="226" class="t b figt" >Step 2 · communication</text><line x1="120" y1="250" x2="420" y2="250" class="ar" marker-end="url(#f2-ah)"/><text x="270" y="245" class="t mid sm" >data, encrypted with the session key + a tag</text><line x1="420" y1="282" x2="120" y2="282" class="ar" marker-end="url(#f2-ah)"/><text x="270" y="277" class="t mid sm" >reply, encrypted + tag</text></svg><figcaption>The course's two steps. The handshake agrees on algorithms, proves who the server is, and creates a shared key that never travels. Only then does real data flow, encrypted and tagged.</figcaption></figure>
+  
+  <div class="calc"><span class="tag">Worked example</span>
+<p>Set-up (section 7, two VMs): VM2 is the server, VM1 the client. VM2 starts a test server with its certificate; VM1 connects and asks to print every handshake message. <code>-tls1_2</code> forces TLS 1.2 because its handshake shows every step separately.</p>
+ <pre class="code"><code><span class="cm"># on VM2 (server):</span>
+<span class="pr">$ </span>openssl s_server -accept 4433 -cert vm2.crt -key vm2.key
+<span class="cm"># on VM1 (client), 192.168.1.22 being VM2's address:</span>
+<span class="pr">$ </span>openssl s_client -connect 192.168.1.22:4433 -CAfile ca.crt -tls1_2 -msg
+<span class="out">&gt;&gt;&gt; TLS 1.2, ClientHello [length 00b7]
+&lt;&lt;&lt; TLS 1.2, ServerHello [length 0041]
+&lt;&lt;&lt; TLS 1.2, Certificate [length 02ba]
+&lt;&lt;&lt; TLS 1.2, ServerKeyExchange [length 012c]
+&lt;&lt;&lt; TLS 1.2, ServerHelloDone [length 0004]
+&gt;&gt;&gt; TLS 1.2, ClientKeyExchange [length 0025]
+&gt;&gt;&gt; TLS 1.2, ChangeCipherSpec [length 0001]
+&gt;&gt;&gt; TLS 1.2, Finished [length 0010]
+&lt;&lt;&lt; TLS 1.2, NewSessionTicket [length 00ba]
+&lt;&lt;&lt; TLS 1.2, Finished [length 0010]</span></code></pre>
+ <p><code>&gt;&gt;&gt;</code> means "VM1 sent", <code>&lt;&lt;&lt;</code> means "VM1 received". The lengths are in hexadecimal (base 16). (This trace was recorded with both ends on one machine; the messages are the same between two VMs. Lines showing only the record headers were left out.)</p>
+ 
+  <figure class="fig live" id="lf1">
+    <div class="live-grid">
+      <svg id="lf1-svg" viewBox="0 0 400 340" role="img" aria-label="TLS 1.2 handshake between VM1 and VM2, one message at a time" xmlns="http://www.w3.org/2000/svg"></svg>
+      <div class="live-side" data-no-save>
+        <div class="live-val"><span class="tag">Step</span><b id="lf1-val">0 / 0</b></div>
+        <div class="actions"><button class="b chk" id="lf1-play" type="button">Play</button><button class="b" id="lf1-step" type="button">Step</button><button class="b" id="lf1-reset" type="button">Reset</button></div>
+        <label class="tag" for="lf1-range">Drag to any step</label>
+        <input id="lf1-range" type="range" min="0" max="0" step="1" value="0">
+        <div class="live-status" id="lf1-status" aria-live="polite"></div>
+        <div class="scroll"><table class="t"><thead><tr><th>#</th><th>dir</th><th>message</th><th>bytes</th></tr></thead><tbody id="lf1-rows"></tbody></table></div>
+      </div>
+    </div>
+    <figcaption><p>Watch the order: hellos first, then the certificate and the two halves of the key exchange, then the two Finished checksums. Real data only starts after both checksums match. The messages and their sizes are the real trace printed by <code>-msg</code>.</p></figcaption>
+  </figure>
+  <script>
+  (function(){
+    var $=function(id){return document.getElementById("lf1-"+id);};
+
+    var T=[{"d": "c2s", "m": "ClientHello", "len": 183, "ver": "TLS 1.2"}, {"d": "s2c", "m": "ServerHello", "len": 65, "ver": "TLS 1.2"}, {"d": "s2c", "m": "Certificate", "len": 698, "ver": "TLS 1.2"}, {"d": "s2c", "m": "ServerKeyExchange", "len": 300, "ver": "TLS 1.2"}, {"d": "s2c", "m": "ServerHelloDone", "len": 4, "ver": "TLS 1.2"}, {"d": "c2s", "m": "ClientKeyExchange", "len": 37, "ver": "TLS 1.2"}, {"d": "c2s", "m": "ChangeCipherSpec", "len": 1, "ver": "TLS 1.2"}, {"d": "c2s", "m": "Finished", "len": 16, "ver": "TLS 1.2"}, {"d": "s2c", "m": "NewSessionTicket", "len": 186, "ver": "TLS 1.2"}, {"d": "s2c", "m": "Finished", "len": 16, "ver": "TLS 1.2"}], MSG="Bonjour depuis VM1";
+    var EXPL={
+      "ClientHello":"VM1 says hello: the TLS versions and the cipher suites it can use, plus a fresh random number.",
+      "ServerHello":"VM2 picks one version and one cipher suite from VM1's list, and sends its own random number.",
+      "Certificate":"VM2 sends its certificate: its name (CN = vm2), its public key, and the CA signature that vouches for both.",
+      "ServerKeyExchange":"VM2 sends its half of the key exchange (an X25519 public value) and signs it with its private key, proving it really owns the certificate.",
+      "ServerHelloDone":"VM2: “that is all from me”.",
+      "ClientKeyExchange":"VM1 sends its half. Each side now mixes its own secret with the other's half and gets the same session key. Someone watching the wire saw both halves but cannot compute it.",
+      "ChangeCipherSpec":"VM1: “from now on, everything I send is encrypted with the new key”.",
+      "Finished":"A checksum of the whole conversation, sent encrypted. If anyone changed one byte of the hellos, the checksums would not match and the connection would stop.",
+      "NewSessionTicket":"VM2 hands over a ticket so a later reconnection can skip most of this handshake."};
+    var STEPS=[{text:"Start: VM2 runs <code>openssl s_server -accept 4433</code>, VM1 runs <code>openssl s_client -connect &lt;VM2&gt;:4433 -tls1_2 -msg</code>. Nothing sent yet."}];
+    var nfin=0;
+    T.forEach(function(r,k){
+      var who=r.d==="c2s"?"VM1 → VM2":"VM2 → VM1";
+      var t=EXPL[r.m]||r.m; if(r.m==="Finished"){nfin++;if(nfin===2)t+=" Both checksums match: <b>handshake over</b>.";}
+      STEPS.push({text:"<b>"+who+": "+r.m+"</b> ("+r.len+" bytes). "+t,row:k});
+    });
+    STEPS.push({text:"Step 2, communication: VM1 types a line, TLS encrypts it into a record, and VM2's server prints <code>"+MSG+"</code>.",app:true,end:true});
+    var NS="http://www.w3.org/2000/svg";
+    function el(n,a,txt){var x=document.createElementNS(NS,n);for(var k in a)x.setAttribute(k,a[k]);if(txt!=null)x.textContent=txt;return x;}
+    var svg=$("svg"),XC=70,XS=330,Y0=44,DY=24;
+    function render(i){
+      while(svg.firstChild)svg.removeChild(svg.firstChild);
+      var d=el("defs",{});var m=el("marker",{id:"lf1-ah",viewBox:"0 0 10 10",refX:"9",refY:"5",markerWidth:"7",markerHeight:"7",orient:"auto-start-reverse"});
+      m.appendChild(el("path",{d:"M0,0 L10,5 L0,10 z","class":"hd"}));d.appendChild(m);
+      var m2=el("marker",{id:"lf1-am",viewBox:"0 0 10 10",refX:"9",refY:"5",markerWidth:"7",markerHeight:"7",orient:"auto-start-reverse"});
+      m2.appendChild(el("path",{d:"M0,0 L10,5 L0,10 z","class":"hdm"}));d.appendChild(m2);svg.appendChild(d);
+      svg.appendChild(el("text",{x:XC,y:18,"class":"t b mid"},"VM1 · client"));
+      svg.appendChild(el("text",{x:XS,y:18,"class":"t b mid"},"VM2 · server"));
+      var H=Y0+DY*(T.length+1)+10;
+      svg.appendChild(el("line",{x1:XC,y1:26,x2:XC,y2:H,"class":"ln"}));
+      svg.appendChild(el("line",{x1:XS,y1:26,x2:XS,y2:H,"class":"ln"}));
+      var cur=STEPS[i];
+      T.forEach(function(r,k){
+        if(k+1>i)return;
+        var y=Y0+k*DY,x1=r.d==="c2s"?XC:XS,x2=r.d==="c2s"?XS:XC;
+        var isCur=cur.row===k, g=el("g",{"class":cur.app?"dim":""});
+        g.appendChild(el("line",{x1:x1,y1:y,x2:x2,y2:y,"class":isCur?"ar":"ln","marker-end":isCur?"url(#lf1-ah)":"url(#lf1-am)"}));
+        g.appendChild(el("text",{x:(XC+XS)/2,y:y-5,"class":(isCur?"t b":"tm")+" mid sm mono"},r.m));
+        svg.appendChild(g);
+      });
+      if(cur.app){
+        var y=Y0+T.length*DY+6;
+        svg.appendChild(el("rect",{x:XC,y:y-12,width:XS-XC,height:18,"class":"soft"}));
+        svg.appendChild(el("line",{x1:XC,y1:y,x2:XS,y2:y,"class":"ar","marker-end":"url(#lf1-ah)"}));
+        svg.appendChild(el("text",{x:(XC+XS)/2,y:y-1,"class":"t mid sm b"},"encrypted: “"+MSG+"”"));
+      }
+      var rows=$("rows");rows.innerHTML="";
+      T.forEach(function(r,k){if(k+1>i)return;var tr=document.createElement("tr");if(cur.row!==k)tr.className="past";
+        tr.innerHTML="<td>"+(k+1)+"</td><td>"+(r.d==="c2s"?"→":"←")+"</td><td><code>"+r.m+"</code></td><td>"+r.len+"</td>";rows.appendChild(tr);});
+    }
+    var i=0,timer=null,reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+    function draw(){
+      var s=STEPS[i];
+      render(i);
+      $("val").textContent=i+" / "+(STEPS.length-1);
+      $("status").className="live-status"+(s.end?" ok":"");
+      $("status").innerHTML=(s.end?"<b>✓ Done.</b> ":"")+s.text;
+      $("range").value=i;
+    }
+    function stop(){clearInterval(timer);timer=null;$("play").textContent="Play";}
+    function go(n){i=Math.max(0,Math.min(STEPS.length-1,n));draw();if(i===STEPS.length-1)stop();}
+    $("play").addEventListener("click",function(){
+      if(timer){stop();return;}
+      if(i===STEPS.length-1)go(0);
+      if(reduced){go(STEPS.length-1);return;}
+      $("play").textContent="Pause";timer=setInterval(function(){go(i+1);},1400);
+    });
+    $("step").addEventListener("click",function(){stop();go(i+1);});
+    $("reset").addEventListener("click",function(){stop();go(0);});
+    $("range").max=STEPS.length-1;
+    $("range").addEventListener("input",function(){stop();go(+this.value);});
+    draw();
+  })();
+  </script>
+ <p><b>TLS 1.3</b>, what you get without <code>-tls1_2</code>, is shorter: the client sends its key-exchange half in its very first hello, so after <code>ServerHello</code> everything, certificate included, is already encrypted:</p>
+ <pre class="code"><code><span class="pr">$ </span>openssl s_client -connect 192.168.1.22:4433 -CAfile ca.crt -msg
+<span class="out">&gt;&gt;&gt; TLS 1.3, ClientHello
+&lt;&lt;&lt; TLS 1.3, ServerHello
+&lt;&lt;&lt; TLS 1.3, EncryptedExtensions
+&lt;&lt;&lt; TLS 1.3, Certificate
+&lt;&lt;&lt; TLS 1.3, CertificateVerify
+&lt;&lt;&lt; TLS 1.3, Finished
+&gt;&gt;&gt; TLS 1.3, ChangeCipherSpec
+&gt;&gt;&gt; TLS 1.3, Finished</span></code></pre>
+ <p>And the one-screen summary, with <code>-brief</code>:</p>
+ <pre class="code"><code><span class="pr">$ </span>openssl s_client -connect 192.168.1.22:4433 -CAfile ca.crt -brief
+<span class="out">CONNECTION ESTABLISHED
+Protocol version: TLSv1.3
+Ciphersuite: TLS_AES_256_GCM_SHA384
+Peer certificate: CN = vm2
+Hash used: SHA256
+Signature type: RSA-PSS
+Verification: OK
+Server Temp Key: X25519, 253 bits
+DONE</span></code></pre>
+ <p>Read it with the definitions above: protocol <code>TLSv1.3</code>, cipher suite <code>TLS_AES_256_GCM_SHA384</code>, key exchange <code>X25519</code>, and <code>Verification: OK</code> because VM1 trusts the CA that signed VM2's certificate.</p>
+  </div>
+</section>
+<section class="sec" id="s3">
+  <div class="sec-h"><span class="num">3</span><h2>Typing commands and getting help <span class="fr">(commandes et aide)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>You talk to OpenSSL in a <b>terminal</b>. Every line has the same shape: <code>openssl &lt;command&gt; &lt;options&gt;</code>. The <b>command</b> picks the tool (<code>enc</code> to encrypt, <code>dgst</code> for fingerprints, <code>genrsa</code> for RSA keys...). The <b>options</b> say how, each starting with one dash.</p>
+ <p>You never need to remember everything: <code>openssl help</code> lists the commands, and <code>openssl enc -help</code> lists the options of one command.</p>
+ <p>In OpenSSL 3, typing <code>openssl</code> alone just prints the command list and gives you back the normal prompt. The old <code>OpenSSL&gt;</code> prompt of the handout is gone, so always write <code>openssl</code> in front of every command.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">shell</b> <span class="fr">(interpréteur de commandes)</span></span><span class="mean">The program that reads what you type in the terminal (on Ubuntu, bash).</span></li><li><span class="term"><b class="en">prompt</b> <span class="fr">(invite)</span></span><span class="mean">The sign the shell prints when it waits for you, usually <code>$</code>. You do not type it.</span></li><li><span class="term"><b class="en">command</b> <span class="fr">(commande)</span></span><span class="mean">The word right after <code>openssl</code>.</span><span class="eg">enc, dgst, rand, genrsa, req, s_client</span></li><li><span class="term"><b class="en">option</b> <span class="fr">(option)</span></span><span class="mean">A setting starting with <code>-</code>. Some need a value: <code>-in message.txt</code>.</span></li><li><span class="term"><b class="en">man page</b> <span class="fr">(page de manuel)</span></span><span class="mean">The full manual of a command: <code>man openssl-enc</code>. Press <code>q</code> to leave it.</span></li></ul>
+  </div>
+  <figure class="fig"><svg viewBox="0 0 653 110" role="img" aria-label="Anatomy of one openssl command line" style="--minw:600px;--maxw:760px" xmlns="http://www.w3.org/2000/svg"><defs><marker id="f3-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker><marker id="f3-aw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hdw"/></marker></defs><rect x="6" y="50" width="57.0" height="24" rx="4" class="c4" /><text x="10" y="66" class="t dk mono sm" >openssl</text><line x1="34.5" y1="50" x2="34.5" y2="40" class="ln"/><text x="34.5" y="36" class="tm mid sm" >the program</text><rect x="68.0" y="50" width="29.0" height="24" rx="4" class="c3" /><text x="72.0" y="66" class="t dk mono sm" >enc</text><line x1="82.5" y1="74" x2="82.5" y2="86" class="ln"/><text x="82.5" y="98" class="tm mid sm" >command: which tool</text><rect x="102.0" y="50" width="92.0" height="24" rx="4" class="c1" /><text x="106.0" y="66" class="t dk mono sm" >-aes-256-cbc</text><line x1="148.0" y1="50" x2="148.0" y2="40" class="ln"/><text x="148.0" y="36" class="tm mid sm" >option: the cipher</text><rect x="199.0" y="50" width="57.0" height="24" rx="4" class="c1" /><text x="203.0" y="66" class="t dk mono sm" >-pbkdf2</text><line x1="227.5" y1="74" x2="227.5" y2="86" class="ln"/><text x="227.5" y="98" class="tm mid sm" >option: key recipe</text><rect x="261.0" y="50" width="57.0" height="24" rx="4" class="c1" /><text x="265.0" y="66" class="t dk mono sm" >-base64</text><line x1="289.5" y1="50" x2="289.5" y2="40" class="ln"/><text x="289.5" y="36" class="tm mid sm" >option: text output</text><rect x="323.0" y="50" width="113.0" height="24" rx="4" class="c2" /><text x="327.0" y="66" class="t dk mono sm" >-in message.txt</text><line x1="379.5" y1="74" x2="379.5" y2="86" class="ln"/><text x="379.5" y="98" class="tm mid sm" >input file</text><rect x="441.0" y="50" width="92.0" height="24" rx="4" class="c2" /><text x="445.0" y="66" class="t dk mono sm" >-out crypted</text><line x1="487.0" y1="50" x2="487.0" y2="40" class="ln"/><text x="487.0" y="36" class="tm mid sm" >output file</text><rect x="538.0" y="50" width="106.0" height="24" rx="4" class="c2" /><text x="542.0" y="66" class="t dk mono sm" >-pass pass:tp2</text><line x1="591.0" y1="74" x2="591.0" y2="86" class="ln"/><text x="591.0" y="98" class="tm mid sm" >the password</text></svg><figcaption>Every OpenSSL line has the same shape: the program, one command, then options. Options start with a single dash, and some take a value right after them.</figcaption></figure>
+  
+  <div class="calc"><span class="tag">Worked example</span>
+<p>The help commands, run for real (outputs cut after a few lines):</p>
+ <pre class="code"><code><span class="pr">$ </span>openssl help
+<span class="out">help:
+
+Standard commands
+asn1parse         ca                ciphers           cmp               
+cms               crl               crl2pkcs7         dgst              
+dhparam           dsa               dsaparam          ec                
+…</span>
+<span class="pr">$ </span>openssl enc -help
+<span class="out">Usage: enc [options]
+
+General options:
+ -help               Display this summary
+ -list               List ciphers
+ -ciphers            Alias for -list
+ -e                  Encrypt
+ -d                  Decrypt
+ -p                  Print the iv/key
+ -P                  Print the iv/key and exit
+ -engine val         Use engine, possibly a hardware device
+
+…</span>
+<span class="pr">$ </span>openssl list -cipher-commands
+<span class="out">aes-128-cbc       aes-128-ecb       aes-192-cbc       aes-192-ecb       
+aes-256-cbc       aes-256-ecb       aria-128-cbc      aria-128-cfb      
+aria-128-cfb1     aria-128-cfb8     aria-128-ctr      aria-128-ecb      
+…</span></code></pre>
+ <p>The handout's <code>openssl list-cipher-commands</code> (one word) is the old 1.x spelling. Version 3 refuses it:</p>
+ <pre class="code"><code><span class="pr">$ </span>openssl list-cipher-commands
+<span class="out">Invalid command 'list-cipher-commands'; type "help" for a list.</span></code></pre>
+ <p>Two more lists you will use: <code>openssl list -digest-commands</code> (hash names) and <code>openssl enc -list</code> (every cipher name <code>enc</code> accepts). Linux is case-sensitive, so <code>Openssl</code> with a capital O, as written in the handout, is not found:</p>
+ <pre class="code"><code><span class="pr">$ </span>Openssl version
+<span class="out">bash: line 1: Openssl: command not found</span></code></pre>
+  </div>
+</section>
+<section class="sec" id="s4">
+  <div class="sec-h"><span class="num">4</span><h2>Encrypt a file with enc <span class="fr">(chiffrer un fichier)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p><code>openssl enc</code> takes a file and a password and writes a scrambled copy. Only someone with the same password can get the original back. Because the <b>same secret</b> locks and unlocks, this is called <b>symmetric</b> encryption.</p>
+ <p>AES-256 needs a key of exactly 32 bytes that look random. A password like <code>tp2</code> is neither, so <code>enc</code> first <b>stretches</b> it into a key with a recipe called PBKDF2. It also adds 8 random bytes, the <b>salt</b>, so the same password gives a different key every time.</p>
+ <p>The output starts with the word <code>Salted__</code> and the salt, so that decrypting later can redo the same stretch.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">plaintext / ciphertext</b> <span class="fr">(texte clair / chiffré)</span></span><span class="mean">The readable file before encryption / the scrambled file after.</span></li><li><span class="term"><b class="en">AES</b> <span class="fr">(Advanced Encryption Standard)</span></span><span class="mean">The standard symmetric cipher. It works on blocks of 16 bytes; <code>-aes-256</code> means a 256-bit (32-byte) key.</span></li><li><span class="term"><b class="en">CBC</b> <span class="fr">(chaînage de blocs)</span></span><span class="mean">A mode: each block is mixed with the previous encrypted block before being encrypted, so equal blocks do not give equal output.</span></li><li><span class="term"><b class="en">padding</b> <span class="fr">(bourrage)</span></span><span class="mean">Bytes added so the message fills whole 16-byte blocks. Decryption checks them and removes them.</span></li><li><span class="term"><b class="en">salt</b> <span class="fr">(sel)</span></span><span class="mean">Random bytes mixed into the password before stretching it. Stored in clear at the start of the file.</span></li><li><span class="term"><b class="en">PBKDF2</b> <span class="fr">(dérivation de clé)</span></span><span class="mean">The stretch: hash password + salt thousands of times (10 000 by default). Slow on purpose, so guessing passwords is slow too. Turned on by <code>-pbkdf2</code>.</span></li><li><span class="term"><b class="en">IV</b> <span class="fr">(vecteur d'initialisation)</span></span><span class="mean">16 extra bytes that start the CBC chain. Comes out of the same stretch.</span></li><li><span class="term"><b class="en">base64</b></span><span class="mean">A way to write any bytes with 64 printable characters, so the result can be shown, copied and pasted. <code>-base64</code> (or <code>-a</code>).</span></li></ul>
+  </div>
+  <figure class="fig"><svg viewBox="0 0 584 200" role="img" aria-label="From password and salt to key and IV, then AES encryption and the output file layout" style="--minw:520px;--maxw:640px" xmlns="http://www.w3.org/2000/svg"><defs><marker id="f4-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker><marker id="f4-aw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hdw"/></marker></defs><rect x="6" y="20" width="120" height="40" rx="6" class="c2" /><text x="16" y="36" class="t dk sm" >password</text><text x="16" y="51" class="t dk sm" >tp2</text><rect x="6" y="76" width="120" height="40" rx="6" class="c2" /><text x="16" y="92" class="t dk sm" >salt: 8 random</text><text x="16" y="107" class="t dk sm" >bytes, new each run</text><rect x="160" y="40" width="130" height="56" rx="6" class="box" /><text x="170" y="58" class="t sm" >PBKDF2</text><text x="170" y="73" class="t sm" >SHA-256 repeated</text><text x="170" y="88" class="t sm" >10 000 times</text><line x1="126" y1="40" x2="158" y2="58" class="ar" marker-end="url(#f4-ah)"/><line x1="126" y1="96" x2="158" y2="80" class="ar" marker-end="url(#f4-ah)"/><rect x="324" y="20" width="96" height="30" rx="6" class="c3" /><text x="334" y="39" class="t dk sm" >key 32 bytes</text><rect x="324" y="86" width="96" height="30" rx="6" class="c3" /><text x="334" y="105" class="t dk sm" >IV 16 bytes</text><line x1="290" y1="58" x2="322" y2="36" class="ar" marker-end="url(#f4-ah)"/><line x1="290" y1="80" x2="322" y2="100" class="ar" marker-end="url(#f4-ah)"/><rect x="6" y="150" width="120" height="40" rx="6" class="c4" /><text x="16" y="166" class="t dk sm" >message.txt</text><text x="16" y="181" class="t dk sm" >17 bytes</text><rect x="324" y="146" width="96" height="48" rx="6" class="soft" /><text x="334" y="166" class="t sm" >AES-256-CBC</text><text x="334" y="181" class="t sm" >encrypt</text><line x1="126" y1="170" x2="322" y2="170" class="ar" marker-end="url(#f4-ah)"/><line x1="372" y1="52" x2="372" y2="84" class="ar" marker-end="url(#f4-ah)"/><path d="M420,101 C450,110 450,150 422,160" class="ar" marker-end="url(#f4-ah)"/><line x1="372" y1="118" x2="372" y2="144" class="ar" marker-end="url(#f4-ah)"/><rect x="454" y="20" width="124" height="120" rx="6" class="pane" /><text x="464" y="40" class="t sm" >output file</text><text x="464" y="55" class="t sm" >48 bytes =</text><rect x="464" y="62" width="104" height="20" rx="6" class="c1" /><text x="470" y="76" class="t dk sm mono" >"Salted__" 8</text><rect x="464" y="86" width="104" height="20" rx="6" class="c2" /><text x="470" y="100" class="t dk sm mono" >salt 8</text><rect x="464" y="110" width="104" height="20" rx="6" class="c3" /><text x="470" y="124" class="t dk sm mono" >ciphertext 32</text><path d="M420,170 C440,170 450,150 470,142" class="ar" marker-end="url(#f4-ah)"/><rect x="454" y="160" width="124" height="34" rx="6" class="box" /><text x="464" y="175" class="t sm" >-base64: same bytes</text><text x="464" y="190" class="t sm" >as printable text</text></svg><figcaption>What <code>enc</code> does inside. The password is stretched into a key and an IV; the salt makes the result different every run; the output file stores the salt so decryption can redo the same stretch.</figcaption></figure>
+  
+  <div class="calc"><span class="tag">Worked example</span>
+<p><b>The course example.</b> The file <code>message.txt</code> contains the line <code>Hello Prof Nacer</code> and a newline. Encrypt it with AES-256-CBC, password <code>tp2</code>, and write the result as text:</p>
+ <pre class="code"><code><span class="pr">$ </span>printf 'Hello Prof Nacer\n' &gt; message.txt
+<span class="pr">$ </span>wc -c message.txt
+<span class="out">17 message.txt</span>
+<span class="pr">$ </span>openssl enc -aes-256-cbc -pbkdf2 -base64 -in message.txt -out crypted -pass pass:tp2
+<span class="pr">$ </span>cat crypted
+<span class="out">U2FsdGVkX18ReoXlVOL3c9Gt/k/BY6fYHD0YZ7xTPsjbmLzQ+R12PNRVUxz8Qn5i</span></code></pre>
+ <p>The text starts with <code>U2FsdGVkX1</code>: that is <code>Salted__</code> written in base64. Every file made by <code>enc</code> with a password starts that way, whatever the cipher. Without <code>-base64</code> the file is binary; count its bytes and look at its first 8:</p>
+ <pre class="code"><code><span class="pr">$ </span>openssl enc -aes-256-cbc -pbkdf2 -in message.txt -out crypted.bin -pass pass:tp2
+<span class="pr">$ </span>wc -c crypted.bin
+<span class="out">48 crypted.bin</span>
+<span class="pr">$ </span>head -c 8 crypted.bin; echo
+<span class="out">Salted__</span></code></pre>
+ <p>Why 48? 8 bytes <code>Salted__</code> + 8 bytes of salt + the 17-byte message rounded up to two 16-byte blocks (32) = 48.</p>
+ <p>If you leave out <code>-pbkdf2</code>, OpenSSL 3 still works but warns you, because the old stretch (one single hash) makes passwords easy to guess:</p>
+ <pre class="code"><code><span class="pr">$ </span>openssl enc -aes-256-cbc -base64 -in message.txt -out crypted -k secret
+<span class="out">*** WARNING : deprecated key derivation used.
+Using -iter or -pbkdf2 would be better.</span></code></pre>
+ 
+  <figure class="fig live" id="lf2">
+    <div class="live-grid">
+      <svg id="lf2-svg" viewBox="0 0 430 262" role="img" aria-label="Inside one enc run: salt, key derivation, padding, two CBC blocks, output file" xmlns="http://www.w3.org/2000/svg"></svg>
+      <div class="live-side" data-no-save>
+        <div class="live-val"><span class="tag">Step</span><b id="lf2-val">0 / 0</b></div>
+        <div class="actions"><button class="b chk" id="lf2-play" type="button">Play</button><button class="b" id="lf2-step" type="button">Step</button><button class="b" id="lf2-reset" type="button">Reset</button></div>
+        <label class="tag" for="lf2-range">Drag to any step</label>
+        <input id="lf2-range" type="range" min="0" max="0" step="1" value="0">
+        <div class="live-status" id="lf2-status" aria-live="polite"></div>
+        <div class="scroll"><table class="t"><thead><tr><th>what</th><th>value (hex)</th></tr></thead><tbody id="lf2-rows"></tbody></table></div>
+      </div>
+    </div>
+    <figcaption><p>Step through one real run. Watch where the 48 bytes come from: 16 bytes of header (the word Salted__ and the salt) plus the message rounded up to whole 16-byte blocks. Every value was printed by OpenSSL itself, and the key and IV were re-derived with Python's PBKDF2 to check them.</p></figcaption>
+  </figure>
+  <script>
+  (function(){
+    var $=function(id){return document.getElementById("lf2-"+id);};
+
+    var D={"msg": "Hello Prof Nacer\n", "pw": "tp2", "salt": "4EB6C70F3D8A2138", "key": "44E95985607A0807587FEFFA0085E20095D215E91BB030044A54890679BBE0CD", "iv": "157F7676F15E72A012A592A231E18036", "c": "4733264299A278A073D95B1895939E7A9CB33E7C1C8EE0C4CD385B39EB755FE9", "file": "53616C7465645F5F4EB6C70F3D8A21384733264299A278A073D95B1895939E7A9CB33E7C1C8EE0C4CD385B39EB755FE9"};
+    function hx(s){var o="";for(var k=0;k<s.length;k++){o+=("0"+s.charCodeAt(k).toString(16)).slice(-2).toUpperCase();}return o;}
+    var bytes=D.msg.length, pad=16-bytes%16, padded=hx(D.msg); for(var k=0;k<pad;k++)padded+=("0"+pad.toString(16)).slice(-2).toUpperCase();
+    var P1=padded.slice(0,32),P2=padded.slice(32,64),C1=D.c.slice(0,32),C2=D.c.slice(32,64);
+    var bin="";for(var k=0;k<D.file.length;k+=2)bin+=String.fromCharCode(parseInt(D.file.substr(k,2),16));
+    var B64=btoa(bin);
+    function sh(h){return h.length>16?h.slice(0,8)+"…"+h.slice(-4):h;}
+    var STEPS=[
+     {text:"Start: <code>message.txt</code> holds <code>Hello Prof Nacer</code> plus a newline: "+bytes+" bytes. The password is <code>"+D.pw+"</code>. Command: <code>openssl enc -aes-256-cbc -pbkdf2 -p -in message.txt -out p.bin -pass pass:tp2</code>.",on:["pw","msg"]},
+     {text:"<code>enc</code> draws 8 random bytes, the <b>salt</b>: <code>"+D.salt+"</code>. Another run would draw other bytes.",on:["salt"],row:["salt",D.salt]},
+     {text:"PBKDF2 hashes password + salt 10 000 times and cuts the result: 32 bytes of <b>key</b>, 16 bytes of <b>IV</b>. <code>-p</code> printed exactly these.",on:["kdf","key","iv"],row:["key",D.key],row2:["iv",D.iv]},
+     {text:"AES works on 16-byte blocks. "+bytes+" bytes = one full block + 1 byte, so "+pad+" padding bytes of value <code>"+("0"+pad.toString(16)).slice(-2).toUpperCase()+"</code> fill block 2 (that is the padding rule: n bytes of value n).",on:["p1","p2"],row:["P1 | P2",P1+" | "+P2]},
+     {text:"Block 1 is mixed (XOR) with the IV, then AES-encrypted with the key: <code>"+C1+"</code>.",on:["p1","c1","key","iv"],row:["C1",C1]},
+     {text:"Block 2 is mixed with C1 (that chaining is what CBC means), then encrypted: <code>"+C2+"</code>.",on:["p2","c2","c1","key"],row:["C2",C2]},
+     {text:"The file is written: <code>Salted__</code> (8) + salt (8) + C1 + C2 (32) = <b>"+(D.file.length/2)+" bytes</b>. With <code>-base64</code> those bytes become the text <code>"+B64+"</code>.",on:["file"],row:["file",D.file],end:true}];
+    var NS="http://www.w3.org/2000/svg";
+    function el(n,a,t){var x=document.createElementNS(NS,n);for(var k in a)x.setAttribute(k,a[k]);if(t!=null)x.textContent=t;return x;}
+    var BOX={pw:[10,14,120,34,"c2","password",D.pw],salt:[10,58,120,34,"c2","salt",sh(D.salt)],
+      kdf:[160,30,100,46,"box","PBKDF2","× 10 000"],key:[290,14,130,34,"c3","key (32 B)",sh(D.key)],iv:[290,58,130,34,"c3","IV (16 B)",sh(D.iv)],
+      msg:[10,120,120,34,"c4","message.txt",bytes+" bytes"],p1:[160,120,120,34,"c4","block P1",sh(P1)],p2:[160,164,120,34,"c4","block P2 + pad",sh(P2)],
+      c1:[300,120,120,34,"soft","C1",sh(C1)],c2:[300,164,120,34,"soft","C2",sh(C2)],file:[10,220,410,34,"c1","p.bin = Salted__ | salt | C1 | C2",(D.file.length/2)+" bytes"]};
+    var svg=$("svg");
+    function render(i){
+      while(svg.firstChild)svg.removeChild(svg.firstChild);
+      var on=STEPS[i].on||[];
+      Object.keys(BOX).forEach(function(k){var b=BOX[k];var g=el("g",{"class":on.indexOf(k)>=0?"":"dim"});
+        g.appendChild(el("rect",{x:b[0],y:b[1],width:b[2],height:b[3],rx:5,"class":b[4]}));
+        var dk=b[4]==="soft"||b[4]==="box"?"":" dk";
+        g.appendChild(el("text",{x:b[0]+8,y:b[1]+14,"class":"t sm b"+dk},b[5]));
+        g.appendChild(el("text",{x:b[0]+8,y:b[1]+28,"class":"t sm mono"+dk},b[6]));
+        if(on.indexOf(k)>=0&&i>0)g.appendChild(el("rect",{x:b[0]-2,y:b[1]-2,width:b[2]+4,height:b[3]+4,rx:6,"class":"hi"}));
+        svg.appendChild(g);});
+      var rows=$("rows");rows.innerHTML="";
+      for(var k=1;k<=i;k++){var s=STEPS[k];[s.row,s.row2].forEach(function(r){if(!r)return;var tr=document.createElement("tr");if(k<i)tr.className="past";
+        tr.innerHTML="<td>"+r[0]+"</td><td><span class=\"k\">"+r[1]+"</span></td>";rows.appendChild(tr);});}
+    }
+    var i=0,timer=null,reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+    function draw(){
+      var s=STEPS[i];
+      render(i);
+      $("val").textContent=i+" / "+(STEPS.length-1);
+      $("status").className="live-status"+(s.end?" ok":"");
+      $("status").innerHTML=(s.end?"<b>✓ Done.</b> ":"")+s.text;
+      $("range").value=i;
+    }
+    function stop(){clearInterval(timer);timer=null;$("play").textContent="Play";}
+    function go(n){i=Math.max(0,Math.min(STEPS.length-1,n));draw();if(i===STEPS.length-1)stop();}
+    $("play").addEventListener("click",function(){
+      if(timer){stop();return;}
+      if(i===STEPS.length-1)go(0);
+      if(reduced){go(STEPS.length-1);return;}
+      $("play").textContent="Pause";timer=setInterval(function(){go(i+1);},1400);
+    });
+    $("step").addEventListener("click",function(){stop();go(i+1);});
+    $("reset").addEventListener("click",function(){stop();go(0);});
+    $("range").max=STEPS.length-1;
+    $("range").addEventListener("input",function(){stop();go(+this.value);});
+    draw();
+  })();
+  </script>
+  </div>
+</section>
+<section class="sec" id="s5">
+  <div class="sec-h"><span class="num">5</span><h2>Where the password comes from <span class="fr">(le mot de passe)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>The handout calls it a "private key" but for <code>enc</code> it is simply a <b>password</b>: any line of text both sides know. You can type it, write it in the command, or keep it in a file.</p>
+ <p>A good password file is long and random. <code>openssl rand</code> makes random bytes; with <code>-hex</code> it writes them as readable characters, which is what you want in a password file.</p>
+ <p>When <code>enc</code> reads a password from a file, it takes <b>only the first line</b>, without its newline. That one rule explains two traps of the handout: a binary <code>rand</code> file, and an RSA key made by <code>genrsa</code>.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">random bytes</b> <span class="fr">(octets aléatoires)</span></span><span class="mean">Bytes nobody can predict. <code>openssl rand N</code> makes N of them.</span></li><li><span class="term"><b class="en">byte vs bit</b> <span class="fr">(octet / bit)</span></span><span class="mean">1 byte = 8 bits. <code>rand</code> counts in <b>bytes</b>: <code>rand 32</code> = 256 bits.</span></li><li><span class="term"><b class="en">hex</b> <span class="fr">(hexadécimal)</span></span><span class="mean">Each byte written as two characters 0-9 A-F. <code>rand -hex 32</code> prints 64 characters.</span></li><li><span class="term"><b class="en">-k / -kfile</b></span><span class="mean">Old options: <code>-k WORD</code> = the password is WORD; <code>-kfile FILE</code> = the password is the first line of FILE.</span></li><li><span class="term"><b class="en">-pass</b></span><span class="mean">The modern form: <code>pass:WORD</code>, <code>file:FILE</code>, <code>env:VAR</code> (from a variable), <code>stdin</code>.</span></li></ul>
+  </div>
+  <figure class="fig"><svg viewBox="0 0 520 204" role="img" aria-label="Three ways to hand the password to enc, and the -k trap" style="--minw:480px" xmlns="http://www.w3.org/2000/svg"><defs><marker id="f5-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker><marker id="f5-aw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hdw"/></marker></defs><rect x="6" y="14" width="330" height="38" rx="6" class="c2" /><text x="14" y="30" class="t mono sm dk" >-pass pass:tp2   or   -k tp2</text><text x="14" y="45" class="t sm dk" >the word written right there is the password</text><line x1="338" y1="33" x2="402" y2="82" class="ar" marker-end="url(#f5-ah)"/><rect x="6" y="60" width="330" height="38" rx="6" class="c2" /><text x="14" y="76" class="t mono sm dk" >-pass file:cle.key   or   -kfile cle.key</text><text x="14" y="91" class="t sm dk" >the FIRST LINE of the file is the password</text><line x1="338" y1="79" x2="402" y2="82" class="ar" marker-end="url(#f5-ah)"/><rect x="6" y="106" width="330" height="38" rx="6" class="box" /><text x="14" y="122" class="t mono sm" >(nothing)</text><text x="14" y="137" class="t sm" >OpenSSL asks you to type it, twice, hidden</text><line x1="338" y1="125" x2="402" y2="82" class="ar" marker-end="url(#f5-ah)"/><rect x="404" y="62" width="110" height="40" rx="6" class="soft" /><text x="459" y="87" class="t mid mono" >openssl enc</text><rect x="6" y="158" width="508" height="40" rx="6" class="pane" /><rect x="6" y="158" width="508" height="40" rx="6" class="hi"/><text x="14" y="174" class="t b mono sm" >Trap: -k cle.key</text><text x="14" y="190" class="t sm" >the password becomes the 7 letters c l e . k e y, not what is inside the file</text></svg><figcaption>Three ways in. <code>-k</code> and <code>pass:</code> take the word itself; <code>-kfile</code> and <code>file:</code> read the first line of a file. Mixing them up is the most common TP mistake.</figcaption></figure>
+  
+  <div class="calc"><span class="tag">Worked example</span>
+<p><b>Make a password file.</b> The handout's <code>rand -out cle.key 2048</code> makes 2048 <b>bytes</b> (not bits) of raw binary. Use <code>-hex</code> instead:</p>
+ <pre class="code"><code><span class="pr">$ </span>openssl rand -out cle.key 2048
+<span class="pr">$ </span>wc -c cle.key
+<span class="out">2048 cle.key</span>
+<span class="pr">$ </span>openssl rand -hex 32 &gt; cle.key
+<span class="pr">$ </span>cat cle.key
+<span class="out">61c7342a360d2b1b555eca1724968386135f94df861e1bb95c8426489bf25079</span>
+<span class="pr">$ </span>wc -c cle.key
+<span class="out">65 cle.key</span></code></pre>
+ <p>65 = 64 hex characters + the newline (which <code>enc</code> ignores). Now encrypt and decrypt <code>message.txt</code> (still <code>Hello Prof Nacer</code>) with that file:</p>
+ <pre class="code"><code><span class="pr">$ </span>openssl enc -aes-256-cbc -pbkdf2 -in message.txt -out c2.bin -kfile cle.key
+<span class="pr">$ </span>openssl enc -aes-256-cbc -pbkdf2 -d -in c2.bin -pass file:cle.key
+<span class="out">Hello Prof Nacer</span></code></pre>
+ <p><b>The <code>-k</code> trap.</b> The handout writes <code>-k cle.key</code>. That uses the 7 letters <code>cle.key</code> as the password, and the file is never opened. Proof: decrypting with <code>pass:cle.key</code> works, and decrypting the <code>-kfile</code> file with <code>-k cle.key</code> fails:</p>
+ <pre class="code"><code><span class="pr">$ </span>openssl enc -aes-256-cbc -pbkdf2 -in message.txt -out c1.bin -k cle.key
+<span class="pr">$ </span>openssl enc -aes-256-cbc -pbkdf2 -d -in c1.bin -pass pass:cle.key
+<span class="out">Hello Prof Nacer</span>
+<span class="pr">$ </span>openssl enc -aes-256-cbc -pbkdf2 -d -in c2.bin -k cle.key
+<span class="out">bad decrypt</span></code></pre>
+ <p><b>The <code>genrsa</code> trap.</b> The handout's "case 2" makes an RSA private key and uses it as the password file. Its first line is the same text in every key ever made:</p>
+ <pre class="code"><code><span class="pr">$ </span>openssl genrsa -out k1.key 2048
+<span class="pr">$ </span>openssl genrsa -out k2.key 2048
+<span class="pr">$ </span>head -1 k1.key; head -1 k2.key
+<span class="out">-----BEGIN PRIVATE KEY-----
+-----BEGIN PRIVATE KEY-----</span>
+<span class="pr">$ </span>openssl enc -aes-256-cbc -pbkdf2 -in message.txt -out c3.bin -kfile k1.key
+<span class="pr">$ </span>openssl enc -aes-256-cbc -pbkdf2 -d -in c3.bin -kfile k2.key
+<span class="out">Hello Prof Nacer</span></code></pre>
+ <p>A <b>different</b> key decrypted it: the real password was <code>-----BEGIN PRIVATE KEY-----</code>, known to everyone. RSA keys are for <code>pkeyutl</code> and signatures (section 12), not for <code>enc</code>.</p>
+ <p><b>Binary password files.</b> A raw <code>rand</code> file may contain a newline byte early on; everything after it is ignored. If it is the very first byte, the password is empty and <code>enc</code> stops:</p>
+ <pre class="code"><code><span class="pr">$ </span>printf '\nabcdef' &gt; early.key
+<span class="pr">$ </span>openssl enc -aes-256-cbc -pbkdf2 -in message.txt -out c4.bin -kfile early.key
+<span class="out">enc: zero length password
+enc: Use -help for summary.</span></code></pre>
+ <p><b>Newlines and spaces.</b> The newline at the end of a file made with <code>echo</code> is dropped, so it does no harm. A trailing <b>space</b> is kept, and changes the password:</p>
+ <pre class="code"><code><span class="pr">$ </span>echo secret &gt; nl.key
+<span class="pr">$ </span>openssl enc -aes-256-cbc -pbkdf2 -in message.txt -out c5.bin -kfile nl.key
+<span class="pr">$ </span>openssl enc -aes-256-cbc -pbkdf2 -d -in c5.bin -pass pass:secret
+<span class="out">Hello Prof Nacer</span>
+<span class="pr">$ </span>printf 'secret \n' &gt; sp.key
+<span class="pr">$ </span>openssl enc -aes-256-cbc -pbkdf2 -d -in c5.bin -kfile sp.key
+<span class="out">bad decrypt</span></code></pre>
+  </div>
+</section>
+<section class="sec" id="s6">
+  <div class="sec-h"><span class="num">6</span><h2>Decrypt, and read the errors <span class="fr">(déchiffrer)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>To decrypt, repeat the encrypt line, add <code>-d</code>, and give the encrypted file as input. Everything else must be <b>exactly</b> what the sender used: the cipher name, <code>-pbkdf2</code> (and <code>-iter</code> if any), <code>-base64</code>, and the password.</p>
+ <p>OpenSSL almost never tells you which one is wrong. Its usual complaint, <code>bad decrypt</code>, only means "the padding at the end came out wrong", which happens with any mismatch. So learn the few messages below by heart: in a timed TP they save minutes.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">-d</b> <span class="fr">(déchiffrer)</span></span><span class="mean">Decrypt. Without it <code>enc</code> encrypts (that is <code>-e</code>, the default).</span></li><li><span class="term"><b class="en">bad decrypt</b></span><span class="mean">The last block's padding is wrong after decryption: wrong password, cipher, <code>-pbkdf2</code> or <code>-iter</code>.</span></li><li><span class="term"><b class="en">bad magic number</b></span><span class="mean">The input does not start with <code>Salted__</code>: usually a <code>-base64</code> mismatch.</span></li><li><span class="term"><b class="en">exit code</b> <span class="fr">(code de retour)</span></span><span class="mean">A number every command leaves behind: 0 = success. See it with <code>echo $?</code> right after the command.</span></li></ul>
+  </div>
+  <figure class="fig"><svg viewBox="0 0 701 120" role="img" aria-label="The decrypt line is the encrypt line plus -d, with input and output swapped" style="--minw:640px;--maxw:800px" xmlns="http://www.w3.org/2000/svg"><defs><marker id="f6-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker><marker id="f6-aw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hdw"/></marker></defs><text x="6" y="14" class="tm b" >encrypt</text><text x="6" y="112" class="tm b" >decrypt</text><rect x="6" y="22" width="87.0" height="24" rx="4" class="c4" /><text x="11" y="38" class="t dk mono sm" >openssl enc</text><rect x="6" y="78" width="87.0" height="24" rx="4" class="c4" /><text x="11" y="94" class="t mono sm dk" >openssl enc</text><rect x="99.0" y="22" width="94.0" height="24" rx="4" class="c3" /><text x="104.0" y="38" class="t dk mono sm" >-aes-256-cbc</text><rect x="99.0" y="78" width="94.0" height="24" rx="4" class="c3" /><text x="104.0" y="94" class="t mono sm dk" >-aes-256-cbc</text><line x1="146.0" y1="46" x2="146.0" y2="78" class="ar"/><text x="149.0" y="66" class="tm sm" >same</text><rect x="199.0" y="22" width="59.0" height="24" rx="4" class="c3" /><text x="204.0" y="38" class="t dk mono sm" >-pbkdf2</text><rect x="199.0" y="78" width="59.0" height="24" rx="4" class="c3" /><text x="204.0" y="94" class="t mono sm dk" >-pbkdf2</text><line x1="228.5" y1="46" x2="228.5" y2="78" class="ar"/><text x="231.5" y="66" class="tm sm" >same</text><rect x="264.0" y="22" width="59.0" height="24" rx="4" class="c3" /><text x="269.0" y="38" class="t dk mono sm" >-base64</text><rect x="264.0" y="78" width="59.0" height="24" rx="4" class="c3" /><text x="269.0" y="94" class="t mono sm dk" >-base64</text><line x1="293.5" y1="46" x2="293.5" y2="78" class="ar"/><text x="296.5" y="66" class="tm sm" >same</text><rect x="329.0" y="78" width="24.0" height="24" rx="4" class="soft" /><text x="334.0" y="94" class="t mono sm" >-d</text><rect x="359.0" y="22" width="115.0" height="24" rx="4" class="c4" /><text x="364.0" y="38" class="t dk mono sm" >-in message.txt</text><rect x="359.0" y="78" width="115.0" height="24" rx="4" class="c4" /><text x="364.0" y="94" class="t mono sm dk" >-in crypted</text><rect x="480.0" y="22" width="101.0" height="24" rx="4" class="c4" /><text x="485.0" y="38" class="t dk mono sm" >-out crypted</text><rect x="480.0" y="78" width="101.0" height="24" rx="4" class="c4" /><text x="485.0" y="94" class="t mono sm dk" >-out back.txt</text><rect x="587.0" y="22" width="108.0" height="24" rx="4" class="c3" /><text x="592.0" y="38" class="t dk mono sm" >-pass pass:tp2</text><rect x="587.0" y="78" width="108.0" height="24" rx="4" class="c3" /><text x="592.0" y="94" class="t mono sm dk" >-pass pass:tp2</text><line x1="641.0" y1="46" x2="641.0" y2="78" class="ar"/><text x="644.0" y="66" class="tm sm" >same</text><line x1="500.0" y1="46" x2="454.0" y2="78" class="ar" marker-end="url(#f6-ah)"/><line x1="379.0" y1="46" x2="561.0" y2="78" class="ln" marker-end="url(#f6-ah)"/><text x="341.0" y="68" class="t mid sm b figt" >new</text></svg><figcaption>Decrypting = the same line + <code>-d</code>, with the encrypted file as input. The cipher, <code>-pbkdf2</code>, <code>-base64</code> and the password must be exactly the same as when encrypting.</figcaption></figure>
+  
+  <div class="calc"><span class="tag">Worked example</span>
+<p><b>The handout's last example, corrected.</b> Encrypt <code>message.txt</code> (<code>Hello Prof Nacer</code>) into the text file <code>crypted</code>, read it, then decrypt it into <code>retourmess.txt</code>:</p>
+ <pre class="code"><code><span class="pr">$ </span>openssl enc -aes-256-cbc -pbkdf2 -base64 -in message.txt -out crypted -pass pass:tp2
+<span class="pr">$ </span>cat crypted
+<span class="out">U2FsdGVkX18ReoXlVOL3c9Gt/k/BY6fYHD0YZ7xTPsjbmLzQ+R12PNRVUxz8Qn5i</span>
+<span class="pr">$ </span>openssl enc -aes-256-cbc -pbkdf2 -base64 -d -in crypted -out retourmess.txt -pass pass:tp2
+<span class="pr">$ </span>cat retourmess.txt
+<span class="out">Hello Prof Nacer</span></code></pre>
+ <p><b>Every trap, run for real.</b> Each line below starts from that same <code>crypted</code> file (password <code>tp2</code>, AES-256-CBC, <code>-pbkdf2</code>, <code>-base64</code>):</p>
+ <p><b>Typo in the cipher name: <code>-aes-256-cc</code></b></p><pre class="code"><code><span class="pr">$ </span>openssl enc -aes-256-cc -base64 -in message.txt -out crypted -pass pass:tp2
+<span class="out">enc: Unknown cipher: aes-256-cc
+enc: Use -help for summary.</span></code></pre><p>Fix: Write <code>-aes-256-cbc</code>. Check names with <code>openssl enc -list</code>.</p><p><b>Dash copied from the PDF: <code>–aes-256-cbc</code> (long dash)</b></p><pre class="code"><code><span class="pr">$ </span>openssl enc –aes-256-cbc -in message.txt -pass pass:tp2
+<span class="out">enc: Use -help for summary.</span></code></pre><p>Fix: Retype every dash by hand: the PDF uses long dashes (–) that the shell does not treat as <code>-</code>.</p><p><b>Forgot <code>-d</code></b></p><pre class="code"><code><span class="pr">$ </span>openssl enc -aes-256-cbc -pbkdf2 -base64 -in cb64 -out again.txt -pass pass:tp2; echo "exit code $?"; head -c 24 again.txt; echo
+<span class="out">exit code 0
+U2FsdGVkX1/yiYHWEya0iXSI</span></code></pre><p>Fix: No error at all: the file was encrypted a second time. If the "decrypted" file starts with <code>U2FsdGVkX1</code>, you forgot <code>-d</code>.</p><p><b><code>-base64</code> on one side only</b></p><pre class="code"><code><span class="pr">$ </span>openssl enc -aes-256-cbc -pbkdf2 -d -in crypted -pass pass:tp2
+<span class="out">bad magic number</span></code></pre><p>Fix: "bad magic number" = OpenSSL did not find <code>Salted__</code> at the start: the file is base64 text and you forgot <code>-base64</code> (or the reverse).</p><p><b><code>-pbkdf2</code> on one side only</b></p><pre class="code"><code><span class="pr">$ </span>openssl enc -aes-256-cbc -base64 -d -in crypted -pass pass:tp2
+<span class="out">*** WARNING : deprecated key derivation used.
+Using -iter or -pbkdf2 would be better.
+bad decrypt</span></code></pre><p>Fix: Add <code>-pbkdf2</code> (and the same <code>-iter</code>, if one was used) to the decrypt line.</p><p><b>Wrong cipher (aes-128 instead of aes-256)</b></p><pre class="code"><code><span class="pr">$ </span>openssl enc -aes-128-cbc -pbkdf2 -base64 -d -in crypted -pass pass:tp2
+<span class="out">bad decrypt</span></code></pre><p>Fix: Same message as a wrong password. Try the cipher the sender used.</p><p><b>Wrong password (case matters)</b></p><pre class="code"><code><span class="pr">$ </span>openssl enc -aes-256-cbc -pbkdf2 -base64 -d -in crypted -pass pass:TP2
+<span class="out">bad decrypt</span></code></pre><p>Fix: "bad decrypt" only says the padding at the end did not come out right. Any mismatch above gives it.</p><p><b>Wrong password with a stream mode (CTR)</b></p><pre class="code"><code><span class="pr">$ </span>openssl enc -aes-256-ctr -pbkdf2 -in message.txt -out cctr -pass pass:tp2; openssl enc -aes-256-ctr -pbkdf2 -d -in cctr -pass pass:wrong -out junk.txt; echo "exit code $?"; od -c junk.txt | head -1
+<span class="out">exit code 0
+0000000  \b  \r 373 255 352   { 325   ` 266   z 377 253  \v   K 204 353</span></code></pre><p>Fix: CTR has no padding, so nothing is checked: exit code 0 and garbage. Always look at the result.</p><p><b>Old algorithm (DES)</b></p><pre class="code"><code><span class="pr">$ </span>openssl enc -des-cbc -pbkdf2 -in message.txt -out d.bin -pass pass:tp2
+<span class="out">Error setting cipher DES-CBC</span></code></pre><p>Fix: OpenSSL 3 switches DES, Blowfish, RC4, IDEA off. Add <code>-provider legacy -provider default</code>, or use <code>-des3</code> / AES.</p>
+  </div>
+</section>
+<section class="sec" id="s7">
+  <div class="sec-h"><span class="num">7</span><h2>Three set-ups, one exercise <span class="fr">(trois cas d'utilisation)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>The TP asks you to do the same exchange in three settings. Picture two people, <b>Alice</b> who encrypts and <b>Bob</b> who decrypts.</p>
+ <p><b>1. One physical machine, no VM.</b> Alice and Bob are two folders (or two terminals) on your Ubuntu. Sending is a plain copy.</p>
+ <p><b>2. One physical machine, two VMs.</b> Alice is VM1, Bob is VM2: two Ubuntu Servers running inside VirtualBox on your PC. Each has its own IP address, and sending goes over the network with <code>scp</code>. This is also where you test <code>s_server</code> / <code>s_client</code>.</p>
+ <p><b>3. Two physical machines.</b> Your PC and a classmate's, on the same Wi-Fi or switch. Same commands as case 2, with the real IP addresses.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">physical machine / host</b> <span class="fr">(machine physique / hôte)</span></span><span class="mean">The real computer. In case 2 it hosts the VMs.</span></li><li><span class="term"><b class="en">virtual machine (VM)</b> <span class="fr">(machine virtuelle)</span></span><span class="mean">A whole computer simulated by software, with its own system, disk and network card.</span></li><li><span class="term"><b class="en">hypervisor</b> <span class="fr">(hyperviseur)</span></span><span class="mean">The program that runs VMs.</span><span class="eg">VirtualBox</span></li><li><span class="term"><b class="en">IP address</b> <span class="fr">(adresse IP)</span></span><span class="mean">A machine's number on the network. Find yours with <code>hostname -I</code>.</span><span class="eg">192.168.1.21</span></li><li><span class="term"><b class="en">same network</b> <span class="fr">(même réseau local)</span></span><span class="mean">Machines that can reach each other directly: usually same first three numbers, like 192.168.1.x.</span></li></ul>
+  </div>
+  <figure class="fig"><svg viewBox="0 0 640 208" role="img" aria-label="Three set-ups: two folders on one PC, two VMs on one PC, two real PCs" style="--minw:560px;--maxw:700px" xmlns="http://www.w3.org/2000/svg"><defs><marker id="f7-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker><marker id="f7-aw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hdw"/></marker></defs><rect x="4" y="6" width="200" height="196" rx="8" class="pane" /><text x="14" y="24" class="t b" >1 · one PC, no VM</text><rect x="16" y="40" width="176" height="130" rx="6" class="box" /><text x="24" y="56" class="tm sm" >Ubuntu (host)</text><rect x="26" y="70" width="66" height="40" rx="6" class="c4" /><text x="59" y="94" class="t dk mid mono sm" >alice/</text><rect x="116" y="70" width="66" height="40" rx="6" class="c3" /><text x="149" y="94" class="t dk mid mono sm" >bob/</text><line x1="92" y1="90" x2="114" y2="90" class="ar" marker-end="url(#f7-ah)"/><text x="104" y="128" class="t mid mono sm" >cp</text><text x="104" y="190" class="tm mid sm" >send = copy a file</text><rect x="214" y="6" width="210" height="196" rx="8" class="pane" /><text x="224" y="24" class="t b" >2 · one PC, two VMs</text><rect x="226" y="40" width="186" height="130" rx="6" class="box" /><text x="234" y="56" class="tm sm" >Ubuntu host + VirtualBox</text><rect x="236" y="70" width="70" height="50" rx="6" class="c4" /><text x="244" y="90" class="t dk sm" >VM1</text><text x="244" y="105" class="t dk sm" >.21</text><rect x="332" y="70" width="70" height="50" rx="6" class="c3" /><text x="340" y="90" class="t dk sm" >VM2</text><text x="340" y="105" class="t dk sm" >.22</text><line x1="306" y1="95" x2="330" y2="95" class="ar" marker-end="url(#f7-ah)" marker-start="url(#f7-ah)"/><text x="319" y="140" class="t mid mono sm" >scp, s_client</text><text x="319" y="190" class="tm mid sm" >send = scp over bridged LAN</text><rect x="434" y="6" width="200" height="196" rx="8" class="pane" /><text x="444" y="24" class="t b" >3 · two physical PCs</text><rect x="446" y="80" width="70" height="50" rx="6" class="c4" /><text x="454" y="100" class="t dk sm" >PC A</text><text x="454" y="115" class="t dk sm" >.10</text><rect x="552" y="80" width="70" height="50" rx="6" class="c3" /><text x="560" y="100" class="t dk sm" >PC B</text><text x="560" y="115" class="t dk sm" >.11</text><rect x="504" y="40" width="60" height="24" rx="6" class="box" /><text x="534" y="56" class="t mid sm" >Wi-Fi box</text><line x1="481" y1="80" x2="520" y2="64" class="ln"/><line x1="587" y1="80" x2="548" y2="64" class="ln"/><line x1="516" y1="115" x2="550" y2="115" class="ar" marker-end="url(#f7-ah)" marker-start="url(#f7-ah)"/><text x="534" y="150" class="t mid mono sm" >scp, s_client</text><text x="534" y="190" class="tm mid sm" >send = scp over the real LAN</text></svg><figcaption>The same exercise three times. Only the "send" step changes: a copy between folders, scp between two VMs, scp between two PCs. IP endings (.21, .22...) are examples.</figcaption></figure>
+  
+  <div class="calc"><span class="tag">Worked example</span>
+<p><b>Case 1, done in full.</b> Alice's folder holds <code>message.txt</code> = <code>Hello Prof Nacer</code>. The password <code>tp2</code> was agreed beforehand. Alice encrypts, "sends" by copying, Bob decrypts, then we check the two files are identical:</p>
+ <pre class="code"><code><span class="pr">$ </span>mkdir -p alice bob
+<span class="pr">$ </span>printf 'Hello Prof Nacer\n' &gt; alice/message.txt
+<span class="pr">$ </span>openssl enc -aes-256-cbc -pbkdf2 -base64 -in alice/message.txt -out alice/crypted -pass pass:tp2
+<span class="pr">$ </span>cp alice/crypted bob/
+<span class="pr">$ </span>openssl enc -aes-256-cbc -pbkdf2 -base64 -d -in bob/crypted -out bob/message.txt -pass pass:tp2
+<span class="pr">$ </span>cat bob/message.txt
+<span class="out">Hello Prof Nacer</span>
+<span class="pr">$ </span>cmp alice/message.txt bob/message.txt &amp;&amp; echo same
+<span class="out">same</span>
+<span class="pr">$ </span>openssl dgst -sha256 alice/message.txt bob/message.txt
+<span class="out">SHA2-256(alice/message.txt)= f71760ba2451d83a4cbb8a35c3d81e3b371111cbf8c73bc84f95aa2a1b00804d
+SHA2-256(bob/message.txt)= f71760ba2451d83a4cbb8a35c3d81e3b371111cbf8c73bc84f95aa2a1b00804d</span></code></pre>
+ <p><code>cmp</code> prints nothing when two files are identical (so <code>&amp;&amp; echo same</code> runs), and equal SHA-256 fingerprints say the same thing. In cases 2 and 3 only the <code>cp</code> line changes:</p>
+ <div class="scroll"><table class="t"><thead><tr><th></th><th>Alice</th><th>Bob</th><th>Send command (Alice's side)</th><th>TLS test</th></tr></thead><tbody><tr><td>1</td><td>folder <code>alice/</code></td><td>folder <code>bob/</code></td><td><code>cp alice/crypted bob/</code></td><td>server and client in two terminals, <code>localhost</code></td></tr><tr><td>2</td><td>VM1 (192.168.1.21)</td><td>VM2 (192.168.1.22)</td><td><code>scp crypted lou@192.168.1.22:~/</code></td><td><code>s_server</code> on VM2, <code>s_client -connect 192.168.1.22:4433</code> on VM1</td></tr><tr><td>3</td><td>PC A (192.168.1.10)</td><td>PC B (192.168.1.11)</td><td><code>scp crypted user@192.168.1.11:~/</code></td><td>same as 2, with PC B's address</td></tr></tbody></table></div>
+ <p>Addresses and the user name <code>lou</code> are examples: use what <code>hostname -I</code> and <code>whoami</code> print on your machines.</p>
+  </div>
+</section>
+<section class="sec" id="s8">
+  <div class="sec-h"><span class="num">8</span><h2>Build the lab <span class="fr">(monter le TP)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>You need: Ubuntu on your PC (the host), VirtualBox, and two VMs running <b>Ubuntu Server</b> (Ubuntu without a desktop: just a terminal, light enough to run two at once).</p>
+ <p>The one setting that matters is the VMs' network: set it to <b>Bridged Adapter</b>. Then each VM appears on your Wi-Fi as a separate computer with its own address, so the VMs and your PC can all talk to each other.</p>
+ <p>Tick <b>Install OpenSSH server</b> during the VM install: that is what lets you use <code>ssh</code> and <code>scp</code> (section 9).</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">ISO image</b> <span class="fr">(image ISO)</span></span><span class="mean">A file holding a whole installation disc. You "insert" it into the VM's virtual drive.</span></li><li><span class="term"><b class="en">Ubuntu Server</b></span><span class="mean">Ubuntu with no graphical desktop. OpenSSL is already installed in it.</span></li><li><span class="term"><b class="en">bridged adapter</b> <span class="fr">(accès par pont)</span></span><span class="mean">VM network mode where the VM shares the host's card and gets its own address on the real network.</span></li><li><span class="term"><b class="en">NAT</b></span><span class="mean">VirtualBox's default mode: the VM can reach the Internet but other machines cannot reach the VM. Not what this TP needs.</span></li><li><span class="term"><b class="en">DHCP</b></span><span class="mean">The router service that hands out IP addresses automatically.</span></li><li><span class="term"><b class="en">OpenSSH server</b> <span class="fr">(serveur SSH)</span></span><span class="mean">The program (<code>sshd</code>) that accepts <code>ssh</code> and <code>scp</code> connections.</span></li></ul>
+  </div>
+  <figure class="fig"><svg viewBox="0 0 560 262" role="img" aria-label="Bridged networking: the two VMs share the host's network card and get their own addresses from the router" style="--minw:500px" xmlns="http://www.w3.org/2000/svg"><defs><marker id="f8-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker><marker id="f8-aw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hdw"/></marker></defs><rect x="200" y="8" width="160" height="40" rx="6" class="box" /><text x="212" y="24" class="t sm" >Wi-Fi box / router</text><text x="212" y="39" class="t sm" >192.168.1.1 (DHCP)</text><rect x="10" y="90" width="540" height="166" rx="8" class="pane" /><text x="20" y="250" class="t b sm" >your PC: Ubuntu 24.04 host · 192.168.1.10</text><rect x="26" y="120" width="120" height="30" rx="6" class="c4" /><text x="36" y="139" class="t dk sm mono" >real card wlp2s0</text><rect x="220" y="120" width="316" height="110" rx="6" class="box" /><text x="230" y="137" class="tm sm" >VirtualBox</text><rect x="240" y="150" width="130" height="66" rx="6" class="c4" /><text x="250" y="168" class="t dk sm" >VM1 · Ubuntu Server</text><text x="250" y="183" class="t dk sm" >192.168.1.21</text><text x="250" y="198" class="t dk sm" >Adapter 1: Bridged</text><rect x="390" y="150" width="130" height="66" rx="6" class="c3" /><text x="400" y="168" class="t dk sm" >VM2 · Ubuntu Server</text><text x="400" y="183" class="t dk sm" >192.168.1.22</text><text x="400" y="198" class="t dk sm" >Adapter 1: Bridged</text><line x1="86" y1="120" x2="250" y2="48" class="ar"/><path d="M305,150 C300,110 280,80 270,50" class="ar dash"/><path d="M455,150 C450,100 330,70 300,50" class="ar dash"/><text x="380" y="70" class="tm sm" >bridged: each VM gets its own</text><text x="380" y="84" class="tm sm" >address from the router</text></svg><figcaption>Bridged adapter: VirtualBox plugs each VM into the same network as your PC, as if it were one more computer on your Wi-Fi. The router hands each one an address, so the host, VM1 and VM2 can all reach each other. Addresses are examples.</figcaption></figure>
+  
+  <div class="calc"><span class="tag">Worked example</span>
+<p>These steps were not run here (no VirtualBox in this sandbox); they follow Ubuntu 24.04 and VirtualBox 7. Addresses are examples.</p>
+ <ol class="steps">
+  <li><b>Host.</b> On your Ubuntu: <code>sudo apt update && sudo apt install virtualbox</code>, then check <code>openssl version</code> (3.0.13 on 24.04). If VirtualBox complains about Secure Boot, install it from virtualbox.org instead or turn Secure Boot off in the BIOS.</li>
+  <li><b>Download</b> the Ubuntu Server 24.04 LTS ISO from ubuntu.com/download/server.</li>
+  <li><b>New VM</b> (VirtualBox → New): name <code>vm1</code>, choose the ISO, tick <i>Skip Unattended Installation</i> so you see the installer. 2048 MB of memory, 2 CPUs, 20 GB disk is plenty.</li>
+  <li><b>Network</b>, before starting it: Settings → Network → Adapter 1 → <i>Attached to: Bridged Adapter</i> → <i>Name:</i> your real card (<code>wlp…</code> for Wi-Fi, <code>enp…</code> for cable).</li>
+  <li><b>Install</b> (start the VM): pick your keyboard layout (French AZERTY if that is yours), keep the network page as it is (it already shows the address it received), default disk, then your name, server name <code>vm1</code>, user name and password. Tick <b>Install OpenSSH server</b>. Skip the extra snaps. Reboot when asked.</li>
+  <li><b>VM2.</b> Repeat for <code>vm2</code> (simplest). If you clone VM1 instead, choose <i>Generate new MAC addresses for all network adapters</i>, then inside the clone run <code>sudo hostnamectl set-hostname vm2</code> and <code>sudo rm /etc/machine-id && sudo systemd-machine-id-setup</code> and reboot. Otherwise both VMs can receive the same IP.</li>
+  <li><b>Addresses.</b> In each VM: <code>hostname -I</code>. Write them down, e.g. VM1 = 192.168.1.21, VM2 = 192.168.1.22.</li>
+  <li><b>Test</b> from VM1: <code>ping -c 3 192.168.1.22</code>, and from the host: <code>ping -c 3 192.168.1.21</code>. Replies = you are ready.</li>
+  <li><b>Work from the host.</b> The VM window does not do copy-paste. Open two terminals on the host and log into each VM with <code>ssh lou@192.168.1.21</code> and <code>ssh lou@192.168.1.22</code>: now you can paste commands.</li>
+ </ol>
+ <div class="callout"><b>If ping fails.</b> Some Wi-Fi networks (often on campus) block bridged VMs. Two fallbacks: (a) <i>Host-only Adapter</i> on both VMs (File → Tools → Network Manager creates <code>vboxnet0</code>): host and VMs see each other, no Internet; or (b) <i>NAT Network</i> (create one in the same Network Manager, attach both VMs): the VMs see each other and the Internet, but the host cannot ssh in without port forwarding. Ubuntu Server's firewall is off by default; if you turned <code>ufw</code> on, open the ports with <code>sudo ufw allow OpenSSH</code> and <code>sudo ufw allow 4433/tcp</code>.</div>
+  </div>
+</section>
+<section class="sec" id="s9">
+  <div class="sec-h"><span class="num">9</span><h2>Move files with ssh and scp <span class="fr">(transférer des fichiers)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p><code>ssh</code> opens a terminal on another machine, through an encrypted connection. <code>scp</code> uses the same connection to copy files.</p>
+ <p>The address is always written <code>user@IP</code>, and for <code>scp</code> a colon then a path on that machine: <code>lou@192.168.1.22:~/</code> means "the home folder of lou on 192.168.1.22".</p>
+ <p>The first time you connect, ssh shows the other machine's key fingerprint and asks <i>Are you sure you want to continue connecting?</i>. Type <code>yes</code>. It is ssh's version of checking a certificate: from then on it will warn you if that machine's key ever changes.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">ssh</b> <span class="fr">(Secure Shell)</span></span><span class="mean">Log into another machine: <code>ssh lou@192.168.1.22</code>. Leave with <code>exit</code>.</span></li><li><span class="term"><b class="en">scp</b> <span class="fr">(secure copy)</span></span><span class="mean">Copy over ssh. Send: <code>scp FILE user@IP:PATH</code>. Fetch: <code>scp user@IP:PATH .</code> (the dot = here).</span></li><li><span class="term"><b class="en">~</b> <span class="fr">(tilde)</span></span><span class="mean">Your home folder, e.g. <code>/home/lou</code>.</span></li><li><span class="term"><b class="en">host key fingerprint</b> <span class="fr">(empreinte de clé)</span></span><span class="mean">A short code for the other machine's ssh key, shown on first connection.</span></li></ul>
+  </div>
+  <figure class="fig"><svg viewBox="0 0 560 168" role="img" aria-label="Loop between VM1 and VM2: encrypt, scp, decrypt, compare fingerprints" style="--minw:500px" xmlns="http://www.w3.org/2000/svg"><defs><marker id="f9-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker><marker id="f9-aw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hdw"/></marker></defs><rect x="6" y="10" width="200" height="150" rx="8" class="pane" /><text x="16" y="28" class="t b" >VM1 · Alice</text><text x="16" y="43" class="tm mono sm" >lou@192.168.1.21</text><rect x="354" y="10" width="200" height="150" rx="8" class="pane" /><text x="364" y="28" class="t b" >VM2 · Bob</text><text x="364" y="43" class="tm mono sm" >lou@192.168.1.22</text><rect x="18" y="50" width="176" height="26" rx="6" class="c4" /><text x="26" y="67" class="t dk mono sm" >1 enc → crypted</text><rect x="366" y="50" width="176" height="26" rx="6" class="c3" /><text x="374" y="67" class="t dk mono sm" >3 enc -d → message.txt</text><rect x="18" y="120" width="176" height="26" rx="6" class="box" /><text x="26" y="137" class="t mono sm" >4 dgst -sha256</text><rect x="366" y="120" width="176" height="26" rx="6" class="box" /><text x="374" y="137" class="t mono sm" >4 dgst -sha256</text><line x1="196" y1="63" x2="364" y2="63" class="ar" marker-end="url(#f9-ah)"/><text x="280" y="56" class="t mid mono sm" >2 scp crypted</text><line x1="196" y1="133" x2="364" y2="133" class="ln dash"/><text x="280" y="126" class="tm mid sm" >same fingerprint?</text></svg><figcaption>The loop the competition tasks are built on. Step 4 is your proof: equal SHA-256 fingerprints on both machines mean the message arrived intact.</figcaption></figure>
+  
+  <div class="calc"><span class="tag">Worked example</span>
+<p><b>Case 2 in full.</b> VM1 (Alice, 192.168.1.21) and VM2 (Bob, 192.168.1.22), user <code>lou</code> on both, password <code>tp2</code> agreed beforehand. <code>message.txt</code> on VM1 holds <code>Hello Prof Nacer</code>.</p>
+ <pre class="code"><code><span class="cm"># on VM1</span>
+<span class="pr">$ </span>openssl enc -aes-256-cbc -pbkdf2 -base64 -in message.txt -out crypted -pass pass:tp2
+<span class="pr">$ </span>scp crypted lou@192.168.1.22:~/
+<span class="cm"># on VM2</span>
+<span class="pr">$ </span>openssl enc -aes-256-cbc -pbkdf2 -base64 -d -in crypted -out message.txt -pass pass:tp2
+<span class="pr">$ </span>cat message.txt
+<span class="out">Hello Prof Nacer</span>
+<span class="cm"># on both: the fingerprints must be equal</span>
+<span class="pr">$ </span>openssl dgst -sha256 message.txt
+<span class="out">SHA2-256(message.txt)= f71760ba2451d83a4cbb8a35c3d81e3b371111cbf8c73bc84f95aa2a1b00804d</span></code></pre>
+ <p>The openssl outputs above are real; the scp line was not run here (no second machine), and ssh asks for VM2's password the first time. To send the answer back, fetch it from VM1 with <code>scp lou@192.168.1.22:~/reply.enc .</code></p>
+ 
+  <figure class="fig live" id="lf3">
+    <div class="live-grid">
+      <svg id="lf3-svg" viewBox="0 0 420 212" role="img" aria-label="Encrypt on VM1, copy with scp, decrypt on VM2, compare fingerprints" xmlns="http://www.w3.org/2000/svg"></svg>
+      <div class="live-side" data-no-save>
+        <div class="live-val"><span class="tag">Step</span><b id="lf3-val">0 / 0</b></div>
+        <div class="actions"><button class="b chk" id="lf3-play" type="button">Play</button><button class="b" id="lf3-step" type="button">Step</button><button class="b" id="lf3-reset" type="button">Reset</button></div>
+        <label class="tag" for="lf3-range">Drag to any step</label>
+        <input id="lf3-range" type="range" min="0" max="0" step="1" value="0">
+        <div class="live-status" id="lf3-status" aria-live="polite"></div>
+        <div class="scroll"><table class="t"><thead><tr><th>machine</th><th>file</th><th>content</th></tr></thead><tbody id="lf3-rows"></tbody></table></div>
+      </div>
+    </div>
+    <figcaption><p>Watch which files exist on each machine after each command. Only <code>crypted</code> ever crosses the network; the plain message never does. The ciphertext and fingerprint are the real outputs of the commands.</p></figcaption>
+  </figure>
+  <script>
+  (function(){
+    var $=function(id){return document.getElementById("lf3-"+id);};
+
+    var D={"crypt": "U2FsdGVkX18ReoXlVOL3c9Gt/k/BY6fYHD0YZ7xTPsjbmLzQ+R12PNRVUxz8Qn5i", "msg": "Hello Prof Nacer", "sha": "f71760ba2451d83a4cbb8a35c3d81e3b371111cbf8c73bc84f95aa2a1b00804d"};
+    function f(n,c,cls){return {n:n,c:c,cls:cls};}
+    var M=f("message.txt",D.msg,"c4"), C=f("crypted",D.crypt.slice(0,14)+"…","c3"), H=f("sha256",D.sha.slice(0,12)+"…","box");
+    var STEPS=[
+     {a:[M],b:[],text:"Start: VM1 holds <code>message.txt</code> = <code>"+D.msg+"</code>. VM2 has nothing. Both know the password <code>tp2</code>."},
+     {a:[M,C],b:[],hiA:1,text:"VM1: <code>openssl enc -aes-256-cbc -pbkdf2 -base64 -in message.txt -out crypted -pass pass:tp2</code> → <code>crypted</code> = <code>"+D.crypt+"</code>"},
+     {a:[M,C],b:[C],wire:1,hiB:0,text:"VM1: <code>scp crypted lou@192.168.1.22:~/</code>. The file crosses the network (and ssh encrypts the transfer once more). VM2 now has <code>crypted</code>."},
+     {a:[M,C],b:[C,M],hiB:1,text:"VM2: <code>openssl enc -aes-256-cbc -pbkdf2 -base64 -d -in crypted -out message.txt -pass pass:tp2</code> → <code>"+D.msg+"</code>."},
+     {a:[M,C,H],b:[C,M,H],hiA:2,hiB:2,cmp:1,end:true,text:"Both run <code>openssl dgst -sha256 message.txt</code> and get <code>"+D.sha+"</code>: identical, so the message arrived intact."}];
+    var NS="http://www.w3.org/2000/svg";
+    function el(n,a,t){var x=document.createElementNS(NS,n);for(var k in a)x.setAttribute(k,a[k]);if(t!=null)x.textContent=t;return x;}
+    var svg=$("svg");
+    function mach(x,name,ip,files,hi){
+      svg.appendChild(el("rect",{x:x,y:8,width:170,height:196,rx:8,"class":"pane"}));
+      svg.appendChild(el("text",{x:x+10,y:26,"class":"t b"},name));
+      svg.appendChild(el("text",{x:x+10,y:41,"class":"tm mono sm"},ip));
+      files.forEach(function(F_,k){var y=54+k*48;
+        svg.appendChild(el("rect",{x:x+10,y:y,width:150,height:38,rx:5,"class":F_.cls}));
+        var dk=F_.cls==="box"?"":" dk";
+        svg.appendChild(el("text",{x:x+18,y:y+15,"class":"t sm b"+dk},F_.n));
+        svg.appendChild(el("text",{x:x+18,y:y+30,"class":"t sm mono"+dk},F_.c));
+        if(hi===k)svg.appendChild(el("rect",{x:x+8,y:y-2,width:154,height:42,rx:6,"class":"hi"}));});
+    }
+    function render(i){
+      var s=STEPS[i];while(svg.firstChild)svg.removeChild(svg.firstChild);
+      var d=el("defs",{});var m=el("marker",{id:"lf3-ah",viewBox:"0 0 10 10",refX:"9",refY:"5",markerWidth:"7",markerHeight:"7",orient:"auto-start-reverse"});
+      m.appendChild(el("path",{d:"M0,0 L10,5 L0,10 z","class":"hd"}));d.appendChild(m);svg.appendChild(d);
+      mach(6,"VM1 · Alice","192.168.1.21",s.a,s.hiA);
+      mach(244,"VM2 · Bob","192.168.1.22",s.b,s.hiB);
+      if(s.wire){svg.appendChild(el("rect",{x:178,y:62,width:64,height:22,"class":"soft"}));
+        svg.appendChild(el("line",{x1:178,y1:73,x2:240,y2:73,"class":"ar","marker-end":"url(#lf3-ah)"}));
+        svg.appendChild(el("text",{x:210,y:100,"class":"tm mid sm mono"},"scp"));}
+      if(s.cmp){svg.appendChild(el("line",{x1:170,y1:169,x2:254,y2:169,"class":"ar","marker-end":"url(#lf3-ah)","marker-start":"url(#lf3-ah)"}));
+        svg.appendChild(el("text",{x:212,y:162,"class":"t mid sm b ok"},"="));}
+      var rows=$("rows");rows.innerHTML="";
+      [["VM1",s.a],["VM2",s.b]].forEach(function(p){p[1].forEach(function(F_){var tr=document.createElement("tr");
+        tr.innerHTML="<td>"+p[0]+"</td><td><code>"+F_.n+"</code></td><td><span class=\"k\">"+(F_.n==="crypted"?D.crypt.slice(0,22)+"…":F_.n==="sha256"?D.sha.slice(0,22)+"…":F_.c)+"</span></td>";rows.appendChild(tr);});});
+    }
+    var i=0,timer=null,reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+    function draw(){
+      var s=STEPS[i];
+      render(i);
+      $("val").textContent=i+" / "+(STEPS.length-1);
+      $("status").className="live-status"+(s.end?" ok":"");
+      $("status").innerHTML=(s.end?"<b>✓ Done.</b> ":"")+s.text;
+      $("range").value=i;
+    }
+    function stop(){clearInterval(timer);timer=null;$("play").textContent="Play";}
+    function go(n){i=Math.max(0,Math.min(STEPS.length-1,n));draw();if(i===STEPS.length-1)stop();}
+    $("play").addEventListener("click",function(){
+      if(timer){stop();return;}
+      if(i===STEPS.length-1)go(0);
+      if(reduced){go(STEPS.length-1);return;}
+      $("play").textContent="Pause";timer=setInterval(function(){go(i+1);},1400);
+    });
+    $("step").addEventListener("click",function(){stop();go(i+1);});
+    $("reset").addEventListener("click",function(){stop();go(0);});
+    $("range").max=STEPS.length-1;
+    $("range").addEventListener("input",function(){stop();go(+this.value);});
+    draw();
+  })();
+  </script>
+ <p><b>Case 3</b> is identical with the two PCs' addresses. Each PC needs the ssh server first: <code>sudo apt install openssh-server</code> (Ubuntu desktop does not include it).</p>
+  </div>
+</section>
+<section class="sec" id="s10">
+  <div class="sec-h"><span class="num">10</span><h2>Cheatsheet · enc, every option <span class="fr">(aide-mémoire · enc)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>Everything about symmetric encryption on one screen. The safe default line is <code>openssl enc -aes-256-cbc -pbkdf2 [-base64] -in X -out Y -pass ...</code>; add <code>-d</code> to decrypt.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">-pbkdf2 / -iter N</b></span><span class="mean">Use the modern password stretch, N rounds (10 000 if not given). Both sides must match.</span></li><li><span class="term"><b class="en">-K / -iv</b></span><span class="mean">Give the raw key and IV in hex yourself: no password, no salt, no <code>Salted__</code> header.</span></li><li><span class="term"><b class="en">AEAD</b></span><span class="mean">Modes like GCM that also check integrity. <code>enc</code> refuses them: "AEAD ciphers not supported".</span></li></ul>
+  </div>
+  <figure class="fig"><svg viewBox="0 0 640 166" role="img" aria-label="Output sizes for a 17-byte message with three kinds of cipher" style="--minw:500px" xmlns="http://www.w3.org/2000/svg"><text x="6" y="18" class="t b mono sm" >aes-128-cbc / aes-256-cbc</text><text x="634" y="18" class="t b end sm" >48 bytes</text><rect x="6" y="24" width="64" height="22" rx="3" class="c1" /><text x="10" y="39" class="t dk sm mono" >Salted__</text><rect x="70" y="24" width="64" height="22" rx="3" class="c2" /><text x="74" y="39" class="t dk sm mono" >salt</text><rect x="134" y="24" width="256" height="22" rx="3" class="c3" /><text x="138" y="39" class="t dk sm mono" >32</text><text x="400" y="39" class="tm sm" >message rounded up to 16-byte blocks</text><text x="6" y="70" class="t b mono sm" >des-ede3-cbc (-des3)</text><text x="634" y="70" class="t b end sm" >40 bytes</text><rect x="6" y="76" width="64" height="22" rx="3" class="c1" /><text x="10" y="91" class="t dk sm mono" >Salted__</text><rect x="70" y="76" width="64" height="22" rx="3" class="c2" /><text x="74" y="91" class="t dk sm mono" >salt</text><rect x="134" y="76" width="192" height="22" rx="3" class="c3" /><text x="138" y="91" class="t dk sm mono" >24</text><text x="336" y="91" class="tm sm" >rounded up to 8-byte blocks</text><text x="6" y="122" class="t b mono sm" >aes-256-ctr / chacha20</text><text x="634" y="122" class="t b end sm" >33 bytes</text><rect x="6" y="128" width="64" height="22" rx="3" class="c1" /><text x="10" y="143" class="t dk sm mono" >Salted__</text><rect x="70" y="128" width="64" height="22" rx="3" class="c2" /><text x="74" y="143" class="t dk sm mono" >salt</text><rect x="134" y="128" width="136" height="22" rx="3" class="c3" /><text x="138" y="143" class="t dk sm mono" >17</text><text x="280" y="143" class="tm sm" >stream: exactly the message size</text></svg><figcaption>Encrypting the same 17-byte <code>message.txt</code> with <code>-pbkdf2</code>: the size alone tells the cipher family. Block ciphers round up to their block size, stream modes do not. (Sizes measured: aes-128-cbc = 48, aes-256-cbc = 48, des-ede3-cbc = 40, aes-256-ctr = 33, chacha20 = 33.)</figcaption></figure>
+  <div class="cs"><div class="card"><h3>Encrypt / decrypt</h3><pre class="code"><code><span class="pr">$ </span>openssl enc -aes-256-cbc -pbkdf2 -in msg.txt -out msg.enc -pass pass:tp2
+<span class="pr">$ </span>openssl enc -aes-256-cbc -pbkdf2 -d -in msg.enc -out msg.txt -pass pass:tp2
+<span class="cm"># as text (paste-able): add -base64 (= -a) on BOTH lines</span>
+<span class="pr">$ </span>openssl enc -aes-256-cbc -pbkdf2 -base64 -in msg.txt -out msg.b64 -pass pass:tp2
+<span class="cm"># one single line of base64: add -A too</span>
+<span class="cm"># password from a file (first line)</span>
+<span class="pr">$ </span>openssl enc -aes-256-cbc -pbkdf2 -in msg.txt -out msg.enc -pass file:cle.key
+<span class="cm"># typed at the prompt (asked twice): no -pass at all</span>
+<span class="pr">$ </span>openssl enc -aes-256-cbc -pbkdf2 -in msg.txt -out msg.enc</code></pre></div><div class="card"><h3>Options</h3><div class="scroll"><table class="t"><thead><tr><th>option</th><th>meaning</th></tr></thead><tbody><tr><td><code>-e / -d</code></td><td>encrypt (default) / decrypt</td></tr><tr><td><code>-in F / -out F</code></td><td>input / output file (default: keyboard / screen)</td></tr><tr><td><code>-pass pass:W</code></td><td>password W (same as <code>-k W</code>)</td></tr><tr><td><code>-pass file:F</code></td><td>first line of F (same as <code>-kfile F</code>)</td></tr><tr><td><code>-pass env:V</code></td><td>from shell variable V</td></tr><tr><td><code>-pbkdf2</code></td><td>modern key stretch (use it)</td></tr><tr><td><code>-iter N</code></td><td>N rounds of stretch (implies PBKDF2)</td></tr><tr><td><code>-md sha256</code></td><td>hash used by the stretch (sha256 is the default)</td></tr><tr><td><code>-salt / -nosalt</code></td><td>salt on (default) / off</td></tr><tr><td><code>-a, -base64</code></td><td>base64 text in/out</td></tr><tr><td><code>-A</code></td><td>base64 on one line</td></tr><tr><td><code>-p / -P</code></td><td>print salt, key, IV / print them and stop</td></tr><tr><td><code>-K hex -iv hex</code></td><td>raw key and IV, no password</td></tr><tr><td><code>-nopad</code></td><td>no padding (input must fill whole blocks)</td></tr><tr><td><code>-list</code></td><td>every cipher name enc accepts</td></tr></tbody></table></div></div><div class="card"><h3>Cipher names you will meet</h3><div class="scroll"><table class="t"><thead><tr><th>name</th><th>notes</th></tr></thead><tbody><tr><td><code>-aes-128-cbc, -aes-256-cbc</code></td><td>the usual choice; 16-byte blocks</td></tr><tr><td><code>-aes-256-ecb</code></td><td>no chaining: equal blocks give equal output, avoid</td></tr><tr><td><code>-aes-256-ctr</code></td><td>stream mode: no padding, wrong password gives garbage, no error</td></tr><tr><td><code>-chacha20</code></td><td>stream cipher, same size as input</td></tr><tr><td><code>-des3 (-des-ede3-cbc)</code></td><td>triple DES, 8-byte blocks, still on in v3</td></tr><tr><td><code>-camellia-256-cbc, -aria-256-cbc</code></td><td>other 16-byte block ciphers</td></tr><tr><td><code>-des, -bf, -rc4, -idea</code></td><td>off in v3: add <code>-provider legacy -provider default</code></td></tr></tbody></table></div></div><div class="card"><h3>Raw key mode (-K / -iv)</h3><p>Key = 64 hex characters for AES-256 (32 for AES-128), IV = 32 hex characters. The output has no header, so it is 16 bytes shorter than with a password.</p><pre class="code"><code><span class="pr">$ </span>K=$(openssl rand -hex 32); IV=$(openssl rand -hex 16)
+<span class="pr">$ </span>openssl enc -aes-256-cbc -K $K -iv $IV -in msg.txt -out raw.bin
+<span class="pr">$ </span>openssl enc -aes-256-cbc -d -K $K -iv $IV -in raw.bin</code></pre></div></div>
+  <div class="calc"><span class="tag">Worked example</span>
+<p>Applied to the course file <code>message.txt</code> = <code>Hello Prof Nacer</code> (17 bytes):</p><pre class="code"><code><span class="pr">$ </span>for c in aes-128-cbc aes-256-cbc des-ede3-cbc aes-256-ctr chacha20; do openssl enc -$c -pbkdf2 -in message.txt -out s.bin -pass pass:tp2; echo "$c $(wc -c &lt; s.bin)"; done
+<span class="out">aes-128-cbc 48
+aes-256-cbc 48
+des-ede3-cbc 40
+aes-256-ctr 33
+chacha20 33</span></code></pre><p>Print the key and IV a password gives, without encrypting anything (handy to understand <code>-K</code>/<code>-iv</code>):</p><pre class="code"><code><span class="pr">$ </span>openssl enc -aes-256-cbc -pbkdf2 -iter 100000 -P -pass pass:tp2
+<span class="out">salt=D3A4FAE6E116CC46
+key=39AA2FED329AEFE766855F01AE59EF53514A211E1939B36AD06CF75B76000490
+iv =BC853DB37977A12EF84A8DA158F74B8B</span></code></pre>
+  </div>
+</section>
+<section class="sec" id="s11">
+  <div class="sec-h"><span class="num">11</span><h2>Cheatsheet · rand, base64, hashes, HMAC <span class="fr">(aléa, base64, empreintes)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>Small tools you will chain with <code>enc</code>: random passwords (<code>rand</code>), text-safe encoding (<code>base64</code>), fingerprints (<code>dgst</code>) and keyed fingerprints (HMAC). Watch the <b>newline trap</b>: <code>echo hello</code> sends "hello" plus a newline, <code>printf 'hello'</code> sends just the 5 letters, and the hashes differ completely.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">hash / digest</b> <span class="fr">(empreinte / condensé)</span></span><span class="mean">A fixed-size fingerprint of any data. SHA-256 = 256 bits = 64 hex characters.</span></li><li><span class="term"><b class="en">HMAC</b></span><span class="mean">A hash computed with a secret key: proves the data came from someone holding the key.</span></li><li><span class="term"><b class="en">MD5, SHA-1</b></span><span class="mean">Old hashes, broken for security (people can make two files with the same MD5). Use SHA-256.</span></li></ul>
+  </div>
+  <figure class="fig"><svg viewBox="0 0 562 138" role="img" aria-label="Hash versus HMAC: a hash needs only the message, an HMAC also needs a secret key" style="--minw:480px" xmlns="http://www.w3.org/2000/svg"><defs><marker id="f11-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker><marker id="f11-aw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hdw"/></marker></defs><rect x="6" y="14" width="120" height="36" rx="6" class="c4" /><text x="16" y="37" class="t dk sm" >message</text><rect x="176" y="14" width="110" height="36" rx="6" class="box" /><text x="186" y="37" class="t sm b" >SHA-256</text><rect x="336" y="14" width="220" height="36" rx="6" class="c3" /><text x="346" y="29" class="t dk sm" >64 hex characters</text><text x="346" y="44" class="t dk sm" >anyone can recompute it</text><line x1="126" y1="32" x2="174" y2="32" class="ar" marker-end="url(#f11-ah)"/><line x1="286" y1="32" x2="334" y2="32" class="ar" marker-end="url(#f11-ah)"/><rect x="6" y="80" width="120" height="50" rx="6" class="c4" /><text x="16" y="100" class="t dk sm" >message</text><text x="16" y="115" class="t dk sm" >+ secret key</text><rect x="176" y="87" width="110" height="36" rx="6" class="box" /><text x="186" y="110" class="t sm b" >HMAC-SHA256</text><rect x="336" y="80" width="220" height="50" rx="6" class="c2" /><text x="346" y="100" class="t dk sm" >64 hex characters</text><text x="346" y="115" class="t dk sm" >only key holders can make it</text><line x1="126" y1="105" x2="174" y2="105" class="ar" marker-end="url(#f11-ah)"/><line x1="286" y1="105" x2="334" y2="105" class="ar" marker-end="url(#f11-ah)"/></svg><figcaption>A hash proves a file did not change by accident; anyone can recompute it. An HMAC also mixes in a secret key, so a forger without the key cannot produce a matching value.</figcaption></figure>
+  <div class="cs"><div class="card"><h3>rand</h3><p>The number is always in bytes.</p><pre class="code"><code><span class="pr">$ </span>openssl rand -hex 32          # 64 hex chars (32 bytes)
+<span class="pr">$ </span>openssl rand -base64 24       # 32 base64 chars
+<span class="pr">$ </span>openssl rand -hex 32 &gt; cle.key  # a good password file
+<span class="pr">$ </span>openssl rand -out k.bin 32     # 32 raw bytes</code></pre></div><div class="card"><h3>base64</h3><pre class="code"><code><span class="pr">$ </span>openssl base64 -in message.txt
+<span class="pr">$ </span>openssl base64 -d -in msg.b64 -out msg.bin
+<span class="pr">$ </span>echo aGVsbG8= | openssl base64 -d</code></pre><pre class="code"><code><span class="pr">$ </span>openssl base64 -in message.txt
+<span class="out">SGVsbG8gUHJvZiBOYWNlcgo=</span></code></pre></div><div class="card"><h3>Hashes (dgst)</h3><pre class="code"><code><span class="pr">$ </span>openssl dgst -sha256 file
+<span class="pr">$ </span>openssl dgst -sha256 -r file      # sha256sum style
+<span class="pr">$ </span>openssl dgst -sha512 file
+<span class="pr">$ </span>openssl dgst -md5 file            # legacy
+<span class="pr">$ </span>openssl dgst -ripemd160 file
+<span class="pr">$ </span>openssl sha256 file               # shortcut
+<span class="pr">$ </span>openssl list -digest-commands</code></pre></div><div class="card"><h3>HMAC and passwords</h3><p><code>openssl mac</code> prints the same HMAC in capitals. <code>passwd</code> makes Linux password hashes, not <code>enc</code> keys.</p><pre class="code"><code><span class="pr">$ </span>openssl dgst -sha256 -hmac SECRET file
+<span class="pr">$ </span>openssl mac -digest SHA256 -macopt key:SECRET -in file HMAC
+<span class="pr">$ </span>openssl passwd -6 -salt abcdefgh tp2   # /etc/shadow style</code></pre><pre class="code"><code><span class="pr">$ </span>openssl passwd -6 -salt abcdefgh tp2
+<span class="out">$6$abcdefgh$bL.beVW3pX/41ZeVR7aMrFXdCw2sOATK.ls4G3ycf/xakBXVUuSwzNiT0EEqBQqiEas3NpE7UeJEWOvSA.TSV0</span></code></pre></div></div>
+  <div class="calc"><span class="tag">Worked example</span>
+<p>The newline trap, and the course file <code>message.txt</code> (<code>Hello Prof Nacer</code> + newline):</p><pre class="code"><code><span class="pr">$ </span>printf 'hello' | openssl dgst -sha256
+<span class="out">SHA2-256(stdin)= 2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824</span>
+<span class="pr">$ </span>echo hello | openssl dgst -sha256
+<span class="out">SHA2-256(stdin)= 5891b5b522d5df086d0ff0b110fbd9d21bb4fc7163af34d08286a2e846f6be03</span>
+<span class="pr">$ </span>openssl dgst -sha256 message.txt
+<span class="out">SHA2-256(message.txt)= f71760ba2451d83a4cbb8a35c3d81e3b371111cbf8c73bc84f95aa2a1b00804d</span>
+<span class="pr">$ </span>sha256sum message.txt
+<span class="out">f71760ba2451d83a4cbb8a35c3d81e3b371111cbf8c73bc84f95aa2a1b00804d  message.txt</span>
+<span class="pr">$ </span>printf 'hello' | openssl dgst -sha256 -hmac tp2key
+<span class="out">SHA2-256(stdin)= b44f70549d1b9669ffc58a5e5ba860391f1280528594ebe3cfd46caafaa7b66d</span></code></pre>
+  </div>
+</section>
+<section class="sec" id="s12">
+  <div class="sec-h"><span class="num">12</span><h2>Cheatsheet · RSA keys, encrypt, sign <span class="fr">(RSA)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>RSA is <b>asymmetric</b>: two keys that go together. The <b>private key</b> stays on your machine; the <b>public key</b> is made from it and can be given to anyone. What one key locks, only the other unlocks.</p>
+ <p>RSA can only encrypt a few hundred bytes, so in practice it protects a short secret (like an <code>enc</code> password) and AES does the bulk.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">key pair</b> <span class="fr">(bi-clé)</span></span><span class="mean">A private key (<code>priv.pem</code>) and the public key derived from it (<code>pub.pem</code>).</span></li><li><span class="term"><b class="en">PEM</b></span><span class="mean">Text format for keys and certificates: base64 between <code>-----BEGIN ...-----</code> lines.</span></li><li><span class="term"><b class="en">signature</b> <span class="fr">(signature)</span></span><span class="mean">A value made with a private key over a file's hash. Anyone with the public key can check it.</span></li><li><span class="term"><b class="en">pkeyutl</b></span><span class="mean">The v3 command for RSA encrypt/decrypt/sign. The old <code>rsautl</code> is deprecated.</span></li></ul>
+  </div>
+  <figure class="fig"><svg viewBox="0 0 562 148" role="img" aria-label="RSA: encrypt with the public key and decrypt with the private one; sign with the private key and verify with the public one" style="--minw:480px" xmlns="http://www.w3.org/2000/svg"><defs><marker id="f12-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker><marker id="f12-aw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hdw"/></marker></defs><text x="6" y="16" class="t b" >Encrypt (secrecy)</text><text x="300" y="16" class="t b" >Sign (proof of origin)</text><rect x="6" y="26" width="110" height="34" rx="6" class="c4" /><text x="14" y="47" class="t dk sm mono" >note.txt</text><rect x="150" y="26" width="120" height="34" rx="6" class="c3" /><text x="158" y="40" class="t dk sm" >Bob's PUBLIC key</text><text x="158" y="55" class="t dk sm" >pub.pem</text><rect x="6" y="90" width="110" height="34" rx="6" class="soft" /><text x="14" y="111" class="t sm mono" >note.enc</text><rect x="150" y="90" width="120" height="34" rx="6" class="c2" /><text x="158" y="104" class="t dk sm" >Bob's PRIVATE key</text><text x="158" y="119" class="t dk sm" >priv.pem</text><line x1="61" y1="60" x2="61" y2="88" class="ar" marker-end="url(#f12-ah)"/><text x="70" y="79" class="tm sm mono" >pkeyutl -encrypt</text><line x1="116" y1="107" x2="148" y2="107" class="ar" marker-end="url(#f12-ah)"/><text x="150" y="140" class="tm sm" >only Bob can -decrypt</text><rect x="300" y="26" width="110" height="34" rx="6" class="c4" /><text x="308" y="47" class="t dk sm mono" >message.txt</text><rect x="444" y="26" width="112" height="34" rx="6" class="c2" /><text x="452" y="40" class="t dk sm" >Alice's PRIVATE</text><text x="452" y="55" class="t dk sm" >priv.pem</text><rect x="300" y="90" width="110" height="34" rx="6" class="soft" /><text x="308" y="111" class="t sm mono" >message.sig</text><rect x="444" y="90" width="112" height="34" rx="6" class="c3" /><text x="452" y="104" class="t dk sm" >Alice's PUBLIC</text><text x="452" y="119" class="t dk sm" >pub.pem</text><line x1="355" y1="60" x2="355" y2="88" class="ar" marker-end="url(#f12-ah)"/><text x="364" y="79" class="tm sm mono" >dgst -sign</text><line x1="410" y1="107" x2="442" y2="107" class="ar" marker-end="url(#f12-ah)"/><text x="444" y="140" class="tm sm" >anyone can -verify</text></svg><figcaption>An RSA key pair works both ways round. To keep a secret, lock with the receiver's public key. To prove you wrote something, sign with your own private key.</figcaption></figure>
+  <div class="cs"><div class="card"><h3>Make keys</h3><pre class="code"><code><span class="pr">$ </span>openssl genrsa -out priv.pem 2048
+<span class="pr">$ </span>openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 -out priv.pem
+<span class="pr">$ </span>openssl genrsa -aes256 -out priv.pem 2048     # key protected by a passphrase
+<span class="pr">$ </span>openssl rsa -in priv.pem -pubout -out pub.pem
+<span class="pr">$ </span>openssl rsa -in priv.pem -noout -text   # see n, e, d...
+<span class="pr">$ </span>openssl pkey -in priv.pem -check -noout</code></pre></div><div class="card"><h3>Encrypt / decrypt a small secret</h3><pre class="code"><code><span class="pr">$ </span>openssl pkeyutl -encrypt -pubin -inkey pub.pem -in note.txt -out note.enc
+<span class="pr">$ </span>openssl pkeyutl -decrypt -inkey priv.pem -in note.enc -out note.txt</code></pre><pre class="code"><code><span class="pr">$ </span>openssl pkeyutl -decrypt -inkey priv.pem -in note.enc
+<span class="out">secret note</span></code></pre></div><div class="card"><h3>Sign / verify</h3><p><code>-verify</code> wants the PUBLIC key. Giving it <code>priv.pem</code> fails with "Could not read public key from priv.pem"; use <code>-prverify</code> for a private key.</p><pre class="code"><code><span class="pr">$ </span>openssl dgst -sha256 -sign priv.pem -out f.sig f
+<span class="pr">$ </span>openssl dgst -sha256 -verify pub.pem -signature f.sig f
+<span class="pr">$ </span>openssl dgst -sha256 -prverify priv.pem -signature f.sig f</code></pre></div><div class="card"><h3>Hybrid: big file for Bob</h3><p>This is what TLS does too: public-key crypto for the small secret, AES for the data.</p><pre class="code"><code><span class="pr">$ </span>openssl rand -hex 32 &gt; pw.txt
+<span class="pr">$ </span>openssl enc -aes-256-cbc -pbkdf2 -in big.pdf -out big.enc -pass file:pw.txt
+<span class="pr">$ </span>openssl pkeyutl -encrypt -pubin -inkey bob_pub.pem -in pw.txt -out pw.enc
+<span class="cm"># send big.enc + pw.enc; Bob:</span>
+<span class="pr">$ </span>openssl pkeyutl -decrypt -inkey bob_priv.pem -in pw.enc -out pw.txt
+<span class="pr">$ </span>openssl enc -aes-256-cbc -pbkdf2 -d -in big.enc -out big.pdf -pass file:pw.txt</code></pre></div></div>
+  <div class="calc"><span class="tag">Worked example</span>
+<p>Alice signs the course file <code>message.txt</code> (<code>Hello Prof Nacer</code>), then someone changes one character (adds a <code>!</code>):</p><pre class="code"><code><span class="pr">$ </span>openssl genrsa -out priv.pem 2048
+<span class="pr">$ </span>openssl rsa -in priv.pem -pubout -out pub.pem
+<span class="out">writing RSA key</span>
+<span class="pr">$ </span>openssl dgst -sha256 -sign priv.pem -out message.sig message.txt
+<span class="pr">$ </span>wc -c message.sig
+<span class="out">256 message.sig</span>
+<span class="pr">$ </span>openssl dgst -sha256 -verify pub.pem -signature message.sig message.txt
+<span class="out">Verified OK</span>
+<span class="pr">$ </span>openssl dgst -sha256 -verify pub.pem -signature message.sig tampered.txt
+<span class="out">Verification failure</span></code></pre><p>A 2048-bit key = 256 bytes, so the signature is 256 bytes. RSA encryption has a size limit (245 bytes for a 2048-bit key with the default padding):</p><pre class="code"><code><span class="pr">$ </span>openssl pkeyutl -encrypt -pubin -inkey pub.pem -in b245.bin -out b245.enc   # 245 bytes
+<span class="out">245 bytes: ok</span>
+<span class="pr">$ </span>openssl pkeyutl -encrypt -pubin -inkey pub.pem -in big.bin -out big.enc     # 246 bytes
+<span class="out">rsa routines:ossl_rsa_padding_add_PKCS1_type_2_ex:data too large for key size:../crypto/rsa/rsa_pk1.c:133:</span></code></pre>
+  </div>
+</section>
+<section class="sec" id="s13">
+  <div class="sec-h"><span class="num">13</span><h2>Cheatsheet · certificates and a small CA <span class="fr">(certificats X.509)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>A <b>certificate</b> glues a name (like <code>CN = vm2</code>) to a public key, and carries the signature of whoever vouches for that link. If you sign it yourself it is <b>self-signed</b>: fine for a test, but a client will warn. If a <b>CA</b> you trust signs it, the client accepts it.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">X.509</b></span><span class="mean">The standard certificate format used by TLS.</span></li><li><span class="term"><b class="en">CSR</b> <span class="fr">(demande de certificat)</span></span><span class="mean">Certificate Signing Request: your public key + name, sent to a CA to be signed.</span></li><li><span class="term"><b class="en">CA</b> <span class="fr">(autorité de certification)</span></span><span class="mean">Whoever signs certificates. Here, a test CA you create in two commands.</span></li><li><span class="term"><b class="en">subject / issuer</b> <span class="fr">(sujet / émetteur)</span></span><span class="mean">Whose certificate it is / who signed it. Equal for a self-signed certificate.</span></li><li><span class="term"><b class="en">CN</b> <span class="fr">(Common Name)</span></span><span class="mean">The name in the certificate, usually the machine's name.</span></li></ul>
+  </div>
+  <figure class="fig"><svg viewBox="0 0 562 160" role="img" aria-label="A test CA signs VM2's certificate request; VM1 trusts the CA so it accepts VM2's certificate" style="--minw:480px" xmlns="http://www.w3.org/2000/svg"><defs><marker id="f13-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker><marker id="f13-aw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hdw"/></marker></defs><rect x="6" y="14" width="160" height="50" rx="6" class="c1" /><text x="16" y="34" class="t dk sm" >Test CA</text><text x="16" y="49" class="t dk sm" >ca.key + ca.crt (self-signed)</text><rect x="6" y="104" width="160" height="50" rx="6" class="c4" /><text x="16" y="124" class="t dk sm" >VM2</text><text x="16" y="139" class="t dk sm" >vm2.key + vm2.csr</text><rect x="220" y="60" width="150" height="50" rx="6" class="soft" /><text x="230" y="80" class="t sm" >x509 -req -CA ...</text><text x="230" y="95" class="t sm" >CA signs the request</text><rect x="420" y="60" width="136" height="50" rx="6" class="c3" /><text x="430" y="80" class="t dk sm" >vm2.crt</text><text x="430" y="95" class="t dk sm" >issuer = Test CA</text><line x1="166" y1="40" x2="218" y2="76" class="ar" marker-end="url(#f13-ah)"/><line x1="166" y1="128" x2="218" y2="96" class="ar" marker-end="url(#f13-ah)"/><line x1="370" y1="85" x2="418" y2="85" class="ar" marker-end="url(#f13-ah)"/><text x="420" y="135" class="tm sm" >VM1 holds ca.crt:</text><text x="420" y="150" class="t sm b ok" >verify → OK</text></svg><figcaption>A certificate is trusted because someone the client already trusts signed it. Self-signed means "I vouch for myself", which a client accepts only if told to.</figcaption></figure>
+  <div class="cs"><div class="card"><h3>Make</h3><pre class="code"><code><span class="cm"># self-signed cert + new key, no passphrase (-nodes)</span>
+<span class="pr">$ </span>openssl req -x509 -newkey rsa:2048 -nodes -keyout srv.key -out srv.crt -days 365 -subj '/CN=vm1'
+<span class="cm"># request (CSR) for an existing key</span>
+<span class="pr">$ </span>openssl req -new -key priv.pem -out vm2.csr -subj '/CN=vm2'
+<span class="cm"># CA signs a CSR (creates ca.srl the first time)</span>
+<span class="pr">$ </span>openssl x509 -req -in vm2.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out vm2.crt -days 30</code></pre></div><div class="card"><h3>Inspect and check</h3><pre class="code"><code><span class="pr">$ </span>openssl x509 -in c.crt -noout -text
+<span class="pr">$ </span>openssl x509 -in c.crt -noout -subject -issuer -dates
+<span class="pr">$ </span>openssl x509 -in c.crt -noout -fingerprint -sha256
+<span class="pr">$ </span>openssl x509 -in c.crt -noout -pubkey
+<span class="pr">$ </span>openssl req -in vm2.csr -noout -text -verify
+<span class="pr">$ </span>openssl verify -CAfile ca.crt vm2.crt
+<span class="pr">$ </span>openssl x509 -in c.crt -outform DER -out c.der   # PEM to binary</code></pre></div><div class="card"><h3>Errors you will see</h3><div class="scroll"><table class="t"><thead><tr><th>message</th><th>meaning</th></tr></thead><tbody><tr><td><code>error 18 ... self-signed certificate</code></td><td>nobody but itself vouches for it</td></tr><tr><td><code>Verify return code: 21 (unable to verify the first certificate)</code></td><td>s_client got a CA-signed cert but was not given <code>-CAfile ca.crt</code></td></tr><tr><td><code>vm2.crt: OK</code></td><td>chain checked up to a CA you trust</td></tr></tbody></table></div></div></div>
+  <div class="calc"><span class="tag">Worked example</span>
+<p>A self-signed certificate for VM1, and what <code>verify</code> thinks of it:</p><pre class="code"><code><span class="pr">$ </span>openssl req -x509 -newkey rsa:2048 -nodes -keyout server.key -out server.crt -days 365 -subj '/C=DZ/O=USTHB/CN=vm1'
+<span class="pr">$ </span>openssl x509 -in server.crt -noout -subject -issuer
+<span class="out">subject=C = DZ, O = USTHB, CN = vm1
+issuer=C = DZ, O = USTHB, CN = vm1</span>
+<span class="pr">$ </span>openssl verify server.crt
+<span class="out">C = DZ, O = USTHB, CN = vm1
+error 18 at 0 depth lookup: self-signed certificate</span></code></pre><p>Now a test CA signs VM2's certificate, and the check passes:</p><pre class="code"><code><span class="pr">$ </span>openssl req -x509 -newkey rsa:2048 -nodes -keyout ca.key -out ca.crt -days 365 -subj '/CN=SSAD Test CA'
+<span class="pr">$ </span>openssl req -new -newkey rsa:2048 -nodes -keyout vm2.key -out vm2.csr -subj '/CN=vm2'
+<span class="pr">$ </span>openssl x509 -req -in vm2.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out vm2.crt -days 30
+<span class="out">Certificate request self-signature ok
+subject=CN = vm2</span>
+<span class="pr">$ </span>openssl x509 -in vm2.crt -noout -subject -issuer
+<span class="out">subject=CN = vm2
+issuer=CN = SSAD Test CA</span>
+<span class="pr">$ </span>openssl verify -CAfile ca.crt vm2.crt
+<span class="out">vm2.crt: OK</span></code></pre>
+  </div>
+</section>
+<section class="sec" id="s14">
+  <div class="sec-h"><span class="num">14</span><h2>Cheatsheet · TLS tests, list and help <span class="fr">(tests TLS, aide)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p><code>s_server</code> is a tiny TLS server, <code>s_client</code> a tiny TLS client. Together they let you watch a real handshake (section 2) and send text over it. A <b>port</b> is the "door number" a server listens on; 4433 is the usual test port.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">port</b></span><span class="mean">A number 1-65535 that picks the program on a machine. HTTPS uses 443; tests use 4433.</span></li><li><span class="term"><b class="en">-msg / -brief</b></span><span class="mean">Print every handshake message / print a one-screen summary.</span></li><li><span class="term"><b class="en">Connection refused</b></span><span class="mean">Nothing listens on that address and port: server not started, wrong IP or port, or a firewall.</span></li></ul>
+  </div>
+  <figure class="fig"><svg viewBox="0 0 562 160" role="img" aria-label="s_server on VM2 listens on port 4433; s_client on VM1 connects to it" style="--minw:480px" xmlns="http://www.w3.org/2000/svg"><defs><marker id="f14-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker><marker id="f14-aw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hdw"/></marker></defs><rect x="6" y="10" width="260" height="110" rx="8" class="pane" /><text x="16" y="28" class="t b" >VM2 · server · 192.168.1.22</text><rect x="16" y="44" width="240" height="64" rx="4" class="box" /><text x="24" y="62" class="t mono sm" >$ openssl s_server -accept 4433</text><text x="24" y="77" class="t mono sm" >  -cert vm2.crt -key vm2.key</text><text x="24" y="92" class="t mono sm" >(waits on port 4433)</text><rect x="296" y="10" width="260" height="110" rx="8" class="pane" /><text x="306" y="28" class="t b" >VM1 · client · 192.168.1.21</text><rect x="306" y="44" width="240" height="64" rx="4" class="box" /><text x="314" y="62" class="t mono sm" >$ openssl s_client</text><text x="314" y="77" class="t mono sm" >  -connect 192.168.1.22:4433</text><text x="314" y="92" class="t mono sm" >  -CAfile ca.crt</text><line x1="296" y1="135" x2="266" y2="135" class="ar" marker-end="url(#f14-ah)"/><text x="281" y="152" class="tm mid sm" >TLS on port 4433: lines typed on one side appear on the other</text></svg><figcaption>A two-terminal chat over TLS. Start the server first; type a line in either terminal and it appears in the other.</figcaption></figure>
+  <div class="cs"><div class="card"><h3>Server and client</h3><p>In the client, a line starting with <code>Q</code> quits and <code>R</code> renegotiates; Ctrl+C stops either side.</p><pre class="code"><code><span class="pr">$ </span>openssl s_server -accept 4433 -cert srv.crt -key srv.key
+<span class="pr">$ </span>openssl s_server -accept 4433 -cert srv.crt -key srv.key -www   # answers a web page
+<span class="pr">$ </span>openssl s_client -connect 192.168.1.22:4433 -CAfile ca.crt
+<span class="pr">$ </span>openssl s_client -connect 192.168.1.22:4433 -brief
+<span class="pr">$ </span>openssl s_client -connect 192.168.1.22:4433 -msg      # every handshake message
+<span class="pr">$ </span>openssl s_client -connect 192.168.1.22:4433 -tls1_2   # force TLS 1.2
+<span class="pr">$ </span>openssl s_client -connect 192.168.1.22:4433 -showcerts
+<span class="pr">$ </span>openssl s_client -connect example.com:443 -servername example.com</code></pre></div><div class="card"><h3>List and help</h3><pre class="code"><code><span class="pr">$ </span>openssl version -a
+<span class="pr">$ </span>openssl help
+<span class="pr">$ </span>openssl enc -help
+<span class="pr">$ </span>openssl list -commands
+<span class="pr">$ </span>openssl list -cipher-commands
+<span class="pr">$ </span>openssl list -digest-commands
+<span class="pr">$ </span>openssl list -cipher-algorithms
+<span class="pr">$ </span>openssl enc -list
+<span class="pr">$ </span>openssl ciphers -v | head   # TLS cipher suites
+<span class="pr">$ </span>man openssl-enc   (q to quit)</code></pre></div><div class="card wide"><h3>Handout command → OpenSSL 3 form</h3><div class="scroll"><table class="t"><thead><tr><th>handout</th><th>write instead</th></tr></thead><tbody><tr><td><code>openssl list-cipher-commands</code></td><td><code>openssl list -cipher-commands</code></td></tr><tr><td><code>$ help</code></td><td><code>openssl help</code></td></tr><tr><td><code>Enc –help</code></td><td><code>openssl enc -help</code></td></tr><tr><td><code>enc-aes ...</code></td><td><code>openssl enc -aes-256-cbc ...</code></td></tr><tr><td><code>-aes-256-cc</code></td><td><code>-aes-256-cbc</code></td></tr><tr><td><code>-k cle.key</code></td><td><code>-kfile cle.key</code> or <code>-pass file:cle.key</code></td></tr><tr><td><code>Openssl –out key 1024</code></td><td><code>openssl rand -hex 32 &gt; key</code></td></tr><tr><td><code>genrsa –out cle.key 1024</code> (as password)</td><td><code>openssl rand -hex 32 &gt; cle.key</code></td></tr></tbody></table></div></div></div>
+  <div class="calc"><span class="tag">Worked example</span>
+<p>Run for real (both ends on one machine; between VMs, replace <code>localhost</code> with VM2's address). The server receives VM1's line:</p><pre class="code"><code><span class="cm"># terminal 1 (server)</span>
+<span class="pr">$ </span>openssl s_server -accept 4433 -cert vm2.crt -key vm2.key -quiet
+<span class="out">Bonjour depuis VM1</span>
+<span class="cm"># terminal 2 (client), then type: Bonjour depuis VM1</span>
+<span class="pr">$ </span>openssl s_client -connect localhost:4433 -CAfile ca.crt -brief
+<span class="out">CONNECTION ESTABLISHED
+Protocol version: TLSv1.3
+Ciphersuite: TLS_AES_256_GCM_SHA384
+Peer certificate: CN = vm2
+Hash used: SHA256
+Signature type: RSA-PSS
+Verification: OK
+Server Temp Key: X25519, 253 bits
+DONE</span>
+<span class="pr">$ </span>openssl s_client -connect localhost:4433
+<span class="out">Verify return code: 21 (unable to verify the first certificate)</span>
+<span class="pr">$ </span>openssl s_client -connect localhost:4499
+<span class="out">Connection refused</span></code></pre>
+  </div>
+</section>
+<section class="sec" id="notes">
+  <div class="note errata"><span class="tag">Notes on the original course</span>
+    <ul><li>Handout 2 header: <b>"Couse"</b> should read <b>Course</b>.</li><li>Handout 1 writes <b>"TSL"</b> several times; the protocol is <b>TLS</b>.</li><li><b>"openssl" then "OpenSSL&gt; q"</b>: OpenSSL 3 has no interactive prompt. Typing <code>openssl</code> alone prints the command list and returns; write <code>openssl</code> before every command. Lines written <code>$rand ...</code>, <code>$genrsa ...</code>, <code>$ enc-aes ...</code> therefore need <code>openssl</code> in front.</li><li><b><code>openssl list-cipher-commands</code></b> is the 1.x spelling; OpenSSL 3 answers "Invalid command". Use <code>openssl list -cipher-commands</code> or <code>openssl enc -list</code>. <code>$ help</code> alone runs the shell's own help, not OpenSSL's: use <code>openssl help</code>, and <code>openssl enc -help</code> for <code>Enc –help</code>.</li><li><b><code>enc-aes</code></b> is not a command ("Invalid command 'enc-aes'"): it needs a space and a full cipher name, e.g. <code>enc -aes-256-cbc</code>. The same example also decrypts <code>mestest.txt</code> into <code>mescrypt.txt</code>, the file names the wrong way round.</li><li><b><code>-aes-256-cc</code></b> should be <code>-aes-256-cbc</code> ("Unknown cipher"). <code>-aes-256-cbc-base64</code> is missing a space before <code>-base64</code>.</li><li><b><code>Openssl –out key 1024</code></b> is missing the subcommand (<code>openssl rand -out key 1024</code>) and starts with a capital O, which Linux does not find.</li><li><b>Dashes:</b> the handouts print long dashes and spaces (<code>– in</code>, <code>– out</code>, <code>- &lt;algo&gt;</code>). Copied as is they fail; options are one ASCII hyphen glued to the name: <code>-in</code>, <code>-out</code>, <code>-aes-256-cbc</code>.</li><li><b>"output.txt: File saving the decrypted message"</b> in the encryption part: it is the <b>encrypted</b> message.</li><li><b><code>-k cle.key</code></b>: <code>-k</code> takes the password itself, so the password becomes the 7 letters <code>cle.key</code> and the file is never read (checked in section 5). To use the file, write <code>-kfile cle.key</code> or <code>-pass file:cle.key</code>.</li><li><b><code>rand -out cle.key 2048</code> "using the specified number of bits"</b>: the size is in <b>bytes</b> (2048 bytes = 16 384 bits). The file is also binary, and <code>enc</code> reads a password file only up to its first newline byte, which can leave a short or empty password. Use <code>openssl rand -hex 32 &gt; cle.key</code>.</li><li><b>Case 2, <code>genrsa</code> as the <code>enc</code> key</b>: <code>enc</code> cannot use an RSA key as a key. Through <code>-kfile</code> it reads only the first line, <code>-----BEGIN PRIVATE KEY-----</code>, which is the same for every key: a file encrypted with one genrsa key decrypts with any other (checked in section 5). Use <code>rand</code> for passwords; RSA keys go with <code>pkeyutl</code> and <code>dgst -sign</code>. Also, 1024-bit RSA is too short today: use 2048.</li><li><b>"private key"</b> for the <code>enc</code> password: in symmetric encryption it is a <b>secret key</b> (or simply a password). "Private key" means the secret half of an RSA pair.</li><li><b>No <code>-pbkdf2</code></b> in any handout command. OpenSSL 3 then warns "deprecated key derivation used" because the old method hashes the password only once. Add <code>-pbkdf2</code> to both the encrypt and the decrypt line; leaving it on one side only gives "bad decrypt".</li><li><b>DES, IDEA, RC2, RC4, Blowfish</b> (listed as examples) are switched off by default in OpenSSL 3 ("unsupported"); they need <code>-provider legacy -provider default</code>. Triple DES (<code>-des3</code>) and AES work. MD5 is broken for security; prefer SHA-256.</li><li><b>"Data are exchanged in compressed, encrypted and signed format"</b>: TLS compression was dropped after the 2012 CRIME attack and TLS 1.3 removed it. Each record is protected by an integrity tag (MAC/AEAD), not a signature; signatures are used once, during the handshake.</li></ul>
+  </div>
+</section>
+<footer class="foot">Based on Prof H. Nacer's TP 2 handouts "Handling Frame-Work OPENSSL" and "Symmetric Cryptography" (SSAD, M1, USTHB, 2026/2027). Every openssl command and output on this page was run with OpenSSL 3.0.13 30 Jan 2024 on Ubuntu 24.04; the VirtualBox, ssh and scp steps were not run here, and IP addresses and user names are examples.</footer>
+</div>
+</body>
+</html>
