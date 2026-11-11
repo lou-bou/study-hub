@@ -4,219 +4,349 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>THOR · Ch 2 · Practice</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
 <script>/* study-hub:theme */(function(){var r=document.documentElement;try{var t=localStorage.getItem("studyhub-theme");if(t)r.setAttribute("data-theme",t);}catch(e){}document.addEventListener("DOMContentLoaded",function(){var b=document.getElementById("theme-toggle");if(b)b.addEventListener("click",function(){var c=r.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");var n=c==="dark"?"light":"dark";r.setAttribute("data-theme",n);try{localStorage.setItem("studyhub-theme",n);}catch(e){}});});})();</script>
 <style>
-/* study-hub:base v1 — shared by every remake; edit here, then copy into pages */
-:root{
-  --bg:#F3F5FB; --surface:#FFFFFF; --ink:#14203B; --muted:#586583; --line:#D9DFEC;
-  --accent:#2B52E6; --accent-soft:#E3E9FF; --hi:#D9481C; --hi-soft:#FFE3D6; --code-bg:#E9EDF8;
-  --ok:#1B7A49; --ok-soft:#E2F4EA;
-  --c1:#8FB0FF; --c2:#FFB877; --c3:#7EDBAA; --c4:#CDAEFF;
-  --f-display:'Bricolage Grotesque',system-ui,sans-serif;
-  --f-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
-  --f-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
-  --f-math:'Cambria Math','STIX Two Math',Georgia,serif;
-  color-scheme:light;
+/* study-hub:base v3 — shared by every remake. build.py swaps in the current copy, so uploads never drift */
+/* tokens: a copy of assets/tokens.css so a page previews on its own; the build links the real file */
+/* Cahier design tokens. Light ("paper") is the default; dark ("night ink") follows.
+   Theme switch: <html data-theme="light|dark">; no attribute = follow the OS. */
+
+:root {
+  /* Brand (theme-independent) */
+  --brand-paper: #F3EBDD;
+  --brand-ink:   #1E2A44;
+  --brand-amber: #D9952B;   /* ribbon: progress, "resume", bookmarks */
+  --brand-green: #3D6B5A;   /* correct / completed */
+
+  /* Type */
+  --font-display: "Fraunces", Georgia, serif;          /* headings, lesson titles */
+  --font-body:    "Source Sans 3", system-ui, sans-serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, monospace;
+
+  --text-xs: 0.8125rem;  /* 13 */
+  --text-sm: 0.9375rem;  /* 15 */
+  --text-md: 1.0625rem;  /* 17 body — reading app, slightly larger */
+  --text-lg: 1.375rem;   /* 22 */
+  --text-xl: 1.875rem;   /* 30 */
+  --text-2xl: 2.5rem;    /* 40 lesson hero */
+  --leading-body: 1.65;
+  --measure: 68ch;       /* max line length for lesson text */
+
+  /* Spacing (4px grid) */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-5: 24px; --space-6: 32px; --space-7: 48px; --space-8: 72px;
+
+  /* Shape — quiet, paper-like */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Motion — minimal */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-fast: 120ms;
+  --dur-med: 200ms;
+
+  /* Light / paper (default) */
+  --bg:          #F7F1E6;
+  --surface:     #FFFCF6;
+  --surface-2:   #EFE6D6;
+  --border:      #E2D8C6;
+  --text:        #1E2A44;
+  --text-muted:  #5C6475;
+  --accent:      var(--brand-amber);   /* fills: ribbon, progress bars */
+  --accent-text: #8A5A12;              /* amber text/links on paper (AA) */
+  --link:        #1E4FA0;
+  --correct:     #3D6B5A;
+  --correct-bg:  #E3EEE8;
+  --wrong:       #B4443A;
+  --wrong-bg:    #F6E2DF;
+  --note-bg:     #FBF0D9;              /* "In plain words" / worked example boxes */
+  --focus:       #1E4FA0;
+  color-scheme: light;
 }
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#0D1426; --surface:#151F38; --ink:#E6EBF8; --muted:#9BA8C7; --line:#28345A;
-    --accent:#8AA5FF; --accent-soft:#1B2958; --hi:#FF8D63; --hi-soft:#47281F; --code-bg:#1C2849;
-    --ok:#5FD394; --ok-soft:#173326;
-    color-scheme:dark;
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:          #141C2E;
+    --surface:     #1B2540;
+    --surface-2:   #233052;
+    --border:      #2E3A5C;
+    --text:        #F3EBDD;
+    --text-muted:  #A9B0C0;
+    --accent:      #E5A945;
+    --accent-text: #F0BE6A;
+    --link:        #8DB4F5;
+    --correct:     #6FA88F;
+    --correct-bg:  #1F3A33;
+    --wrong:       #E07A6E;
+    --wrong-bg:    #43262A;
+    --note-bg:     #2A2A3A;
+    --focus:       #8DB4F5;
+    color-scheme: dark;
   }
 }
-:root[data-theme="dark"]{
-  --bg:#0D1426; --surface:#151F38; --ink:#E6EBF8; --muted:#9BA8C7; --line:#28345A;
-  --accent:#8AA5FF; --accent-soft:#1B2958; --hi:#FF8D63; --hi-soft:#47281F; --code-bg:#1C2849;
-  --ok:#5FD394; --ok-soft:#173326;
-  color-scheme:dark;
+
+:root[data-theme="dark"] {
+  --bg:          #141C2E;
+  --surface:     #1B2540;
+  --surface-2:   #233052;
+  --border:      #2E3A5C;
+  --text:        #F3EBDD;
+  --text-muted:  #A9B0C0;
+  --accent:      #E5A945;
+  --accent-text: #F0BE6A;
+  --link:        #8DB4F5;
+  --correct:     #6FA88F;
+  --correct-bg:  #1F3A33;
+  --wrong:       #E07A6E;
+  --wrong-bg:    #43262A;
+  --note-bg:     #2A2A3A;
+  --focus:       #8DB4F5;
+  color-scheme: dark;
 }
+
+/* Project additions, not in the brand kit. */
+:root {
+  /* Figures in lessons. Amber means "my place" only, so diagrams use these. */
+  --fig: #1E4FA0; --fig-soft: #DCE6F5;
+  --c1: #E8C98C; --c2: #E3AE9B; --c3: #AFCDB8; --c4: #B9C6E0;  /* dark text sits on all of them */
+  --font-math: "Cambria Math", "STIX Two Math", Georgia, serif;
+  --primary: var(--text); --on-primary: var(--bg);             /* main buttons: ink, never amber */
+  /* Names older remakes use in their own CSS, mapped onto this theme. */
+  --ink: var(--text); --muted: var(--text-muted); --faint: var(--text-muted);
+  --line: var(--border); --line-strong: var(--border); --sunken: var(--surface-2); --hover: var(--surface-2);
+  --code-bg: var(--surface-2); --ok: var(--correct); --ok-soft: var(--correct-bg); --hi: var(--wrong); --hi-soft: var(--wrong-bg);
+  --accent-soft: var(--fig-soft);
+  --f-display: var(--font-display); --f-body: var(--font-body); --f-mono: var(--font-mono); --f-math: var(--font-math);
+  --l0: #8FA8D3; --l1: #A9BDDF; --l2: #C2D1E8; --l3: #D9E3F1; --l4: #ECF1F8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --fig: #8DB4F5; --fig-soft: #233052; }
+}
+:root[data-theme="dark"] { --fig: #8DB4F5; --fig-soft: #233052; }
+/* /tokens */
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
 body{
-  background:var(--bg); color:var(--ink); font-family:var(--f-body); font-size:16px; line-height:1.6;
+  background:var(--bg); color:var(--text); font-family:var(--font-body); font-size:var(--text-md); line-height:var(--leading-body);
   padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px));
-  padding-block:28px 72px; margin:0;
+  padding-block:28px var(--space-8); margin:0;
 }
 .wrap{max-width:1040px;margin:0 auto}
-a{color:var(--accent)}
-a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px}
-code{font-family:var(--f-mono);font-size:.9em;background:var(--code-bg);padding:1px 6px;border-radius:5px}
+a{color:var(--link);text-decoration:underline;text-underline-offset:2px}
+a,button,label,summary,input,select{touch-action:manipulation}
+a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+code{font-family:var(--font-mono);font-size:.86em;background:var(--surface-2);padding:1px 5px;border-radius:var(--radius-sm)}
 .en{font-weight:600}
-.fr{color:var(--muted);font-style:italic;font-weight:400}
+.fr{color:var(--text-muted);font-style:italic;font-weight:400}
 sub,sup{line-height:0}
-.m{font-family:var(--f-math);font-style:italic}
+.m{font-family:var(--font-math);font-style:italic}
 .ov{text-decoration:overline}
-.eq{font-family:var(--f-math);font-size:1.05rem;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 16px;margin:12px 0;overflow-x:auto;white-space:pre}
-.res{display:inline-block;background:var(--ok-soft);color:var(--ink);border-radius:6px;padding:1px 8px;font-weight:600}
-.toggle{position:fixed;top:14px;right:max(14px,env(safe-area-inset-right,0px));z-index:20;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 14px;font:500 .8rem var(--f-body);cursor:pointer}
+.eq{font-family:var(--font-math);font-size:var(--text-md);background:var(--surface-2);border-radius:var(--radius-sm);padding:var(--space-3) var(--space-4);margin:var(--space-3) 0;overflow-x:auto;white-space:pre}
+.res{display:inline-block;background:var(--correct-bg);color:var(--text);border-radius:var(--radius-sm);padding:1px 7px;font-weight:600;font-variant-numeric:tabular-nums}
+.toggle{position:fixed;top:14px;right:max(14px,env(safe-area-inset-right,0px));z-index:20;display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;padding:0;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:var(--radius-md);cursor:pointer;transition:background var(--dur-fast) var(--ease-out)}
+.toggle svg{width:20px;height:20px}
 
 /* hero */
-.hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:36px;align-items:center;padding-bottom:36px}
+.hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:var(--space-6);align-items:center;padding-bottom:var(--space-6)}
 .hero.solo{grid-template-columns:minmax(0,1fr)}
-.eyebrow{font:600 .75rem/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
-h1{font-family:var(--f-display);font-weight:800;font-size:clamp(2.3rem,5.4vw,3.8rem);line-height:1.02;letter-spacing:-.025em;margin:14px 0 16px;text-wrap:balance}
-.lead{font-size:1.1rem;color:var(--muted);max-width:60ch;margin:0 0 22px}
-.how{display:grid;gap:10px;margin:0;padding:0;list-style:none;max-width:52ch}
-.how li{display:flex;gap:12px;align-items:baseline;font-size:.95rem}
-.how .tag{flex:0 0 auto;min-width:9.5em}
-.pills{display:flex;flex-wrap:wrap;gap:8px;margin:0}
-.pill{background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:4px 12px;font:500 .8rem var(--f-mono)}
-.herofig{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 16px 12px;min-width:0;overflow-x:auto}
+.eyebrow{font:600 var(--text-xs)/1.3 var(--font-body);color:var(--text-muted)}
+h1{font-family:var(--font-display);font-weight:600;font-variation-settings:"opsz" 72;font-size:clamp(1.875rem,4.4vw,var(--text-2xl));line-height:1.12;letter-spacing:-.01em;margin:var(--space-2) 0 var(--space-3);text-wrap:balance}
+.lead{font-size:var(--text-lg);line-height:1.4;color:var(--text-muted);max-width:var(--measure);margin:0 0 var(--space-4)}
+.how{display:grid;gap:var(--space-2);margin:0;padding:0;list-style:none;max-width:var(--measure)}
+.how li{display:flex;gap:var(--space-3);align-items:baseline;font-size:var(--text-sm)}
+.how .tag{flex:0 0 auto;min-width:10em}
+.pills{display:flex;flex-wrap:wrap;gap:var(--space-2);margin:0}
+.pill{background:var(--surface-2);color:var(--text);border-radius:var(--radius-sm);padding:2px 10px;font:600 var(--text-xs) var(--font-body);font-variant-numeric:tabular-nums}
+.herofig{margin:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4);min-width:0;overflow-x:auto}
 .herofig svg{display:block;width:100%;height:auto;min-width:var(--minw,0)}
-.herofig figcaption{font-size:.84rem;color:var(--muted);margin-top:8px}
+.herofig figcaption{font-size:var(--text-xs);color:var(--text-muted);margin-top:var(--space-2)}
+
+/* resume chip: the ribbon marks my place */
+.resume-chip{display:inline-flex;align-items:center;gap:var(--space-2);min-height:44px;margin:0 0 var(--space-5);padding:var(--space-2) var(--space-4) var(--space-2) var(--space-3);background:var(--note-bg);border:1px solid var(--border);border-radius:var(--radius-md);color:var(--text);font:600 var(--text-sm)/1.3 var(--font-body);text-align:left;cursor:pointer}
+.resume-chip svg{flex-shrink:0;width:9px;height:22px}
 
 /* contents */
-.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:28px 24px;padding-block:28px 8px;border-top:1px solid var(--line)}
-.part h3{font:600 .72rem/1.3 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
-.part ul{list-style:none;margin:0;padding:0;display:grid;gap:3px}
-.part a{display:flex;gap:10px;text-decoration:none;color:var(--ink);padding:3px 0;font-size:.95rem}
-.part a:hover{color:var(--accent)}
-.part a small{display:block;color:var(--muted);font-size:.8rem;line-height:1.35}
-.part .n{font:500 .8rem/1.7 var(--f-mono);color:var(--accent);min-width:1.6em}
-.part .sc{margin-left:auto;font:500 .78rem/1.7 var(--f-mono);color:var(--muted);white-space:nowrap}
+.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:var(--space-5);padding-block:var(--space-5) var(--space-2);border-top:1px solid var(--border)}
+.part h3{font:600 var(--text-xs)/1.3 var(--font-body);color:var(--text-muted);margin:0 0 var(--space-2)}
+.part ul{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.part a{display:flex;gap:var(--space-3);text-decoration:none;color:var(--text);padding:var(--space-1) 0;font-size:var(--text-sm)}
+.part a small{display:block;color:var(--text-muted);font-size:var(--text-xs);line-height:1.35}
+.part .n{font:400 var(--text-xs)/1.9 var(--font-mono);color:var(--text-muted);min-width:1.6em}
+.part .sc{margin-left:auto;font:400 var(--text-xs)/1.9 var(--font-mono);color:var(--text-muted);white-space:nowrap}
 
 /* sections */
-.sec{margin-top:56px;padding-top:36px;border-top:1px solid var(--line);scroll-margin-top:12px}
-.sec-h{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
-.num{font:800 2.5rem/1 var(--f-display);color:var(--accent);letter-spacing:-.03em}
-.sec h2{font-family:var(--f-display);font-weight:700;font-size:clamp(1.4rem,3vw,1.9rem);line-height:1.15;margin:0;letter-spacing:-.015em;text-wrap:balance;min-width:0}
-.sec h2 .fr{font-family:var(--f-body);font-size:.62em;font-weight:400}
-.sec h3{font-family:var(--f-display);font-weight:700;font-size:1.15rem;margin:28px 0 8px}
-.sec h3 .fr{font-family:var(--f-body);font-size:.8em}
-.sec>p,.sec>ul,.sec>ol{max-width:78ch}
-.back{margin-left:auto;font-size:.78rem;color:var(--muted);text-decoration:none}
-.back:hover{color:var(--accent)}
-.secscore{font:600 .85rem var(--f-mono);color:var(--accent)}
-.tag{display:inline-block;font:600 .68rem/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
-.intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;margin-top:20px}
-.plain{margin-top:20px;border-left:3px solid var(--accent);padding:2px 0 2px 16px}
-.intro .plain{margin-top:0}
-.plain p{margin:8px 0 0;font-size:1.05rem;max-width:62ch}
-.defs{list-style:none;margin:20px 0 0;padding:0;display:grid;gap:12px;min-width:0}
+.sec{margin-top:var(--space-7);padding-top:var(--space-6);border-top:1px solid var(--border);scroll-margin-top:var(--space-3)}
+.sec-h{display:flex;align-items:baseline;gap:var(--space-3);flex-wrap:wrap}
+.num{font:600 var(--text-xl)/1.15 var(--font-display);color:var(--text-muted)}
+.sec h2{font-family:var(--font-display);font-weight:600;font-size:var(--text-xl);line-height:1.15;margin:0;text-wrap:balance;min-width:0}
+.sec h2 .fr{font-family:var(--font-body);font-size:.6em}
+.sec h3{font-family:var(--font-display);font-weight:500;font-size:var(--text-lg);line-height:1.2;margin:var(--space-5) 0 var(--space-2)}
+.sec h3 .fr{font-family:var(--font-body);font-size:.75em}
+.sec>p,.sec>ul,.sec>ol{max-width:var(--measure)}
+.back{margin-left:auto;font-size:var(--text-xs);color:var(--text-muted);text-decoration:none}
+.secscore{font:400 var(--text-sm) var(--font-mono);color:var(--text-muted)}
+.tag{display:inline-block;font:600 var(--text-xs)/1.3 var(--font-body);color:var(--text-muted)}
+.intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-5);margin-top:var(--space-5)}
+.plain{margin-top:var(--space-5);background:var(--note-bg);border-left:3px solid var(--accent);border-radius:0 var(--radius-md) var(--radius-md) 0;padding:var(--space-3) var(--space-4)}
+.intro .plain{margin-top:0;align-self:start}
+.plain p{margin:var(--space-2) 0 0;max-width:var(--measure)}
+.defs{list-style:none;margin:var(--space-5) 0 0;padding:0;display:grid;gap:var(--space-3);min-width:0}
 .intro .defs{margin-top:0}
-.defs li{display:grid;gap:1px;font-size:.95rem}
-.defs .mean{color:var(--muted)}
-.defs .eg{color:var(--muted);font-size:.9rem}
-.defs .eg::before{content:"e.g. ";font-weight:600;color:var(--accent)}
-.callout{margin-top:20px;background:var(--surface);border:1px dashed var(--accent);border-radius:12px;padding:14px 20px}
-.callout>b:first-child{color:var(--accent)}
+.defs li{display:grid;gap:1px;font-size:var(--text-sm)}
+.defs .mean{color:var(--text-muted)}
+.defs .eg{color:var(--text-muted);font-size:var(--text-sm)}
+.defs .eg::before{content:"e.g. ";font-weight:600;color:var(--text)}
+.callout{margin-top:var(--space-5);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4)}
+.callout>b:first-child{color:var(--text)}
 .callout ol,.callout ul{margin:6px 0 2px;padding-left:22px}
-.callout li{margin:5px 0}
-details.more{margin-top:14px;border:1px dashed var(--line);border-radius:10px;padding:8px 14px;background:var(--surface)}
-details.more summary{cursor:pointer;font-weight:600;color:var(--accent)}
+.callout li{margin:var(--space-1) 0}
+details.more{margin-top:var(--space-3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:var(--space-2) var(--space-4);background:var(--surface)}
+details.more summary{cursor:pointer;font-weight:600}
 
 /* figures */
-.figs{display:flex;flex-wrap:wrap;gap:16px;margin-top:24px}
-.figs figure{flex:1 1 250px;max-width:430px;min-width:0;margin:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 14px 12px}
-figure.fig{margin:18px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 14px 12px;overflow-x:auto}
+.figs{display:flex;flex-wrap:wrap;gap:var(--space-4);margin-top:var(--space-5)}
+.figs figure{flex:1 1 250px;max-width:430px;min-width:0;margin:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4) var(--space-4) var(--space-3)}
+figure.fig{margin:var(--space-5) 0 0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4) var(--space-4) var(--space-3);overflow-x:auto}
 figure.fig svg{display:block;width:100%;height:auto;min-width:var(--minw,0);max-width:var(--maxw,560px);margin-inline:auto}
-figcaption{font-size:.82rem;color:var(--muted);margin-top:8px;line-height:1.45}
+figcaption{font-size:var(--text-xs);color:var(--text-muted);margin-top:var(--space-2);line-height:1.45}
 
 /* worked example */
-.calc{margin-top:22px;background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--ok);border-radius:12px;padding:14px 20px 18px}
-.calc>.tag{color:var(--ok)}
+.calc{margin-top:var(--space-5);background:var(--note-bg);border-radius:var(--radius-md);padding:var(--space-4)}
+.calc>.tag{color:var(--text)}
 .calc>p{margin:10px 0 0}
 .calc ol{margin:10px 0 0;padding-left:22px}
-.calc li{margin:8px 0}
-.calc li>b:first-child{color:var(--accent)}
-.calc figure.fig,.calc .eq{background:var(--bg)}
-ul.ln{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:7px;font-family:var(--f-mono);font-size:.88rem;line-height:1.55}
+.calc li{margin:var(--space-2) 0}
+.calc li>b:first-child{color:var(--text)}
+.calc figure.fig,.calc .figs figure{background:var(--surface)}
+.calc code{background:var(--surface)}
+ul.ln{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:var(--space-2);font-size:var(--text-sm)}
 ul.ln li{padding-left:1.1em;text-indent:-1.1em;overflow-wrap:anywhere}
-ul.ln li::before{content:"\203A\00a0";color:var(--accent);font-weight:600}
+ul.ln li::before{content:"\203A\00a0";color:var(--text-muted);font-weight:600}
 
 /* tables */
-.scroll{overflow-x:auto;margin-top:12px;max-width:100%}
-table.t{border-collapse:collapse;font:400 .9rem/1.45 var(--f-body);min-width:260px}
-table.t th{font-weight:600;text-align:left;color:var(--muted)}
-table.t th,table.t td{padding:6px 14px 6px 0;border-bottom:1px solid var(--line);vertical-align:top}
-table.t.mono{font-family:var(--f-mono);font-size:.85rem}
+.scroll{overflow-x:auto;margin-top:var(--space-3);max-width:100%}
+table.t{border-collapse:collapse;font:400 var(--text-sm)/1.45 var(--font-body);font-variant-numeric:tabular-nums;min-width:260px}
+table.t th{font-weight:600;text-align:left;color:var(--text-muted)}
+table.t th,table.t td{padding:6px 14px 6px 0;border-bottom:1px solid var(--border);vertical-align:top}
+table.t.mono{font-family:var(--font-mono);font-size:var(--text-xs)}
 table.t.mono th,table.t.mono td{white-space:nowrap}
-table.t.grid th,table.t.grid td{padding:6px 10px;border:1px solid var(--line)}
-table.t.grid th{background:var(--accent-soft);color:var(--ink)}
+table.t.grid th,table.t.grid td{padding:6px 10px;border:1px solid var(--border)}
+table.t.grid th{background:var(--surface-2);color:var(--text)}
 table.t .c,table.t.center th,table.t.center td{text-align:center}
 table.t.center .l{text-align:left}
-table.t td.ok{color:var(--ok);font-weight:600}
-table.t td.bad,table.t td.x{color:var(--hi);font-weight:600}
-table.t tr.best td{background:var(--ok-soft);font-weight:600}
+table.t td.ok{color:var(--correct);font-weight:600}
+table.t td.bad,table.t td.x{color:var(--wrong);font-weight:600}
+table.t tr.best td{background:var(--correct-bg);font-weight:600}
 
 /* notes and footer */
-.note{margin-top:20px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 20px}
-.note.errata{background:var(--hi-soft);border-color:color-mix(in srgb,var(--hi) 35%,transparent)}
-.note.errata>.tag{color:var(--hi)}
-.note ul,.note ol{margin:8px 0 0;padding-left:1.2em;display:grid;gap:8px;font-size:.95rem}
-.foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);font-size:.82rem;color:var(--muted)}
+.note{margin-top:var(--space-5);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4)}
+.note.errata{background:var(--surface-2);border-color:transparent;color:var(--text-muted)}
+.note.errata>.tag{color:var(--text-muted)}
+.note ul,.note ol{margin:var(--space-2) 0 0;padding-left:1.2em;display:grid;gap:var(--space-2);font-size:var(--text-sm)}
+.foot{margin-top:var(--space-7);padding-top:var(--space-4);border-top:1px solid var(--border);font-size:var(--text-xs);color:var(--text-muted)}
 
 /* practice */
-.prog{display:flex;align-items:center;gap:14px;max-width:460px;margin-top:22px;font:500 .85rem var(--f-mono);color:var(--muted)}
-.prog .track{flex:1;height:8px;border-radius:99px;background:var(--line);overflow:hidden}
-.prog .fill{display:block;height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .25s}
-.legend{display:flex;gap:10px 16px;flex-wrap:wrap;margin-top:16px;font-size:.88rem;color:var(--muted)}
-.setmeta{margin:6px 0 0;color:var(--muted);font-size:.9rem}
-.prob{margin-top:18px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 20px 14px;scroll-margin-top:12px}
-.prob.ok{border-color:var(--ok);box-shadow:0 0 0 1px var(--ok) inset}
-.prob.bad{border-color:var(--hi)}
-.ph{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.pid{font:600 1.05rem var(--f-mono);color:var(--accent)}
-.ph .pt{font:600 1rem/1.35 var(--f-body);margin:0;min-width:0;flex:1 1 16em}
-.lvl{font:600 .66rem/1 var(--f-mono);letter-spacing:.09em;text-transform:uppercase;padding:5px 9px;border-radius:99px}
-.lw{background:var(--accent-soft);color:var(--accent)}
-.ls{background:var(--code-bg);color:var(--ink)}
-.lc{background:var(--hi-soft);color:var(--hi)}
-.done{margin-left:auto;display:flex;align-items:center;gap:7px;font-size:.82rem;color:var(--muted);cursor:pointer}
-.done input{width:17px;height:17px;accent-color:var(--accent);cursor:pointer}
-.pq{margin-top:10px;max-width:78ch}
+.prog{display:flex;align-items:center;gap:var(--space-3);max-width:460px;margin-top:var(--space-4);font:400 var(--text-sm) var(--font-mono);color:var(--text-muted)}
+.prog .track{flex:1;height:6px;border-radius:var(--radius-sm);background:var(--surface-2);overflow:hidden}
+.prog .fill{display:block;height:100%;width:0;background:var(--accent);transition:width var(--dur-med) var(--ease-out)}
+.legend{display:flex;gap:var(--space-2) var(--space-4);flex-wrap:wrap;margin-top:var(--space-4);font-size:var(--text-sm);color:var(--text-muted)}
+.setmeta{margin:6px 0 0;color:var(--text-muted);font-size:var(--text-sm)}
+.prob{margin-top:var(--space-4);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4);scroll-margin-top:var(--space-3);transition:border-color var(--dur-med) var(--ease-out)}
+.prob.ok{border-color:var(--correct)}
+.prob.bad{border-color:var(--wrong)}
+.ph{display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap}
+.pid{font:400 var(--text-sm) var(--font-mono);color:var(--text-muted)}
+.ph .pt{font:600 var(--text-md)/1.35 var(--font-body);margin:0;min-width:0;flex:1 1 16em}
+.lvl{font:600 var(--text-xs)/1 var(--font-body);padding:4px 8px;border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text-muted)}
+.lw,.ls,.lc{background:var(--surface-2);color:var(--text-muted)}
+.lc{color:var(--text)}
+.done{margin-left:auto;display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs);color:var(--text-muted);cursor:pointer}
+.done input{width:18px;height:18px;accent-color:var(--correct);cursor:pointer}
+.pq{margin-top:10px;max-width:var(--measure)}
 .pq>p,.prob>p{margin:10px 0 0}
-.parts{margin:8px 0 0;padding-left:1.4em;display:grid;gap:5px}
-.pfs{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px}
-.pfs figure{flex:1 1 200px;max-width:340px;min-width:0;margin:0;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 10px 8px}
-.prob details{margin-top:14px}
-.prob summary{cursor:pointer;font:600 .82rem var(--f-mono);color:var(--accent);width:max-content;padding:4px 0}
-.sol{margin-top:8px;background:var(--bg);border:1px solid var(--line);border-top:4px solid var(--ok);border-radius:10px;padding:6px 18px 12px;font-size:.95rem}
-.sol p{margin:10px 0 0;max-width:78ch}
-.sol li>b:first-child{color:var(--accent)}
+.parts{margin:var(--space-2) 0 0;padding-left:1.4em;display:grid;gap:var(--space-1)}
+.pfs{display:flex;flex-wrap:wrap;gap:var(--space-3);margin-top:var(--space-3)}
+.pfs figure{flex:1 1 200px;max-width:340px;min-width:0;margin:0;background:var(--surface-2);border-radius:var(--radius-sm);padding:var(--space-3) var(--space-3) var(--space-2)}
+.prob details{margin-top:var(--space-3)}
+.prob summary{cursor:pointer;display:inline-flex;align-items:center;gap:var(--space-2);font:600 var(--text-sm) var(--font-body);color:var(--text);padding:var(--space-1) var(--space-3) var(--space-1) var(--space-2);border-radius:var(--radius-sm);list-style:none}
+.prob summary::-webkit-details-marker{display:none}
+.prob summary::before{content:"\203A";font-size:1.2em;line-height:1;color:var(--text-muted);transition:transform var(--dur-fast) var(--ease-out)}
+.prob details[open]>summary::before{transform:rotate(90deg)}
+.sol{margin-top:var(--space-2);background:var(--surface-2);border-radius:var(--radius-sm);padding:var(--space-2) var(--space-4) var(--space-3);font-size:var(--text-sm)}
+.sol p{margin:10px 0 0;max-width:var(--measure)}
+.sol li>b:first-child{color:var(--text)}
 .sol .pfs figure,.sol .eq{background:var(--surface)}
-.aid{margin-top:12px;background:var(--bg);border:1px dashed var(--accent);border-radius:10px;padding:8px 14px;font-size:.9rem;line-height:1.55}
-.aid>b:first-child{color:var(--accent)}
-.prob input[type=text]{width:100%;min-width:56px;max-width:90px;font:inherit;text-align:center;padding:5px 6px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
-.prob textarea{width:100%;font:inherit;padding:8px 10px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
-.prob select{font:inherit;padding:5px 8px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
-.prob input:focus,.prob select:focus,.prob textarea:focus{outline:2px solid var(--accent);outline-offset:1px}
-.prob input.ok,.prob select.ok{border-color:var(--ok);background:var(--ok-soft)}
-.prob input.bad,.prob select.bad{border-color:var(--hi);background:var(--hi-soft)}
+.sol code{background:var(--surface)}
+.aid{margin-top:var(--space-3);background:var(--surface-2);border-radius:var(--radius-sm);padding:10px var(--space-3);font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;overflow-x:auto}
+.aid>b:first-child{color:var(--text)}
+.prob input[type=text]{width:100%;min-width:56px;max-width:90px;font:inherit;font-variant-numeric:tabular-nums;text-align:center;padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text)}
+.prob textarea{width:100%;font:inherit;padding:var(--space-2) var(--space-3);border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text)}
+.prob select{font:inherit;padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text)}
+.prob input.ok,.prob select.ok{border-color:var(--correct);background:var(--correct-bg)}
+.prob input.bad,.prob select.bad{border-color:var(--wrong);background:var(--wrong-bg)}
 table.t.inp td{padding:3px 6px 3px 0}
-.scalars{display:flex;flex-wrap:wrap;gap:12px 20px;margin:12px 0 0}
-label.sc{display:flex;align-items:center;gap:8px}
+.scalars{display:flex;flex-wrap:wrap;gap:var(--space-3) var(--space-4);margin:var(--space-3) 0 0}
+label.sc{display:flex;align-items:center;gap:var(--space-2)}
 label.sc>span{font-weight:600;min-width:34px}
-label.sc small{color:var(--muted);font-size:.75rem}
-.mc{display:grid;gap:7px;margin:12px 0 0}
-label.opt{display:flex;gap:10px;align-items:flex-start;padding:8px 12px;border:1.5px solid var(--line);border-radius:10px;cursor:pointer;background:var(--bg)}
-label.opt:hover{border-color:var(--accent)}
-label.opt.ok{border-color:var(--ok);background:var(--ok-soft)}
-label.opt.bad{border-color:var(--hi);background:var(--hi-soft)}
-label.opt.reveal{border-color:var(--ok)}
-label.opt input{margin-top:5px;accent-color:var(--accent)}
+label.sc small{color:var(--text-muted);font-size:var(--text-xs)}
+.mc{display:grid;gap:var(--space-2);margin:var(--space-3) 0 0}
+label.opt{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;background:var(--surface);transition:background var(--dur-fast) var(--ease-out),border-color var(--dur-med) var(--ease-out)}
+label.opt.ok{border-color:var(--correct);background:var(--correct-bg)}
+label.opt.bad{border-color:var(--wrong);background:var(--wrong-bg)}
+label.opt.reveal{border-color:var(--correct)}
+/* correct and wrong are never colour alone */
+label.opt.ok::after{content:"\2713\00a0 Correct";margin-left:auto;font-size:var(--text-xs);font-weight:600;color:var(--correct)}
+label.opt.bad::after{content:"\2715\00a0Wrong";margin-left:auto;font-size:var(--text-xs);font-weight:600;color:var(--wrong)}
+.prob.ok>.ph::after{content:"\2713\00a0 Correct";font-size:var(--text-xs);font-weight:600;color:var(--correct)}
+.prob.bad>.ph::after{content:"\2715\00a0Wrong";font-size:var(--text-xs);font-weight:600;color:var(--wrong)}
+.fb.ok::before{content:"\2713\00a0"}
+.fb.bad::before{content:"\2715\00a0"}
+label.opt input{margin-top:6px;accent-color:var(--primary)}
 .chips-set{display:inline-flex;flex-wrap:wrap;gap:6px;vertical-align:middle}
-label.chipbox{position:relative;border:1.5px solid var(--line);border-radius:999px;padding:3px 12px;cursor:pointer;background:var(--bg);font-size:.88rem}
-label.chipbox:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+label.chipbox{position:relative;border:1px solid var(--border);border-radius:var(--radius-sm);padding:3px 12px;cursor:pointer;background:var(--surface);font-size:var(--text-sm)}
+label.chipbox:has(input:checked){border-color:var(--text);background:var(--text);color:var(--bg)}
 label.chipbox input{position:absolute;opacity:0;pointer-events:none}
-.chips-set.ok label.chipbox:has(input:checked){border-color:var(--ok);background:var(--ok-soft)}
-.chips-set.bad{outline:2px solid var(--hi);outline-offset:3px;border-radius:12px}
-.actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:14px}
-.b{font:500 .85rem var(--f-body);padding:6px 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
-.b.chk{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:600}
-.fb{font-size:.88rem;font-weight:600}
-.fb.ok{color:var(--ok)} .fb.bad{color:var(--hi)}
-.solution,.expl{margin-top:12px;border-top:1px dashed var(--line);padding-top:10px;font-size:.95rem}
+.chips-set.ok label.chipbox:has(input:checked){border-color:var(--correct);background:var(--correct-bg);color:var(--correct)}
+.chips-set.bad{outline:2px solid var(--wrong);outline-offset:3px;border-radius:var(--radius-sm)}
+.actions{display:flex;flex-wrap:wrap;gap:var(--space-2);align-items:center;margin-top:var(--space-3)}
+.b{font:600 var(--text-sm) var(--font-body);min-height:36px;padding:6px var(--space-4);border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;transition:background var(--dur-fast) var(--ease-out)}
+.b.chk{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.fb{font-size:var(--text-sm);font-weight:600}
+.fb.ok{color:var(--correct)} .fb.bad{color:var(--wrong)}
+.solution,.expl{margin-top:var(--space-3);border-top:1px solid var(--border);padding-top:10px;font-size:var(--text-sm)}
 .solution>p,.expl>p{margin:6px 0}
-.expl{color:var(--muted)}
+.expl{color:var(--text-muted)}
 
+/* live figure: a process played step by step (REMAKE_BRIEF.md, "Live figures") */
+.live-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-5);align-items:start}
+figure.fig.live svg{max-width:none;max-height:72vh}
+.live-side{display:grid;gap:var(--space-3);min-width:0}
+.live-side .aid,.live-side .actions{margin-top:0}
+.live-val{display:flex;align-items:baseline;gap:var(--space-2);flex-wrap:wrap}
+.live-val b{font:600 var(--text-xl) var(--font-mono);font-variant-numeric:tabular-nums;color:var(--text)}
+.live input[type=range]{width:100%;margin:0;accent-color:var(--fig)}
+.live-status{min-height:4.4em;padding:var(--space-2) var(--space-3);background:var(--surface-2);border-left:3px solid var(--fig);border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:var(--text-sm)}
+.live-status.ok{border-color:var(--correct);background:var(--correct-bg)}
+.live-status.bad{border-color:var(--wrong);background:var(--wrong-bg)}
+.live-status.ok b{color:var(--correct)} .live-status.bad b{color:var(--wrong)}
+.live table.t{width:100%;min-width:0}
+.live tr.past td{color:var(--text-muted)}
+.live figcaption p{margin:var(--space-2) 0 0;max-width:var(--measure)}
+/* the site zooms pages 125% / 150% on wide screens: keep the whole drawing on screen */
+@media (min-width:1200px){figure.fig.live svg{max-height:58vh}}
+@media (min-width:1500px){figure.fig.live svg{max-height:48vh}}
+
+@media (hover:hover){
+  .toggle:hover,.b:hover,label.opt:hover,.prob summary:hover{background:var(--surface-2)}
+  .b.chk:hover{background:var(--primary);opacity:.88}
+  .part a:hover,.back:hover{color:var(--link)}
+  label.opt.ok:hover{background:var(--correct-bg)} label.opt.bad:hover{background:var(--wrong-bg)}
+}
 @media (max-width:820px){
   .hero{grid-template-columns:minmax(0,1fr)}
+  .live-grid{grid-template-columns:minmax(0,1fr)}
+  figure.fig.live svg{max-height:60vh}
   .intro{grid-template-columns:minmax(0,1fr)}
   .how li{flex-direction:column;gap:2px}
   body{padding-top:56px}
@@ -227,46 +357,98 @@ label.chipbox input{position:absolute;opacity:0;pointer-events:none}
 </style>
 <style>
 /* page-specific styles (figures, palettes) go here, using the tokens above */
-.g-task{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
-.g-hi{fill:var(--hi-soft);stroke:var(--hi);stroke-width:1.5}
-.g-set{fill:var(--code-bg);stroke:var(--muted);stroke-width:1;stroke-dasharray:3 2}
-.g-idle{fill:none;stroke:var(--muted);stroke-width:1;stroke-dasharray:2 3}
-.g-t{fill:var(--ink);font:600 12px var(--f-mono)}
-.g-st{fill:var(--muted);font:500 10px var(--f-mono)}
-.g-m{fill:var(--muted);font:600 12px var(--f-mono)}
-.g-n{fill:var(--muted);font:11px var(--f-mono)}
-.g-ax{stroke:var(--muted);stroke-width:1}
-.g-rel{stroke:var(--hi);stroke-width:1.2;stroke-dasharray:3 3}
-.g-relh{fill:var(--hi)}
-.g-rl{fill:var(--hi);font:600 10.5px var(--f-mono)}
+
+/* Gantt charts */
+.g-task{fill:var(--fig-soft);stroke:var(--fig);stroke-width:1.5}
+.g-hi{fill:var(--surface);stroke:var(--wrong);stroke-width:2.6}
+.g-set{fill:var(--surface-2);stroke:var(--text-muted);stroke-width:1;stroke-dasharray:3 2}
+.g-idle{fill:none;stroke:var(--text-muted);stroke-width:1;stroke-dasharray:2 3}
+.g-t{fill:var(--text);font:600 12px var(--font-mono)}
+.g-st{fill:var(--text-muted);font:500 10px var(--font-mono)}
+.g-m{fill:var(--text-muted);font:600 12px var(--font-mono)}
+.g-n{fill:var(--text-muted);font:11px var(--font-mono)}
+.g-ax{stroke:var(--text-muted);stroke-width:1}
+.g-rel{stroke:var(--wrong);stroke-width:1.2;stroke-dasharray:3 3}
+.g-relh{fill:var(--wrong)}
+.g-rl{fill:var(--wrong);font:600 10.5px var(--font-mono)}
 .sb{font-size:.72em;baseline-shift:sub}
-.gr-e{stroke:var(--muted);stroke-width:1.3}
-.gr-eh{fill:var(--muted)}
-.gr-on{stroke:var(--hi);stroke-width:2.6}
-.gr-onh{fill:var(--hi)}
+/* graphs */
+.gr-e{stroke:var(--text-muted);stroke-width:1.3;fill:none}
+.gr-eh{fill:var(--text-muted)}
+.gr-on{stroke:var(--wrong);stroke-width:2.6}
+.gr-onh{fill:var(--wrong)}
 .gr-lb{fill:var(--surface)}
-.gr-w{fill:var(--muted);font:600 12px var(--f-mono)}
-.gr-won{fill:var(--hi);font:700 13px var(--f-mono)}
-.gr-n{fill:var(--surface);stroke:var(--ink);stroke-width:1.5}
-.gr-nt{fill:var(--ink);font:600 14px var(--f-mono)}
-.rb{fill:var(--surface);stroke:var(--ink);stroke-width:1.3}
-.rb-easy{fill:var(--ok-soft);stroke:var(--ok);stroke-width:1.5}
-.rb-hard{fill:var(--hi-soft);stroke:var(--hi);stroke-width:1.5}
-.rb-t{fill:var(--ink);font:italic 15px var(--f-math)}
-.hm{fill:var(--accent);stroke:none}
-.hm-t{fill:var(--surface);font:700 15px var(--f-display)}
-.hm-s{fill:var(--surface);font:500 10px var(--f-mono);opacity:.85}
-pre.algo{font:400 .86rem/1.55 var(--f-mono);background:var(--code-bg);border-radius:10px;padding:12px 16px;margin:14px 0 0;overflow-x:auto;max-width:78ch}
-pre.algo b{color:var(--accent);font-weight:600}
-pre.algo .cm{color:var(--muted)}
-pre.algo .fx{color:var(--hi);font-weight:600}
+.gr-w{fill:var(--text-muted);font:600 12px var(--font-mono)}
+.gr-won{fill:var(--wrong);font:700 13px var(--font-mono)}
+.gr-n{fill:var(--surface);stroke:var(--text);stroke-width:1.5}
+.gr-nt{fill:var(--text);font:600 14px var(--font-mono)}
+.gr-sub{fill:var(--text-muted);font:500 11px var(--font-mono)}
+.gr-sub.hot{fill:var(--fig);font-weight:700}
+/* reductions diagram */
+.rb{fill:var(--surface);stroke:var(--text);stroke-width:1.3}
+.rb-easy{fill:var(--surface);stroke:var(--correct);stroke-width:2.4}
+.rb-hard{fill:var(--surface);stroke:var(--wrong);stroke-width:2.4}
+.rb-t{fill:var(--text);font:italic 15px var(--font-math)}
+.rb-s{fill:var(--text-muted);font:500 11px var(--font-mono)}
+/* hero machine */
+.hm{fill:var(--fig);stroke:none}
+.hm-t{fill:var(--surface);font:700 15px var(--font-display)}
+.hm-s{fill:var(--surface);font:500 10px var(--font-mono)}
+/* pseudo-code */
+pre.algo{font:400 .86rem/1.55 var(--font-mono);background:var(--surface-2);color:var(--text);border-radius:var(--radius-md);padding:12px 16px;margin:14px 0 0;overflow-x:auto;max-width:78ch}
+pre.algo b{color:var(--fig);font-weight:600}
+pre.algo .cm{color:var(--text-muted)}
+pre.algo .fx{color:var(--wrong);font-weight:600}
 .figpair svg+svg{margin-top:10px}
-.figpair .lbl{font:600 .78rem var(--f-mono);color:var(--muted);margin:10px 0 2px;text-align:center}
+.figpair .lbl{font:600 .78rem var(--font-mono);color:var(--text-muted);margin:10px 0 2px;text-align:center}
 .legend-k{display:inline-block;width:14px;height:10px;border-radius:2px;vertical-align:middle;margin-right:4px}
-.k-task{background:var(--accent-soft);border:1.5px solid var(--accent)}
-.k-hi{background:var(--hi-soft);border:1.5px solid var(--hi)}
-.k-set{background:var(--code-bg);border:1px dashed var(--muted)}
-.k-idle{border:1px dashed var(--muted)}
+.k-task{background:var(--fig-soft);border:1.5px solid var(--fig)}
+.k-hi{background:var(--surface);border:2px solid var(--wrong)}
+.k-set{background:var(--surface-2);border:1px dashed var(--text-muted)}
+.k-idle{border:1px dashed var(--text-muted)}
+/* search tree */
+.tr-l{stroke:var(--text-muted);stroke-width:1.2}
+.tr-l.on{stroke:var(--correct);stroke-width:2.4}
+.tr-l.miss{stroke:var(--wrong);stroke-dasharray:4 3}
+.tr-n{fill:var(--fig-soft);stroke:var(--fig);stroke-width:1.5}
+.tr-n.dead{fill:var(--surface-2);stroke:var(--text-muted)}
+.tr-n.full{fill:var(--surface);stroke:var(--correct);stroke-width:3}
+.tr-n.miss{fill:var(--surface);stroke:var(--wrong);stroke-dasharray:3 2}
+.tr-t{fill:var(--text);font:600 11px var(--font-mono)}
+.tr-t.miss{fill:var(--wrong)}
+.tr-c{fill:var(--text-muted);font:10.5px var(--font-mono)}
+/* key answers */
+.th-ans{font-weight:700;color:var(--text);border-bottom:2px solid var(--correct);font-variant-numeric:tabular-nums}
+.th-gap{margin:8px 0 0}
+.th-box{margin-top:var(--space-4);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-3) var(--space-4)}
+.th-box>.tag{color:var(--text)}
+.th-box p{margin:6px 0 0;max-width:var(--measure)}
+/* live figures */
+.lv-n{fill:var(--surface);stroke:var(--text);stroke-width:1.5}
+.lv-n.av{stroke:var(--fig);stroke-width:3}
+.lv-n.on{fill:var(--fig);stroke:var(--fig)}
+.lv-n.done{fill:var(--fig-soft);stroke:var(--fig)}
+.lv-n.path{fill:var(--fig-soft);stroke:var(--fig);stroke-width:2}
+.lv-n.ok{fill:var(--surface);stroke:var(--correct);stroke-width:3.2}
+.lv-nt{fill:var(--text);font:600 12px var(--font-mono)}
+.lv-nt.on{fill:var(--surface)}
+.lv-sub{fill:var(--text-muted);font:500 11px var(--font-mono)}
+.lv-sub.hot{fill:var(--fig);font-weight:700}
+.lv-e{stroke:var(--text-muted);stroke-width:1.4}
+.lv-e.dead{stroke:var(--border)}
+.lv-eh{fill:var(--text-muted)}
+.lv-eh.dead{fill:var(--border)}
+.lv-cur{fill:var(--fig);stroke:var(--fig);stroke-width:1.5}
+.lv-ct{fill:var(--surface);font:600 12px var(--font-mono)}
+.lv-del{stroke:var(--text-muted);stroke-width:2;stroke-dasharray:4 3}
+.lv-del.hot{stroke:var(--wrong);stroke-width:2.6}
+.lv-dot{fill:var(--text-muted)} .lv-dot.hot{fill:var(--wrong)}
+.lv-dl{fill:var(--text-muted);font:500 10.5px var(--font-mono)} .lv-dl.hot{fill:var(--wrong);font-weight:700}
+.lv-now{stroke:var(--fig);stroke-width:1.4;stroke-dasharray:4 3}
+.lv-now.bad{stroke:var(--wrong)}
+.lv-nowt{fill:var(--fig);font:600 11px var(--font-mono)}
+.lv-nowt.bad{fill:var(--wrong)}
+.lv-blk{fill:var(--fig);font:700 12px var(--font-mono)}
 .prob input.seq{max-width:170px}
 .prob .ans{display:flex;flex-wrap:wrap;gap:12px 22px;margin-top:12px;align-items:center}
 .prob .ans label{display:flex;align-items:center;gap:8px;font-size:.92rem}
@@ -275,13 +457,13 @@ pre.algo .fx{color:var(--hi);font-weight:600}
 </style>
 </head>
 <body>
-<button class="toggle" id="theme-toggle" type="button" aria-label="Toggle light or dark theme">◐ Theme</button>
+<button class="toggle" id="theme-toggle" type="button" aria-label="Toggle light or dark theme"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8a2.83 2.83 0 0 0 4 4 4 4 0 1 1-4-4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.9 4.9 1.4 1.4"/><path d="m17.7 17.7 1.4 1.4"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.3 17.7-1.4 1.4"/><path d="m19.1 4.9-1.4 1.4"/></svg></button>
 <div class="wrap">
 <header class="hero" id="top">
   <div>
     <div class="eyebrow">THOR · Chapter 2 · Practice</div>
     <h1>Scheduling on a single machine</h1>
-    <p class="lead">Pick the right rule, build the order, compute C<sub>max</sub> or <span class="ov">C</span>, and see where heuristics fail. Small instances: the point is the method. <span class="fr">(Ordonnancement sur une seule machine : exercices)</span></p>
+    <p class="lead">Pick the right rule, build the order, compute C<sub>max</sub>, <span class="ov">C</span>, L<sub>max</sub> or late tasks, and see where heuristics fail. Small instances: the point is the method. <span class="fr">(Ordonnancement sur une seule machine : exercices)</span></p>
     <div class="prog" aria-live="polite"><span id="prog-txt">0 / 0 done</span><span class="track"><span class="fill" id="prog-bar"></span></span></div>
   </div>
   <figure class="herofig"><svg viewBox="0 0 420 104" role="img" aria-label="Example schedule from B2">
@@ -345,6 +527,9 @@ pre.algo .fx{color:var(--hi);font-weight:600}
   <div class="part"><h3>B · Build the order</h3><ul><li><a href="#b"><span class="n">B</span><span>C<sub>max</sub>, ERD, SPT, WSPT<small>B1–B4</small></span></a></li></ul></div>
   <div class="part"><h3>C · Setup times</h3><ul><li><a href="#c"><span class="n">C</span><span>Greedy heuristic vs optimum<small>C1–C2</small></span></a></li></ul></div>
   <div class="part"><h3>D · Spot the trap</h3><ul><li><a href="#d"><span class="n">D</span><span>Release dates and exchanges<small>D1–D3</small></span></a></li></ul></div>
+  <div class="part"><h3>E · Due dates</h3><ul><li><a href="#e"><span class="n">E</span><span>EDD, equal due dates, Moore<small>E1–E4</small></span></a></li></ul></div>
+  <div class="part"><h3>F · Deadlines and delivery</h3><ul><li><a href="#f"><span class="n">F</span><span>Search tree, Schrage<small>F1–F2</small></span></a></li></ul></div>
+  <div class="part"><h3>G · Precedence (part 3)</h3><ul><li><a href="#g"><span class="n">G</span><span>Valid orders, blocks, due dates<small>G1–G4</small></span></a></li></ul></div>
 </nav>
 <section class="sec" id="a">
   <div class="sec-h"><span class="num">A</span><h2>Spot the rule <span class="fr">(choisir la règle)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
@@ -381,13 +566,13 @@ pre.algo .fx{color:var(--hi);font-weight:600}
   <div class="ph"><span class="pid">B1</span><span class="pt">1||C<sub>max</sub>: four tasks ready at 0</span><span class="lvl lw">Warm-up</span><label class="done"><input type="checkbox" id="done-B1"><span>done</span></label></div>
   <div class="pq"><div class="scroll"><table class="t grid center mono"><tr><th>T<sub>i</sub></th><th>T1</th><th>T2</th><th>T3</th><th>T4</th></tr><tr><th>p<sub>i</sub></th><td>3</td><td>5</td><td>2</td><td>4</td></tr></table></div><div class="ans"><label><span>C<sub>max</sub> =</span><input type="text" inputmode="decimal" id="q-B1-1" data-num="14" aria-label="C<sub>max</sub> =" autocomplete="off"></label></div><p class="qn">Would preemption (pmtn) lower C<sub>max</sub>?</p><div class="mc" data-ans="1" data-q="q-B1-2"><label class="opt"><input type="radio" name="q-B1-2" id="q-B1-2a" value="0"><span>Yes</span></label><label class="opt"><input type="radio" name="q-B1-2" id="q-B1-2b" value="1"><span>No</span></label><label class="opt"><input type="radio" name="q-B1-2" id="q-B1-2c" value="2"><span>Only for some orders</span></label></div></div>
   <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
-  <details><summary>Show solution</summary><div class="sol"><p>Any order without idle time: C<sub>max</sub> = 3+5+2+4 = <span class="res">14</span>. Preemption cannot help: the work to do is still 14 and the machine is never idle.</p></div></details>
+  <details><summary>Show solution</summary><div class="sol"><p>Any order without idle time: C<sub>max</sub> = 3+5+2+4 = <b class="th-ans">14</b>. Preemption cannot help: the work to do is still 14 and the machine is never idle.</p></div></details>
 </article>
 <article class="prob" id="p-B2">
   <div class="ph"><span class="pid">B2</span><span class="pt">1|r<sub>i</sub>|C<sub>max</sub> with release dates</span><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-B2"><span>done</span></label></div>
   <div class="pq"><div class="scroll"><table class="t grid center mono"><tr><th>T<sub>i</sub></th><th>T1</th><th>T2</th><th>T3</th><th>T4</th></tr><tr><th>p<sub>i</sub></th><td>3</td><td>2</td><td>4</td><td>1</td></tr><tr><th>r<sub>i</sub></th><td>2</td><td>0</td><td>9</td><td>3</td></tr></table></div><div class="aid"><b>Typing an order:</b> task numbers in sequence, e.g. <code>T2,T1,T4,T3</code> or just <code>2 1 4 3</code>. Decimals with a dot or a comma.</div><div class="ans"><label><span>ERD order</span><input type="text" class="seq" id="q-B2-1" data-seq="2,1,4,3" placeholder="e.g. T1,T2,…" aria-label="ERD order" autocomplete="off"></label><label><span>C<sub>max</sub> =</span><input type="text" inputmode="decimal" id="q-B2-2" data-num="13" aria-label="C<sub>max</sub> =" autocomplete="off"></label><label><span>total idle time =</span><input type="text" inputmode="decimal" id="q-B2-3" data-num="3" aria-label="total idle time =" autocomplete="off"></label></div></div>
   <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
-  <details><summary>Show solution</summary><div class="sol"><ul class="ln"><li>Sort by r: T2 (0), T1 (2), T4 (3), T3 (9)</li><li>T2: 0→2</li><li>T1: max(2,2)=2 → 5</li><li>T4: max(5,3)=5 → 6</li><li>T3: max(6,9)=9 → 13 (idle 6→9)</li></ul><p>C<sub>max</sub> = <span class="res">13</span>, idle time <span class="res">3</span>. Brute force confirms 13 is optimal.</p><figure class="fig" style="--maxw:600px;--minw:480px"><svg viewBox="0 0 560 104" role="img" aria-label="T2 0-2, T1 2-5, T4 5-6, idle 6-9, T3 9-13">
+  <details><summary>Show solution</summary><div class="sol"><ul class="ln"><li>Sort by r: T2 (0), T1 (2), T4 (3), T3 (9)</li><li>T2: 0→2</li><li>T1: max(2,2)=2 → 5</li><li>T4: max(5,3)=5 → 6</li><li>T3: max(6,9)=9 → 13 (idle 6→9)</li></ul><p>C<sub>max</sub> = <b class="th-ans">13</b>, idle time <b class="th-ans">3</b>. Brute force confirms 13 is optimal.</p><figure class="fig" style="--maxw:600px;--minw:480px"><svg viewBox="0 0 560 104" role="img" aria-label="T2 0-2, T1 2-5, T4 5-6, idle 6-9, T3 9-13">
 <text class="g-m" x="8" y="51.0">M1</text>
 <rect class="g-task" x="44.0" y="30" width="76.9" height="34" rx="4"/>
 <text class="g-t" x="82.5" y="51.0" text-anchor="middle">T2</text>
@@ -447,13 +632,13 @@ pre.algo .fx{color:var(--hi);font-weight:600}
   <div class="ph"><span class="pid">B3</span><span class="pt">1||<span class="ov">C</span> with SPT</span><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-B3"><span>done</span></label></div>
   <div class="pq"><div class="scroll"><table class="t grid center mono"><tr><th>T<sub>i</sub></th><th>T1</th><th>T2</th><th>T3</th><th>T4</th></tr><tr><th>p<sub>i</sub></th><td>5</td><td>2</td><td>7</td><td>1</td></tr></table></div><div class="ans"><label><span>SPT order</span><input type="text" class="seq" id="q-B3-1" data-seq="4,2,1,3" placeholder="e.g. T1,T2,…" aria-label="SPT order" autocomplete="off"></label><label><span>Σ C<sub>i</sub> =</span><input type="text" inputmode="decimal" id="q-B3-2" data-num="27" aria-label="Σ C<sub>i</sub> =" autocomplete="off"></label><label><span><span class="ov">C</span> =</span><input type="text" inputmode="decimal" id="q-B3-3" data-num="6.75" aria-label="<span class="ov">C</span> =" autocomplete="off"></label></div></div>
   <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
-  <details><summary>Show solution</summary><div class="sol"><p>Order T4, T2, T1, T3. Completions 1, 3, 8, 15. Σ C<sub>i</sub> = <span class="res">27</span>, <span class="ov">C</span> = 27/4 = <span class="res">6.75</span>.</p></div></details>
+  <details><summary>Show solution</summary><div class="sol"><p>Order T4, T2, T1, T3. Completions 1, 3, 8, 15. Σ C<sub>i</sub> = <b class="th-ans">27</b>, <span class="ov">C</span> = 27/4 = <b class="th-ans">6.75</b>.</p></div></details>
 </article>
 <article class="prob" id="p-B4">
   <div class="ph"><span class="pid">B4</span><span class="pt">1||<span class="ov">C</span><sub>w</sub> with WSPT</span><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-B4"><span>done</span></label></div>
   <div class="pq"><div class="scroll"><table class="t grid center mono"><tr><th>T<sub>i</sub></th><th>T1</th><th>T2</th><th>T3</th><th>T4</th></tr><tr><th>p<sub>i</sub></th><td>4</td><td>6</td><td>3</td><td>9</td></tr><tr><th>w<sub>i</sub></th><td>1</td><td>3</td><td>2</td><td>4</td></tr></table></div><div class="ans"><label><span>WSPT order</span><input type="text" class="seq" id="q-B4-1" data-seq="3,2,4,1" placeholder="e.g. T1,T2,…" aria-label="WSPT order" autocomplete="off"></label><label><span>Σ w<sub>i</sub>C<sub>i</sub> =</span><input type="text" inputmode="decimal" id="q-B4-2" data-num="127" aria-label="Σ w<sub>i</sub>C<sub>i</sub> =" autocomplete="off"></label><label><span><span class="ov">C</span><sub>w</sub> =</span><input type="text" inputmode="decimal" id="q-B4-3" data-num="12.7" aria-label="<span class="ov">C</span><sub>w</sub> =" autocomplete="off"></label></div></div>
   <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
-  <details><summary>Show solution</summary><div class="sol"><div class="scroll"><table class="t grid center mono"><tr><th>order</th><th>T3</th><th>T2</th><th>T4</th><th>T1</th></tr><tr><th>p/w</th><td>1.5</td><td>2</td><td>2.25</td><td>4</td></tr><tr><th>C<sub>i</sub></th><td>3</td><td>9</td><td>18</td><td>22</td></tr><tr><th>w<sub>i</sub>C<sub>i</sub></th><td>6</td><td>27</td><td>72</td><td>22</td></tr></table></div><p>Σ w<sub>i</sub>C<sub>i</sub> = <span class="res">127</span>, Σ w<sub>i</sub> = 10, <span class="ov">C</span><sub>w</sub> = <span class="res">12.7</span> (optimal over all 24 orders).</p></div></details>
+  <details><summary>Show solution</summary><div class="sol"><div class="scroll"><table class="t grid center mono"><tr><th>order</th><th>T3</th><th>T2</th><th>T4</th><th>T1</th></tr><tr><th>p/w</th><td>1.5</td><td>2</td><td>2.25</td><td>4</td></tr><tr><th>C<sub>i</sub></th><td>3</td><td>9</td><td>18</td><td>22</td></tr><tr><th>w<sub>i</sub>C<sub>i</sub></th><td>6</td><td>27</td><td>72</td><td>22</td></tr></table></div><p>Σ w<sub>i</sub>C<sub>i</sub> = <b class="th-ans">127</b>, Σ w<sub>i</sub> = 10, <span class="ov">C</span><sub>w</sub> = <b class="th-ans">12.7</b> (optimal over all 24 orders).</p></div></details>
 </article>
 </section>
 <section class="sec" id="c">
@@ -463,13 +648,13 @@ pre.algo .fx{color:var(--hi);font-weight:600}
   <div class="ph"><span class="pid">C1</span><span class="pt">Run the set-up heuristic</span><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-C1"><span>done</span></label></div>
   <div class="pq"><div class="scroll"><table class="t grid center mono"><tr><th>T<sub>i</sub></th><th>T1</th><th>T2</th><th>T3</th><th>T4</th></tr><tr><th>p<sub>i</sub></th><td>3</td><td>2</td><td>4</td><td>1</td></tr></table></div><div class="scroll"><table class="t grid center mono"><tr><th>c<sub>ij</sub></th><th>→T1</th><th>→T2</th><th>→T3</th><th>→T4</th></tr><tr><th>T1</th><td>0</td><td>5</td><td>2</td><td>3</td></tr><tr><th>T2</th><td>4</td><td>0</td><td>2</td><td>5</td></tr><tr><th>T3</th><td>1</td><td>5</td><td>0</td><td>3</td></tr><tr><th>T4</th><td>5</td><td>6</td><td>2</td><td>0</td></tr></table></div><div class="aid"><b>Reminder:</b> start with the cheapest arc (i ≠ j), then from the current task go to the cheapest task not yet used. C<sub>max</sub> = Σ p<sub>i</sub> + setups along the order.</div><div class="ans"><label><span>heuristic order</span><input type="text" class="seq" id="q-C1-1" data-seq="3,1,4,2" placeholder="e.g. T1,T2,…" aria-label="heuristic order" autocomplete="off"></label><label><span>C<sub>max</sub> =</span><input type="text" inputmode="decimal" id="q-C1-2" data-num="20" aria-label="C<sub>max</sub> =" autocomplete="off"></label></div></div>
   <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
-  <details><summary>Show solution</summary><div class="sol"><ul class="ln"><li>Cheapest arc: c<sub>31</sub> = 1 → start T3, then T1</li><li>From T1: c<sub>12</sub>=5, c<sub>14</sub>=3 → T4</li><li>From T4: only T2 left, c<sub>42</sub>=6</li></ul><p>Order T3, T1, T4, T2. Setups 1 + 3 + 6 = 10, work 3+2+4+1 = 10, so C<sub>max</sub> = <span class="res">20</span>. The greedy start forced the expensive last arc c<sub>42</sub> = 6.</p></div></details>
+  <details><summary>Show solution</summary><div class="sol"><ul class="ln"><li>Cheapest arc: c<sub>31</sub> = 1 → start T3, then T1</li><li>From T1: c<sub>12</sub>=5, c<sub>14</sub>=3 → T4</li><li>From T4: only T2 left, c<sub>42</sub>=6</li></ul><p>Order T3, T1, T4, T2. Setups 1 + 3 + 6 = 10, work 3+2+4+1 = 10, so C<sub>max</sub> = <b class="th-ans">20</b>. The greedy start forced the expensive last arc c<sub>42</sub> = 6.</p></div></details>
 </article>
 <article class="prob" id="p-C2">
   <div class="ph"><span class="pid">C2</span><span class="pt">Is the heuristic optimal here?</span><span class="lvl lc">Challenge</span><label class="done"><input type="checkbox" id="done-C2"><span>done</span></label></div>
   <div class="pq"><p>Same data as C1. Compute C<sub>max</sub> for the order T2, T3, T1, T4.</p><div class="ans"><label><span>C<sub>max</sub> =</span><input type="text" inputmode="decimal" id="q-C2-1" data-num="16" aria-label="C<sub>max</sub> =" autocomplete="off"></label></div><p class="qn">So the heuristic result of C1 is…</p><div class="mc" data-ans="1" data-q="q-C2-2"><label class="opt"><input type="radio" name="q-C2-2" id="q-C2-2a" value="0"><span>optimal</span></label><label class="opt"><input type="radio" name="q-C2-2" id="q-C2-2b" value="1"><span>not optimal</span></label><label class="opt"><input type="radio" name="q-C2-2" id="q-C2-2c" value="2"><span>impossible to tell</span></label></div></div>
   <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
-  <details><summary>Show solution</summary><div class="sol"><p>Setups c<sub>23</sub> + c<sub>31</sub> + c<sub>14</sub> = 2 + 1 + 3 = 6, so C<sub>max</sub> = 10 + 6 = <span class="res">16</span> &lt; 20: the heuristic is <b>not optimal</b>. Brute force over all 24 orders: 16 is the unique optimum.</p></div></details>
+  <details><summary>Show solution</summary><div class="sol"><p>Setups c<sub>23</sub> + c<sub>31</sub> + c<sub>14</sub> = 2 + 1 + 3 = 6, so C<sub>max</sub> = 10 + 6 = <b class="th-ans">16</b> &lt; 20: the heuristic is <b>not optimal</b>. Brute force over all 24 orders: 16 is the unique optimum.</p></div></details>
 </article>
 </section>
 <section class="sec" id="d">
@@ -479,22 +664,94 @@ pre.algo .fx{color:var(--hi);font-weight:600}
   <div class="ph"><span class="pid">D1</span><span class="pt">Trace the 1|r<sub>i</sub>|<span class="ov">C</span> heuristic</span><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-D1"><span>done</span></label></div>
   <div class="pq"><div class="scroll"><table class="t grid center mono"><tr><th>T<sub>i</sub></th><th>T1</th><th>T2</th><th>T3</th><th>T4</th></tr><tr><th>p<sub>i</sub></th><td>4</td><td>1</td><td>2</td><td>3</td></tr><tr><th>r<sub>i</sub></th><td>0</td><td>1</td><td>1</td><td>6</td></tr></table></div><div class="aid"><b>Rule:</b> when the machine is free at time t, run the shortest task with r<sub>i</sub> ≤ t. If none, jump to the next release.</div><div class="ans"><label><span>order</span><input type="text" class="seq" id="q-D1-1" data-seq="1,2,3,4" placeholder="e.g. T1,T2,…" aria-label="order" autocomplete="off"></label><label><span><span class="ov">C</span> =</span><input type="text" inputmode="decimal" id="q-D1-2" data-num="6.5" aria-label="<span class="ov">C</span> =" autocomplete="off"></label></div></div>
   <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
-  <details><summary>Show solution</summary><div class="sol"><ul class="ln"><li>t=0: only T1 available → 0→4</li><li>t=4: T2, T3 available → T2 (p=1): 4→5</li><li>t=5: T3: 5→7</li><li>t=7: T4 (r=6): 7→10</li></ul><p>Σ C = 4+5+7+10 = 26, <span class="ov">C</span> = <span class="res">6.5</span>.</p></div></details>
+  <details><summary>Show solution</summary><div class="sol"><ul class="ln"><li>t=0: only T1 available → 0→4</li><li>t=4: T2, T3 available → T2 (p=1): 4→5</li><li>t=5: T3: 5→7</li><li>t=7: T4 (r=6): 7→10</li></ul><p>Σ C = 4+5+7+10 = 26, <span class="ov">C</span> = <b class="th-ans">6.5</b>.</p></div></details>
 </article>
 <article class="prob" id="p-D2">
   <div class="ph"><span class="pid">D2</span><span class="pt">Beat the heuristic by waiting</span><span class="lvl lc">Challenge</span><label class="done"><input type="checkbox" id="done-D2"><span>done</span></label></div>
   <div class="pq"><p>Same data as D1. Schedule the order T2, T3, T1, T4, each task as early as possible (the machine stays idle from 0 to 1).</p><div class="ans"><label><span><span class="ov">C</span> =</span><input type="text" inputmode="decimal" id="q-D2-1" data-num="6.25" aria-label="<span class="ov">C</span> =" autocomplete="off"></label></div><p class="qn">Why does it beat the heuristic?</p><div class="mc" data-ans="1" data-q="q-D2-2"><label class="opt"><input type="radio" name="q-D2-2" id="q-D2-2a" value="0"><span>The heuristic made an arithmetic mistake</span></label><label class="opt"><input type="radio" name="q-D2-2" id="q-D2-2b" value="1"><span>Waiting one unit lets two short tasks finish early instead of behind T1</span></label><label class="opt"><input type="radio" name="q-D2-2" id="q-D2-2c" value="2"><span>SPT is wrong when release dates exist, always use ERD</span></label></div></div>
   <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
-  <details><summary>Show solution</summary><div class="sol"><p>T2 1→2, T3 2→4, T1 4→8, T4 8→11. Σ C = 2+4+8+11 = 25, <span class="ov">C</span> = <span class="res">6.25</span> &lt; 6.5. This is the best of all 24 orders. The heuristic never idles on purpose, so it started the long T1 at 0 and made T2 and T3 wait behind it.</p></div></details>
+  <details><summary>Show solution</summary><div class="sol"><p>T2 1→2, T3 2→4, T1 4→8, T4 8→11. Σ C = 2+4+8+11 = 25, <span class="ov">C</span> = <b class="th-ans">6.25</b> &lt; 6.5. This is the best of all 24 orders. The heuristic never idles on purpose, so it started the long T1 at 0 and made T2 and T3 wait behind it.</p></div></details>
 </article>
 <article class="prob" id="p-D3">
   <div class="ph"><span class="pid">D3</span><span class="pt">WSPT exchange: compute the change</span><span class="lvl lc">Challenge</span><label class="done"><input type="checkbox" id="done-D3"><span>done</span></label></div>
   <div class="pq"><p>In some order, T<sub>i</sub> (p=3, w=1) runs immediately before T<sub>j</sub> (p=2, w=4). Swapping two neighbours changes Σ w<sub>k</sub>C<sub>k</sub> by <span class="m">w<sub>i</sub>p<sub>j</sub> − w<sub>j</sub>p<sub>i</sub></span>.</p><div class="ans"><label><span>change =</span><input type="text" inputmode="decimal" id="q-D3-1" data-num="-10" aria-label="change =" autocomplete="off"></label></div><p class="qn">Should you swap them?</p><div class="mc" data-ans="0" data-q="q-D3-2"><label class="opt"><input type="radio" name="q-D3-2" id="q-D3-2a" value="0"><span>Yes, it lowers the cost</span></label><label class="opt"><input type="radio" name="q-D3-2" id="q-D3-2b" value="1"><span>No, it raises the cost</span></label><label class="opt"><input type="radio" name="q-D3-2" id="q-D3-2c" value="2"><span>It makes no difference</span></label></div></div>
   <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
-  <details><summary>Show solution</summary><div class="sol"><p>Change = 1·2 − 4·3 = <span class="res">−10</span>: the swap lowers Σ w<sub>k</sub>C<sub>k</sub> by 10, so <b>yes</b>. Check with the ratios: p<sub>i</sub>/w<sub>i</sub> = 3 &gt; p<sub>j</sub>/w<sub>j</sub> = 0.5, so WSPT puts T<sub>j</sub> first.</p></div></details>
+  <details><summary>Show solution</summary><div class="sol"><p>Change = 1·2 − 4·3 = <b class="th-ans">−10</b>: the swap lowers Σ w<sub>k</sub>C<sub>k</sub> by 10, so <b>yes</b>. Check with the ratios: p<sub>i</sub>/w<sub>i</sub> = 3 &gt; p<sub>j</sub>/w<sub>j</sub> = 0.5, so WSPT puts T<sub>j</sub> first.</p></div></details>
 </article>
 </section>
-<footer class="foot">Based on THOR (Théorie de l’ordonnancement), Chapitre 2 : Ordonnancement sur une seule machine. All answers recomputed by program, including brute force over every task order.</footer>
+<section class="sec" id="e">
+  <div class="sec-h"><span class="num">E</span><h2>Due dates <span class="fr">(dates échues)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <p class="setmeta">Lesson §7, §8, §9.</p>
+<article class="prob" id="p-E1">
+  <div class="ph"><span class="pid">E1</span><span class="pt">1||L<sub>max</sub> with EDD</span><span class="lvl lw">Warm-up</span><label class="done"><input type="checkbox" id="done-E1"><span>done</span></label></div>
+  <div class="pq"><div class="scroll"><table class="t grid center mono"><tr><th>T<sub>i</sub></th><th>T1</th><th>T2</th><th>T3</th><th>T4</th></tr><tr><th>p<sub>i</sub></th><td>4</td><td>2</td><td>6</td><td>3</td></tr><tr><th>d<sub>i</sub></th><td>7</td><td>3</td><td>13</td><td>8</td></tr></table></div><div class="ans"><label><span>EDD order</span><input type="text" class="seq" id="q-E1-1" data-seq="2,1,4,3" placeholder="e.g. T1,T2,…" aria-label="EDD order" autocomplete="off"></label><label><span>L<sub>max</sub> =</span><input type="text" inputmode="decimal" id="q-E1-2" data-num="2" aria-label="L<sub>max</sub> =" autocomplete="off"></label><label><span>T<sub>max</sub> =</span><input type="text" inputmode="decimal" id="q-E1-3" data-num="2" aria-label="T<sub>max</sub> =" autocomplete="off"></label></div></div>
+  <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+  <details><summary>Show solution</summary><div class="sol"><div class="scroll"><table class="t grid center mono"><tr><th>order</th><th>T2</th><th>T1</th><th>T4</th><th>T3</th></tr><tr><th>C<sub>i</sub></th><td>2</td><td>6</td><td>9</td><td>15</td></tr><tr><th>d<sub>i</sub></th><td>3</td><td>7</td><td>8</td><td>13</td></tr><tr><th>L<sub>i</sub></th><td>−1</td><td>−1</td><td>1</td><td>2</td></tr></table></div><p>L<sub>max</sub> = <b class="th-ans">2</b> and T<sub>max</sub> = max(0, 2) = <b class="th-ans">2</b> (optimal over all 24 orders).</p></div></details>
+</article>
+<article class="prob" id="p-E2">
+  <div class="ph"><span class="pid">E2</span><span class="pt">1|r<sub>i</sub>|L<sub>max</sub> with equal due dates</span><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-E2"><span>done</span></label></div>
+  <div class="pq"><p>All due dates equal 7.</p><div class="scroll"><table class="t grid center mono"><tr><th>T<sub>i</sub></th><th>T1</th><th>T2</th><th>T3</th><th>T4</th></tr><tr><th>p<sub>i</sub></th><td>3</td><td>2</td><td>2</td><td>1</td></tr><tr><th>r<sub>i</sub></th><td>2</td><td>0</td><td>5</td><td>1</td></tr></table></div><p class="qn">Which easy case is this, and which rule solves it?</p><div class="mc" data-ans="1" data-q="q-E2-1"><label class="opt"><input type="radio" name="q-E2-1" id="q-E2-1a" value="0"><span>r<sub>i</sub> = r: EDD</span></label><label class="opt"><input type="radio" name="q-E2-1" id="q-E2-1b" value="1"><span>d<sub>i</sub> = d: sort by r<sub>i</sub> (ERD)</span></label><label class="opt"><input type="radio" name="q-E2-1" id="q-E2-1c" value="2"><span>p<sub>i</sub> = 1: smallest due date among available tasks</span></label></div><div class="aid"><b>Typing an order:</b> task numbers in sequence, e.g. <code>T2,T1,T4,T3</code> or just <code>2 1 4 3</code>. Decimals with a dot or a comma.</div><div class="ans"><label><span>order</span><input type="text" class="seq" id="q-E2-2" data-seq="2,4,1,3" placeholder="e.g. T1,T2,…" aria-label="order" autocomplete="off"></label><label><span>L<sub>max</sub> =</span><input type="text" inputmode="decimal" id="q-E2-3" data-num="1" aria-label="L<sub>max</sub> =" autocomplete="off"></label></div></div>
+  <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+  <details><summary>Show solution</summary><div class="sol"><p>With d<sub>i</sub> = d, L<sub>max</sub> = C<sub>max</sub> − d, so minimise C<sub>max</sub> with ERD.</p><ul class="ln"><li>T2: 0→2</li><li>T4: max(2,1)=2 → 3</li><li>T1: max(3,2)=3 → 6</li><li>T3: max(6,5)=6 → 8</li></ul><p>L<sub>max</sub> = 8 − 7 = <b class="th-ans">1</b> (optimal).</p></div></details>
+</article>
+<article class="prob" id="p-E3">
+  <div class="ph"><span class="pid">E3</span><span class="pt">Moore's algorithm: fewest late tasks</span><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-E3"><span>done</span></label></div>
+  <div class="pq"><div class="scroll"><table class="t grid center mono"><tr><th>T<sub>i</sub></th><th>T1</th><th>T2</th><th>T3</th><th>T4</th><th>T5</th></tr><tr><th>p<sub>i</sub></th><td>2</td><td>4</td><td>3</td><td>5</td><td>1</td></tr><tr><th>d<sub>i</sub></th><td>3</td><td>5</td><td>7</td><td>9</td><td>10</td></tr></table></div><div class="aid"><b>Moore:</b> go through EDD; when t &gt; d<sub>i</sub>, remove the longest task kept so far and subtract its p.</div><div class="ans"><label><span>on-time tasks, in order</span><input type="text" class="seq" id="q-E3-1" data-seq="1,3,5" placeholder="e.g. T1,T2,…" aria-label="on-time tasks, in order" autocomplete="off"></label><label><span>number of late tasks =</span><input type="text" inputmode="decimal" id="q-E3-2" data-num="2" aria-label="number of late tasks =" autocomplete="off"></label><label><span><span class="ov">U</span> =</span><input type="text" inputmode="decimal" id="q-E3-3" data-num="0.4" aria-label="<span class="ov">U</span> =" autocomplete="off"></label></div></div>
+  <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+  <details><summary>Show solution</summary><div class="sol"><ul class="ln"><li>T1: t = 2 ≤ 3</li><li>T2: t = 6 &gt; 5 → remove T2 (4), t = 2</li><li>T3: t = 5 ≤ 7</li><li>T4: t = 10 &gt; 9 → remove T4 (5), t = 5</li><li>T5: t = 6 ≤ 10</li></ul><p>On time: T1, T3, T5. Late: T2 and T4, so 2 late tasks and <span class="ov">U</span> = 2/5 = <b class="th-ans">0.4</b>. No order has fewer than 2 late tasks (checked).</p></div></details>
+</article>
+<article class="prob" id="p-E4">
+  <div class="ph"><span class="pid">E4</span><span class="pt">Match the criterion to the rule</span><span class="lvl lw">Warm-up</span><label class="done"><input type="checkbox" id="done-E4"><span>done</span></label></div>
+  <div class="pq"><p class="qn">1. Which rule minimises T<sub>max</sub> on one machine (all r<sub>i</sub> = 0)?</p><div class="mc" data-ans="1" data-q="q-E4-1"><label class="opt"><input type="radio" name="q-E4-1" id="q-E4-1a" value="0"><span>SPT</span></label><label class="opt"><input type="radio" name="q-E4-1" id="q-E4-1b" value="1"><span>EDD</span></label><label class="opt"><input type="radio" name="q-E4-1" id="q-E4-1c" value="2"><span>Moore</span></label><label class="opt"><input type="radio" name="q-E4-1" id="q-E4-1d" value="3"><span>Schrage</span></label></div><p class="qn">2. 1|r<sub>i</sub>, p<sub>i</sub> = 1|L<sub>max</sub>: what do you do?</p><div class="mc" data-ans="2" data-q="q-E4-2"><label class="opt"><input type="radio" name="q-E4-2" id="q-E4-2a" value="0"><span>Sort by r<sub>i</sub> and ignore due dates</span></label><label class="opt"><input type="radio" name="q-E4-2" id="q-E4-2b" value="1"><span>Sort by d<sub>i</sub> and ignore release dates</span></label><label class="opt"><input type="radio" name="q-E4-2" id="q-E4-2c" value="2"><span>At each time, run the available task with the smallest d<sub>i</sub></span></label></div></div>
+  <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+  <details><summary>Show solution</summary><div class="sol"><ol><li><b>EDD</b> (Corollary 5: T<sub>max</sub> = max(0, L<sub>max</sub>)).</li><li><b>Smallest due date among available tasks</b>, the third easy case of 1|r<sub>i</sub>|L<sub>max</sub>.</li></ol></div></details>
+</article>
+</section>
+<section class="sec" id="f">
+  <div class="sec-h"><span class="num">F</span><h2>Deadlines and delivery times <span class="fr">(dates limites, temps de livraison)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <p class="setmeta">Lesson §10, §11.</p>
+<article class="prob" id="p-F1">
+  <div class="ph"><span class="pid">F1</span><span class="pt">Search tree with deadlines</span><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-F1"><span>done</span></label></div>
+  <div class="pq"><div class="scroll"><table class="t grid center mono"><tr><th>T<sub>i</sub></th><th>T1</th><th>T2</th><th>T3</th></tr><tr><th>r<sub>i</sub></th><td>0</td><td>1</td><td>2</td></tr><tr><th>p<sub>i</sub></th><td>2</td><td>1</td><td>2</td></tr><tr><th>d̃<sub>i</sub></th><td>4</td><td>3</td><td>6</td></tr></table></div><div class="aid"><b>Node rule:</b> C = max(previous end, r<sub>j</sub>) + p<sub>j</sub>; drop the node if C &gt; d̃<sub>j</sub>.</div><div class="ans"><label><span>complete feasible sequences =</span><input type="text" inputmode="decimal" id="q-F1-1" data-num="2" aria-label="complete feasible sequences =" autocomplete="off"></label><label><span>optimal C<sub>max</sub> =</span><input type="text" inputmode="decimal" id="q-F1-2" data-num="5" aria-label="optimal C<sub>max</sub> =" autocomplete="off"></label></div></div>
+  <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+  <details><summary>Show solution</summary><div class="sol"><ul class="ln"><li>(T1)/2 → (T1,T2)/3 → (T1,T2,T3)/5 ✓</li><li>(T1)/2 → (T1,T3)/4 → T2: 5 &gt; 3, pruned</li><li>(T2)/2 → (T2,T1)/4 → (T2,T1,T3)/6 ✓</li><li>(T2)/2 → (T2,T3)/4 → T1: 6 &gt; 4, pruned</li><li>(T3)/4 → T1: 6 &gt; 4 and T2: 5 &gt; 3, pruned</li></ul><p><b class="th-ans">2</b> complete sequences; the best is T1, T2, T3 with C<sub>max</sub> = <b class="th-ans">5</b>.</p></div></details>
+</article>
+<article class="prob" id="p-F2">
+  <div class="ph"><span class="pid">F2</span><span class="pt">Schrage with delivery times</span><span class="lvl lc">Challenge</span><label class="done"><input type="checkbox" id="done-F2"><span>done</span></label></div>
+  <div class="pq"><div class="scroll"><table class="t grid center mono"><tr><th>T<sub>i</sub></th><th>T1</th><th>T2</th><th>T3</th><th>T4</th></tr><tr><th>r<sub>i</sub></th><td>0</td><td>2</td><td>3</td><td>5</td></tr><tr><th>p<sub>i</sub></th><td>4</td><td>3</td><td>2</td><td>2</td></tr><tr><th>q<sub>i</sub></th><td>2</td><td>9</td><td>6</td><td>1</td></tr></table></div><div class="aid"><b>Schrage:</b> among arrived tasks, take the largest q<sub>i</sub>. C<sub>max</sub> = max(C<sub>i</sub> + q<sub>i</sub>).</div><div class="ans"><label><span>Schrage order</span><input type="text" class="seq" id="q-F2-1" data-seq="1,2,3,4" placeholder="e.g. T1,T2,…" aria-label="Schrage order" autocomplete="off"></label><label><span>Schrage C<sub>max</sub> =</span><input type="text" inputmode="decimal" id="q-F2-2" data-num="16" aria-label="Schrage C<sub>max</sub> =" autocomplete="off"></label><label><span>C<sub>max</sub> of T2,T3,T1,T4 =</span><input type="text" inputmode="decimal" id="q-F2-3" data-num="14" aria-label="C<sub>max</sub> of T2,T3,T1,T4 =" autocomplete="off"></label></div><p class="qn">So Schrage is…</p><div class="mc" data-ans="1" data-q="q-F2-4"><label class="opt"><input type="radio" name="q-F2-4" id="q-F2-4a" value="0"><span>optimal here</span></label><label class="opt"><input type="radio" name="q-F2-4" id="q-F2-4b" value="1"><span>not optimal here</span></label></div></div>
+  <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+  <details><summary>Show solution</summary><div class="sol"><ul class="ln"><li>t=0: only T1 → 0→4, delivered 6</li><li>t=4: T2 (q 9), T3 (q 6) → T2 4→7, delivered 16</li><li>t=7: T3, T4 → T3 7→9, delivered 15</li><li>T4 9→11, delivered 12</li></ul><p>Schrage: C<sub>max</sub> = <b class="th-ans">16</b>. Waiting for T2: T2 2→5 (14), T3 5→7 (13), T1 7→11 (13), T4 11→13 (14), so C<sub>max</sub> = <b class="th-ans">14</b>, the optimum over all 24 orders. Schrage is <b>not optimal</b> here: it never waits on purpose.</p></div></details>
+</article>
+</section>
+<section class="sec" id="g">
+  <div class="sec-h"><span class="num">G</span><h2>Precedence constraints <span class="fr">(contraintes de précédence)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <p class="setmeta">Lesson §12 to §16.</p>
+<article class="prob" id="p-G1">
+  <div class="ph"><span class="pid">G1</span><span class="pt">1|prec|C<sub>max</sub>: build the order from the end</span><span class="lvl lw">Warm-up</span><label class="done"><input type="checkbox" id="done-G1"><span>done</span></label></div>
+  <div class="pq"><p>Five tasks. Arrows (T<sub>i</sub> → T<sub>j</sub>: T<sub>j</sub> only after T<sub>i</sub>): T1→T3, T2→T3, T3→T5, T2→T4.</p><div class="scroll"><table class="t grid center mono"><tr><th>T<sub>i</sub></th><th>T1</th><th>T2</th><th>T3</th><th>T4</th><th>T5</th></tr><tr><th>p<sub>i</sub></th><td>2</td><td>4</td><td>1</td><td>3</td><td>2</td></tr></table></div><div class="aid"><b>Method (§12):</b> ns(i) = arrows leaving T<sub>i</sub>. Fill positions 5, 4, …, 1: each time take the smallest-numbered task with ns = 0, then subtract 1 from ns of every task with an arrow into it.</div><div class="ans"><label><span>order</span><input type="text" class="seq" id="q-G1-1" data-seq="2,1,3,5,4" placeholder="e.g. T1,T2,…" aria-label="order" autocomplete="off"></label><label><span>C<sub>max</sub> =</span><input type="text" inputmode="decimal" id="q-G1-2" data-num="12" aria-label="Cmax =" autocomplete="off"></label></div></div>
+  <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+  <details><summary>Show solution</summary><div class="sol"><p>Start: ns = (1, 2, 1, 0, 0).</p><ul class="ln"><li>Position 5: ns = 0 for T4, T5 → T4. T2 loses one: ns(2) = 1.</li><li>Position 4: T5. T3 loses one: ns(3) = 0.</li><li>Position 3: T3. T1 and T2 lose one: both 0.</li><li>Position 2: T1. Position 1: T2.</li></ul><p>Order <b class="th-ans">T2, T1, T3, T5, T4</b>, every arrow points right. C<sub>max</sub> = 2 + 4 + 1 + 3 + 2 = <b class="th-ans">12</b> (any valid order gives 12).</p></div></details>
+</article>
+<article class="prob" id="p-G2">
+  <div class="ph"><span class="pid">G2</span><span class="pt">Unit tasks: push the release dates, find the blocks</span><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-G2"><span>done</span></label></div>
+  <div class="pq"><p>Five unit tasks (p<sub>i</sub> = 1). Arrows: T1→T2, T1→T3, T2→T4, T3→T4, T4→T5 (the numbering already follows the arrows).</p><div class="scroll"><table class="t grid center mono"><tr><th>T<sub>i</sub></th><th>T1</th><th>T2</th><th>T3</th><th>T4</th><th>T5</th></tr><tr><th>r<sub>i</sub></th><td>1</td><td>0</td><td>4</td><td>2</td><td>3</td></tr></table></div><div class="aid"><b>Method (§13):</b> for each arrow T<sub>i</sub> → T<sub>j</sub> in order: r<sub>j</sub> := max(r<sub>j</sub>, r<sub>i</sub> + 1). Then run by new r, as early as possible. A block = tasks back to back without a gap.</div><div class="ans"><label><span>new r<sub>4</sub> =</span><input type="text" inputmode="decimal" id="q-G2-1" data-num="5" aria-label="new r4 =" autocomplete="off"></label><label><span>C<sub>max</sub> =</span><input type="text" inputmode="decimal" id="q-G2-2" data-num="7" aria-label="Cmax =" autocomplete="off"></label><label><span>number of blocks =</span><input type="text" inputmode="decimal" id="q-G2-3" data-num="2" aria-label="number of blocks =" autocomplete="off"></label></div></div>
+  <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+  <details><summary>Show solution</summary><div class="sol"><ul class="ln"><li>T1→T2: r2 = max(0, 2) = 2. T1→T3: r3 = max(4, 2) = 4.</li><li>T2→T4: r4 = max(2, 3) = 3. T3→T4: r4 = max(3, 5) = <b>5</b>.</li><li>T4→T5: r5 = max(3, 6) = 6.</li></ul><p>New r = (1, 2, 4, 5, 6). Run: T1 1→2, T2 2→3, idle, T3 4→5, T4 5→6, T5 6→7. Blocks {T1, T2} and {T3, T4, T5}: <b class="th-ans">2</b> blocks, C<sub>max</sub> = <b class="th-ans">7</b> (best over all valid orders, checked).</p></div></details>
+</article>
+<article class="prob" id="p-G3">
+  <div class="ph"><span class="pid">G3</span><span class="pt">1|prec|L<sub>max</sub>: lower the due dates first</span><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-G3"><span>done</span></label></div>
+  <div class="pq"><p>Four tasks. Arrows: T1→T2, T1→T3, T3→T4.</p><div class="scroll"><table class="t grid center mono"><tr><th>T<sub>i</sub></th><th>T1</th><th>T2</th><th>T3</th><th>T4</th></tr><tr><th>p<sub>i</sub></th><td>2</td><td>3</td><td>1</td><td>2</td></tr><tr><th>d<sub>i</sub></th><td>5</td><td>7</td><td>9</td><td>4</td></tr></table></div><div class="aid"><b>Method (§14):</b> from T4 back to T1, d*<sub>i</sub> = min(d<sub>i</sub>, d* of its successors). Then, each time the machine is free, run the ready task with the smallest d*. Lateness L = C − d with the <i>real</i> d.</div><div class="ans"><label><span>d*<sub>3</sub> =</span><input type="text" inputmode="decimal" id="q-G3-1" data-num="4" aria-label="d*3 =" autocomplete="off"></label><label><span>d*<sub>1</sub> =</span><input type="text" inputmode="decimal" id="q-G3-2" data-num="4" aria-label="d*1 =" autocomplete="off"></label><label><span>order</span><input type="text" class="seq" id="q-G3-3" data-seq="1,3,4,2" placeholder="e.g. T1,T2,…" aria-label="order" autocomplete="off"></label><label><span>L<sub>max</sub> =</span><input type="text" inputmode="decimal" id="q-G3-4" data-num="1" aria-label="Lmax =" autocomplete="off"></label></div></div>
+  <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+  <details><summary>Show solution</summary><div class="sol"><ul class="ln"><li>d*4 = 4; d*3 = min(9, 4) = <b>4</b>; d*2 = 7; d*1 = min(5, 7, 4) = <b>4</b>.</li><li>t = 0: only T1 ready → 0→2.</li><li>t = 2: T2 (7), T3 (4) → T3 2→3.</li><li>t = 3: T2 (7), T4 (4) → T4 3→5, then T2 5→8.</li></ul><p>Order <b class="th-ans">T1, T3, T4, T2</b>. L = (2−5, 3−9, 5−4, 8−7) = (−3, −6, 1, 1), so L<sub>max</sub> = <b class="th-ans">1</b>, the best possible (checked). With the real due dates you would run T2 before T3 and T4 would end at 8: L<sub>max</sub> = 4.</p></div></details>
+</article>
+<article class="prob" id="p-G4">
+  <div class="ph"><span class="pid">G4</span><span class="pt">Easy or hard?</span><span class="lvl lw">Warm-up</span><label class="done"><input type="checkbox" id="done-G4"><span>done</span></label></div>
+  <div class="pq"><p class="qn">1. Which of these problems is NP-hard (no fast exact method known)?</p><div class="mc" data-ans="1" data-q="q-G4-1"><label class="opt"><input type="radio" name="q-G4-1" id="q-G4-1a" value="0"><span>1|prec|L<sub>max</sub></span></label><label class="opt"><input type="radio" name="q-G4-1" id="q-G4-1b" value="1"><span>1|r<sub>i</sub>|L<sub>max</sub></span></label><label class="opt"><input type="radio" name="q-G4-1" id="q-G4-1c" value="2"><span>1||U</span></label><label class="opt"><input type="radio" name="q-G4-1" id="q-G4-1d" value="3"><span>1|prec|C<sub>max</sub></span></label></div><p class="qn">2. In 1|prec|C<sub>max</sub>, why is every valid order optimal?</p><div class="mc" data-ans="1" data-q="q-G4-2"><label class="opt"><input type="radio" name="q-G4-2" id="q-G4-2a" value="0"><span>Because the course always takes the smallest number</span></label><label class="opt"><input type="radio" name="q-G4-2" id="q-G4-2b" value="1"><span>Because the machine never waits, so it always ends at Σp</span></label><label class="opt"><input type="radio" name="q-G4-2" id="q-G4-2c" value="2"><span>Because precedence rules forbid all other orders</span></label></div><p class="qn">3. The 1|prec|U rule of §15 runs the ready task with the smallest due date. Does it always give the fewest late tasks?</p><div class="mc" data-ans="1" data-q="q-G4-3"><label class="opt"><input type="radio" name="q-G4-3" id="q-G4-3a" value="0"><span>Yes, it is exact</span></label><label class="opt"><input type="radio" name="q-G4-3" id="q-G4-3b" value="1"><span>No, it is a heuristic</span></label></div></div>
+  <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+  <details><summary>Show solution</summary><div class="sol"><ol><li><b>1|r<sub>i</sub>|L<sub>max</sub></b>. The others are in the “easy” column of the course table (§16).</li><li><b>The machine never waits</b>: all tasks are ready at 0, so C<sub>max</sub> = Σp for any order that respects the arrows.</li><li><b>No</b>: on Example 10’s data it gives 3 late tasks while 2 is possible (§15).</li></ol></div></details>
+</article>
+</section>
+<footer class="foot">Based on THOR (Théorie de l’ordonnancement), Chapitre 2 : Ordonnancement sur une seule machine, parts 1, 2 and 3. All answers recomputed by program, including brute force over every task order (or every valid order under precedence).</footer>
 </div>
 <script>
 /* auto-check */
