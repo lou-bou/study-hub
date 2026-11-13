@@ -10,6 +10,7 @@ Every page gets a "← <MODULE>" bar (plus links to the chapter's course PDFs);
 practice pages, and any HTML inside td/, also get the auto-save script.
 Source files are never modified.
 """
+import base64
 import functools
 import hashlib
 import html
@@ -44,6 +45,7 @@ ICONS = {
     "circle": '<circle cx="12" cy="12" r="9"/>',
     "file-text": '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
     "chevron-down": '<path d="m6 9 6 6 6-6"/>',
+    "download": '<path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/>',
     "panel-left": '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/>',
 }
 
@@ -101,7 +103,7 @@ REMAKE_DESKTOP = ("<style>@media screen and (min-width:701px){"
 # (.toc, else .hero), then each parks just below that line and scrolls away with the page.
 PARK_SCRIPT = (
     '(function(){var q=function(c){return document.querySelector(c);},nav=document.getElementById("studyhub-nav"),'
-    'els=[document.getElementById("theme-toggle"),nav].filter(Boolean),orig=els.map(function(el){return el.style.cssText}),'
+    'els=[document.getElementById("theme-toggle"),document.getElementById("studyhub-dl"),nav].filter(Boolean),orig=els.map(function(el){return el.style.cssText}),'
     'phone=matchMedia("' + PHONE + '"),last=scrollY,hidden=false;'
     # phones: the contents collapse into a dropdown that closes when a link is tapped
     'var toc=q(".toc");if(toc&&phone.matches){var d=document.createElement("details");d.className="toc-m";'
@@ -351,7 +353,7 @@ def write_pwa(out_root):
     files = []
     for dirpath, dirnames, filenames in os.walk(out_root):
         rel = os.path.relpath(dirpath, out_root).replace(os.sep, "/")
-        dirnames[:] = [d for d in dirnames if not (rel == "." and d == "upload")]
+        dirnames[:] = [d for d in dirnames if not (rel == "." and d == "upload") and d != "_download"]
         for fn in filenames:
             if fn.endswith((".html", ".js", ".mjs", ".css", ".woff2", ".svg", ".json", ".webmanifest", ".png")) and fn != "sw.js":
                 files.append("/" + (fn if rel == "." else f"{rel}/{fn}"))
@@ -400,6 +402,59 @@ def inject(src, dst, snippet, base=None, theme=None, top=b""):
         f.write(data)
 
 
+# Download button: a standalone copy of the page (see standalone()), saved to the device. Top-right, beside the
+# theme toggle on phones; alone there on desktop, where the sidebar replaces the toggle.
+DL_STYLE = ("<style>#studyhub-dl{" + BACK_STYLE.replace("left:max(14px,env(safe-area-inset-left,0px))",
+            "right:max(62px,calc(env(safe-area-inset-right,0px) + 48px))") + "}#studyhub-dl svg{width:20px;height:20px}"
+            "@media (hover:hover){#studyhub-dl:hover{background:var(--surface-2)}}"
+            "@media " + PHONE + "{#studyhub-dl{width:44px;height:44px;right:max(66px,calc(env(safe-area-inset-right,0px) + 52px))}}"
+            "@media screen and (min-width:701px){#studyhub-dl{right:14px}}@media print{#studyhub-dl{display:none}}</style>")
+
+
+def download_button(module, page):
+    e = html.escape
+    ch, _, rel = page.partition("/")
+    name = f'{module["code"]}-{ch}-{rel.replace("/", "-")}'
+    return (f'{DL_STYLE}<a id="studyhub-dl" href="/{e(module["slug"])}/{e(ch)}/_download/{e(rel)}" download="{e(name)}" '
+            f'data-no-save aria-label="Download this page" title="Download this page">{icon("download")}</a>')
+
+
+@functools.lru_cache(maxsize=None)
+def fonts_inline():
+    """assets/fonts.css with each font embedded, so a downloaded page keeps its type without the site."""
+    try:
+        with open(os.path.join(ASSETS, "fonts.css"), encoding="utf-8") as f:
+            css = f.read()
+    except OSError:
+        return ""
+    def embed(m):
+        try:
+            with open(os.path.join(ASSETS, m.group(1)), "rb") as f:
+                return "url(data:font/woff2;base64," + base64.b64encode(f.read()).decode("ascii") + ")"
+        except OSError:
+            return m.group(0)
+    return "<style>" + re.sub(r"url\(/assets/([^)]+\.woff2)\)", embed, css) + "</style>\n"
+
+
+def standalone(src, dst, base, theme):
+    """The downloadable copy: the page with the current look, tokens and embedded fonts,
+    and nothing that needs the site (no sidebar, saver or back button). Opens from a file on its own."""
+    with open(src, "rb") as f:
+        text = normalize(f.read().decode("utf-8", "surrogateescape"), base, theme)
+    try:
+        with open(os.path.join(ASSETS, "tokens.css"), encoding="utf-8") as f:
+            tokens = "<style>" + f.read() + "</style>\n"
+    except OSError:
+        tokens = ""
+    # first in <head>, so the page's own styles still win, as they do on the site
+    m = re.search(r"<head\b[^>]*>", text, re.I) or re.search(r"<html\b[^>]*>", text, re.I)
+    i = m.end() if m else 0
+    text = text[:i] + "\n" + tokens + fonts_inline() + text[i:]
+    os.makedirs(os.path.dirname(dst), exist_ok=True)
+    with open(dst, "wb") as f:
+        f.write(text.encode("utf-8", "surrogateescape"))
+
+
 def back_button(module):
     """Top-left "←" back to the module page, styled like the theme toggle; it parks after the
     contents like the toggle (PARK_SCRIPT). The body gets room at the top so it never covers the hero."""
@@ -427,7 +482,7 @@ def build_module(module, out_root, base, warnings, theme=None, nav=()):
                     continue
                 rel = f if depth == 0 else os.path.join(rel_dir, f).replace(os.sep, "/")
                 page = f"{ch['slug']}/{rel}"
-                snippet = "\n" + back_button(module)
+                snippet = "\n" + back_button(module) + "\n" + download_button(module, page)
                 practice = in_td or "practice" in f.lower()
                 for w in lint_page(os.path.join(dirpath, f), practice, base):
                     warnings.append(f"modules/{module['slug']}/{page}: {w}")
@@ -441,6 +496,8 @@ def build_module(module, out_root, base, warnings, theme=None, nav=()):
                 side = sidebar(nav, "module", module, current=page, theme_id="cahier-side-theme")
                 inject(os.path.join(dirpath, f), os.path.join(dst, ch["slug"], rel),
                        (snippet + "\n").encode("utf-8"), base, theme, (side + "\n").encode("utf-8"))
+                # source folders starting with "_" are never copied, so _download can't collide with content
+                standalone(os.path.join(dirpath, f), os.path.join(dst, ch["slug"], "_download", rel), base, theme)
 
 
 ICON_CHECK = '<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>'
@@ -583,7 +640,7 @@ def search_index(modules):
 def render_viewer():
     with open(os.path.join(ROOT, "viewer_template.html"), encoding="utf-8") as f:
         tpl = f.read()
-    return fill(tpl, ICON_BACK=icon("arrow-left"))
+    return fill(tpl, ICON_BACK=icon("arrow-left"), ICON_DL=icon("download"))
 
 
 MAIN_NAV = (("/", "house", "Home", "home"), ("/search/", "search", "Search", "search"))

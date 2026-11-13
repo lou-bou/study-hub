@@ -161,6 +161,7 @@ The spec above is the brand kit, with paths adjusted to this repo. These are the
 - Search: `/search/` runs in the browser over `search.json`, built from every section and PDF name, so it works offline. It doesn't search inside PDFs.
 - Manage modules isn't in the spec's navigation. It sits at the bottom of the sidebar and as an icon in the phone top bar.
 - Sidebar: collapsible on every desktop page (`assets/sidebar.css`), down to one panel button that stays in the same spot in both states. Lessons and sheets always open collapsed. Hub pages remember the choice per device (`localStorage` `cahier-side`), and windows under 1000px start collapsed until I choose. On lessons and sheets it replaces the floating back and theme buttons. The PDF viewer keeps its own back bar instead.
+- Download: every lesson and sheet has a download button top-right (beside the theme button on phones, alone on desktop), and the PDF viewer has one in its bar. A downloaded page is a standalone copy built at `<chapter>/_download/` with tokens and fonts embedded, without the sidebar, saver or progress, so it opens from a file with no connection; saved answers stay on the site. It is separate from "Available offline", which keeps a copy inside the app.
 - Position sync: one position per lesson, the newest wins, labelled with the device that saved it.
 
 **Deliberate differences**

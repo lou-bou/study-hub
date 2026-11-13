@@ -48,6 +48,7 @@ function trim(cache) {
 self.addEventListener("fetch", function (e) {
   var req = e.request, url = new URL(req.url);
   if (req.method !== "GET" || url.origin !== location.origin) return;
+  if (/^\/[^/]+\/[^/]+\/_download\//.test(url.pathname)) return;  // downloads go straight to the device
   if (url.pathname.indexOf("/api/") === 0 || url.pathname.indexOf("/cdn-cgi/") === 0 || req.headers.has("range")) return;
   if (url.pathname.indexOf("/upload") === 0) {
     if (req.mode === "navigate") e.respondWith(fetch(req).catch(offlinePage));

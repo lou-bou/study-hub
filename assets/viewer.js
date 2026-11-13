@@ -29,6 +29,9 @@ if (!valid) {
   const key = `p:pdf:${kind}/${name}`;
   const store = `studyhub-pdf:${file}`;
   $("open").href = file;
+  $("dl").href = file;
+  $("dl").download = `${module}-${chapter}-${name}`;
+  $("dl").hidden = false;
   window.cahier.bindKeep($("keep"), file);
 
   let current = 1, ready = false, moved = false, timer = null, sent = 0;
