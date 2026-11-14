@@ -4,6 +4,7 @@
   "blurb": "Veille technologique.",
   "order": 7,
   "chapters": {
-    "ch1": "Introduction + Generalities"
+    "ch1": "Introduction + Generalities",
+    "ch2": "Processus de Veille"
   }
 }
