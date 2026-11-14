@@ -1,0 +1,648 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VT · Ch 2 · Practice</title>
+<script>/* study-hub:theme */(function(){var r=document.documentElement;try{var t=localStorage.getItem("studyhub-theme");if(t)r.setAttribute("data-theme",t);}catch(e){}document.addEventListener("DOMContentLoaded",function(){var b=document.getElementById("theme-toggle");if(b)b.addEventListener("click",function(){var c=r.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");var n=c==="dark"?"light":"dark";r.setAttribute("data-theme",n);try{localStorage.setItem("studyhub-theme",n);}catch(e){}});});})();</script>
+<style>
+/* study-hub:base v3 — shared by every remake. build.py swaps in the current copy, so uploads never drift */
+/* tokens: a copy of assets/tokens.css so a page previews on its own; the build links the real file */
+/* Cahier design tokens. Light ("paper") is the default; dark ("night ink") follows.
+   Theme switch: <html data-theme="light|dark">; no attribute = follow the OS. */
+
+:root {
+  /* Brand (theme-independent) */
+  --brand-paper: #F3EBDD;
+  --brand-ink:   #1E2A44;
+  --brand-amber: #D9952B;   /* ribbon: progress, "resume", bookmarks */
+  --brand-green: #3D6B5A;   /* correct / completed */
+
+  /* Type */
+  --font-display: "Fraunces", Georgia, serif;          /* headings, lesson titles */
+  --font-body:    "Source Sans 3", system-ui, sans-serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, monospace;
+
+  --text-xs: 0.8125rem;  /* 13 */
+  --text-sm: 0.9375rem;  /* 15 */
+  --text-md: 1.0625rem;  /* 17 body — reading app, slightly larger */
+  --text-lg: 1.375rem;   /* 22 */
+  --text-xl: 1.875rem;   /* 30 */
+  --text-2xl: 2.5rem;    /* 40 lesson hero */
+  --leading-body: 1.65;
+  --measure: 68ch;       /* max line length for lesson text */
+
+  /* Spacing (4px grid) */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-5: 24px; --space-6: 32px; --space-7: 48px; --space-8: 72px;
+
+  /* Shape — quiet, paper-like */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Motion — minimal */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-fast: 120ms;
+  --dur-med: 200ms;
+
+  /* Light / paper (default) */
+  --bg:          #F7F1E6;
+  --surface:     #FFFCF6;
+  --surface-2:   #EFE6D6;
+  --border:      #E2D8C6;
+  --text:        #1E2A44;
+  --text-muted:  #5C6475;
+  --accent:      var(--brand-amber);   /* fills: ribbon, progress bars */
+  --accent-text: #8A5A12;              /* amber text/links on paper (AA) */
+  --link:        #1E4FA0;
+  --correct:     #3D6B5A;
+  --correct-bg:  #E3EEE8;
+  --wrong:       #B4443A;
+  --wrong-bg:    #F6E2DF;
+  --note-bg:     #FBF0D9;              /* "In plain words" / worked example boxes */
+  --focus:       #1E4FA0;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:          #141C2E;
+    --surface:     #1B2540;
+    --surface-2:   #233052;
+    --border:      #2E3A5C;
+    --text:        #F3EBDD;
+    --text-muted:  #A9B0C0;
+    --accent:      #E5A945;
+    --accent-text: #F0BE6A;
+    --link:        #8DB4F5;
+    --correct:     #6FA88F;
+    --correct-bg:  #1F3A33;
+    --wrong:       #E07A6E;
+    --wrong-bg:    #43262A;
+    --note-bg:     #2A2A3A;
+    --focus:       #8DB4F5;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg:          #141C2E;
+  --surface:     #1B2540;
+  --surface-2:   #233052;
+  --border:      #2E3A5C;
+  --text:        #F3EBDD;
+  --text-muted:  #A9B0C0;
+  --accent:      #E5A945;
+  --accent-text: #F0BE6A;
+  --link:        #8DB4F5;
+  --correct:     #6FA88F;
+  --correct-bg:  #1F3A33;
+  --wrong:       #E07A6E;
+  --wrong-bg:    #43262A;
+  --note-bg:     #2A2A3A;
+  --focus:       #8DB4F5;
+  color-scheme: dark;
+}
+
+/* Project additions, not in the brand kit. */
+:root {
+  /* Figures in lessons. Amber means "my place" only, so diagrams use these. */
+  --fig: #1E4FA0; --fig-soft: #DCE6F5;
+  --c1: #E8C98C; --c2: #E3AE9B; --c3: #AFCDB8; --c4: #B9C6E0;  /* dark text sits on all of them */
+  --font-math: "Cambria Math", "STIX Two Math", Georgia, serif;
+  --primary: var(--text); --on-primary: var(--bg);             /* main buttons: ink, never amber */
+  /* Names older remakes use in their own CSS, mapped onto this theme. */
+  --ink: var(--text); --muted: var(--text-muted); --faint: var(--text-muted);
+  --line: var(--border); --line-strong: var(--border); --sunken: var(--surface-2); --hover: var(--surface-2);
+  --code-bg: var(--surface-2); --ok: var(--correct); --ok-soft: var(--correct-bg); --hi: var(--wrong); --hi-soft: var(--wrong-bg);
+  --accent-soft: var(--fig-soft);
+  --f-display: var(--font-display); --f-body: var(--font-body); --f-mono: var(--font-mono); --f-math: var(--font-math);
+  --l0: #8FA8D3; --l1: #A9BDDF; --l2: #C2D1E8; --l3: #D9E3F1; --l4: #ECF1F8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --fig: #8DB4F5; --fig-soft: #233052; }
+}
+:root[data-theme="dark"] { --fig: #8DB4F5; --fig-soft: #233052; }
+/* /tokens */
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
+body{
+  background:var(--bg); color:var(--text); font-family:var(--font-body); font-size:var(--text-md); line-height:var(--leading-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:28px var(--space-8); margin:0;
+}
+.wrap{max-width:1040px;margin:0 auto}
+a{color:var(--link);text-decoration:underline;text-underline-offset:2px}
+a,button,label,summary,input,select{touch-action:manipulation}
+a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+code{font-family:var(--font-mono);font-size:.86em;background:var(--surface-2);padding:1px 5px;border-radius:var(--radius-sm)}
+.en{font-weight:600}
+.fr{color:var(--text-muted);font-style:italic;font-weight:400}
+sub,sup{line-height:0}
+.m{font-family:var(--font-math);font-style:italic}
+.ov{text-decoration:overline}
+.eq{font-family:var(--font-math);font-size:var(--text-md);background:var(--surface-2);border-radius:var(--radius-sm);padding:var(--space-3) var(--space-4);margin:var(--space-3) 0;overflow-x:auto;white-space:pre}
+.res{display:inline-block;background:var(--correct-bg);color:var(--text);border-radius:var(--radius-sm);padding:1px 7px;font-weight:600;font-variant-numeric:tabular-nums}
+.toggle{position:fixed;top:14px;right:max(14px,env(safe-area-inset-right,0px));z-index:20;display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;padding:0;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:var(--radius-md);cursor:pointer;transition:background var(--dur-fast) var(--ease-out)}
+.toggle svg{width:20px;height:20px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:var(--space-6);align-items:center;padding-bottom:var(--space-6)}
+.hero.solo{grid-template-columns:minmax(0,1fr)}
+.eyebrow{font:600 var(--text-xs)/1.3 var(--font-body);color:var(--text-muted)}
+h1{font-family:var(--font-display);font-weight:600;font-variation-settings:"opsz" 72;font-size:clamp(1.875rem,4.4vw,var(--text-2xl));line-height:1.12;letter-spacing:-.01em;margin:var(--space-2) 0 var(--space-3);text-wrap:balance}
+.lead{font-size:var(--text-lg);line-height:1.4;color:var(--text-muted);max-width:var(--measure);margin:0 0 var(--space-4)}
+.how{display:grid;gap:var(--space-2);margin:0;padding:0;list-style:none;max-width:var(--measure)}
+.how li{display:flex;gap:var(--space-3);align-items:baseline;font-size:var(--text-sm)}
+.how .tag{flex:0 0 auto;min-width:10em}
+.pills{display:flex;flex-wrap:wrap;gap:var(--space-2);margin:0}
+.pill{background:var(--surface-2);color:var(--text);border-radius:var(--radius-sm);padding:2px 10px;font:600 var(--text-xs) var(--font-body);font-variant-numeric:tabular-nums}
+.herofig{margin:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4);min-width:0;overflow-x:auto}
+.herofig svg{display:block;width:100%;height:auto;min-width:var(--minw,0)}
+.herofig figcaption{font-size:var(--text-xs);color:var(--text-muted);margin-top:var(--space-2)}
+
+/* resume chip: the ribbon marks my place */
+.resume-chip{display:inline-flex;align-items:center;gap:var(--space-2);min-height:44px;margin:0 0 var(--space-5);padding:var(--space-2) var(--space-4) var(--space-2) var(--space-3);background:var(--note-bg);border:1px solid var(--border);border-radius:var(--radius-md);color:var(--text);font:600 var(--text-sm)/1.3 var(--font-body);text-align:left;cursor:pointer}
+.resume-chip svg{flex-shrink:0;width:9px;height:22px}
+
+/* contents */
+.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:var(--space-5);padding-block:var(--space-5) var(--space-2);border-top:1px solid var(--border)}
+.part h3{font:600 var(--text-xs)/1.3 var(--font-body);color:var(--text-muted);margin:0 0 var(--space-2)}
+.part ul{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.part a{display:flex;gap:var(--space-3);text-decoration:none;color:var(--text);padding:var(--space-1) 0;font-size:var(--text-sm)}
+.part a small{display:block;color:var(--text-muted);font-size:var(--text-xs);line-height:1.35}
+.part .n{font:400 var(--text-xs)/1.9 var(--font-mono);color:var(--text-muted);min-width:1.6em}
+.part .sc{margin-left:auto;font:400 var(--text-xs)/1.9 var(--font-mono);color:var(--text-muted);white-space:nowrap}
+
+/* sections */
+.sec{margin-top:var(--space-7);padding-top:var(--space-6);border-top:1px solid var(--border);scroll-margin-top:var(--space-3)}
+.sec-h{display:flex;align-items:baseline;gap:var(--space-3);flex-wrap:wrap}
+.num{font:600 var(--text-xl)/1.15 var(--font-display);color:var(--text-muted)}
+.sec h2{font-family:var(--font-display);font-weight:600;font-size:var(--text-xl);line-height:1.15;margin:0;text-wrap:balance;min-width:0}
+.sec h2 .fr{font-family:var(--font-body);font-size:.6em}
+.sec h3{font-family:var(--font-display);font-weight:500;font-size:var(--text-lg);line-height:1.2;margin:var(--space-5) 0 var(--space-2)}
+.sec h3 .fr{font-family:var(--font-body);font-size:.75em}
+.sec>p,.sec>ul,.sec>ol{max-width:var(--measure)}
+.back{margin-left:auto;font-size:var(--text-xs);color:var(--text-muted);text-decoration:none}
+.secscore{font:400 var(--text-sm) var(--font-mono);color:var(--text-muted)}
+.tag{display:inline-block;font:600 var(--text-xs)/1.3 var(--font-body);color:var(--text-muted)}
+.intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-5);margin-top:var(--space-5)}
+.plain{margin-top:var(--space-5);background:var(--note-bg);border-left:3px solid var(--accent);border-radius:0 var(--radius-md) var(--radius-md) 0;padding:var(--space-3) var(--space-4)}
+.intro .plain{margin-top:0;align-self:start}
+.plain p{margin:var(--space-2) 0 0;max-width:var(--measure)}
+.defs{list-style:none;margin:var(--space-5) 0 0;padding:0;display:grid;gap:var(--space-3);min-width:0}
+.intro .defs{margin-top:0}
+.defs li{display:grid;gap:1px;font-size:var(--text-sm)}
+.defs .mean{color:var(--text-muted)}
+.defs .eg{color:var(--text-muted);font-size:var(--text-sm)}
+.defs .eg::before{content:"e.g. ";font-weight:600;color:var(--text)}
+.callout{margin-top:var(--space-5);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4)}
+.callout>b:first-child{color:var(--text)}
+.callout ol,.callout ul{margin:6px 0 2px;padding-left:22px}
+.callout li{margin:var(--space-1) 0}
+details.more{margin-top:var(--space-3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:var(--space-2) var(--space-4);background:var(--surface)}
+details.more summary{cursor:pointer;font-weight:600}
+
+/* figures */
+.figs{display:flex;flex-wrap:wrap;gap:var(--space-4);margin-top:var(--space-5)}
+.figs figure{flex:1 1 250px;max-width:430px;min-width:0;margin:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4) var(--space-4) var(--space-3)}
+figure.fig{margin:var(--space-5) 0 0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4) var(--space-4) var(--space-3);overflow-x:auto}
+figure.fig svg{display:block;width:100%;height:auto;min-width:var(--minw,0);max-width:var(--maxw,560px);margin-inline:auto}
+figcaption{font-size:var(--text-xs);color:var(--text-muted);margin-top:var(--space-2);line-height:1.45}
+
+/* worked example */
+.calc{margin-top:var(--space-5);background:var(--note-bg);border-radius:var(--radius-md);padding:var(--space-4)}
+.calc>.tag{color:var(--text)}
+.calc>p{margin:10px 0 0}
+.calc ol{margin:10px 0 0;padding-left:22px}
+.calc li{margin:var(--space-2) 0}
+.calc li>b:first-child{color:var(--text)}
+.calc figure.fig,.calc .figs figure{background:var(--surface)}
+.calc code{background:var(--surface)}
+ul.ln{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:var(--space-2);font-size:var(--text-sm)}
+ul.ln li{padding-left:1.1em;text-indent:-1.1em;overflow-wrap:anywhere}
+ul.ln li::before{content:"\203A\00a0";color:var(--text-muted);font-weight:600}
+
+/* tables */
+.scroll{overflow-x:auto;margin-top:var(--space-3);max-width:100%}
+table.t{border-collapse:collapse;font:400 var(--text-sm)/1.45 var(--font-body);font-variant-numeric:tabular-nums;min-width:260px}
+table.t th{font-weight:600;text-align:left;color:var(--text-muted)}
+table.t th,table.t td{padding:6px 14px 6px 0;border-bottom:1px solid var(--border);vertical-align:top}
+table.t.mono{font-family:var(--font-mono);font-size:var(--text-xs)}
+table.t.mono th,table.t.mono td{white-space:nowrap}
+table.t.grid th,table.t.grid td{padding:6px 10px;border:1px solid var(--border)}
+table.t.grid th{background:var(--surface-2);color:var(--text)}
+table.t .c,table.t.center th,table.t.center td{text-align:center}
+table.t.center .l{text-align:left}
+table.t td.ok{color:var(--correct);font-weight:600}
+table.t td.bad,table.t td.x{color:var(--wrong);font-weight:600}
+table.t tr.best td{background:var(--correct-bg);font-weight:600}
+
+/* notes and footer */
+.note{margin-top:var(--space-5);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4)}
+.note.errata{background:var(--surface-2);border-color:transparent;color:var(--text-muted)}
+.note.errata>.tag{color:var(--text-muted)}
+.note ul,.note ol{margin:var(--space-2) 0 0;padding-left:1.2em;display:grid;gap:var(--space-2);font-size:var(--text-sm)}
+.foot{margin-top:var(--space-7);padding-top:var(--space-4);border-top:1px solid var(--border);font-size:var(--text-xs);color:var(--text-muted)}
+
+/* practice */
+.prog{display:flex;align-items:center;gap:var(--space-3);max-width:460px;margin-top:var(--space-4);font:400 var(--text-sm) var(--font-mono);color:var(--text-muted)}
+.prog .track{flex:1;height:6px;border-radius:var(--radius-sm);background:var(--surface-2);overflow:hidden}
+.prog .fill{display:block;height:100%;width:0;background:var(--accent);transition:width var(--dur-med) var(--ease-out)}
+.legend{display:flex;gap:var(--space-2) var(--space-4);flex-wrap:wrap;margin-top:var(--space-4);font-size:var(--text-sm);color:var(--text-muted)}
+.setmeta{margin:6px 0 0;color:var(--text-muted);font-size:var(--text-sm)}
+.prob{margin-top:var(--space-4);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4);scroll-margin-top:var(--space-3);transition:border-color var(--dur-med) var(--ease-out)}
+.prob.ok{border-color:var(--correct)}
+.prob.bad{border-color:var(--wrong)}
+.ph{display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap}
+.pid{font:400 var(--text-sm) var(--font-mono);color:var(--text-muted)}
+.ph .pt{font:600 var(--text-md)/1.35 var(--font-body);margin:0;min-width:0;flex:1 1 16em}
+.lvl{font:600 var(--text-xs)/1 var(--font-body);padding:4px 8px;border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text-muted)}
+.lw,.ls,.lc{background:var(--surface-2);color:var(--text-muted)}
+.lc{color:var(--text)}
+.done{margin-left:auto;display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs);color:var(--text-muted);cursor:pointer}
+.done input{width:18px;height:18px;accent-color:var(--correct);cursor:pointer}
+.pq{margin-top:10px;max-width:var(--measure)}
+.pq>p,.prob>p{margin:10px 0 0}
+.parts{margin:var(--space-2) 0 0;padding-left:1.4em;display:grid;gap:var(--space-1)}
+.pfs{display:flex;flex-wrap:wrap;gap:var(--space-3);margin-top:var(--space-3)}
+.pfs figure{flex:1 1 200px;max-width:340px;min-width:0;margin:0;background:var(--surface-2);border-radius:var(--radius-sm);padding:var(--space-3) var(--space-3) var(--space-2)}
+.prob details{margin-top:var(--space-3)}
+.prob summary{cursor:pointer;display:inline-flex;align-items:center;gap:var(--space-2);font:600 var(--text-sm) var(--font-body);color:var(--text);padding:var(--space-1) var(--space-3) var(--space-1) var(--space-2);border-radius:var(--radius-sm);list-style:none}
+.prob summary::-webkit-details-marker{display:none}
+.prob summary::before{content:"\203A";font-size:1.2em;line-height:1;color:var(--text-muted);transition:transform var(--dur-fast) var(--ease-out)}
+.prob details[open]>summary::before{transform:rotate(90deg)}
+.sol{margin-top:var(--space-2);background:var(--surface-2);border-radius:var(--radius-sm);padding:var(--space-2) var(--space-4) var(--space-3);font-size:var(--text-sm)}
+.sol p{margin:10px 0 0;max-width:var(--measure)}
+.sol li>b:first-child{color:var(--text)}
+.sol .pfs figure,.sol .eq{background:var(--surface)}
+.sol code{background:var(--surface)}
+.aid{margin-top:var(--space-3);background:var(--surface-2);border-radius:var(--radius-sm);padding:10px var(--space-3);font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;overflow-x:auto}
+.aid>b:first-child{color:var(--text)}
+.prob input[type=text]{width:100%;min-width:56px;max-width:90px;font:inherit;font-variant-numeric:tabular-nums;text-align:center;padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text)}
+.prob textarea{width:100%;font:inherit;padding:var(--space-2) var(--space-3);border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text)}
+.prob select{font:inherit;padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text)}
+.prob input.ok,.prob select.ok{border-color:var(--correct);background:var(--correct-bg)}
+.prob input.bad,.prob select.bad{border-color:var(--wrong);background:var(--wrong-bg)}
+table.t.inp td{padding:3px 6px 3px 0}
+.scalars{display:flex;flex-wrap:wrap;gap:var(--space-3) var(--space-4);margin:var(--space-3) 0 0}
+label.sc{display:flex;align-items:center;gap:var(--space-2)}
+label.sc>span{font-weight:600;min-width:34px}
+label.sc small{color:var(--text-muted);font-size:var(--text-xs)}
+.mc{display:grid;gap:var(--space-2);margin:var(--space-3) 0 0}
+label.opt{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;background:var(--surface);transition:background var(--dur-fast) var(--ease-out),border-color var(--dur-med) var(--ease-out)}
+label.opt.ok{border-color:var(--correct);background:var(--correct-bg)}
+label.opt.bad{border-color:var(--wrong);background:var(--wrong-bg)}
+label.opt.reveal{border-color:var(--correct)}
+/* correct and wrong are never colour alone */
+label.opt.ok::after{content:"\2713\00a0 Correct";margin-left:auto;font-size:var(--text-xs);font-weight:600;color:var(--correct)}
+label.opt.bad::after{content:"\2715\00a0Wrong";margin-left:auto;font-size:var(--text-xs);font-weight:600;color:var(--wrong)}
+.prob.ok>.ph::after{content:"\2713\00a0 Correct";font-size:var(--text-xs);font-weight:600;color:var(--correct)}
+.prob.bad>.ph::after{content:"\2715\00a0Wrong";font-size:var(--text-xs);font-weight:600;color:var(--wrong)}
+.fb.ok::before{content:"\2713\00a0"}
+.fb.bad::before{content:"\2715\00a0"}
+label.opt input{margin-top:6px;accent-color:var(--primary)}
+.chips-set{display:inline-flex;flex-wrap:wrap;gap:6px;vertical-align:middle}
+label.chipbox{position:relative;border:1px solid var(--border);border-radius:var(--radius-sm);padding:3px 12px;cursor:pointer;background:var(--surface);font-size:var(--text-sm)}
+label.chipbox:has(input:checked){border-color:var(--text);background:var(--text);color:var(--bg)}
+label.chipbox input{position:absolute;opacity:0;pointer-events:none}
+.chips-set.ok label.chipbox:has(input:checked){border-color:var(--correct);background:var(--correct-bg);color:var(--correct)}
+.chips-set.bad{outline:2px solid var(--wrong);outline-offset:3px;border-radius:var(--radius-sm)}
+.actions{display:flex;flex-wrap:wrap;gap:var(--space-2);align-items:center;margin-top:var(--space-3)}
+.b{font:600 var(--text-sm) var(--font-body);min-height:36px;padding:6px var(--space-4);border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;transition:background var(--dur-fast) var(--ease-out)}
+.b.chk{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.fb{font-size:var(--text-sm);font-weight:600}
+.fb.ok{color:var(--correct)} .fb.bad{color:var(--wrong)}
+.solution,.expl{margin-top:var(--space-3);border-top:1px solid var(--border);padding-top:10px;font-size:var(--text-sm)}
+.solution>p,.expl>p{margin:6px 0}
+.expl{color:var(--text-muted)}
+
+/* live figure: a process played step by step (REMAKE_BRIEF.md, "Live figures") */
+.live-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-5);align-items:start}
+figure.fig.live svg{max-width:none;max-height:72vh}
+.live-side{display:grid;gap:var(--space-3);min-width:0}
+.live-side .aid,.live-side .actions{margin-top:0}
+.live-val{display:flex;align-items:baseline;gap:var(--space-2);flex-wrap:wrap}
+.live-val b{font:600 var(--text-xl) var(--font-mono);font-variant-numeric:tabular-nums;color:var(--text)}
+.live input[type=range]{width:100%;margin:0;accent-color:var(--fig)}
+.live-status{min-height:4.4em;padding:var(--space-2) var(--space-3);background:var(--surface-2);border-left:3px solid var(--fig);border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:var(--text-sm)}
+.live-status.ok{border-color:var(--correct);background:var(--correct-bg)}
+.live-status.bad{border-color:var(--wrong);background:var(--wrong-bg)}
+.live-status.ok b{color:var(--correct)} .live-status.bad b{color:var(--wrong)}
+.live table.t{width:100%;min-width:0}
+.live tr.past td{color:var(--text-muted)}
+.live figcaption p{margin:var(--space-2) 0 0;max-width:var(--measure)}
+/* the site zooms pages 125% / 150% on wide screens: keep the whole drawing on screen */
+@media (min-width:1200px){figure.fig.live svg{max-height:58vh}}
+@media (min-width:1500px){figure.fig.live svg{max-height:48vh}}
+
+@media (hover:hover){
+  .toggle:hover,.b:hover,label.opt:hover,.prob summary:hover{background:var(--surface-2)}
+  .b.chk:hover{background:var(--primary);opacity:.88}
+  .part a:hover,.back:hover{color:var(--link)}
+  label.opt.ok:hover{background:var(--correct-bg)} label.opt.bad:hover{background:var(--wrong-bg)}
+}
+@media (max-width:820px){
+  .hero{grid-template-columns:minmax(0,1fr)}
+  .live-grid{grid-template-columns:minmax(0,1fr)}
+  figure.fig.live svg{max-height:60vh}
+  .intro{grid-template-columns:minmax(0,1fr)}
+  .how li{flex-direction:column;gap:2px}
+  body{padding-top:56px}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{.toggle{display:none}body{background:#fff}}
+/* /study-hub:base */
+</style>
+<style>
+
+/* page-specific (VT ch 2). Tokens only; text on --c1..--c4 uses the dark brand ink. */
+.vt text{font-family:var(--font-body)}
+.vt .t{fill:var(--text);font-size:12px;font-weight:500}
+.vt .tb{fill:var(--text);font-size:13px;font-weight:700}
+.vt .tm{fill:var(--text-muted);font-size:11px}
+.vt .sm{font-size:10px}
+.vt .mid{text-anchor:middle}
+.vt .end{text-anchor:end}
+.vt .dk{fill:var(--brand-ink)}
+.vt .figt{fill:var(--fig)}
+.vt .okt{fill:var(--correct)}
+.vt .badt{fill:var(--wrong)}
+.vt .box{fill:var(--surface-2);stroke:var(--border)}
+.vt .pane{fill:var(--surface);stroke:var(--border)}
+.vt .soft{fill:var(--fig-soft);stroke:var(--fig)}
+.vt .c1{fill:var(--c1)} .vt .c2{fill:var(--c2)} .vt .c3{fill:var(--c3)} .vt .c4{fill:var(--c4)}
+.vt .now{stroke:var(--wrong);stroke-width:2.6}
+.vt .ln{stroke:var(--text-muted);stroke-width:1.3;fill:none}
+.vt .ar{stroke:var(--fig);stroke-width:1.8;fill:none}
+.vt .dash{stroke-dasharray:5 4}
+.vt .hd{fill:var(--fig)}
+.vt .hdm{fill:var(--text-muted)}
+.vt .barf{fill:var(--fig)}
+.vt .barn{fill:var(--text-muted);opacity:.35}
+.vt .okf{fill:var(--correct)}
+.vt .badf{fill:var(--wrong)}
+.vt .dim{opacity:.3}
+.vt .tok{fill:var(--wrong)}
+.vt g,.vt rect,.vt circle{transition:opacity var(--dur-med) var(--ease-out)}
+.vt-ex{margin-top:var(--space-4);background:var(--surface);border:1px dashed var(--border);border-radius:var(--radius-md);padding:var(--space-3) var(--space-4);font-size:var(--text-sm)}
+.vt-ex>b:first-child{display:block;font-size:var(--text-xs);color:var(--text-muted);margin-bottom:2px}
+.vt-ex p{margin:var(--space-1) 0 0}
+.vt-steps{margin:10px 0 0;padding-left:1.4em;display:grid;gap:var(--space-2)}
+.vt-steps li>b:first-child{color:var(--text)}
+.calc .scroll table.t{background:transparent}
+.vt-tf{display:flex;flex-wrap:wrap;gap:var(--space-2);margin-top:var(--space-2)}
+.vt-tf label.opt{padding:5px 14px}
+.vt-row{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2) var(--space-4);margin-top:10px}
+.vt-row>span{flex:1 1 20em;min-width:0}
+</style>
+</head>
+<body>
+<button class="toggle" id="theme-toggle" type="button" aria-label="Toggle light or dark theme"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8a2.83 2.83 0 0 0 4 4 4 4 0 1 1-4-4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.9 4.9 1.4 1.4"/><path d="m17.7 17.7 1.4 1.4"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.3 17.7-1.4 1.4"/><path d="m19.1 4.9-1.4 1.4"/></svg></button>
+<div class="wrap">
+<header class="hero" id="top">
+  <div>
+    <div class="eyebrow">VT · Chapter 2 · Practice</div>
+    <h1>Practise the monitoring process</h1>
+    <p class="lead">Recognise each step, role, mode and tool, answer the course quiz, then run the process on a new case. <span class="fr">(Processus de veille)</span></p>
+    <div class="prog" aria-live="polite"><span id="prog-txt">0 / 0 done</span><span class="track"><span class="fill" id="prog-bar"></span></span></div>
+  </div>
+  <figure class="herofig"><svg class="vt" viewBox="0 0 300 150" role="img" aria-label="Three kinds of exercise: sort and match, course quiz, apply to a new case"><rect x="10" y="20" width="130" height="46" rx="8" class="c1"/><text x="75" y="39.5" class="t dk mid">sort and match</text><text x="75" y="54.5" class="t dk mid"><tspan class="sm">A, B</tspan></text><rect x="160" y="20" width="130" height="46" rx="8" class="c3"/><text x="225" y="39.5" class="t dk mid">course quiz</text><text x="225" y="54.5" class="t dk mid"><tspan class="sm">C, D</tspan></text><rect x="85" y="88" width="130" height="46" rx="8" class="c4"/><text x="150" y="107.5" class="t dk mid">apply to a new case</text><text x="150" y="122.5" class="t dk mid"><tspan class="sm">E</tspan></text></svg><figcaption>No calculations in this chapter: the practice is about recognising and applying the method.</figcaption></figure>
+</header>
+<nav class="toc" aria-label="Contents"><div class="part"><h3>Auto-checked</h3><ul><li><a href="#a"><span class="n">A</span><span>The cycle and the people<small>A1 to A3</small></span></a></li><li><a href="#b"><span class="n">B</span><span>Sources, collection, tools<small>B1 to B3</small></span></a></li><li><a href="#c"><span class="n">C</span><span>Course quiz<small>C1 to C8</small></span></a></li></ul></div><div class="part"><h3>Explain and apply</h3><ul><li><a href="#d"><span class="n">D</span><span>True or false, and why<small>D1 to D6</small></span></a></li><li><a href="#e"><span class="n">E</span><span>Apply it to a new case<small>E1 to E4</small></span></a></li></ul></div></nav>
+<section class="sec" id="a">
+  <div class="sec-h"><span class="num">A</span><h2>The cycle and the people <span class="fr">(processus et acteurs)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <p class="setmeta">Pick from the lists, then press Check.</p>
+<article class="prob" id="p-A1">
+  <div class="ph"><span class="pid">A1</span><span class="pt">The order of the steps</span><span class="lvl lw">Warm-up</span><label class="done"><input type="checkbox" id="done-A1"><span>done</span></label></div>
+  <div class="pq"><p>Put the four steps of the monitoring process in order.</p><div class="scroll"><table class="t inp"><tbody><tr><td><label for="q-A1-1">Analyse and process the information</label></td><td><select id="q-A1-1" data-ans="2"><option value="">choose…</option><option value="0">1st</option><option value="1">2nd</option><option value="2">3rd</option><option value="3">4th</option></select></td></tr><tr><td><label for="q-A1-2">Share the results</label></td><td><select id="q-A1-2" data-ans="3"><option value="">choose…</option><option value="0">1st</option><option value="1">2nd</option><option value="2">3rd</option><option value="3">4th</option></select></td></tr><tr><td><label for="q-A1-3">Define the need</label></td><td><select id="q-A1-3" data-ans="0"><option value="">choose…</option><option value="0">1st</option><option value="1">2nd</option><option value="2">3rd</option><option value="3">4th</option></select></td></tr><tr><td><label for="q-A1-4">Identify sources and collect</label></td><td><select id="q-A1-4" data-ans="1"><option value="">choose…</option><option value="0">1st</option><option value="1">2nd</option><option value="2">3rd</option><option value="3">4th</option></select></td></tr></tbody></table></div></div>
+  <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+  <details><summary>Show solution</summary><div class="sol"><p>1 · Define the need → 2 · Sources and collection → 3 · Analysis → 4 · Diffusion, then the decision raises a new need and the loop starts again.</p><ul class="ln"><li>Analyse and process the information: <b>3rd</b></li><li>Share the results: <b>4th</b></li><li>Define the need: <b>1st</b></li><li>Identify sources and collect: <b>2nd</b></li></ul></div></details>
+</article>
+<article class="prob" id="p-A2">
+  <div class="ph"><span class="pid">A2</span><span class="pt">Which step is it?</span><span class="lvl lw">Warm-up</span><label class="done"><input type="checkbox" id="done-A2"><span>done</span></label></div>
+  <div class="pq"><div class="aid"><b>The cycle</b>: 1 Define the need (définition des besoins) → 2 Find sources and collect (identification des sources, récolte) → 3 Analyse and process (analyse et traitement) → 4 Share (diffusion) → decision → back to 1.</div><p>A small company, SahraDry, dries dates and wonders whether solar dryers could replace gas. Which step of the process is each task part of?</p><div class="scroll"><table class="t inp"><tbody><tr><td><label for="q-A2-1">Writing down the keywords and the scope of the search</label></td><td><select id="q-A2-1" data-ans="0"><option value="">choose…</option><option value="0">1 · Define the need</option><option value="1">2 · Sources and collection</option><option value="2">3 · Analysis</option><option value="3">4 · Diffusion</option></select></td></tr><tr><td><label for="q-A2-2">Checking whether a website's author is qualified</label></td><td><select id="q-A2-2" data-ans="1"><option value="">choose…</option><option value="0">1 · Define the need</option><option value="1">2 · Sources and collection</option><option value="2">3 · Analysis</option><option value="3">4 · Diffusion</option></select></td></tr><tr><td><label for="q-A2-3">Setting up an email alert on "solar dryer"</label></td><td><select id="q-A2-3" data-ans="1"><option value="">choose…</option><option value="0">1 · Define the need</option><option value="1">2 · Sources and collection</option><option value="2">3 · Analysis</option><option value="3">4 · Diffusion</option></select></td></tr><tr><td><label for="q-A2-4">Linking a gas price rise to a competitor's switch to solar</label></td><td><select id="q-A2-4" data-ans="2"><option value="">choose…</option><option value="0">1 · Define the need</option><option value="1">2 · Sources and collection</option><option value="2">3 · Analysis</option><option value="3">4 · Diffusion</option></select></td></tr><tr><td><label for="q-A2-5">Writing two possible scenarios and a proposal</label></td><td><select id="q-A2-5" data-ans="2"><option value="">choose…</option><option value="0">1 · Define the need</option><option value="1">2 · Sources and collection</option><option value="2">3 · Analysis</option><option value="3">4 · Diffusion</option></select></td></tr><tr><td><label for="q-A2-6">Deciding who receives which items, and how often</label></td><td><select id="q-A2-6" data-ans="3"><option value="">choose…</option><option value="0">1 · Define the need</option><option value="1">2 · Sources and collection</option><option value="2">3 · Analysis</option><option value="3">4 · Diffusion</option></select></td></tr><tr><td><label for="q-A2-7">Sending a one-page monthly bulletin to the manager</label></td><td><select id="q-A2-7" data-ans="3"><option value="">choose…</option><option value="0">1 · Define the need</option><option value="1">2 · Sources and collection</option><option value="2">3 · Analysis</option><option value="3">4 · Diffusion</option></select></td></tr></tbody></table></div></div>
+  <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+  <details><summary>Show solution</summary><div class="sol"><ul class="ln"><li>Writing down the keywords and the scope of the search: <b>1 · Define the need</b></li><li>Checking whether a website's author is qualified: <b>2 · Sources and collection</b></li><li>Setting up an email alert on "solar dryer": <b>2 · Sources and collection</b></li><li>Linking a gas price rise to a competitor's switch to solar: <b>3 · Analysis</b></li><li>Writing two possible scenarios and a proposal: <b>3 · Analysis</b></li><li>Deciding who receives which items, and how often: <b>4 · Diffusion</b></li><li>Sending a one-page monthly bulletin to the manager: <b>4 · Diffusion</b></li></ul><p>Tip: anything about <i>where to look</i> or <i>getting</i> items is step 2; anything about <i>what it means</i> is step 3; anything about <i>who gets it, how, when</i> is step 4.</p></div></details>
+</article>
+<article class="prob" id="p-A3">
+  <div class="ph"><span class="pid">A3</span><span class="pt">Who does it?</span><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-A3"><span>done</span></label></div>
+  <div class="pq"><div class="aid"><b>Roles</b>: watchers = information professionals (observers, researchers, documentalists); experts = domain specialists (analysts, technical experts); decision-makers = managers, directors.</div><p>Monitoring is team work with three roles. Who does each task?</p><div class="scroll"><table class="t inp"><tbody><tr><td><label for="q-A3-1">Collects raw data and manages the sources</label></td><td><select id="q-A3-1" data-ans="0"><option value="">choose…</option><option value="0">watcher (veilleur)</option><option value="1">expert / analyst</option><option value="2">decision-maker (décideur)</option></select></td></tr><tr><td><label for="q-A3-2">Interprets and validates the collected information</label></td><td><select id="q-A3-2" data-ans="1"><option value="">choose…</option><option value="0">watcher (veilleur)</option><option value="1">expert / analyst</option><option value="2">decision-maker (décideur)</option></select></td></tr><tr><td><label for="q-A3-3">Uses the monitoring summaries to choose the company's direction</label></td><td><select id="q-A3-3" data-ans="2"><option value="">choose…</option><option value="0">watcher (veilleur)</option><option value="1">expert / analyst</option><option value="2">decision-maker (décideur)</option></select></td></tr><tr><td><label for="q-A3-4">Searches for relevant sources (sourcing)</label></td><td><select id="q-A3-4" data-ans="0"><option value="">choose…</option><option value="0">watcher (veilleur)</option><option value="1">expert / analyst</option><option value="2">decision-maker (décideur)</option></select></td></tr><tr><td><label for="q-A3-5">Puts the information in perspective for the company</label></td><td><select id="q-A3-5" data-ans="1"><option value="">choose…</option><option value="0">watcher (veilleur)</option><option value="1">expert / analyst</option><option value="2">decision-maker (décideur)</option></select></td></tr><tr><td><label for="q-A3-6">Decides to test one solar dryer next season</label></td><td><select id="q-A3-6" data-ans="2"><option value="">choose…</option><option value="0">watcher (veilleur)</option><option value="1">expert / analyst</option><option value="2">decision-maker (décideur)</option></select></td></tr></tbody></table></div></div>
+  <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+  <details><summary>Show solution</summary><div class="sol"><ul class="ln"><li>Collects raw data and manages the sources: <b>watcher (veilleur)</b></li><li>Interprets and validates the collected information: <b>expert / analyst</b></li><li>Uses the monitoring summaries to choose the company's direction: <b>decision-maker (décideur)</b></li><li>Searches for relevant sources (sourcing): <b>watcher (veilleur)</b></li><li>Puts the information in perspective for the company: <b>expert / analyst</b></li><li>Decides to test one solar dryer next season: <b>decision-maker (décideur)</b></li></ul></div></details>
+</article>
+</section>
+
+<section class="sec" id="b">
+  <div class="sec-h"><span class="num">B</span><h2>Sources, collection and tools <span class="fr">(sources, collecte, outils)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <p class="setmeta">Pick from the lists, then press Check.</p>
+<article class="prob" id="p-B1">
+  <div class="ph"><span class="pid">B1</span><span class="pt">Pull or push?</span><span class="lvl lw">Warm-up</span><label class="done"><input type="checkbox" id="done-B1"><span>done</span></label></div>
+  <div class="pq"><div class="aid"><b>Pull</b>: you search the web yourself. <b>Push</b>: a tool sends you new items automatically, from settings (keywords, filters) you chose once.</div><p>Pull or push?</p><div class="scroll"><table class="t inp"><tbody><tr><td><label for="q-B1-1">You go fishing for the information yourself</label></td><td><select id="q-B1-1" data-ans="0"><option value="">choose…</option><option value="0">pull</option><option value="1">push</option></select></td></tr><tr><td><label for="q-B1-2">No registration with a publisher or database is needed</label></td><td><select id="q-B1-2" data-ans="0"><option value="">choose…</option><option value="0">pull</option><option value="1">push</option></select></td></tr><tr><td><label for="q-B1-3">Risk of being flooded if the keywords are too broad</label></td><td><select id="q-B1-3" data-ans="1"><option value="">choose…</option><option value="0">pull</option><option value="1">push</option></select></td></tr><tr><td><label for="q-B1-4">Automatic, warns you quickly</label></td><td><select id="q-B1-4" data-ans="1"><option value="">choose…</option><option value="0">pull</option><option value="1">push</option></select></td></tr><tr><td><label for="q-B1-5">Takes a lot of time, is tedious, and the watch becomes irregular</label></td><td><select id="q-B1-5" data-ans="0"><option value="">choose…</option><option value="0">pull</option><option value="1">push</option></select></td></tr><tr><td><label for="q-B1-6">You can discard bad results at once, so it is precise</label></td><td><select id="q-B1-6" data-ans="0"><option value="">choose…</option><option value="0">pull</option><option value="1">push</option></select></td></tr><tr><td><label for="q-B1-7">Saves the researcher time and keeps the watch regular</label></td><td><select id="q-B1-7" data-ans="1"><option value="">choose…</option><option value="0">pull</option><option value="1">push</option></select></td></tr><tr><td><label for="q-B1-8">Brings emails and spam</label></td><td><select id="q-B1-8" data-ans="1"><option value="">choose…</option><option value="0">pull</option><option value="1">push</option></select></td></tr></tbody></table></div></div>
+  <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+  <details><summary>Show solution</summary><div class="sol"><ul class="ln"><li>You go fishing for the information yourself: <b>pull</b></li><li>No registration with a publisher or database is needed: <b>pull</b></li><li>Risk of being flooded if the keywords are too broad: <b>push</b></li><li>Automatic, warns you quickly: <b>push</b></li><li>Takes a lot of time, is tedious, and the watch becomes irregular: <b>pull</b></li><li>You can discard bad results at once, so it is precise: <b>pull</b></li><li>Saves the researcher time and keeps the watch regular: <b>push</b></li><li>Brings emails and spam: <b>push</b></li></ul></div></details>
+</article>
+<article class="prob" id="p-B2">
+  <div class="ph"><span class="pid">B2</span><span class="pt">Which check does it fail?</span><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-B2"><span>done</span></label></div>
+  <div class="pq"><div class="aid"><b>Four checks</b>: authority (who is behind it?), date (are the pages you use recent? check them all, not just the home page), objectivity (is it neutral?), organisation (can you find things in it?).</div><p>Each source fails one of the four quality checks. Which one?</p><div class="scroll"><table class="t inp"><tbody><tr><td><label for="q-B2-1">A report on solar dryers written by a dryer seller, praising its own model</label></td><td><select id="q-B2-1" data-ans="2"><option value="">choose…</option><option value="0">authority (autorité)</option><option value="1">date of update (mise à jour)</option><option value="2">objectivity (objectivité)</option><option value="3">organisation of the site</option></select></td></tr><tr><td><label for="q-B2-2">A site whose home page is dated today, but whose technical pages were last updated in 2015</label></td><td><select id="q-B2-2" data-ans="1"><option value="">choose…</option><option value="0">authority (autorité)</option><option value="1">date of update (mise à jour)</option><option value="2">objectivity (objectivité)</option><option value="3">organisation of the site</option></select></td></tr><tr><td><label for="q-B2-3">An article with no author name and no known publisher</label></td><td><select id="q-B2-3" data-ans="0"><option value="">choose…</option><option value="0">authority (autorité)</option><option value="1">date of update (mise à jour)</option><option value="2">objectivity (objectivité)</option><option value="3">organisation of the site</option></select></td></tr><tr><td><label for="q-B2-4">Useful data scattered over pages with no menu and broken links</label></td><td><select id="q-B2-4" data-ans="3"><option value="">choose…</option><option value="0">authority (autorité)</option><option value="1">date of update (mise à jour)</option><option value="2">objectivity (objectivité)</option><option value="3">organisation of the site</option></select></td></tr></tbody></table></div></div>
+  <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+  <details><summary>Show solution</summary><div class="sol"><ul class="ln"><li>A report on solar dryers written by a dryer seller, praising its own model: <b>objectivity (objectivité)</b></li><li>A site whose home page is dated today, but whose technical pages were last updated in 2015: <b>date of update (mise à jour)</b></li><li>An article with no author name and no known publisher: <b>authority (autorité)</b></li><li>Useful data scattered over pages with no menu and broken links: <b>organisation of the site</b></li></ul></div></details>
+</article>
+<article class="prob" id="p-B3">
+  <div class="ph"><span class="pid">B3</span><span class="pt">The right tool for the job</span><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-B3"><span>done</span></label></div>
+  <div class="pq"><p>Pick the tool family that fits each job.</p><div class="scroll"><table class="t inp"><tbody><tr><td><label for="q-B3-1">Store 20 scientific PDFs and cite them in a Word report</label></td><td><select id="q-B3-1" data-ans="0"><option value="">choose…</option><option value="0">reference manager (Zotero, Mendeley)</option><option value="1">social bookmarking (Diigo, Pearltrees)</option><option value="2">note tool (Evernote, Google Keep)</option><option value="3">site copier (HTTrack)</option><option value="4">curation (Scoop.it)</option><option value="5">dashboard (Netvibes)</option></select></td></tr><tr><td><label for="q-B3-2">Capture a maker's web page and highlight the price on it</label></td><td><select id="q-B3-2" data-ans="1"><option value="">choose…</option><option value="0">reference manager (Zotero, Mendeley)</option><option value="1">social bookmarking (Diigo, Pearltrees)</option><option value="2">note tool (Evernote, Google Keep)</option><option value="3">site copier (HTTrack)</option><option value="4">curation (Scoop.it)</option><option value="5">dashboard (Netvibes)</option></select></td></tr><tr><td><label for="q-B3-3">Download a whole research centre's website to read it offline</label></td><td><select id="q-B3-3" data-ans="3"><option value="">choose…</option><option value="0">reference manager (Zotero, Mendeley)</option><option value="1">social bookmarking (Diigo, Pearltrees)</option><option value="2">note tool (Evernote, Google Keep)</option><option value="3">site copier (HTTrack)</option><option value="4">curation (Scoop.it)</option><option value="5">dashboard (Netvibes)</option></select></td></tr><tr><td><label for="q-B3-4">Republish the 10 best articles of the month, each with a comment</label></td><td><select id="q-B3-4" data-ans="4"><option value="">choose…</option><option value="0">reference manager (Zotero, Mendeley)</option><option value="1">social bookmarking (Diigo, Pearltrees)</option><option value="2">note tool (Evernote, Google Keep)</option><option value="3">site copier (HTTrack)</option><option value="4">curation (Scoop.it)</option><option value="5">dashboard (Netvibes)</option></select></td></tr><tr><td><label for="q-B3-5">Gather several news feeds on a single screen</label></td><td><select id="q-B3-5" data-ans="5"><option value="">choose…</option><option value="0">reference manager (Zotero, Mendeley)</option><option value="1">social bookmarking (Diigo, Pearltrees)</option><option value="2">note tool (Evernote, Google Keep)</option><option value="3">site copier (HTTrack)</option><option value="4">curation (Scoop.it)</option><option value="5">dashboard (Netvibes)</option></select></td></tr><tr><td><label for="q-B3-6">Write notes after a supplier call and share them with a colleague</label></td><td><select id="q-B3-6" data-ans="2"><option value="">choose…</option><option value="0">reference manager (Zotero, Mendeley)</option><option value="1">social bookmarking (Diigo, Pearltrees)</option><option value="2">note tool (Evernote, Google Keep)</option><option value="3">site copier (HTTrack)</option><option value="4">curation (Scoop.it)</option><option value="5">dashboard (Netvibes)</option></select></td></tr></tbody></table></div></div>
+  <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+  <details><summary>Show solution</summary><div class="sol"><ul class="ln"><li>Store 20 scientific PDFs and cite them in a Word report: <b>reference manager (Zotero, Mendeley)</b></li><li>Capture a maker's web page and highlight the price on it: <b>social bookmarking (Diigo, Pearltrees)</b></li><li>Download a whole research centre's website to read it offline: <b>site copier (HTTrack)</b></li><li>Republish the 10 best articles of the month, each with a comment: <b>curation (Scoop.it)</b></li><li>Gather several news feeds on a single screen: <b>dashboard (Netvibes)</b></li><li>Write notes after a supplier call and share them with a colleague: <b>note tool (Evernote, Google Keep)</b></li></ul></div></details>
+</article>
+</section>
+
+<section class="sec" id="c">
+  <div class="sec-h"><span class="num">C</span><h2>Course quiz <span class="fr">(QCM du cours)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <p class="setmeta">The eight questions of the course quiz, in English. Pick one answer, then press Check.</p>
+<article class="prob" id="p-C1">
+  <div class="ph"><span class="pid">C1</span><span class="pt">Course quiz, question 1</span><span class="lvl lw">Warm-up</span><label class="done"><input type="checkbox" id="done-C1"><span>done</span></label></div>
+  <div class="pq"><p>Technology monitoring aims above all to: <span class="tag">one answer</span></p><div class="mc" data-ans="1"><label class="opt"><input type="radio" name="q-C1" id="q-C1-1" value="0"><span>a) gather as much information as possible about competitors</span></label><label class="opt"><input type="radio" name="q-C1" id="q-C1-2" value="1"><span>b) watch and use the technology changes that matter to the company</span></label><label class="opt"><input type="radio" name="q-C1" id="q-C1-3" value="2"><span>c) copy the innovations already on the market</span></label><label class="opt"><input type="radio" name="q-C1" id="q-C1-4" value="3"><span>d) replace the company's own R&amp;D</span></label></div></div>
+  <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+  <details><summary>Show solution</summary><div class="sol"><p>Correct: <b>b)</b> Monitoring is about the changes that <i>matter to the company</i>, and using them. Quantity (a) is not the goal; copying (c) or replacing R&amp;D (d) are not either.</p></div></details>
+</article>
+<article class="prob" id="p-C2">
+  <div class="ph"><span class="pid">C2</span><span class="pt">Course quiz, question 2</span><span class="lvl lw">Warm-up</span><label class="done"><input type="checkbox" id="done-C2"><span>done</span></label></div>
+  <div class="pq"><p>Analysis and processing of information are essential because: <span class="tag">one answer</span></p><div class="mc" data-ans="3"><label class="opt"><input type="radio" name="q-C2" id="q-C2-1" value="0"><span>a) they only sort out outdated data</span></label><label class="opt"><input type="radio" name="q-C2" id="q-C2-2" value="1"><span>b) they are limited to filing documents</span></label><label class="opt"><input type="radio" name="q-C2" id="q-C2-3" value="2"><span>c) they consist of copying the information found</span></label><label class="opt"><input type="radio" name="q-C2" id="q-C2-4" value="3"><span>d) they turn raw data into information with added value</span></label></div></div>
+  <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+  <details><summary>Show solution</summary><div class="sol"><p>Correct: <b>d)</b> Step 3 is where raw items become meaning: links, hypotheses, scenarios, proposals.</p></div></details>
+</article>
+<article class="prob" id="p-C3">
+  <div class="ph"><span class="pid">C3</span><span class="pt">Course quiz, question 3</span><span class="lvl lw">Warm-up</span><label class="done"><input type="checkbox" id="done-C3"><span>done</span></label></div>
+  <div class="pq"><p>Which statement best describes the watcher's (veilleur's) role? <span class="tag">one answer</span></p><div class="mc" data-ans="1"><label class="opt"><input type="radio" name="q-C3" id="q-C3-1" value="0"><span>a) decides the company's strategic direction</span></label><label class="opt"><input type="radio" name="q-C3" id="q-C3-2" value="1"><span>b) searches for, selects and validates relevant sources</span></label><label class="opt"><input type="radio" name="q-C3" id="q-C3-3" value="2"><span>c) writes the marketing bulletins</span></label><label class="opt"><input type="radio" name="q-C3" id="q-C3-4" value="3"><span>d) designs the technology products</span></label></div></div>
+  <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+  <details><summary>Show solution</summary><div class="sol"><p>Correct: <b>b)</b> Deciding (a) is the decision-maker's job. The watcher does the sourcing and collection.</p></div></details>
+</article>
+<article class="prob" id="p-C4">
+  <div class="ph"><span class="pid">C4</span><span class="pt">Course quiz, question 4</span><span class="lvl lw">Warm-up</span><label class="done"><input type="checkbox" id="done-C4"><span>done</span></label></div>
+  <div class="pq"><p>Push mode has one major risk: <span class="tag">one answer</span></p><div class="mc" data-ans="2"><label class="opt"><input type="radio" name="q-C4" id="q-C4-1" value="0"><span>a) a watch that is too slow</span></label><label class="opt"><input type="radio" name="q-C4" id="q-C4-2" value="1"><span>b) no information at all</span></label><label class="opt"><input type="radio" name="q-C4" id="q-C4-3" value="2"><span>c) an overload of irrelevant information</span></label><label class="opt"><input type="radio" name="q-C4" id="q-C4-4" value="3"><span>d) a lack of collaboration</span></label></div></div>
+  <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+  <details><summary>Show solution</summary><div class="sol"><p>Correct: <b>c)</b> If the alert's keywords are too broad, you are flooded. Push is fast (not a), and sends plenty (not b).</p></div></details>
+</article>
+<article class="prob" id="p-C5">
+  <div class="ph"><span class="pid">C5</span><span class="pt">Course quiz, question 5</span><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-C5"><span>done</span></label></div>
+  <div class="pq"><p>One advantage of curation tools (like Scoop.it) is that they: <span class="tag">one answer</span></p><div class="mc" data-ans="1"><label class="opt"><input type="radio" name="q-C5" id="q-C5-1" value="0"><span>a) completely replace human analysis</span></label><label class="opt"><input type="radio" name="q-C5" id="q-C5-2" value="1"><span>b) make it easier to share, present and put monitoring results in context</span></label><label class="opt"><input type="radio" name="q-C5" id="q-C5-3" value="2"><span>c) automatically collect everything on the web</span></label><label class="opt"><input type="radio" name="q-C5" id="q-C5-4" value="3"><span>d) distribute information on paper only</span></label></div></div>
+  <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+  <details><summary>Show solution</summary><div class="sol"><p>Correct: <b>b)</b> Curation means picking the best items and republishing them with context. It does not replace analysis or collect everything.</p></div></details>
+</article>
+<article class="prob" id="p-C6">
+  <div class="ph"><span class="pid">C6</span><span class="pt">Course quiz, question 6</span><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-C6"><span>done</span></label></div>
+  <div class="pq"><p>Technology monitoring helps innovation directly by: <span class="tag">one answer</span></p><div class="mc" data-ans="0"><label class="opt"><input type="radio" name="q-C6" id="q-C6-1" value="0"><span>a) spotting new scientific and technical opportunities</span></label><label class="opt"><input type="radio" name="q-C6" id="q-C6-2" value="1"><span>b) replacing engineers</span></label><label class="opt"><input type="radio" name="q-C6" id="q-C6-3" value="2"><span>c) increasing administrative work</span></label><label class="opt"><input type="radio" name="q-C6" id="q-C6-4" value="3"><span>d) limiting the exchange of information</span></label></div></div>
+  <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+  <details><summary>Show solution</summary><div class="sol"><p>Correct: <b>a)</b> Innovation is one of monitoring's aims: new opportunities feed new ideas.</p></div></details>
+</article>
+<article class="prob" id="p-C7">
+  <div class="ph"><span class="pid">C7</span><span class="pt">Course quiz, question 7</span><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-C7"><span>done</span></label></div>
+  <div class="pq"><p>Which of these is NOT a criterion for judging whether a source is reliable? <span class="tag">one answer</span></p><div class="mc" data-ans="3"><label class="opt"><input type="radio" name="q-C7" id="q-C7-1" value="0"><span>a) authority</span></label><label class="opt"><input type="radio" name="q-C7" id="q-C7-2" value="1"><span>b) how up to date it is</span></label><label class="opt"><input type="radio" name="q-C7" id="q-C7-3" value="2"><span>c) objectivity</span></label><label class="opt"><input type="radio" name="q-C7" id="q-C7-4" value="3"><span>d) how nice the site looks</span></label></div></div>
+  <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+  <details><summary>Show solution</summary><div class="sol"><p>Correct: <b>d)</b> The four checks are authority, date, objectivity and organisation of the information. Looks are not a criterion.</p></div></details>
+</article>
+<article class="prob" id="p-C8">
+  <div class="ph"><span class="pid">C8</span><span class="pt">Course quiz, question 8</span><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-C8"><span>done</span></label></div>
+  <div class="pq"><p>Why should diffusion be selective rather than sending everything to everyone? <span class="tag">one answer</span></p><div class="mc" data-ans="1"><label class="opt"><input type="radio" name="q-C8" id="q-C8-1" value="0"><span>a) because sharing with decision-makers is useless</span></label><label class="opt"><input type="radio" name="q-C8" id="q-C8-2" value="1"><span>b) because mass sending can make information lose its meaning and slow reactions</span></label><label class="opt"><input type="radio" name="q-C8" id="q-C8-3" value="2"><span>c) because only good news should be passed on</span></label></div></div>
+  <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+  <details><summary>Show solution</summary><div class="sol"><p>Correct: <b>b)</b> Too much information drowns the important item. Selective diffusion sends each person only what matches their profile.</p></div></details>
+</article>
+</section>
+
+<section class="sec" id="d">
+  <div class="sec-h"><span class="num">D</span><h2>True or false, and say why <span class="fr">(Vrai / Faux, justifier)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <p class="setmeta">From the course quiz. Check the true/false part, then compare your reason with the solution.</p>
+<article class="prob" id="p-D1">
+  <div class="ph"><span class="pid">D1</span><span class="pt">True or false?</span><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-D1"><span>done</span></label></div>
+  <div class="pq"><div class="vt-row"><span>Technology monitoring is limited to collecting information on the internet.</span><div class="mc vt-tf" data-ans="1"><label class="opt"><input type="radio" name="q-D1" id="q-D1-1" value="0"><span>True</span></label><label class="opt"><input type="radio" name="q-D1" id="q-D1-2" value="1"><span>False</span></label></div></div><p><label for="q-D1-3"><b>Why?</b> (one sentence, not auto-checked)</label></p><textarea id="q-D1-3" rows="2"></textarea></div>
+  <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+  <details><summary>Show solution</summary><div class="sol"><p><b>False. Collection is only step 2. Monitoring also includes analysis, summarising and sharing useful information for strategic decisions.</b></p></div></details>
+</article>
+<article class="prob" id="p-D2">
+  <div class="ph"><span class="pid">D2</span><span class="pt">True or false?</span><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-D2"><span>done</span></label></div>
+  <div class="pq"><div class="vt-row"><span>Sourcing can be fully automated with digital tools.</span><div class="mc vt-tf" data-ans="1"><label class="opt"><input type="radio" name="q-D2" id="q-D2-1" value="0"><span>True</span></label><label class="opt"><input type="radio" name="q-D2" id="q-D2-2" value="1"><span>False</span></label></div></div><p><label for="q-D2-3"><b>Why?</b> (one sentence, not auto-checked)</label></p><textarea id="q-D2-3" rows="2"></textarea></div>
+  <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+  <details><summary>Show solution</summary><div class="sol"><p><b>False. Tools can automate the searching, but choosing the relevant sources needs human judgement to make sure they are reliable and relevant.</b></p></div></details>
+</article>
+<article class="prob" id="p-D3">
+  <div class="ph"><span class="pid">D3</span><span class="pt">True or false?</span><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-D3"><span>done</span></label></div>
+  <div class="pq"><div class="vt-row"><span>Push mode delivers the most relevant information automatically, with no set-up needed.</span><div class="mc vt-tf" data-ans="1"><label class="opt"><input type="radio" name="q-D3" id="q-D3-1" value="0"><span>True</span></label><label class="opt"><input type="radio" name="q-D3" id="q-D3-2" value="1"><span>False</span></label></div></div><p><label for="q-D3-3"><b>Why?</b> (one sentence, not auto-checked)</label></p><textarea id="q-D3-3" rows="2"></textarea></div>
+  <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+  <details><summary>Show solution</summary><div class="sol"><p><b>False. Push needs precise settings (keywords, filters, alerts); otherwise it floods you with irrelevant items.</b></p></div></details>
+</article>
+<article class="prob" id="p-D4">
+  <div class="ph"><span class="pid">D4</span><span class="pt">True or false?</span><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-D4"><span>done</span></label></div>
+  <div class="pq"><div class="vt-row"><span>Analysis and processing is the heart of the monitoring process.</span><div class="mc vt-tf" data-ans="0"><label class="opt"><input type="radio" name="q-D4" id="q-D4-1" value="0"><span>True</span></label><label class="opt"><input type="radio" name="q-D4" id="q-D4-2" value="1"><span>False</span></label></div></div><p><label for="q-D4-3"><b>Why?</b> (one sentence, not auto-checked)</label></p><textarea id="q-D4-3" rows="2"></textarea></div>
+  <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+  <details><summary>Show solution</summary><div class="sol"><p><b>True. This is the step where collected data becomes useful information, interpreted and put in perspective for decisions.</b></p></div></details>
+</article>
+<article class="prob" id="p-D5">
+  <div class="ph"><span class="pid">D5</span><span class="pt">True or false?</span><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-D5"><span>done</span></label></div>
+  <div class="pq"><div class="vt-row"><span>Effective monitoring needs several profiles with complementary skills.</span><div class="mc vt-tf" data-ans="0"><label class="opt"><input type="radio" name="q-D5" id="q-D5-1" value="0"><span>True</span></label><label class="opt"><input type="radio" name="q-D5" id="q-D5-2" value="1"><span>False</span></label></div></div><p><label for="q-D5-3"><b>Why?</b> (one sentence, not auto-checked)</label></p><textarea id="q-D5-3" rows="2"></textarea></div>
+  <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+  <details><summary>Show solution</summary><div class="sol"><p><b>True. Watchers collect, analysts interpret, decision-makers act: each turns data one step closer to a usable strategy.</b></p></div></details>
+</article>
+<article class="prob" id="p-D6">
+  <div class="ph"><span class="pid">D6</span><span class="pt">True or false?</span><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-D6"><span>done</span></label></div>
+  <div class="pq"><div class="vt-row"><span>Selective diffusion aims to avoid overloading the people who receive it.</span><div class="mc vt-tf" data-ans="0"><label class="opt"><input type="radio" name="q-D6" id="q-D6-1" value="0"><span>True</span></label><label class="opt"><input type="radio" name="q-D6" id="q-D6-2" value="1"><span>False</span></label></div></div><p><label for="q-D6-3"><b>Why?</b> (one sentence, not auto-checked)</label></p><textarea id="q-D6-3" rows="2"></textarea></div>
+  <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+  <details><summary>Show solution</summary><div class="sol"><p><b>True. Too much information wastes time and buries decision-makers in useless data. Selecting makes the watch more effective.</b></p></div></details>
+</article>
+</section>
+
+<section class="sec" id="e">
+  <div class="sec-h"><span class="num">E</span><h2>Apply it to a new case <span class="fr">(mise en application)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <p class="setmeta">Open answers: write yours, then compare with the solution and tick done. E2 is auto-checked.</p>
+<article class="prob" id="p-E1">
+  <div class="ph"><span class="pid">E1</span><span class="pt">Define the need</span><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-E1"><span>done</span></label></div>
+  <div class="pq"><p><b>The case.</b> MedOran is a chain of 8 pharmacies in Oran. Its director has heard about "e-health" (e-santé) and asks you to set up a technology watch on it. He has a small budget, one assistant who can give 3 hours a week, and one pharmacist who knows IT well.</p><p>Do step 1 for MedOran: turn the vague topic "e-health" into a precise need.</p><div class="aid"><b>Step 1 checklist</b>: understand the goal · precise question · key ideas and keywords · scope (périmètre) · guiding idea (idée directrice) · resources · plan.</div><p><label for="q-E1-1"><b>Precise question</b></label></p><textarea id="q-E1-1" rows="2"></textarea><p><label for="q-E1-2"><b>Keywords (English and French)</b></label></p><textarea id="q-E1-2" rows="2"></textarea><p><label for="q-E1-3"><b>Scope</b></label></p><textarea id="q-E1-3" rows="2"></textarea><p><label for="q-E1-4"><b>Guiding idea</b></label></p><textarea id="q-E1-4" rows="2"></textarea></div>
+  
+  <details><summary>Show solution</summary><div class="sol"><p>One good answer (yours can differ, but it must be just as precise):</p><ul class="ln"><li><b>Question:</b> Which e-prescription and online-ordering services are pharmacies starting to use in Algeria and nearby countries, what do they cost, and what do the rules allow?</li><li><b>Keywords:</b> e-prescription / ordonnance électronique, online pharmacy / pharmacie en ligne, click and collect, teleconsultation / téléconsultation, pharmacy software / logiciel officinal.</li><li><b>Scope:</b> retail pharmacies only (not hospitals), Algeria + Maghreb + France for comparison, items from the last 2 years.</li><li><b>Guiding idea:</b> "Find which e-health service MedOran could offer first, legally and at low cost."</li><li><b>Resources and plan</b> (not asked, but part of step 1): assistant 3 h/week for collection, the IT-minded pharmacist for analysis; report to the director after 3 months.</li></ul></div></details>
+</article>
+<article class="prob" id="p-E2">
+  <div class="ph"><span class="pid">E2</span><span class="pt">Which sources would you keep?</span><span class="lvl ls">Standard</span><label class="done"><input type="checkbox" id="done-E2"><span>done</span></label></div>
+  <div class="pq"><p><b>The case.</b> MedOran is a chain of 8 pharmacies in Oran. Its director has heard about "e-health" (e-santé) and asks you to set up a technology watch on it. He has a small budget, one assistant who can give 3 hours a week, and one pharmacist who knows IT well.</p><p>The assistant found six sources on e-prescription. Which ones pass all four checks (authority, date, objectivity, organisation)? <span class="tag">several answers</span></p><div class="mc" data-ans="0,2,5"><label class="opt"><input type="checkbox" name="q-E2" id="q-E2-1" value="0"><span>a) The Ministry of Health's page on prescription rules, updated in 2026, with a clear menu</span></label><label class="opt"><input type="checkbox" name="q-E2" id="q-E2-2" value="1"><span>b) A telemedicine app maker's blog comparing its app with its rivals</span></label><label class="opt"><input type="checkbox" name="q-E2" id="q-E2-3" value="2"><span>c) A 2025 review article in a medical research database</span></label><label class="opt"><input type="checkbox" name="q-E2" id="q-E2-4" value="3"><span>d) A forum thread from 2013 posted by "anon42"</span></label><label class="opt"><input type="checkbox" name="q-E2" id="q-E2-5" value="4"><span>e) A news site with a fresh home page, whose e-health article dates from 2017</span></label><label class="opt"><input type="checkbox" name="q-E2" id="q-E2-6" value="5"><span>f) The WHO's digital-health page, updated this year and well organised</span></label></div></div>
+  <div class="actions" data-no-save><button class="b chk" type="button" data-act="check">Check</button><button class="b" type="button" data-act="reset">Reset</button><span class="fb" aria-live="polite"></span></div>
+  <details><summary>Show solution</summary><div class="sol"><p>Keep <b>a</b>, <b>c</b> and <b>f</b>.</p><ul class="ln"><li>b fails <b>objectivity</b>: a maker comparing itself with rivals is advertising.</li><li>d fails <b>authority</b> (anonymous) and <b>date</b> (2013).</li><li>e fails <b>date</b>: the home page is fresh but the article you need is from 2017.</li></ul></div></details>
+</article>
+<article class="prob" id="p-E3">
+  <div class="ph"><span class="pid">E3</span><span class="pt">Plan the diffusion</span><span class="lvl lc">Challenge</span><label class="done"><input type="checkbox" id="done-E3"><span>done</span></label></div>
+  <div class="pq"><p><b>The case.</b> MedOran is a chain of 8 pharmacies in Oran. Its director has heard about "e-health" (e-santé) and asks you to set up a technology watch on it. He has a small budget, one assistant who can give 3 hours a week, and one pharmacist who knows IT well.</p><p>After three months, the watch has produced: news on a new law on e-prescriptions, two software offers for online ordering with prices, a study on how patients use pharmacy apps, and 40 general articles on "digital health". Three people must be informed: the <b>director</b>, the <b>IT-minded pharmacist</b>, and the <b>8 head pharmacists</b> of the shops. For each, say <b>what</b> they get, <b>how</b> (format, medium) and <b>when</b> (frequency).</p><p><label for="q-E3-1"><b>Your plan</b></label></p><textarea id="q-E3-1" rows="5"></textarea></div>
+  
+  <details><summary>Show solution</summary><div class="sol"><div class="scroll"><table class="t"><thead><tr><th>Who</th><th>What</th><th>How</th><th>When</th></tr></thead><tbody><tr><td>Director</td><td>the law, the two offers with prices, a recommendation</td><td>one-page bulletin by email + a short thematic dossier for the decision</td><td>monthly; the dossier once</td></tr><tr><td>IT pharmacist</td><td>the software offers in detail, the patient-use study</td><td>email alerts + shared bibliography (Zotero)</td><td>as soon as items arrive</td></tr><tr><td>Head pharmacists</td><td>what the new law changes at the counter</td><td>a note on the intranet</td><td>once, when the law applies</td></tr></tbody></table></div><p>The 40 general articles go to <b>nobody</b>: they are archived. That is selective diffusion: each person gets only what fits their profile.</p></div></details>
+</article>
+<article class="prob" id="p-E4">
+  <div class="ph"><span class="pid">E4</span><span class="pt">Three questions to think about</span><span class="lvl lc">Challenge</span><label class="done"><input type="checkbox" id="done-E4"><span>done</span></label></div>
+  <div class="pq"><p>The course's reflection questions. Answer each in two or three sentences.</p><p><label for="q-E4-1"><b>1.</b> Why is collaboration between watchers, analysts and decision-makers essential?</label></p><textarea id="q-E4-1" rows="3"></textarea><p><label for="q-E4-2"><b>2.</b> How can a company make sure that information collected automatically is reliable?</label></p><textarea id="q-E4-2" rows="3"></textarea><p><label for="q-E4-3"><b>3.</b> When is pull mode better than push mode?</label></p><textarea id="q-E4-3" rows="3"></textarea></div>
+  
+  <details><summary>Show solution</summary><div class="sol"><ol class="parts"><li>Each role is complementary: watchers collect, analysts interpret, decision-makers use the information to act. Remove one and the chain breaks (no data, no meaning, or no action).</li><li>Combine automation with human control, and judge sources with clear criteria: author (authority), the source itself, and the date of last update.</li><li>For one-off, precise searches: you pick only relevant results, so you avoid the overload a push alert can bring.</li></ol></div></details>
+</article>
+</section>
+<section class="sec" id="notes">
+  <div class="note errata"><span class="tag">Notes on the original course</span>
+    <ul><li>The course quiz numbers two questions "6" (slides 27 and 28); here they are C6 and C8.</li><li>The quiz key marks one answer per question; C1 to C8 keep those keys.</li><li>SahraDry and MedOran are invented cases for practice; they are not from the course.</li></ul>
+  </div>
+</section>
+
+<footer class="foot">Based on Mme AZZOUZ Mahdia, <i>Module Veille Technologique</i>, USTHB, 1st year Master Big Data Analytics, "Processus de veille". C and D are the course quiz; answer keys checked automatically by <code>verify.py</code>.</footer>
+</div>
+<script>
+/* auto-check for selects and multiple choice (.mc[data-ans]); Reset fires change so the site forgets the answers */
+(function(){
+  function fields(p){return p.querySelectorAll('select[data-ans], .mc[data-ans] input');}
+  function check(p,quiet){
+    var tot=0,ok=0;
+    p.querySelectorAll('select[data-ans]').forEach(function(s){
+      tot++;s.classList.remove('ok','bad');
+      if(s.value===s.dataset.ans){ok++;s.classList.add('ok');}else if(s.value||!quiet)s.classList.add('bad');
+    });
+    p.querySelectorAll('.mc[data-ans]').forEach(function(g){
+      tot++;var ans=g.dataset.ans.split(','),good=true;
+      g.querySelectorAll('input').forEach(function(i){
+        var l=i.closest('label');l.classList.remove('ok','bad');
+        var want=ans.indexOf(i.value)>=0;
+        if(i.checked){l.classList.add(want?'ok':'bad');if(!want)good=false;}else if(want)good=false;
+      });
+      if(good)ok++;
+    });
+    var fb=p.querySelector('.fb');
+    p.classList.remove('ok','bad');
+    if(ok===tot){fb.textContent='All correct';fb.className='fb ok';p.classList.add('ok');
+      var d=p.querySelector('.done input');if(d&&!d.checked&&!quiet){d.checked=true;d.dispatchEvent(new Event('change',{bubbles:true}));}}
+    else{fb.textContent=ok+' / '+tot+' correct'+(p.querySelector('.mc[data-ans*=","]')?' (several answers are right)':'');fb.className='fb bad';p.classList.add('bad');}
+  }
+  function reset(p){
+    p.querySelectorAll('select[data-ans]').forEach(function(s){s.value='';s.classList.remove('ok','bad');s.dispatchEvent(new Event('change',{bubbles:true}));});
+    p.querySelectorAll('.mc[data-ans] input').forEach(function(i){i.closest('label').classList.remove('ok','bad');if(i.checked){i.checked=false;i.dispatchEvent(new Event('change',{bubbles:true}));}});
+    var fb=p.querySelector('.fb');fb.textContent='';fb.className='fb';p.classList.remove('ok','bad');
+  }
+  document.querySelectorAll('.prob').forEach(function(p){
+    p.querySelectorAll('[data-act]').forEach(function(b){
+      b.addEventListener('click',function(){if(b.dataset.act==='check')check(p,false);else reset(p);});
+    });
+  });
+  document.addEventListener('studyhub:restored',function(){
+    document.querySelectorAll('.prob').forEach(function(p){
+      if(!p.querySelector('[data-act]'))return;
+      var any=false;fields(p).forEach(function(f){if(f.tagName==='SELECT'?f.value:f.checked)any=true;});
+      if(any)check(p,true);
+    });
+    var boxes=document.querySelectorAll('.done input'),n=0;boxes.forEach(function(b){if(b.checked)n++;});
+    var txt=document.getElementById('prog-txt'),bar=document.getElementById('prog-bar');
+    if(txt){txt.textContent=n+' / '+boxes.length+' done';bar.style.width=(100*n/boxes.length)+'%';}
+  });
+})();
+</script>
+<script>
+/* study-hub:progress — practice pages: counts ticked .done boxes */
+(function(){
+  var boxes=document.querySelectorAll('.done input'), txt=document.getElementById('prog-txt'), bar=document.getElementById('prog-bar');
+  if(!boxes.length||!txt) return;
+  function upd(){var n=0;boxes.forEach(function(b){if(b.checked)n++;});txt.textContent=n+' / '+boxes.length+' done';bar.style.width=(100*n/boxes.length)+'%';}
+  boxes.forEach(function(b){b.addEventListener('change',upd);});
+  upd();
+})();
+</script>
+</body>
+</html>
