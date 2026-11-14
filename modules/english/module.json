@@ -3,5 +3,7 @@
   "title": "English",
   "blurb": "Anglais.",
   "order": 8,
-  "chapters": {}
+  "chapters": {
+    "td": "General"
+  }
 }
