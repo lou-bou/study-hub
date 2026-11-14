@@ -1,0 +1,929 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VT · Ch 2 · Lesson</title>
+<script>/* study-hub:theme */(function(){var r=document.documentElement;try{var t=localStorage.getItem("studyhub-theme");if(t)r.setAttribute("data-theme",t);}catch(e){}document.addEventListener("DOMContentLoaded",function(){var b=document.getElementById("theme-toggle");if(b)b.addEventListener("click",function(){var c=r.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");var n=c==="dark"?"light":"dark";r.setAttribute("data-theme",n);try{localStorage.setItem("studyhub-theme",n);}catch(e){}});});})();</script>
+<style>
+/* study-hub:base v3 — shared by every remake. build.py swaps in the current copy, so uploads never drift */
+/* tokens: a copy of assets/tokens.css so a page previews on its own; the build links the real file */
+/* Cahier design tokens. Light ("paper") is the default; dark ("night ink") follows.
+   Theme switch: <html data-theme="light|dark">; no attribute = follow the OS. */
+
+:root {
+  /* Brand (theme-independent) */
+  --brand-paper: #F3EBDD;
+  --brand-ink:   #1E2A44;
+  --brand-amber: #D9952B;   /* ribbon: progress, "resume", bookmarks */
+  --brand-green: #3D6B5A;   /* correct / completed */
+
+  /* Type */
+  --font-display: "Fraunces", Georgia, serif;          /* headings, lesson titles */
+  --font-body:    "Source Sans 3", system-ui, sans-serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, monospace;
+
+  --text-xs: 0.8125rem;  /* 13 */
+  --text-sm: 0.9375rem;  /* 15 */
+  --text-md: 1.0625rem;  /* 17 body — reading app, slightly larger */
+  --text-lg: 1.375rem;   /* 22 */
+  --text-xl: 1.875rem;   /* 30 */
+  --text-2xl: 2.5rem;    /* 40 lesson hero */
+  --leading-body: 1.65;
+  --measure: 68ch;       /* max line length for lesson text */
+
+  /* Spacing (4px grid) */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-5: 24px; --space-6: 32px; --space-7: 48px; --space-8: 72px;
+
+  /* Shape — quiet, paper-like */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Motion — minimal */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-fast: 120ms;
+  --dur-med: 200ms;
+
+  /* Light / paper (default) */
+  --bg:          #F7F1E6;
+  --surface:     #FFFCF6;
+  --surface-2:   #EFE6D6;
+  --border:      #E2D8C6;
+  --text:        #1E2A44;
+  --text-muted:  #5C6475;
+  --accent:      var(--brand-amber);   /* fills: ribbon, progress bars */
+  --accent-text: #8A5A12;              /* amber text/links on paper (AA) */
+  --link:        #1E4FA0;
+  --correct:     #3D6B5A;
+  --correct-bg:  #E3EEE8;
+  --wrong:       #B4443A;
+  --wrong-bg:    #F6E2DF;
+  --note-bg:     #FBF0D9;              /* "In plain words" / worked example boxes */
+  --focus:       #1E4FA0;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:          #141C2E;
+    --surface:     #1B2540;
+    --surface-2:   #233052;
+    --border:      #2E3A5C;
+    --text:        #F3EBDD;
+    --text-muted:  #A9B0C0;
+    --accent:      #E5A945;
+    --accent-text: #F0BE6A;
+    --link:        #8DB4F5;
+    --correct:     #6FA88F;
+    --correct-bg:  #1F3A33;
+    --wrong:       #E07A6E;
+    --wrong-bg:    #43262A;
+    --note-bg:     #2A2A3A;
+    --focus:       #8DB4F5;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg:          #141C2E;
+  --surface:     #1B2540;
+  --surface-2:   #233052;
+  --border:      #2E3A5C;
+  --text:        #F3EBDD;
+  --text-muted:  #A9B0C0;
+  --accent:      #E5A945;
+  --accent-text: #F0BE6A;
+  --link:        #8DB4F5;
+  --correct:     #6FA88F;
+  --correct-bg:  #1F3A33;
+  --wrong:       #E07A6E;
+  --wrong-bg:    #43262A;
+  --note-bg:     #2A2A3A;
+  --focus:       #8DB4F5;
+  color-scheme: dark;
+}
+
+/* Project additions, not in the brand kit. */
+:root {
+  /* Figures in lessons. Amber means "my place" only, so diagrams use these. */
+  --fig: #1E4FA0; --fig-soft: #DCE6F5;
+  --c1: #E8C98C; --c2: #E3AE9B; --c3: #AFCDB8; --c4: #B9C6E0;  /* dark text sits on all of them */
+  --font-math: "Cambria Math", "STIX Two Math", Georgia, serif;
+  --primary: var(--text); --on-primary: var(--bg);             /* main buttons: ink, never amber */
+  /* Names older remakes use in their own CSS, mapped onto this theme. */
+  --ink: var(--text); --muted: var(--text-muted); --faint: var(--text-muted);
+  --line: var(--border); --line-strong: var(--border); --sunken: var(--surface-2); --hover: var(--surface-2);
+  --code-bg: var(--surface-2); --ok: var(--correct); --ok-soft: var(--correct-bg); --hi: var(--wrong); --hi-soft: var(--wrong-bg);
+  --accent-soft: var(--fig-soft);
+  --f-display: var(--font-display); --f-body: var(--font-body); --f-mono: var(--font-mono); --f-math: var(--font-math);
+  --l0: #8FA8D3; --l1: #A9BDDF; --l2: #C2D1E8; --l3: #D9E3F1; --l4: #ECF1F8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --fig: #8DB4F5; --fig-soft: #233052; }
+}
+:root[data-theme="dark"] { --fig: #8DB4F5; --fig-soft: #233052; }
+/* /tokens */
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
+body{
+  background:var(--bg); color:var(--text); font-family:var(--font-body); font-size:var(--text-md); line-height:var(--leading-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:28px var(--space-8); margin:0;
+}
+.wrap{max-width:1040px;margin:0 auto}
+a{color:var(--link);text-decoration:underline;text-underline-offset:2px}
+a,button,label,summary,input,select{touch-action:manipulation}
+a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+code{font-family:var(--font-mono);font-size:.86em;background:var(--surface-2);padding:1px 5px;border-radius:var(--radius-sm)}
+.en{font-weight:600}
+.fr{color:var(--text-muted);font-style:italic;font-weight:400}
+sub,sup{line-height:0}
+.m{font-family:var(--font-math);font-style:italic}
+.ov{text-decoration:overline}
+.eq{font-family:var(--font-math);font-size:var(--text-md);background:var(--surface-2);border-radius:var(--radius-sm);padding:var(--space-3) var(--space-4);margin:var(--space-3) 0;overflow-x:auto;white-space:pre}
+.res{display:inline-block;background:var(--correct-bg);color:var(--text);border-radius:var(--radius-sm);padding:1px 7px;font-weight:600;font-variant-numeric:tabular-nums}
+.toggle{position:fixed;top:14px;right:max(14px,env(safe-area-inset-right,0px));z-index:20;display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;padding:0;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:var(--radius-md);cursor:pointer;transition:background var(--dur-fast) var(--ease-out)}
+.toggle svg{width:20px;height:20px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:var(--space-6);align-items:center;padding-bottom:var(--space-6)}
+.hero.solo{grid-template-columns:minmax(0,1fr)}
+.eyebrow{font:600 var(--text-xs)/1.3 var(--font-body);color:var(--text-muted)}
+h1{font-family:var(--font-display);font-weight:600;font-variation-settings:"opsz" 72;font-size:clamp(1.875rem,4.4vw,var(--text-2xl));line-height:1.12;letter-spacing:-.01em;margin:var(--space-2) 0 var(--space-3);text-wrap:balance}
+.lead{font-size:var(--text-lg);line-height:1.4;color:var(--text-muted);max-width:var(--measure);margin:0 0 var(--space-4)}
+.how{display:grid;gap:var(--space-2);margin:0;padding:0;list-style:none;max-width:var(--measure)}
+.how li{display:flex;gap:var(--space-3);align-items:baseline;font-size:var(--text-sm)}
+.how .tag{flex:0 0 auto;min-width:10em}
+.pills{display:flex;flex-wrap:wrap;gap:var(--space-2);margin:0}
+.pill{background:var(--surface-2);color:var(--text);border-radius:var(--radius-sm);padding:2px 10px;font:600 var(--text-xs) var(--font-body);font-variant-numeric:tabular-nums}
+.herofig{margin:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4);min-width:0;overflow-x:auto}
+.herofig svg{display:block;width:100%;height:auto;min-width:var(--minw,0)}
+.herofig figcaption{font-size:var(--text-xs);color:var(--text-muted);margin-top:var(--space-2)}
+
+/* resume chip: the ribbon marks my place */
+.resume-chip{display:inline-flex;align-items:center;gap:var(--space-2);min-height:44px;margin:0 0 var(--space-5);padding:var(--space-2) var(--space-4) var(--space-2) var(--space-3);background:var(--note-bg);border:1px solid var(--border);border-radius:var(--radius-md);color:var(--text);font:600 var(--text-sm)/1.3 var(--font-body);text-align:left;cursor:pointer}
+.resume-chip svg{flex-shrink:0;width:9px;height:22px}
+
+/* contents */
+.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:var(--space-5);padding-block:var(--space-5) var(--space-2);border-top:1px solid var(--border)}
+.part h3{font:600 var(--text-xs)/1.3 var(--font-body);color:var(--text-muted);margin:0 0 var(--space-2)}
+.part ul{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.part a{display:flex;gap:var(--space-3);text-decoration:none;color:var(--text);padding:var(--space-1) 0;font-size:var(--text-sm)}
+.part a small{display:block;color:var(--text-muted);font-size:var(--text-xs);line-height:1.35}
+.part .n{font:400 var(--text-xs)/1.9 var(--font-mono);color:var(--text-muted);min-width:1.6em}
+.part .sc{margin-left:auto;font:400 var(--text-xs)/1.9 var(--font-mono);color:var(--text-muted);white-space:nowrap}
+
+/* sections */
+.sec{margin-top:var(--space-7);padding-top:var(--space-6);border-top:1px solid var(--border);scroll-margin-top:var(--space-3)}
+.sec-h{display:flex;align-items:baseline;gap:var(--space-3);flex-wrap:wrap}
+.num{font:600 var(--text-xl)/1.15 var(--font-display);color:var(--text-muted)}
+.sec h2{font-family:var(--font-display);font-weight:600;font-size:var(--text-xl);line-height:1.15;margin:0;text-wrap:balance;min-width:0}
+.sec h2 .fr{font-family:var(--font-body);font-size:.6em}
+.sec h3{font-family:var(--font-display);font-weight:500;font-size:var(--text-lg);line-height:1.2;margin:var(--space-5) 0 var(--space-2)}
+.sec h3 .fr{font-family:var(--font-body);font-size:.75em}
+.sec>p,.sec>ul,.sec>ol{max-width:var(--measure)}
+.back{margin-left:auto;font-size:var(--text-xs);color:var(--text-muted);text-decoration:none}
+.secscore{font:400 var(--text-sm) var(--font-mono);color:var(--text-muted)}
+.tag{display:inline-block;font:600 var(--text-xs)/1.3 var(--font-body);color:var(--text-muted)}
+.intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-5);margin-top:var(--space-5)}
+.plain{margin-top:var(--space-5);background:var(--note-bg);border-left:3px solid var(--accent);border-radius:0 var(--radius-md) var(--radius-md) 0;padding:var(--space-3) var(--space-4)}
+.intro .plain{margin-top:0;align-self:start}
+.plain p{margin:var(--space-2) 0 0;max-width:var(--measure)}
+.defs{list-style:none;margin:var(--space-5) 0 0;padding:0;display:grid;gap:var(--space-3);min-width:0}
+.intro .defs{margin-top:0}
+.defs li{display:grid;gap:1px;font-size:var(--text-sm)}
+.defs .mean{color:var(--text-muted)}
+.defs .eg{color:var(--text-muted);font-size:var(--text-sm)}
+.defs .eg::before{content:"e.g. ";font-weight:600;color:var(--text)}
+.callout{margin-top:var(--space-5);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4)}
+.callout>b:first-child{color:var(--text)}
+.callout ol,.callout ul{margin:6px 0 2px;padding-left:22px}
+.callout li{margin:var(--space-1) 0}
+details.more{margin-top:var(--space-3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:var(--space-2) var(--space-4);background:var(--surface)}
+details.more summary{cursor:pointer;font-weight:600}
+
+/* figures */
+.figs{display:flex;flex-wrap:wrap;gap:var(--space-4);margin-top:var(--space-5)}
+.figs figure{flex:1 1 250px;max-width:430px;min-width:0;margin:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4) var(--space-4) var(--space-3)}
+figure.fig{margin:var(--space-5) 0 0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4) var(--space-4) var(--space-3);overflow-x:auto}
+figure.fig svg{display:block;width:100%;height:auto;min-width:var(--minw,0);max-width:var(--maxw,560px);margin-inline:auto}
+figcaption{font-size:var(--text-xs);color:var(--text-muted);margin-top:var(--space-2);line-height:1.45}
+
+/* worked example */
+.calc{margin-top:var(--space-5);background:var(--note-bg);border-radius:var(--radius-md);padding:var(--space-4)}
+.calc>.tag{color:var(--text)}
+.calc>p{margin:10px 0 0}
+.calc ol{margin:10px 0 0;padding-left:22px}
+.calc li{margin:var(--space-2) 0}
+.calc li>b:first-child{color:var(--text)}
+.calc figure.fig,.calc .figs figure{background:var(--surface)}
+.calc code{background:var(--surface)}
+ul.ln{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:var(--space-2);font-size:var(--text-sm)}
+ul.ln li{padding-left:1.1em;text-indent:-1.1em;overflow-wrap:anywhere}
+ul.ln li::before{content:"\203A\00a0";color:var(--text-muted);font-weight:600}
+
+/* tables */
+.scroll{overflow-x:auto;margin-top:var(--space-3);max-width:100%}
+table.t{border-collapse:collapse;font:400 var(--text-sm)/1.45 var(--font-body);font-variant-numeric:tabular-nums;min-width:260px}
+table.t th{font-weight:600;text-align:left;color:var(--text-muted)}
+table.t th,table.t td{padding:6px 14px 6px 0;border-bottom:1px solid var(--border);vertical-align:top}
+table.t.mono{font-family:var(--font-mono);font-size:var(--text-xs)}
+table.t.mono th,table.t.mono td{white-space:nowrap}
+table.t.grid th,table.t.grid td{padding:6px 10px;border:1px solid var(--border)}
+table.t.grid th{background:var(--surface-2);color:var(--text)}
+table.t .c,table.t.center th,table.t.center td{text-align:center}
+table.t.center .l{text-align:left}
+table.t td.ok{color:var(--correct);font-weight:600}
+table.t td.bad,table.t td.x{color:var(--wrong);font-weight:600}
+table.t tr.best td{background:var(--correct-bg);font-weight:600}
+
+/* notes and footer */
+.note{margin-top:var(--space-5);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4)}
+.note.errata{background:var(--surface-2);border-color:transparent;color:var(--text-muted)}
+.note.errata>.tag{color:var(--text-muted)}
+.note ul,.note ol{margin:var(--space-2) 0 0;padding-left:1.2em;display:grid;gap:var(--space-2);font-size:var(--text-sm)}
+.foot{margin-top:var(--space-7);padding-top:var(--space-4);border-top:1px solid var(--border);font-size:var(--text-xs);color:var(--text-muted)}
+
+/* practice */
+.prog{display:flex;align-items:center;gap:var(--space-3);max-width:460px;margin-top:var(--space-4);font:400 var(--text-sm) var(--font-mono);color:var(--text-muted)}
+.prog .track{flex:1;height:6px;border-radius:var(--radius-sm);background:var(--surface-2);overflow:hidden}
+.prog .fill{display:block;height:100%;width:0;background:var(--accent);transition:width var(--dur-med) var(--ease-out)}
+.legend{display:flex;gap:var(--space-2) var(--space-4);flex-wrap:wrap;margin-top:var(--space-4);font-size:var(--text-sm);color:var(--text-muted)}
+.setmeta{margin:6px 0 0;color:var(--text-muted);font-size:var(--text-sm)}
+.prob{margin-top:var(--space-4);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4);scroll-margin-top:var(--space-3);transition:border-color var(--dur-med) var(--ease-out)}
+.prob.ok{border-color:var(--correct)}
+.prob.bad{border-color:var(--wrong)}
+.ph{display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap}
+.pid{font:400 var(--text-sm) var(--font-mono);color:var(--text-muted)}
+.ph .pt{font:600 var(--text-md)/1.35 var(--font-body);margin:0;min-width:0;flex:1 1 16em}
+.lvl{font:600 var(--text-xs)/1 var(--font-body);padding:4px 8px;border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text-muted)}
+.lw,.ls,.lc{background:var(--surface-2);color:var(--text-muted)}
+.lc{color:var(--text)}
+.done{margin-left:auto;display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs);color:var(--text-muted);cursor:pointer}
+.done input{width:18px;height:18px;accent-color:var(--correct);cursor:pointer}
+.pq{margin-top:10px;max-width:var(--measure)}
+.pq>p,.prob>p{margin:10px 0 0}
+.parts{margin:var(--space-2) 0 0;padding-left:1.4em;display:grid;gap:var(--space-1)}
+.pfs{display:flex;flex-wrap:wrap;gap:var(--space-3);margin-top:var(--space-3)}
+.pfs figure{flex:1 1 200px;max-width:340px;min-width:0;margin:0;background:var(--surface-2);border-radius:var(--radius-sm);padding:var(--space-3) var(--space-3) var(--space-2)}
+.prob details{margin-top:var(--space-3)}
+.prob summary{cursor:pointer;display:inline-flex;align-items:center;gap:var(--space-2);font:600 var(--text-sm) var(--font-body);color:var(--text);padding:var(--space-1) var(--space-3) var(--space-1) var(--space-2);border-radius:var(--radius-sm);list-style:none}
+.prob summary::-webkit-details-marker{display:none}
+.prob summary::before{content:"\203A";font-size:1.2em;line-height:1;color:var(--text-muted);transition:transform var(--dur-fast) var(--ease-out)}
+.prob details[open]>summary::before{transform:rotate(90deg)}
+.sol{margin-top:var(--space-2);background:var(--surface-2);border-radius:var(--radius-sm);padding:var(--space-2) var(--space-4) var(--space-3);font-size:var(--text-sm)}
+.sol p{margin:10px 0 0;max-width:var(--measure)}
+.sol li>b:first-child{color:var(--text)}
+.sol .pfs figure,.sol .eq{background:var(--surface)}
+.sol code{background:var(--surface)}
+.aid{margin-top:var(--space-3);background:var(--surface-2);border-radius:var(--radius-sm);padding:10px var(--space-3);font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;overflow-x:auto}
+.aid>b:first-child{color:var(--text)}
+.prob input[type=text]{width:100%;min-width:56px;max-width:90px;font:inherit;font-variant-numeric:tabular-nums;text-align:center;padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text)}
+.prob textarea{width:100%;font:inherit;padding:var(--space-2) var(--space-3);border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text)}
+.prob select{font:inherit;padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text)}
+.prob input.ok,.prob select.ok{border-color:var(--correct);background:var(--correct-bg)}
+.prob input.bad,.prob select.bad{border-color:var(--wrong);background:var(--wrong-bg)}
+table.t.inp td{padding:3px 6px 3px 0}
+.scalars{display:flex;flex-wrap:wrap;gap:var(--space-3) var(--space-4);margin:var(--space-3) 0 0}
+label.sc{display:flex;align-items:center;gap:var(--space-2)}
+label.sc>span{font-weight:600;min-width:34px}
+label.sc small{color:var(--text-muted);font-size:var(--text-xs)}
+.mc{display:grid;gap:var(--space-2);margin:var(--space-3) 0 0}
+label.opt{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;background:var(--surface);transition:background var(--dur-fast) var(--ease-out),border-color var(--dur-med) var(--ease-out)}
+label.opt.ok{border-color:var(--correct);background:var(--correct-bg)}
+label.opt.bad{border-color:var(--wrong);background:var(--wrong-bg)}
+label.opt.reveal{border-color:var(--correct)}
+/* correct and wrong are never colour alone */
+label.opt.ok::after{content:"\2713\00a0 Correct";margin-left:auto;font-size:var(--text-xs);font-weight:600;color:var(--correct)}
+label.opt.bad::after{content:"\2715\00a0Wrong";margin-left:auto;font-size:var(--text-xs);font-weight:600;color:var(--wrong)}
+.prob.ok>.ph::after{content:"\2713\00a0 Correct";font-size:var(--text-xs);font-weight:600;color:var(--correct)}
+.prob.bad>.ph::after{content:"\2715\00a0Wrong";font-size:var(--text-xs);font-weight:600;color:var(--wrong)}
+.fb.ok::before{content:"\2713\00a0"}
+.fb.bad::before{content:"\2715\00a0"}
+label.opt input{margin-top:6px;accent-color:var(--primary)}
+.chips-set{display:inline-flex;flex-wrap:wrap;gap:6px;vertical-align:middle}
+label.chipbox{position:relative;border:1px solid var(--border);border-radius:var(--radius-sm);padding:3px 12px;cursor:pointer;background:var(--surface);font-size:var(--text-sm)}
+label.chipbox:has(input:checked){border-color:var(--text);background:var(--text);color:var(--bg)}
+label.chipbox input{position:absolute;opacity:0;pointer-events:none}
+.chips-set.ok label.chipbox:has(input:checked){border-color:var(--correct);background:var(--correct-bg);color:var(--correct)}
+.chips-set.bad{outline:2px solid var(--wrong);outline-offset:3px;border-radius:var(--radius-sm)}
+.actions{display:flex;flex-wrap:wrap;gap:var(--space-2);align-items:center;margin-top:var(--space-3)}
+.b{font:600 var(--text-sm) var(--font-body);min-height:36px;padding:6px var(--space-4);border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;transition:background var(--dur-fast) var(--ease-out)}
+.b.chk{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.fb{font-size:var(--text-sm);font-weight:600}
+.fb.ok{color:var(--correct)} .fb.bad{color:var(--wrong)}
+.solution,.expl{margin-top:var(--space-3);border-top:1px solid var(--border);padding-top:10px;font-size:var(--text-sm)}
+.solution>p,.expl>p{margin:6px 0}
+.expl{color:var(--text-muted)}
+
+/* live figure: a process played step by step (REMAKE_BRIEF.md, "Live figures") */
+.live-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-5);align-items:start}
+figure.fig.live svg{max-width:none;max-height:72vh}
+.live-side{display:grid;gap:var(--space-3);min-width:0}
+.live-side .aid,.live-side .actions{margin-top:0}
+.live-val{display:flex;align-items:baseline;gap:var(--space-2);flex-wrap:wrap}
+.live-val b{font:600 var(--text-xl) var(--font-mono);font-variant-numeric:tabular-nums;color:var(--text)}
+.live input[type=range]{width:100%;margin:0;accent-color:var(--fig)}
+.live-status{min-height:4.4em;padding:var(--space-2) var(--space-3);background:var(--surface-2);border-left:3px solid var(--fig);border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:var(--text-sm)}
+.live-status.ok{border-color:var(--correct);background:var(--correct-bg)}
+.live-status.bad{border-color:var(--wrong);background:var(--wrong-bg)}
+.live-status.ok b{color:var(--correct)} .live-status.bad b{color:var(--wrong)}
+.live table.t{width:100%;min-width:0}
+.live tr.past td{color:var(--text-muted)}
+.live figcaption p{margin:var(--space-2) 0 0;max-width:var(--measure)}
+/* the site zooms pages 125% / 150% on wide screens: keep the whole drawing on screen */
+@media (min-width:1200px){figure.fig.live svg{max-height:58vh}}
+@media (min-width:1500px){figure.fig.live svg{max-height:48vh}}
+
+@media (hover:hover){
+  .toggle:hover,.b:hover,label.opt:hover,.prob summary:hover{background:var(--surface-2)}
+  .b.chk:hover{background:var(--primary);opacity:.88}
+  .part a:hover,.back:hover{color:var(--link)}
+  label.opt.ok:hover{background:var(--correct-bg)} label.opt.bad:hover{background:var(--wrong-bg)}
+}
+@media (max-width:820px){
+  .hero{grid-template-columns:minmax(0,1fr)}
+  .live-grid{grid-template-columns:minmax(0,1fr)}
+  figure.fig.live svg{max-height:60vh}
+  .intro{grid-template-columns:minmax(0,1fr)}
+  .how li{flex-direction:column;gap:2px}
+  body{padding-top:56px}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{.toggle{display:none}body{background:#fff}}
+/* /study-hub:base */
+</style>
+<style>
+
+/* page-specific (VT ch 2). Tokens only; text on --c1..--c4 uses the dark brand ink. */
+.vt text{font-family:var(--font-body)}
+.vt .t{fill:var(--text);font-size:12px;font-weight:500}
+.vt .tb{fill:var(--text);font-size:13px;font-weight:700}
+.vt .tm{fill:var(--text-muted);font-size:11px}
+.vt .sm{font-size:10px}
+.vt .mid{text-anchor:middle}
+.vt .end{text-anchor:end}
+.vt .dk{fill:var(--brand-ink)}
+.vt .figt{fill:var(--fig)}
+.vt .okt{fill:var(--correct)}
+.vt .badt{fill:var(--wrong)}
+.vt .box{fill:var(--surface-2);stroke:var(--border)}
+.vt .pane{fill:var(--surface);stroke:var(--border)}
+.vt .soft{fill:var(--fig-soft);stroke:var(--fig)}
+.vt .c1{fill:var(--c1)} .vt .c2{fill:var(--c2)} .vt .c3{fill:var(--c3)} .vt .c4{fill:var(--c4)}
+.vt .now{stroke:var(--wrong);stroke-width:2.6}
+.vt .ln{stroke:var(--text-muted);stroke-width:1.3;fill:none}
+.vt .ar{stroke:var(--fig);stroke-width:1.8;fill:none}
+.vt .dash{stroke-dasharray:5 4}
+.vt .hd{fill:var(--fig)}
+.vt .hdm{fill:var(--text-muted)}
+.vt .barf{fill:var(--fig)}
+.vt .barn{fill:var(--text-muted);opacity:.35}
+.vt .okf{fill:var(--correct)}
+.vt .badf{fill:var(--wrong)}
+.vt .dim{opacity:.3}
+.vt .tok{fill:var(--wrong)}
+.vt g,.vt rect,.vt circle{transition:opacity var(--dur-med) var(--ease-out)}
+.vt-ex{margin-top:var(--space-4);background:var(--surface);border:1px dashed var(--border);border-radius:var(--radius-md);padding:var(--space-3) var(--space-4);font-size:var(--text-sm)}
+.vt-ex>b:first-child{display:block;font-size:var(--text-xs);color:var(--text-muted);margin-bottom:2px}
+.vt-ex p{margin:var(--space-1) 0 0}
+.vt-steps{margin:10px 0 0;padding-left:1.4em;display:grid;gap:var(--space-2)}
+.vt-steps li>b:first-child{color:var(--text)}
+.calc .scroll table.t{background:transparent}
+.vt-tf{display:flex;flex-wrap:wrap;gap:var(--space-2);margin-top:var(--space-2)}
+.vt-tf label.opt{padding:5px 14px}
+.vt-row{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2) var(--space-4);margin-top:10px}
+.vt-row>span{flex:1 1 20em;min-width:0}
+</style>
+</head>
+<body>
+<button class="toggle" id="theme-toggle" type="button" aria-label="Toggle light or dark theme"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8a2.83 2.83 0 0 0 4 4 4 4 0 1 1-4-4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.9 4.9 1.4 1.4"/><path d="m17.7 17.7 1.4 1.4"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.3 17.7-1.4 1.4"/><path d="m19.1 4.9-1.4 1.4"/></svg></button>
+<div class="wrap">
+<header class="hero" id="top">
+  <div>
+    <div class="eyebrow">VT · Chapter 2 · Lesson</div>
+    <h1>The monitoring process, step by step</h1>
+    <p class="lead">How a company keeps watch on new technology: decide what to watch, find and judge sources, collect, analyse, and share the results with the right people. <span class="fr">(Processus de veille)</span></p>
+    <ul class="how">
+      <li><span class="tag">In plain words</span><span>What the idea means, in everyday language.</span></li>
+      <li><span class="tag">Keywords</span><span><b class="en">term</b> <span class="fr">(terme)</span>: English first, French after.</span></li>
+      <li><span class="tag">Worked example</span><span>One company, SahraDry, followed through every section and restated each time.</span></li>
+    </ul>
+  </div>
+  <figure class="herofig"><svg class="vt" viewBox="0 0 300 196" role="img" aria-label="Four steps in a loop: need, collect, analyse, share, and back to need"><defs><marker id="h-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker></defs><rect x="105" y="12" width="90" height="38" rx="8" class="c4"/><text x="150" y="35" class="tb dk mid">1 Need</text><rect x="195" y="80" width="90" height="38" rx="8" class="c1"/><text x="240" y="103" class="tb dk mid">2 Collect</text><rect x="105" y="148" width="90" height="38" rx="8" class="c3"/><text x="150" y="171" class="tb dk mid">3 Analyse</text><rect x="15" y="80" width="90" height="38" rx="8" class="c2"/><text x="60" y="103" class="tb dk mid">4 Share</text><path d="M196,31 Q245,35 240,78" class="ar" marker-end="url(#h-ah)"/><path d="M240,119 Q245,160 197,167" class="ar" marker-end="url(#h-ah)"/><path d="M104,167 Q55,160 60,120" class="ar" marker-end="url(#h-ah)"/><path d="M60,79 Q55,35 103,31" class="ar" marker-end="url(#h-ah)"/><text x="150" y="94" class="tm mid">decisions</text><text x="150" y="107" class="tm mid">feed the</text><text x="150" y="120" class="tm mid">next round</text></svg><figcaption>The four steps of monitoring form a loop: decisions raise the next need.</figcaption></figure>
+</header>
+<nav class="toc" aria-label="Contents"><div class="part"><h3>A · The idea</h3><ul><li><a href="#s1"><span class="n">1</span><span>What technology monitoring is</span></a></li><li><a href="#s2"><span class="n">2</span><span>What it is for</span></a></li><li><a href="#s3"><span class="n">3</span><span>Monitoring questions</span></a></li><li><a href="#s4"><span class="n">4</span><span>Who does it</span></a></li></ul></div><div class="part"><h3>B · The four-step cycle</h3><ul><li><a href="#s5"><span class="n">5</span><span>The cycle at a glance</span></a></li><li><a href="#s6"><span class="n">6</span><span>Step 1: define the need</span></a></li><li><a href="#s7"><span class="n">7</span><span>Step 2a: sources</span></a></li><li><a href="#s8"><span class="n">8</span><span>Step 2b: pull or push</span></a></li><li><a href="#s9"><span class="n">9</span><span>Step 2c: tools and storage</span></a></li></ul></div><div class="part"><h3>C · From data to decisions</h3><ul><li><a href="#s10"><span class="n">10</span><span>Step 3: analyse</span></a></li><li><a href="#s11"><span class="n">11</span><span>Tools for documents</span></a></li><li><a href="#s12"><span class="n">12</span><span>Step 4: share</span></a></li><li><a href="#s13"><span class="n">13</span><span>Deliverables and sharing tools</span></a></li></ul></div><div class="part"><h3>D · Tools</h3><ul><li><a href="#s14"><span class="n">14</span><span>A panorama of tools</span></a></li></ul></div></nav>
+<section class="sec" id="s1">
+  <div class="sec-h"><span class="num">1</span><h2>What technology monitoring is <span class="fr">(Définition de la veille technologique)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>A company cannot stop the world from changing: new machines, new materials and new rules appear all the time. <b>Technology monitoring</b> means keeping an organised watch on these changes, on purpose and on a schedule, instead of hearing about them by chance.</p><p>It is more than reading the news. The information is <b>collected</b>, then <b>analysed</b> (what does it mean for us?), then <b>shared</b> with the right people, who <b>use</b> it to decide. And it is done only by <b>legal</b> means.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">technology monitoring</b> <span class="fr">(veille technologique)</span></span><span class="mean">an organised, continuous watch on science and technology news that matters to a company, done to help it decide.</span></li><li><span class="term"><b class="en">legal, lawful</b> <span class="fr">(licite)</span></span><span class="mean">allowed by law. Monitoring uses public information. Stealing secrets is espionage, not monitoring.</span></li><li><span class="term"><b class="en">systematic</b> <span class="fr">(de façon systématique)</span></span><span class="mean">done with a method and on a regular schedule, not now and then when someone remembers.</span></li><li><span class="term"><b class="en">manufacturing process</b> <span class="fr">(procédé de fabrication)</span></span><span class="mean">the way a product is made: the steps, the machines, the settings.</span><span class="eg">drying dates with hot air from a gas burner</span></li><li><span class="term"><b class="en">economic impact</b> <span class="fr">(impact économique)</span></span><span class="mean">what a change does to costs, prices or sales, now or later.</span></li></ul>
+  </div>
+  <figure class="fig"><svg class="vt" viewBox="0 0 560 156" role="img" aria-label="Four verbs in a row: collect, analyse, share, use, inside a frame labelled legal means only" style="--minw:500px"><defs><marker id="f1-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker></defs><rect x="22" y="52" width="108" height="50" rx="8" class="c1"/><text x="76" y="73.5" class="tb dk mid">Collect</text><text x="76" y="88.5" class="tb dk mid"><tspan class="sm">récolter</tspan></text><line x1="132" y1="77" x2="152" y2="77" class="ar" marker-end="url(#f1-ah)"/><rect x="154" y="52" width="108" height="50" rx="8" class="c3"/><text x="208" y="73.5" class="tb dk mid">Analyse</text><text x="208" y="88.5" class="tb dk mid"><tspan class="sm">analyser</tspan></text><line x1="264" y1="77" x2="284" y2="77" class="ar" marker-end="url(#f1-ah)"/><rect x="286" y="52" width="108" height="50" rx="8" class="c2"/><text x="340" y="73.5" class="tb dk mid">Share</text><text x="340" y="88.5" class="tb dk mid"><tspan class="sm">diffuser</tspan></text><line x1="396" y1="77" x2="416" y2="77" class="ar" marker-end="url(#f1-ah)"/><rect x="418" y="52" width="108" height="50" rx="8" class="c4"/><text x="472" y="73.5" class="tb dk mid">Use</text><text x="472" y="88.5" class="tb dk mid"><tspan class="sm">exploiter</tspan></text><rect x="8" y="22" width="540" height="96" rx="10" class="ln dash"/><text x="18" y="16" class="tm">only legal means (licite): public sources, no spying, no hacking</text><text x="278" y="146" class="t mid">goal: help the company grow and develop</text><line x1="278" y1="104" x2="278" y2="130" class="ar" marker-end="url(#f1-ah)"/></svg><figcaption>The definition in one line: four actions in a row, all done by legal means, all aimed at helping the company grow.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<div class="vt-ex"><b>The example, in full</b><p><b>SahraDry</b> is a small company in Biskra (12 employees) that dries dates for export. Its dryers run on gas, and the gas bill keeps rising. The manager wants to know: <i>could solar dryers replace gas?</i></p></div><ol class="vt-steps"><li><b>Collect.</b> Gather news on solar dryers: research articles, maker catalogues, new rules on energy use.</li><li><b>Analyse.</b> Ask what each item means for SahraDry: is a solar dryer cheaper over five years than gas?</li><li><b>Share.</b> Send a short summary to the manager, who decides.</li><li><b>Use.</b> The manager decides, for example to test one solar dryer next season.</li><li><b>Legal?</b> Reading a maker's public catalogue: yes. Asking a competitor's employee to send their supplier contract: no, that is not monitoring.</li></ol><p>What is watched, per the course: research linked to <b>science and technology</b>, <b>products</b>, <b>manufacturing processes</b>, <b>materials</b>, and the <b>economic impacts</b> they have now and later. For SahraDry: drying research, dryer models, the drying method itself, panel and collector materials, and the effect on the energy bill.</p>
+  </div>
+</section>
+
+<section class="sec" id="s2">
+  <div class="sec-h"><span class="num">2</span><h2>What monitoring is for <span class="fr">(Objectifs de la veille technologique)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>Why spend time and money watching the outside world? The course gives five reasons. In short: to make better products, to get new ideas, to keep the team sharp, to stay up to date, and above all to <b>see changes coming</b> before they hit you.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">R&amp;D</b> <span class="fr">(recherche et développement)</span></span><span class="mean">research and development: the work a company does to create new products or improve old ones.</span></li><li><span class="term"><b class="en">innovation</b> <span class="fr">(innovation)</span></span><span class="mean">the ability to come up with new ideas and turn them into products or methods.</span></li><li><span class="term"><b class="en">information flow</b> <span class="fr">(flux d'informations)</span></span><span class="mean">news arriving regularly, like water in a pipe, rather than in rare bursts.</span></li><li><span class="term"><b class="en">anticipation</b> <span class="fr">(anticipation)</span></span><span class="mean">acting before a change happens, because you saw the first signs early.</span></li><li><span class="term"><b class="en">competitive spirit</b> <span class="fr">(esprit concurrentiel)</span></span><span class="mean">the wish to do better than rivals, which pushes people to learn.</span></li></ul>
+  </div>
+  <figure class="fig"><svg class="vt" viewBox="0 0 568 172" role="img" aria-label="Five boxes: better quality, innovation, stronger staff, steady flow, anticipation" style="--minw:500px"><rect x="10" y="10" width="172" height="70" rx="8" class="c1"/><text x="96" y="34" class="t dk mid">Better quality</text><text x="96" y="49" class="t dk mid"><tspan class="sm">amélioration de la qualité</tspan></text><text x="96" y="64" class="t dk mid"><tspan class="sm">know new products, methods and R&amp;D directions</tspan></text><rect x="196" y="10" width="172" height="70" rx="8" class="c3"/><text x="282" y="34" class="t dk mid">Innovation</text><text x="282" y="49" class="t dk mid"><tspan class="sm">innovation</tspan></text><text x="282" y="64" class="t dk mid"><tspan class="sm">come up with new ideas</tspan></text><rect x="382" y="10" width="172" height="70" rx="8" class="c4"/><text x="468" y="34" class="t dk mid">Stronger staff</text><text x="468" y="49" class="t dk mid"><tspan class="sm">compétences des employés</tspan></text><text x="468" y="64" class="t dk mid"><tspan class="sm">a competitive spirit pushes people to learn</tspan></text><rect x="103" y="94" width="172" height="70" rx="8" class="c2"/><text x="189" y="118" class="t dk mid">Steady flow</text><text x="189" y="133" class="t dk mid"><tspan class="sm">flux régulier</tspan></text><text x="189" y="148" class="t dk mid"><tspan class="sm">always up to date in your field</tspan></text><rect x="289" y="94" width="172" height="70" rx="8" class="soft"/><text x="375" y="118" class="t mid">Anticipation</text><text x="375" y="133" class="t mid"><tspan class="sm">anticipation</tspan></text><text x="375" y="148" class="t mid"><tspan class="sm">see changes coming, weigh risks and gains</tspan></text></svg><figcaption>The five aims from the course. Anticipation is the one that makes monitoring more than a news feed.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<div class="vt-ex"><b>The example, in full</b><p><b>SahraDry</b> is a small company in Biskra (12 employees) that dries dates for export. Its dryers run on gas, and the gas bill keeps rising. The manager wants to know: <i>could solar dryers replace gas?</i></p></div><div class="scroll"><table class="t"><thead><tr><th>Aim</th><th>What it gives SahraDry</th></tr></thead><tbody><tr><td>Better quality</td><td>Learns of a dryer that heats more evenly, so fewer dates are over-dried.</td></tr><tr><td>Innovation</td><td>Gets the idea of selling its own dried dates as a "solar-dried" product.</td></tr><tr><td>Stronger staff</td><td>The engineer learns how solar collectors work and trains the team.</td></tr><tr><td>Steady flow</td><td>A short news summary every month, so nothing big is missed.</td></tr><tr><td>Anticipation</td><td>Sees gas prices rising a year ahead and has a plan ready in time.</td></tr></tbody></table></div>
+  </div>
+</section>
+
+<section class="sec" id="s3">
+  <div class="sec-h"><span class="num">3</span><h2>Monitoring questions <span class="fr">(Exemples de questions de veille)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>Good monitoring starts with <b>precise questions</b>. "Tell me about solar energy" is too vague: you would drown in results. A precise question says exactly what you want to know, and so it also fixes <b>where to look</b> and <b>where to stop</b>.</p><p>The course groups the usual questions into four families.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">monitoring question</b> <span class="fr">(question de veille)</span></span><span class="mean">the exact question the watch must answer. It decides what is in and out of the search.</span></li><li><span class="term"><b class="en">scope</b> <span class="fr">(périmètre)</span></span><span class="mean">the limits of the search: which topic, which countries, which years.</span><span class="eg">solar dryers for fruit, worldwide, last 3 years</span></li><li><span class="term"><b class="en">patent</b> <span class="fr">(brevet)</span></span><span class="mean">a public document that gives an inventor the sole right to use an invention for some years. It also describes the invention, so it is a rich source.</span></li><li><span class="term"><b class="en">norm, standard</b> <span class="fr">(norme)</span></span><span class="mean">an agreed technical rule (size, safety, quality) that products are expected to follow.</span></li><li><span class="term"><b class="en">regulation</b> <span class="fr">(réglementation)</span></span><span class="mean">the laws and official rules that apply to an activity.</span></li></ul>
+  </div>
+  <figure class="fig"><svg class="vt" viewBox="0 0 560 194" role="img" aria-label="Four boxes: competition, patents and rules, new technologies and materials, research papers" style="--minw:500px"><rect x="10" y="10" width="266" height="80" rx="8" class="c1"/><text x="22" y="32" class="tb dk">Competition</text><text x="22" y="47" class="tm dk sm">Analyse de la concurrence</text><text x="22" y="65" class="t dk sm">Who is growing in the sector? What do they</text><text x="22" y="79" class="t dk sm">do? Clients, partners, R&amp;D?</text><rect x="290" y="10" width="266" height="80" rx="8" class="c2"/><text x="302" y="32" class="tb dk">Patents and rules</text><text x="302" y="47" class="tm dk sm">Propriété intellectuelle et réglementation</text><text x="302" y="65" class="t dk sm">Which patents were filed lately? Which</text><text x="302" y="79" class="t dk sm">norms and laws apply?</text><rect x="10" y="102" width="266" height="80" rx="8" class="c3"/><text x="22" y="124" class="tb dk">New tech and materials</text><text x="22" y="139" class="tm dk sm">Technologies et matériaux émergents</text><text x="22" y="157" class="t dk sm">Which new materials or technologies are</text><text x="22" y="171" class="t dk sm">coming? Their features and likely impact?</text><rect x="290" y="102" width="266" height="80" rx="8" class="c4"/><text x="302" y="124" class="tb dk">Research papers</text><text x="302" y="139" class="tm dk sm">Recherche académique et publications</text><text x="302" y="157" class="t dk sm">Who has already published serious work on</text><text x="302" y="171" class="t dk sm">the subject?</text></svg><figcaption>The four families of monitoring questions, with the course's sample questions shortened.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<div class="vt-ex"><b>The example, in full</b><p><b>SahraDry</b> is a small company in Biskra (12 employees) that dries dates for export. Its dryers run on gas, and the gas bill keeps rising. The manager wants to know: <i>could solar dryers replace gas?</i></p></div><p>One precise question per family for SahraDry:</p><ul class="ln"><li><b>Competition:</b> Which date-drying companies in Algeria and Tunisia have switched to solar drying, and with which supplier?</li><li><b>Patents and rules:</b> Which patents on solar dryers for fruit were filed since 2023? Which hygiene rules must dried dates meet to be sold in Europe?</li><li><b>New tech and materials:</b> Which solar collector types work in a hot, dusty climate, and how much drying time do they save?</li><li><b>Research papers:</b> Which universities have published tests of solar drying on dates?</li></ul><p>Compare with the vague start, "solar energy": each question above names a product (dryers), a use (dates or fruit), and often a place or a period. That is what makes it searchable.</p>
+  </div>
+</section>
+
+<section class="sec" id="s4">
+  <div class="sec-h"><span class="num">4</span><h2>Who does it <span class="fr">(Acteurs de la veille)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>Monitoring is <b>team work</b>. Three kinds of people each do one part, and each part needs the one before it.</p><p>The <b>watchers</b> find and gather the information. The <b>experts</b> work out what it means. The <b>decision-makers</b> use that meaning to choose what the company does.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">watcher</b> <span class="fr">(veilleur)</span></span><span class="mean">the person who searches, gathers and files information. Also called observer, researcher (recherchiste) or documentalist (documentaliste).</span></li><li><span class="term"><b class="en">documentalist</b> <span class="fr">(documentaliste)</span></span><span class="mean">a specialist in finding, sorting and storing documents.</span></li><li><span class="term"><b class="en">raw data</b> <span class="fr">(données brutes)</span></span><span class="mean">information as it was found, not yet checked or explained.</span></li><li><span class="term"><b class="en">expert, analyst</b> <span class="fr">(expert, analyste)</span></span><span class="mean">a specialist of the field who interprets the information, checks it is true (validation) and puts it in context (mise en perspective).</span></li><li><span class="term"><b class="en">decision-maker</b> <span class="fr">(décideur)</span></span><span class="mean">a manager or director who reads the summaries (synthèses de veille) and chooses the company's direction.</span></li></ul>
+  </div>
+  <figure class="fig"><svg class="vt" viewBox="0 0 560 144" role="img" aria-label="Three boxes in a row: information professionals, domain specialists, decision-makers; raw data becomes meaning becomes decisions" style="--minw:500px"><defs><marker id="f4-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker></defs><rect x="10" y="14" width="166" height="100" rx="8" class="c1"/><text x="93" y="45.5" class="t dk mid">Information pros</text><text x="93" y="60.5" class="t dk mid"><tspan class="sm">professionnels de l'information</tspan></text><text x="93" y="75.5" class="t dk mid"><tspan class="sm">watchers: collect, manage</tspan></text><text x="93" y="90.5" class="t dk mid"><tspan class="sm">sources and raw data</tspan></text><line x1="178" y1="64" x2="194" y2="64" class="ar" marker-end="url(#f4-ah)"/><rect x="196" y="14" width="166" height="100" rx="8" class="c3"/><text x="279" y="45.5" class="t dk mid">Domain specialists</text><text x="279" y="60.5" class="t dk mid"><tspan class="sm">spécialistes du domaine</tspan></text><text x="279" y="75.5" class="t dk mid"><tspan class="sm">experts, analysts: interpret,</tspan></text><text x="279" y="90.5" class="t dk mid"><tspan class="sm">check, put in context</tspan></text><line x1="364" y1="64" x2="380" y2="64" class="ar" marker-end="url(#f4-ah)"/><rect x="382" y="14" width="166" height="100" rx="8" class="c4"/><text x="465" y="45.5" class="t dk mid">Decision-makers</text><text x="465" y="60.5" class="t dk mid"><tspan class="sm">décideurs stratégiques</tspan></text><text x="465" y="75.5" class="t dk mid"><tspan class="sm">managers: use the summaries</tspan></text><text x="465" y="90.5" class="t dk mid"><tspan class="sm">to choose and act</tspan></text><text x="93" y="134" class="tm mid">raw data</text><text x="279" y="134" class="tm mid">meaning</text><text x="465" y="134" class="tm mid">decisions</text></svg><figcaption>Three roles, three jobs: raw data becomes meaning, meaning becomes a decision.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<div class="vt-ex"><b>The example, in full</b><p><b>SahraDry</b> is a small company in Biskra (12 employees) that dries dates for export. Its dryers run on gas, and the gas bill keeps rising. The manager wants to know: <i>could solar dryers replace gas?</i></p><p>SahraDry has 12 employees, so nobody does monitoring full time.</p></div><div class="scroll"><table class="t"><thead><tr><th>Role</th><th>Who at SahraDry</th><th>What they do</th></tr></thead><tbody><tr><td>Watcher</td><td>the office assistant, 2 hours a week</td><td>looks for articles, catalogues and rules on solar dryers, files them</td></tr><tr><td>Expert</td><td>the production engineer</td><td>reads what was filed, checks it, says what it means for our drying line</td></tr><tr><td>Decision-maker</td><td>the manager</td><td>reads the engineer's one-page summary and decides</td></tr></tbody></table></div><p>Why not let one person do it all? The assistant does not know drying well enough to judge a technical claim, and the manager has no time to read 50 articles. Each role covers the others' gap.</p>
+  </div>
+</section>
+
+<section class="sec" id="s5">
+  <div class="sec-h"><span class="num">5</span><h2>The cycle at a glance <span class="fr">(Processus de veille)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>Monitoring is done in <b>four steps</b>, always in the same order: decide what you need to know, find and gather the information, work out what it means, and pass it on.</p><p>It is a <b>loop</b>, not a line. What the managers decide usually raises a new question, which starts the next round.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">process</b> <span class="fr">(processus)</span></span><span class="mean">a fixed series of steps that turns something in (a need) into something out (a decision).</span></li><li><span class="term"><b class="en">need</b> <span class="fr">(besoin)</span></span><span class="mean">what the company wants to know. Step 1 turns it into a precise question.</span></li><li><span class="term"><b class="en">collection, gathering</b> <span class="fr">(récolte, collecte)</span></span><span class="mean">getting hold of the information from the sources found.</span></li><li><span class="term"><b class="en">processing</b> <span class="fr">(traitement)</span></span><span class="mean">sorting, checking, summarising and explaining the information.</span></li><li><span class="term"><b class="en">diffusion, sharing</b> <span class="fr">(diffusion)</span></span><span class="mean">sending the results to the people who need them, in a form they can use.</span></li></ul>
+  </div>
+  <figure class="fig"><svg class="vt" viewBox="0 0 600 300" role="img" aria-label="The monitoring cycle: four steps in order, then a decision that sends a new need back to step 1" style="--maxw:640px;--minw:500px"><defs><marker id="f5-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker></defs><defs><marker id="f5-ahm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hdm"/></marker></defs><rect x="190" y="18" width="210" height="48" rx="8" class="c4"/><text x="295" y="38.5" class="t dk mid">1 · Define the need</text><text x="295" y="53.5" class="t dk mid"><tspan class="sm">Définition des besoins</tspan></text><text x="180" y="47" class="tm end">decision-makers + watchers</text><line x1="295" y1="67" x2="295" y2="88" class="ar" marker-end="url(#f5-ah)"/><rect x="190" y="90" width="210" height="48" rx="8" class="c1"/><text x="295" y="110.5" class="t dk mid">2 · Find sources and collect</text><text x="295" y="125.5" class="t dk mid"><tspan class="sm">Sources et récolte</tspan></text><text x="180" y="119" class="tm end">watchers (veilleurs)</text><line x1="295" y1="139" x2="295" y2="160" class="ar" marker-end="url(#f5-ah)"/><rect x="190" y="162" width="210" height="48" rx="8" class="c3"/><text x="295" y="182.5" class="t dk mid">3 · Analyse and process</text><text x="295" y="197.5" class="t dk mid"><tspan class="sm">Analyse et traitement</tspan></text><text x="180" y="191" class="tm end">experts / analysts</text><line x1="295" y1="211" x2="295" y2="232" class="ar" marker-end="url(#f5-ah)"/><rect x="190" y="234" width="210" height="48" rx="8" class="c2"/><text x="295" y="254.5" class="t dk mid">4 · Share the results</text><text x="295" y="269.5" class="t dk mid"><tspan class="sm">Diffusion</tspan></text><text x="180" y="263" class="tm end">watchers → decision-makers</text><rect x="440" y="234" width="104" height="48" rx="8" class="soft"/><text x="492" y="254.5" class="t mid">Decision</text><text x="492" y="269.5" class="t mid"><tspan class="sm">managers act</tspan></text><line x1="401" y1="258" x2="438" y2="258" class="ar" marker-end="url(#f5-ah)"/><path d="M492,233 V42 H404" class="ar dash" marker-end="url(#f5-ah)"/><text x="498" y="140" class="tm">new or sharper</text><text x="498" y="154" class="tm">need</text></svg><figcaption>The course's diagram, redrawn. Left: who does each step. Right: the dashed arrow is the loop: a decision sends a new need back to step 1.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<div class="vt-ex"><b>The example, in full</b><p><b>SahraDry</b> is a small company in Biskra (12 employees) that dries dates for export. Its dryers run on gas, and the gas bill keeps rising. The manager wants to know: <i>could solar dryers replace gas?</i></p></div><p>One full round for SahraDry. Press <b>Play</b> or <b>Step</b> and follow the red dot.</p>
+  <figure class="fig live" id="lf1">
+    <div class="live-grid">
+      <svg class="vt" id="lf1-svg" viewBox="0 0 400 316" role="img" aria-label="The four steps of the cycle, with a dot moving from step to step for SahraDry&#x27;s question, then back to step 1"></svg>
+      <div class="live-side" data-no-save>
+        <div class="live-val"><span class="tag">Step</span><b id="lf1-val">0 / 0</b></div>
+        <div class="actions"><button class="b chk" id="lf1-play" type="button">Play</button><button class="b" id="lf1-step" type="button">Step</button><button class="b" id="lf1-reset" type="button">Reset</button></div>
+        <label class="tag" for="lf1-range">Drag to any step</label>
+        <input id="lf1-range" type="range" min="0" max="0" step="1" value="0">
+        <div class="live-status" id="lf1-status" aria-live="polite"></div>
+        <div class="scroll"><table class="t"><thead><tr><th>Step</th><th>Who</th><th>What happens</th></tr></thead><tbody id="lf1-rows"></tbody></table></div>
+      </div>
+    </div>
+    <figcaption><p><b>What to watch:</b> the dot passes each step once, in order, then the dashed arrow lights up and it returns to step 1 with a sharper question. <b>Why it works:</b> each step needs the output of the one before (no analysis without collected items, no useful sharing without analysis), and the decision tells the next round what to look for.</p></figcaption>
+  </figure>
+  <script>
+  (function(){
+    var $=function(id){return document.getElementById("lf1-"+id);};
+
+    var BOX=[{y:18},{y:90},{y:162},{y:234}];
+    var NAMES=["1 · Define the need","2 · Find sources and collect","3 · Analyse and process","4 · Share the results"];
+    var FR=["Définition des besoins","Sources et récolte","Analyse et traitement","Diffusion"];
+    var C=["c4","c1","c3","c2"];
+    // the course's steps, in order, with who does each and what SahraDry does
+    var ROUND=[
+      {at:0,who:"manager + assistant",what:"Question: can solar dryers replace gas for drying dates?"},
+      {at:1,who:"assistant (watcher)",what:"Finds and gathers sources: research papers, maker catalogues, energy news."},
+      {at:2,who:"engineer (expert)",what:"Checks the items and writes: a solar dryer could halve gas use on sunny months."},
+      {at:3,who:"assistant → manager",what:"Sends a one-page summary to the manager."},
+      {at:4,who:"manager (decision)",what:"Decides to lease one solar dryer for a test season."},
+      {at:0,who:"manager",what:"New, sharper need: how do leased solar dryers perform in Biskra's dust?"}
+    ];
+    var STEPS=ROUND.map(function(r,k){
+      var t=(k===ROUND.length-1)
+        ? "Back to step 1. The decision raised a <b>new, sharper need</b>, so the cycle starts again: "+r.what
+        : (r.at<4?"Step "+(r.at+1)+", <b>"+NAMES[r.at].slice(4)+"</b> ("+FR[r.at]+"). "+r.who+": "+r.what
+                 :"<b>Decision.</b> The results reach the manager, who acts: "+r.what);
+      return {text:t,end:k===ROUND.length-1};
+    });
+    function render(n){
+      var cur=ROUND[n].at,h=[];
+      h.push('<defs><marker id="lf1-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker></defs>');
+      for(var k=0;k<4;k++){
+        var y=BOX[k].y;
+        h.push('<rect x="40" y="'+y+'" width="220" height="50" rx="8" class="'+C[k]+(k===cur?' now':'')+'"/>');
+        h.push('<text x="150" y="'+(y+22)+'" class="t dk mid">'+NAMES[k]+'</text>');
+        h.push('<text x="150" y="'+(y+38)+'" class="t dk mid sm">'+FR[k]+'</text>');
+        if(k<3)h.push('<line x1="150" y1="'+(y+51)+'" x2="150" y2="'+(y+70)+'" class="ar" marker-end="url(#lf1-ah)"/>');
+      }
+      h.push('<rect x="284" y="234" width="96" height="50" rx="8" class="soft'+(cur===4?' now':'')+'"/>');
+      h.push('<text x="332" y="256" class="t mid">Decision</text><text x="332" y="272" class="tm mid">managers act</text>');
+      h.push('<line x1="261" y1="259" x2="282" y2="259" class="ar" marker-end="url(#lf1-ah)"/>');
+      h.push('<path d="M332,233 V43 H263" class="ar dash'+(n===ROUND.length-1?'':' dim')+'" marker-end="url(#lf1-ah)"/>');
+      var ty=cur<4?BOX[cur].y+25:259, tx=cur<4?28:394;
+      h.push('<circle cx="'+tx+'" cy="'+ty+'" r="7" class="tok"/>');
+      h.push('<text x="200" y="306" class="tm mid">round '+(n===ROUND.length-1?2:1)+'</text>');
+      $("svg").innerHTML=h.join("");
+      var r=[];
+      for(var j=0;j<=n;j++){var R=ROUND[j];r.push('<tr class="'+(j<n?'past':'')+'"><td>'+(R.at<4?R.at+1:"✓")+'</td><td>'+R.who+'</td><td>'+R.what+'</td></tr>');}
+      $("rows").innerHTML=r.join("");
+    }
+    var i=0,timer=null,reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+    function draw(){
+      var s=STEPS[i];
+      render(i);
+      $("val").textContent=i+" / "+(STEPS.length-1);
+      $("status").className="live-status"+(s.end?" ok":"");
+      $("status").innerHTML=(s.end?"<b>✓ Done.</b> ":"")+s.text;
+      $("range").value=i;
+    }
+    function stop(){clearInterval(timer);timer=null;$("play").textContent="Play";}
+    function go(n){i=Math.max(0,Math.min(STEPS.length-1,n));draw();if(i===STEPS.length-1)stop();}
+    $("play").addEventListener("click",function(){
+      if(timer){stop();return;}
+      if(i===STEPS.length-1)go(0);
+      if(reduced){go(STEPS.length-1);return;}
+      $("play").textContent="Pause";timer=setInterval(function(){go(i+1);},1300);
+    });
+    $("step").addEventListener("click",function(){stop();go(i+1);});
+    $("reset").addEventListener("click",function(){stop();go(0);});
+    $("range").max=STEPS.length-1;
+    $("range").addEventListener("input",function(){stop();go(+this.value);});
+    draw();
+  })();
+  </script>
+  </div>
+</section>
+
+<section class="sec" id="s6">
+  <div class="sec-h"><span class="num">6</span><h2>Step 1: define the need <span class="fr">(Définition des besoins (sur quoi veiller ?))</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>Before searching, decide <b>what</b> you are looking for and <b>why</b>. Skipping this step is the main cause of failed monitoring: you collect a lot and answer nothing.</p><p>The course lists seven small tasks. Think of a funnel: you pour in a vague topic and get out a precise question, plus a plan to answer it.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">keyword</b> <span class="fr">(mot-clé)</span></span><span class="mean">a word or short phrase you will type into search tools.</span><span class="eg">"solar dryer", "dates"</span></li><li><span class="term"><b class="en">scope</b> <span class="fr">(périmètre)</span></span><span class="mean">the limits of the subject: what is in, what is out.</span></li><li><span class="term"><b class="en">guiding idea</b> <span class="fr">(idée directrice)</span></span><span class="mean">one sentence that says what the watch is for. It keeps the work on track.</span></li><li><span class="term"><b class="en">resources</b> <span class="fr">(ressources)</span></span><span class="mean">what the work needs: people, time, money, tools, access to databases.</span></li><li><span class="term"><b class="en">plan</b> <span class="fr">(planifier)</span></span><span class="mean">decide who does what, and when.</span></li></ul>
+  </div>
+  <figure class="fig"><svg class="vt" viewBox="0 0 560 196" role="img" aria-label="A funnel: a vague topic goes in, a precise question with resources and a plan comes out" style="--minw:500px"><defs><marker id="f6-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker></defs><path d="M20,14 H540 L380,130 H180 Z" class="soft"/><text x="280" y="36" class="t mid">vague topic: "solar energy"</text><text x="280" y="66" class="t mid">+ goal, keywords, scope</text><text x="280" y="92" class="t mid">+ guiding idea</text><rect x="180" y="142" width="200" height="42" rx="8" class="c4"/><text x="280" y="159.5" class="t dk mid">precise question</text><text x="280" y="174.5" class="t dk mid"><tspan class="sm">+ resources + plan</tspan></text><line x1="280" y1="118" x2="280" y2="140" class="ar" marker-end="url(#f6-ah)"/></svg><figcaption>Step 1 as a funnel: each task narrows the topic until it becomes a question you can actually search.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<div class="vt-ex"><b>The example, in full</b><p><b>SahraDry</b> is a small company in Biskra (12 employees) that dries dates for export. Its dryers run on gas, and the gas bill keeps rising. The manager wants to know: <i>could solar dryers replace gas?</i></p></div><ol class="vt-steps"><li><b>Understand the work and its goal</b> (comprendre la nature, les objectifs). The manager must decide within 6 months whether to invest in solar drying.</li><li><b>Make the question precise</b> (préciser la question de veille). Which solar dryers suit dates, what do they cost, and how much gas do they save?</li><li><b>Pull out the key ideas and keywords</b> (idées importantes, mots-clés). solar dryer, solar tunnel dryer, dates, dried fruit, drying time, energy cost; in French: séchoir solaire, dattes.</li><li><b>Set the scope</b> (périmètre). Dryers for fruit only (not grain), hot dry climates, items from the last 3 years.</li><li><b>Write the guiding idea</b> (idée directrice). "Find out if solar drying can cut our drying cost without hurting date quality."</li><li><b>List the resources</b> (ressources nécessaires). The assistant 2 hours a week, the engineer 1 hour a week, free tools, a library access for papers.</li><li><b>Plan</b> (planifier). Months 1 to 2 collect, month 3 analyse, month 4 report to the manager.</li></ol>
+  </div>
+</section>
+
+<section class="sec" id="s7">
+  <div class="sec-h"><span class="num">7</span><h2>Step 2a: find the sources and judge them <span class="fr">(Identification des sources et sourcing)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>Once you know the question, you need <b>places to look</b>: these are the <b>sources</b>. Finding good sources is a job in itself, called <b>sourcing</b>, and it needs a human: a person must judge whether a source is worth watching.</p><p>After that, software <b>monitoring agents</b> can keep an eye on the chosen sources automatically. But they only watch what a human picked first.</p><p>To judge a source, the course gives four checks: who is behind it, how recent it is, whether it is neutral, and whether it is well organised.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">source</b> <span class="fr">(source d'information)</span></span><span class="mean">any place information comes from: a website, a newspaper, a database, a forum...</span></li><li><span class="term"><b class="en">sourcing</b> <span class="fr">(sourcing)</span></span><span class="mean">the work of finding and choosing the sources worth watching. Done by the watchers.</span></li><li><span class="term"><b class="en">monitoring agent</b> <span class="fr">(agent de veille)</span></span><span class="mean">a program that checks chosen sources regularly and reports what is new.</span></li><li><span class="term"><b class="en">institutional site</b> <span class="fr">(site institutionnel)</span></span><span class="mean">the website of an official body: ministry, university, research centre, standards office.</span></li><li><span class="term"><b class="en">thematic directory</b> <span class="fr">(annuaire thématique)</span></span><span class="mean">a list of websites sorted by subject by people (not by a robot).</span></li><li><span class="term"><b class="en">database</b> <span class="fr">(base de données)</span></span><span class="mean">an organised, searchable collection of records, such as scientific articles or patents.</span></li><li><span class="term"><b class="en">authority</b> <span class="fr">(autorité)</span></span><span class="mean">how much we can trust the author or publisher: known, qualified, accountable?</span></li><li><span class="term"><b class="en">objectivity</b> <span class="fr">(objectivité)</span></span><span class="mean">being neutral: not trying to sell you something or push one side.</span></li></ul>
+  </div>
+  <figure class="fig"><svg class="vt" viewBox="0 0 600 146" role="img" aria-label="A source passes four checks in a row: authority, date, objectivity, organisation; if it passes all it is kept" style="--minw:500px"><defs><marker id="f7-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker></defs><rect x="6" y="52" width="70" height="44" rx="8" class="pane"/><text x="41" y="78" class="t mid">a source</text><rect x="96" y="40" width="96" height="68" rx="8" class="c1"/><text x="144" y="62" class="tb dk mid">Authority</text><text x="144" y="77" class="tm dk mid sm">autorité</text><text x="144" y="96" class="t dk mid sm">Who wrote it?</text><line x1="78" y1="74" x2="94" y2="74" class="ar" marker-end="url(#f7-ah)"/><rect x="208" y="40" width="96" height="68" rx="8" class="c4"/><text x="256" y="62" class="tb dk mid">Date</text><text x="256" y="77" class="tm dk mid sm">mise à jour</text><text x="256" y="96" class="t dk mid sm">Is it recent?</text><line x1="190" y1="74" x2="206" y2="74" class="ar" marker-end="url(#f7-ah)"/><rect x="320" y="40" width="96" height="68" rx="8" class="c2"/><text x="368" y="62" class="tb dk mid">Objectivity</text><text x="368" y="77" class="tm dk mid sm">objectivité</text><text x="368" y="96" class="t dk mid sm">Is it neutral?</text><line x1="302" y1="74" x2="318" y2="74" class="ar" marker-end="url(#f7-ah)"/><rect x="432" y="40" width="96" height="68" rx="8" class="c3"/><text x="480" y="62" class="tb dk mid">Organisation</text><text x="480" y="77" class="tm dk mid sm">organisation</text><text x="480" y="96" class="t dk mid sm">Is it easy to use?</text><line x1="414" y1="74" x2="430" y2="74" class="ar" marker-end="url(#f7-ah)"/><line x1="530" y1="74" x2="556" y2="74" class="ar" marker-end="url(#f7-ah)"/><text x="562" y="78" class="tb okt">keep</text><text x="300" y="134" class="tm mid">fail any check: drop the source (or use it with care)</text></svg><figcaption>The four checks from the course. For the date, check the pages you will actually use, not just the home page: a home page can be fresh while the articles inside are years old.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<div class="vt-ex"><b>The example, in full</b><p><b>SahraDry</b> is a small company in Biskra (12 employees) that dries dates for export. Its dryers run on gas, and the gas bill keeps rising. The manager wants to know: <i>could solar dryers replace gas?</i></p></div><p>Sources to consider, by type (the course's list): institutional sites, online press, thematic directories, blogs, forums and mailing lists, databases, social networks. The assistant finds seven candidates and checks each one:</p><div class="scroll"><table class="t"><thead><tr><th>Source</th><th>Type</th><th class="c">Auth.</th><th class="c">Date</th><th class="c">Obj.</th><th class="c">Org.</th><th>Why</th></tr></thead><tbody><tr><td>A public renewable-energy research centre's website</td><td>institutional site</td><td class="c ok">✓</td><td class="c ok">✓</td><td class="c ok">✓</td><td class="c ok">✓</td><td>official body, reports dated 2024 to 2026, neutral, clear menu</td></tr><tr><td>A solar-dryer maker's blog</td><td>blog</td><td class="c ok">✓</td><td class="c ok">✓</td><td class="c bad">✕</td><td class="c ok">✓</td><td>knows the product and is recent, but sells it: claims are advertising</td></tr><tr><td>An anonymous forum post from 2014</td><td>forum</td><td class="c bad">✕</td><td class="c bad">✕</td><td class="c ok">✓</td><td class="c bad">✕</td><td>no known author, old, thread hard to follow</td></tr><tr><td>A 2024 article in a scientific database</td><td>database</td><td class="c ok">✓</td><td class="c ok">✓</td><td class="c ok">✓</td><td class="c ok">✓</td><td>peer-reviewed authors, recent, neutral, searchable</td></tr><tr><td>A national news site</td><td>online press</td><td class="c ok">✓</td><td class="c bad">✕</td><td class="c ok">✓</td><td class="c ok">✓</td><td>home page updated today, but the dryer article is from 2016</td></tr><tr><td>A directory of agri-food suppliers</td><td>thematic directory</td><td class="c ok">✓</td><td class="c ok">✓</td><td class="c ok">✓</td><td class="c bad">✕</td><td>useful list, but pages are messy and links are broken</td></tr><tr><td>The agriculture ministry's page on equipment subsidies</td><td>institutional site</td><td class="c ok">✓</td><td class="c ok">✓</td><td class="c ok">✓</td><td class="c ok">✓</td><td>official, updated this year, neutral, clear</td></tr></tbody></table></div><p>Below, the same checks played one at a time. A source leaves at the first check it fails.</p>
+  <figure class="fig live" id="lf2">
+    <div class="live-grid">
+      <svg class="vt" id="lf2-svg" viewBox="0 0 436 290" role="img" aria-label="Seven sources checked against four criteria one after another; failing sources fade out"></svg>
+      <div class="live-side" data-no-save>
+        <div class="live-val"><span class="tag">Step</span><b id="lf2-val">0 / 0</b></div>
+        <div class="actions"><button class="b chk" id="lf2-play" type="button">Play</button><button class="b" id="lf2-step" type="button">Step</button><button class="b" id="lf2-reset" type="button">Reset</button></div>
+        <label class="tag" for="lf2-range">Drag to any check</label>
+        <input id="lf2-range" type="range" min="0" max="0" step="1" value="0">
+        <div class="live-status" id="lf2-status" aria-live="polite"></div>
+        <div class="scroll"><table class="t"><thead><tr><th>Source</th><th>Status</th></tr></thead><tbody id="lf2-rows"></tbody></table></div>
+      </div>
+    </div>
+    <figcaption><p><b>What to watch:</b> each press checks one more criterion for every source still in the race. A red ✕ fades the source out. <b>Why it works:</b> a source must pass all four checks, so the order does not change who is kept, only when the others leave. Note the news site: its home page is updated daily, but the article on solar dryers is from 2016, so it fails on date.</p></figcaption>
+  </figure>
+  <script>
+  (function(){
+    var $=function(id){return document.getElementById("lf2-"+id);};
+    var SRC=[{"short": "Research centre site", "name": "A public renewable-energy research centre's website", "type": "institutional site", "ok": [1, 1, 1, 1], "why": "official body, reports dated 2024 to 2026, neutral, clear menu"}, {"short": "Dryer maker's blog", "name": "A solar-dryer maker's blog", "type": "blog", "ok": [1, 1, 0, 1], "why": "knows the product and is recent, but sells it: claims are advertising"}, {"short": "Forum post, 2014", "name": "An anonymous forum post from 2014", "type": "forum", "ok": [0, 0, 1, 0], "why": "no known author, old, thread hard to follow"}, {"short": "Database article", "name": "A 2024 article in a scientific database", "type": "database", "ok": [1, 1, 1, 1], "why": "peer-reviewed authors, recent, neutral, searchable"}, {"short": "News site", "name": "A national news site", "type": "online press", "ok": [1, 0, 1, 1], "why": "home page updated today, but the dryer article is from 2016"}, {"short": "Trade directory", "name": "A directory of agri-food suppliers", "type": "thematic directory", "ok": [1, 1, 1, 0], "why": "useful list, but pages are messy and links are broken"}, {"short": "Ministry page", "name": "The agriculture ministry's page on equipment subsidies", "type": "institutional site", "ok": [1, 1, 1, 1], "why": "official, updated this year, neutral, clear"}];
+    var CRIT=[{"en": "Authority", "ab": "Auth.", "fr": "autorité", "q": "Is the author or publisher known and qualified?"}, {"en": "Date", "ab": "Date", "fr": "date de mise à jour", "q": "Are the pages we need recent (not just the home page)?"}, {"en": "Objectivity", "ab": "Obj.", "fr": "objectivité", "q": "Is it neutral, or trying to sell something?"}, {"en": "Organisation", "ab": "Org.", "fr": "organisation de l'information", "q": "Can we find things in it easily?"}];
+
+    // state after checking criteria 0..c-1: a source is out at the first criterion it fails
+    function outAt(s){for(var k=0;k<CRIT.length;k++){if(!s.ok[k])return k;}return -1;}
+    var STEPS=[{text:"Start: "+SRC.length+" candidate sources for SahraDry's question. None has been checked yet."}];
+    for(var c=0;c<CRIT.length;c++){
+      var dropped=SRC.filter(function(s){return outAt(s)===c;}).map(function(s){return s.short;});
+      var left=SRC.filter(function(s){var o=outAt(s);return o<0||o>c;}).length;
+      STEPS.push({c:c,text:"Check "+(c+1)+", <b>"+CRIT[c].en+"</b> ("+CRIT[c].fr+"): "+CRIT[c].q+" "+(dropped.length?"Dropped: "+dropped.join(", ")+".":"Nobody fails.")+" "+left+" left."});
+    }
+    var kept=SRC.filter(function(s){return outAt(s)<0;}).map(function(s){return s.short;});
+    STEPS[STEPS.length-1].text+=" Kept for the watch: <b>"+kept.join(", ")+"</b>.";
+    STEPS[STEPS.length-1].end=true;
+    function render(n){
+      var h=[],done=n; // criteria 0..done-1 have been checked
+      for(var k=0;k<CRIT.length;k++){
+        h.push('<text x="'+(212+k*44)+'" y="20" class="tm mid'+(k===done-1?' figt':'')+'">'+CRIT[k].ab+'</text>');
+      }
+      SRC.forEach(function(s,r){
+        var y=34+r*36,o=outAt(s),out=(o>=0&&o<done);
+        h.push('<g class="'+(out?'dim':'')+'"><rect x="4" y="'+y+'" width="430" height="30" rx="6" class="pane"/>');
+        h.push('<text x="12" y="'+(y+19)+'" class="t">'+s.short+'</text>');
+        for(var k=0;k<CRIT.length;k++){
+          var cx=212+k*44,cy=y+15;
+          if(k<done&&(o<0||k<=o)){
+            h.push('<circle cx="'+cx+'" cy="'+cy+'" r="10" class="'+(s.ok[k]?'okf':'badf')+'"/>');
+            h.push('<text x="'+cx+'" y="'+(cy+4)+'" class="tb mid" style="fill:var(--surface)">'+(s.ok[k]?'✓':'✕')+'</text>');
+          }else{
+            h.push('<circle cx="'+cx+'" cy="'+cy+'" r="10" class="box"/>');
+          }
+        }
+        h.push('</g>');
+        if(done===CRIT.length&&o<0)h.push('<text x="426" y="'+(y+19)+'" class="tb okt end">keep</text>');
+      });
+      $("svg").innerHTML=h.join("");
+      var rows=SRC.map(function(s){var o=outAt(s);var st=(o>=0&&o<done)?"✕ out ("+CRIT[o].en+")":(done===CRIT.length?"✓ kept":"still in");
+        return '<tr><td>'+s.short+'</td><td class="'+(st[0]==="✕"?"bad":(st[0]==="✓"?"ok":""))+'">'+st+'</td></tr>';});
+      $("rows").innerHTML=rows.join("");
+    }
+    var i=0,timer=null,reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+    function draw(){
+      var s=STEPS[i];
+      render(i);
+      $("val").textContent=i+" / "+(STEPS.length-1);
+      $("status").className="live-status"+(s.end?" ok":"");
+      $("status").innerHTML=(s.end?"<b>✓ Done.</b> ":"")+s.text;
+      $("range").value=i;
+    }
+    function stop(){clearInterval(timer);timer=null;$("play").textContent="Play";}
+    function go(n){i=Math.max(0,Math.min(STEPS.length-1,n));draw();if(i===STEPS.length-1)stop();}
+    $("play").addEventListener("click",function(){
+      if(timer){stop();return;}
+      if(i===STEPS.length-1)go(0);
+      if(reduced){go(STEPS.length-1);return;}
+      $("play").textContent="Pause";timer=setInterval(function(){go(i+1);},1300);
+    });
+    $("step").addEventListener("click",function(){stop();go(i+1);});
+    $("reset").addEventListener("click",function(){stop();go(0);});
+    $("range").max=STEPS.length-1;
+    $("range").addEventListener("input",function(){stop();go(+this.value);});
+    draw();
+  })();
+  </script>
+  </div>
+</section>
+
+<section class="sec" id="s8">
+  <div class="sec-h"><span class="num">8</span><h2>Step 2b: collect, by pull or by push <span class="fr">(Collecte d'information : modes Pull et Push)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>There are two ways to get information from the web.</p><p><b>Pull</b>: you go and get it yourself, like going fishing. You type searches, open pages, keep what is good. <b>Push</b>: the information comes to you on its own. You set up an alert once (keywords, filters), and a tool sends you new items as they appear.</p><p>Pull is precise but slow. Push saves time but, if your keywords are too broad, it buries you under results.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">pull mode</b> <span class="fr">(mode Pull)</span></span><span class="mean">you search the web yourself, each time you need something.</span></li><li><span class="term"><b class="en">push mode</b> <span class="fr">(mode Push)</span></span><span class="mean">a tool sends you new information automatically, based on settings you chose once.</span></li><li><span class="term"><b class="en">alert</b> <span class="fr">(alerte)</span></span><span class="mean">an automatic message (often an email) saying a new item matches your keywords.</span></li><li><span class="term"><b class="en">settings, configuration</b> <span class="fr">(paramétrage)</span></span><span class="mean">choosing the keywords, filters and sources an alert uses. Poor settings bring floods of useless items.</span></li><li><span class="term"><b class="en">registration</b> <span class="fr">(enregistrement)</span></span><span class="mean">creating an account with a publisher or database. Pull needs none; many push services do.</span></li><li><span class="term"><b class="en">spam</b> <span class="fr">(spam)</span></span><span class="mean">unwanted mass messages that clog your inbox.</span></li></ul>
+  </div>
+  <figure class="fig"><svg class="vt" viewBox="0 0 560 166" role="img" aria-label="Two panels: pull, where you search the web and pick results; push, where the web feeds a tool that sends alerts to you" style="--minw:500px"><defs><marker id="f8-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker></defs><defs><marker id="f8-am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hdm"/></marker></defs><rect x="6" y="8" width="264" height="150" rx="10" class="pane"/><rect x="290" y="8" width="264" height="150" rx="10" class="pane"/><text x="138" y="30" class="tb mid">Pull: you go fishing</text><text x="422" y="30" class="tb mid">Push: it comes to you</text><rect x="20" y="70" width="76" height="40" rx="8" class="c4"/><text x="58" y="94" class="tb dk mid">you</text><rect x="180" y="70" width="76" height="40" rx="8" class="c1"/><text x="218" y="94" class="tb dk mid">web</text><path d="M98,80 H176" class="ar" marker-end="url(#f8-ah)"/><path d="M176,102 H98" class="ar dash" marker-end="url(#f8-ah)"/><text x="138" y="74" class="tm mid">you search</text><text x="138" y="122" class="tm mid">you pick results</text><text x="138" y="146" class="t mid sm">precise, but slow and irregular</text><rect x="300" y="70" width="64" height="40" rx="8" class="c1"/><text x="332" y="94" class="tb dk mid">web</text><rect x="390" y="70" width="72" height="40" rx="8" class="soft"/><text x="426" y="86.5" class="t mid">tool</text><text x="426" y="101.5" class="t mid"><tspan class="sm">alerts</tspan></text><rect x="480" y="70" width="64" height="40" rx="8" class="c4"/><text x="512" y="94" class="tb dk mid">you</text><line x1="366" y1="90" x2="388" y2="90" class="ar" marker-end="url(#f8-ah)"/><line x1="464" y1="90" x2="478" y2="90" class="ar" marker-end="url(#f8-ah)"/><text x="426" y="60" class="tm mid">set up once</text><text x="422" y="146" class="t mid sm">fast and regular, but can flood you</text></svg><figcaption>Pull: the arrow starts from you. Push: the arrow ends at you.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<div class="vt-ex"><b>The example, in full</b><p><b>SahraDry</b> is a small company in Biskra (12 employees) that dries dates for export. Its dryers run on gas, and the gas bill keeps rising. The manager wants to know: <i>could solar dryers replace gas?</i></p></div><div class="scroll"><table class="t"><thead><tr><th></th><th>Pull</th><th>Push</th></tr></thead><tbody><tr><td>How</td><td>The assistant searches "séchoir solaire dattes" when she has time.</td><td>She sets an alert on the keywords once; new items arrive by email.</td></tr><tr><td>Plus</td><td>Precise: she discards bad results at once. No account needed.</td><td>Saves time, automatic, fast warning, regular.</td></tr><tr><td>Minus</td><td>Takes a lot of time, tedious, irregular: on busy weeks nothing is done.</td><td>Flood risk if the keywords are too broad; emails and spam; needs a good tool.</td></tr></tbody></table></div><p>Below, one invented week for SahraDry with three set-ups: pull by hand, a push alert on the broad word "solar", and a push alert on "solar dryer" + "dates OR dried fruit". Scanning an alert item takes about 1 minute; the precise alert took 30 minutes to set up.</p>
+  <figure class="fig live" id="lf3">
+    <div class="live-grid">
+      <svg class="vt" id="lf3-svg" viewBox="0 0 392 280" role="img" aria-label="Bar charts for a week: pull finds a few useful items on two days, broad push sends many items every day, precise push sends few items, mostly useful, every day"></svg>
+      <div class="live-side" data-no-save>
+        <div class="live-val"><span class="tag">Day</span><b id="lf3-val">0 / 0</b></div>
+        <div class="actions"><button class="b chk" id="lf3-play" type="button">Play</button><button class="b" id="lf3-step" type="button">Step</button><button class="b" id="lf3-reset" type="button">Reset</button></div>
+        <label class="tag" for="lf3-range">Drag to any day</label>
+        <input id="lf3-range" type="range" min="0" max="0" step="1" value="0">
+        <div class="live-status" id="lf3-status" aria-live="polite"></div>
+        <div class="scroll"><table class="t"><thead><tr><th>Mode</th><th>Items</th><th>Useful</th><th>Hours</th></tr></thead><tbody id="lf3-rows"></tbody></table></div>
+      </div>
+    </div>
+    <figcaption><p><b>What to watch:</b> the grey bars (items you must look at) against the blue part (useful ones). Pull has gaps on busy days. The broad alert is tall and grey. The precise alert is short and mostly blue, every day. <b>Why:</b> push is only as good as its settings. Precise keywords keep the time saving and remove the flood, which is exactly the course's warning.</p></figcaption>
+  </figure>
+  <script>
+  (function(){
+    var $=function(id){return document.getElementById("lf3-"+id);};
+    var W={"pull": {"received": [3, 0, 0, 2, 0, 0, 0], "useful": [3, 0, 0, 2, 0, 0, 0], "search_min": [120, 0, 0, 90, 0, 0, 0], "scan_min": 0, "setup_min": 0}, "broad": {"received": [32, 41, 28, 37, 45, 30, 39], "useful": [1, 0, 1, 1, 0, 1, 1], "scan_min": 1, "setup_min": 0}, "precise": {"received": [3, 2, 4, 2, 3, 1, 3], "useful": [2, 1, 2, 1, 2, 1, 2], "scan_min": 1, "setup_min": 30}};
+
+    var DAYS=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],MODES=["pull","broad","precise"];
+    var LABEL={pull:"Pull (search by hand)",broad:"Push, broad alert",precise:"Push, precise alert"};
+    function totals(d){ // cumulative over days 0..d-1
+      var t={};MODES.forEach(function(m){var M=W[m],rec=0,use=0,min=M.setup_min||0,act=0;
+        for(var k=0;k<d;k++){rec+=M.received[k];use+=M.useful[k];min+=(M.search_min?M.search_min[k]:0)+M.received[k]*(M.scan_min||0);if(M.received[k]>0)act++;}
+        if(d===0)min=0;
+        t[m]={rec:rec,use:use,h:Math.round(min/6)/10,act:act};});
+      return t;
+    }
+    var STEPS=[{text:"Start of the week. Three ways to watch SahraDry's question side by side. Bars: grey = items to look at, blue = useful ones (read the numbers: the bar heights are squeezed so small counts stay visible)."}];
+    for(var d=1;d<=7;d++){
+      var T=totals(d),k=d-1;
+      var s=DAYS[k]+": pull "+(W.pull.received[k]?"searched "+W.pull.search_min[k]+" min and found "+W.pull.useful[k]+" useful":"no time to search today")
+        +"; broad alert sent "+W.broad.received[k]+" items ("+W.broad.useful[k]+" useful)"
+        +"; precise alert sent "+W.precise.received[k]+" ("+W.precise.useful[k]+" useful).";
+      STEPS.push({text:s});
+    }
+    var F=totals(7);
+    STEPS[7].end=true;
+    STEPS[7].text+=" <b>Week total.</b> Pull: "+F.pull.use+" useful, but only on "+F.pull.act+" days of 7 and "+F.pull.h+" h of searching. "
+      +"Broad push: "+F.broad.rec+" items to scan for "+F.broad.use+" useful ("+F.broad.h+" h): flooded. "
+      +"Precise push: "+F.precise.use+" useful of "+F.precise.rec+", every day, "+F.precise.h+" h including set-up.";
+    function render(n){
+      var h=[];
+      for(var k=0;k<7;k++)h.push('<text x="'+(96+k*42)+'" y="16" class="tm mid">'+DAYS[k]+'</text>');
+      MODES.forEach(function(m,r){
+        var y=26+r*84,M=W[m],mx=50;
+        h.push('<text x="4" y="'+(y+14)+'" class="tb">'+m+'</text>');
+        h.push('<line x1="76" y1="'+(y+70)+'" x2="380" y2="'+(y+70)+'" class="ln"/>');
+        for(var k=0;k<7;k++){
+          var x=82+k*42,rec=M.received[k],use=M.useful[k],on=k<n;
+          var hr=Math.sqrt(rec/mx)*62,hu=Math.sqrt(use/mx)*62; // square-root scale so small counts stay visible
+          if(!on){h.push('<rect x="'+x+'" y="'+(y+66)+'" width="28" height="4" class="box"/>');continue;}
+          h.push('<rect x="'+x+'" y="'+(y+70-hr)+'" width="28" height="'+hr+'" class="barn"/>');
+          h.push('<rect x="'+x+'" y="'+(y+70-Math.max(hu,use?4:0))+'" width="28" height="'+Math.max(hu,use?4:0)+'" class="barf"/>');
+          h.push('<text x="'+(x+14)+'" y="'+(y+64-hr)+'" class="tm mid sm">'+rec+'</text>');
+        }
+      });
+      $("svg").innerHTML=h.join("");
+      var T=totals(n);
+      $("rows").innerHTML=MODES.map(function(m){return '<tr><td>'+LABEL[m]+'</td><td>'+T[m].rec+'</td><td>'+T[m].use+'</td><td>'+T[m].h+'</td></tr>';}).join("");
+    }
+    var i=0,timer=null,reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+    function draw(){
+      var s=STEPS[i];
+      render(i);
+      $("val").textContent=i+" / "+(STEPS.length-1);
+      $("status").className="live-status"+(s.end?" ok":"");
+      $("status").innerHTML=(s.end?"<b>✓ Done.</b> ":"")+s.text;
+      $("range").value=i;
+    }
+    function stop(){clearInterval(timer);timer=null;$("play").textContent="Play";}
+    function go(n){i=Math.max(0,Math.min(STEPS.length-1,n));draw();if(i===STEPS.length-1)stop();}
+    $("play").addEventListener("click",function(){
+      if(timer){stop();return;}
+      if(i===STEPS.length-1)go(0);
+      if(reduced){go(STEPS.length-1);return;}
+      $("play").textContent="Pause";timer=setInterval(function(){go(i+1);},1300);
+    });
+    $("step").addEventListener("click",function(){stop();go(i+1);});
+    $("reset").addEventListener("click",function(){stop();go(0);});
+    $("range").max=STEPS.length-1;
+    $("range").addEventListener("input",function(){stop();go(+this.value);});
+    draw();
+  })();
+  </script>
+  </div>
+</section>
+
+<section class="sec" id="s9">
+  <div class="sec-h"><span class="num">9</span><h2>Step 2c: the right tool, and storing what you collect <span class="fr">(Collecte d'information : outils et stockage)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>Watchers must <b>master their tools</b>. Before picking one, ask three questions: what <b>kind</b> of tool is it, how does it <b>work</b>, and what must I <b>set up</b>? Then match it to the source and to the purpose.</p><p>The course names three purposes: <b>monitor</b> a page for changes, <b>copy</b> a whole site, or <b>detect</b> new items. Finally, what you collect must be <b>checked, sorted and saved</b> somewhere suitable, so step 3 can use it. Monitoring software helps with that.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">monitor a page</b> <span class="fr">(surveiller)</span></span><span class="mean">the tool revisits a page and tells you when it changes.</span><span class="eg">a ministry's page of new energy subsidies</span></li><li><span class="term"><b class="en">copy a site</b> <span class="fr">(aspirer un site)</span></span><span class="mean">download a whole website to your computer to read or search it offline ("vacuum" it).</span><span class="eg">HTTrack</span></li><li><span class="term"><b class="en">detect</b> <span class="fr">(détecter)</span></span><span class="mean">scan many sources for new items that match keywords.</span></li><li><span class="term"><b class="en">validate</b> <span class="fr">(valider)</span></span><span class="mean">check an item is true and relevant before keeping it.</span></li><li><span class="term"><b class="en">record, file</b> <span class="fr">(consigner)</span></span><span class="mean">write it down in a set place and format (a database, a shared folder) with its source and date.</span></li><li><span class="term"><b class="en">medium</b> <span class="fr">(support)</span></span><span class="mean">where the information is kept: a file, a database, a notes tool...</span></li></ul>
+  </div>
+  <figure class="fig"><svg class="vt" viewBox="0 0 560 192" role="img" aria-label="Three purposes, monitor, copy a site, detect, feed collected items, which are validated, organised and recorded" style="--minw:500px"><defs><marker id="f9-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker></defs><rect x="8" y="10" width="172" height="80" rx="8" class="c1"/><text x="94" y="31.5" class="t dk mid">Monitor</text><text x="94" y="46.5" class="t dk mid"><tspan class="sm">surveiller</tspan></text><text x="94" y="61.5" class="t dk mid"><tspan class="sm">warn me when</tspan></text><text x="94" y="76.5" class="t dk mid"><tspan class="sm">a page changes</tspan></text><line x1="94" y1="92" x2="73" y2="118" class="ln"/><rect x="192" y="10" width="172" height="80" rx="8" class="c2"/><text x="278" y="31.5" class="t dk mid">Copy a site</text><text x="278" y="46.5" class="t dk mid"><tspan class="sm">aspirer</tspan></text><text x="278" y="61.5" class="t dk mid"><tspan class="sm">save a whole site</tspan></text><text x="278" y="76.5" class="t dk mid"><tspan class="sm">to my disk</tspan></text><line x1="278" y1="92" x2="73" y2="118" class="ln"/><rect x="376" y="10" width="172" height="80" rx="8" class="c3"/><text x="462" y="31.5" class="t dk mid">Detect</text><text x="462" y="46.5" class="t dk mid"><tspan class="sm">détecter</tspan></text><text x="462" y="61.5" class="t dk mid"><tspan class="sm">find new items</tspan></text><text x="462" y="76.5" class="t dk mid"><tspan class="sm">with my keywords</tspan></text><line x1="462" y1="92" x2="73" y2="118" class="ln"/><rect x="8" y="120" width="130" height="40" rx="8" class="pane"/><text x="73" y="144" class="t mid">collected items</text><line x1="140" y1="140" x2="166" y2="140" class="ar" marker-end="url(#f9-ah)"/><rect x="170" y="120" width="110" height="40" rx="8" class="soft"/><text x="225" y="136.5" class="t mid">validate</text><text x="225" y="151.5" class="t mid"><tspan class="sm">valider</tspan></text><line x1="281" y1="140" x2="296" y2="140" class="ar" marker-end="url(#f9-ah)"/><rect x="298" y="120" width="110" height="40" rx="8" class="soft"/><text x="353" y="136.5" class="t mid">organise</text><text x="353" y="151.5" class="t mid"><tspan class="sm">organiser</tspan></text><line x1="409" y1="140" x2="424" y2="140" class="ar" marker-end="url(#f9-ah)"/><rect x="426" y="120" width="110" height="40" rx="8" class="soft"/><text x="481" y="136.5" class="t mid">record</text><text x="481" y="151.5" class="t mid"><tspan class="sm">consigner</tspan></text><text x="359" y="182" class="tm mid">kept on a suitable medium, ready for step 3</text></svg><figcaption>Three purposes of collection tools on top; below, what happens to every collected item before analysis.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<div class="vt-ex"><b>The example, in full</b><p><b>SahraDry</b> is a small company in Biskra (12 employees) that dries dates for export. Its dryers run on gas, and the gas bill keeps rising. The manager wants to know: <i>could solar dryers replace gas?</i></p></div><div class="scroll"><table class="t"><thead><tr><th>Source</th><th>Purpose</th><th>Kind of tool</th></tr></thead><tbody><tr><td>Agriculture ministry page on equipment subsidies</td><td>monitor: changes are rare but important</td><td>a page-change monitor</td></tr><tr><td>A research centre's site with 40 reports on solar drying</td><td>copy the site, to search it offline</td><td>a site copier (HTTrack)</td></tr><tr><td>News and papers on "solar dryer" + "dates"</td><td>detect new items</td><td>a keyword alert (push)</td></tr></tbody></table></div><p>Then each item is <b>validated</b> (the engineer checks the article really tested dates, not grain), <b>organised</b> (folder "Dryers / Tunnel type") and <b>recorded</b> with its link, date and a one-line note, in a shared notes tool.</p>
+  </div>
+</section>
+
+<section class="sec" id="s10">
+  <div class="sec-h"><span class="num">10</span><h2>Step 3: analyse and process <span class="fr">(Analyse et traitement de l'information)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>This is where information <b>gains value</b>. A pile of articles is not useful to a manager. What is useful is: "here is what it means for us, and here is what we could do".</p><p>The collected items are checked, analysed and summarised to <b>link</b> them together, make <b>hypotheses</b>, sketch <b>scenarios</b> and make <b>proposals</b>. It is the <b>hardest and most important step</b>, the heart of the process, so it is usually done by experts of the field, helped by software.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">added value</b> <span class="fr">(valeur ajoutée)</span></span><span class="mean">what the analysis adds on top of the raw items: meaning, links, advice.</span></li><li><span class="term"><b class="en">hypothesis</b> <span class="fr">(hypothèse)</span></span><span class="mean">a guess you can test.</span><span class="eg">"if we keep gas, our cost will pass our rival's"</span></li><li><span class="term"><b class="en">scenario</b> <span class="fr">(scénario (pl. scénarii))</span></span><span class="mean">a possible future, described with its consequences.</span></li><li><span class="term"><b class="en">classification</b> <span class="fr">(classification)</span></span><span class="mean">sorting items into groups.</span></li><li><span class="term"><b class="en">mapping</b> <span class="fr">(cartographie)</span></span><span class="mean">drawing a map of a field: who works with whom, which topics are linked.</span></li><li><span class="term"><b class="en">text mining</b> <span class="fr">(text mining (fouille de textes))</span></span><span class="mean">software that reads many texts and pulls out frequent words, topics and trends.</span></li><li><span class="term"><b class="en">sense-making</b> <span class="fr">(création de sens)</span></span><span class="mean">turning scattered facts into a clear story you can act on.</span></li></ul>
+  </div>
+  <figure class="fig"><svg class="vt" viewBox="0 0 560 132" role="img" aria-label="Five boxes in a chain: facts, links, hypotheses, scenarios, proposals, going from raw information to added value" style="--minw:500px"><defs><marker id="f10-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker></defs><rect x="6" y="30" width="98" height="52" rx="8" class="c1"/><text x="55" y="52.5" class="t dk mid">Facts</text><text x="55" y="67.5" class="t dk mid"><tspan class="sm">faits collectés</tspan></text><line x1="105" y1="56" x2="115" y2="56" class="ar" marker-end="url(#f10-ah)"/><rect x="117" y="30" width="98" height="52" rx="8" class="c4"/><text x="166" y="52.5" class="t dk mid">Links</text><text x="166" y="67.5" class="t dk mid"><tspan class="sm">liens</tspan></text><line x1="216" y1="56" x2="226" y2="56" class="ar" marker-end="url(#f10-ah)"/><rect x="228" y="30" width="98" height="52" rx="8" class="c3"/><text x="277" y="52.5" class="t dk mid">Hypotheses</text><text x="277" y="67.5" class="t dk mid"><tspan class="sm">hypothèses</tspan></text><line x1="327" y1="56" x2="337" y2="56" class="ar" marker-end="url(#f10-ah)"/><rect x="339" y="30" width="98" height="52" rx="8" class="c2"/><text x="388" y="52.5" class="t dk mid">Scenarios</text><text x="388" y="67.5" class="t dk mid"><tspan class="sm">scénarii</tspan></text><line x1="438" y1="56" x2="448" y2="56" class="ar" marker-end="url(#f10-ah)"/><rect x="450" y="30" width="98" height="52" rx="8" class="soft"/><text x="499" y="52.5" class="t mid">Proposals</text><text x="499" y="67.5" class="t mid"><tspan class="sm">propositions</tspan></text><text x="6" y="18" class="tm">raw information</text><text x="552" y="18" class="tm end">added value</text><path d="M60,104 H500" class="ar" marker-end="url(#f10-ah)"/><text x="280" y="122" class="tm mid">evaluate, analyse, summarise</text></svg><figcaption>The analysis chain: each box uses the one before. The tools the course lists (classification, mapping, summaries, text mining) help with the first boxes; the experts do the last ones.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<div class="vt-ex"><b>The example, in full</b><p><b>SahraDry</b> is a small company in Biskra (12 employees) that dries dates for export. Its dryers run on gas, and the gas bill keeps rising. The manager wants to know: <i>could solar dryers replace gas?</i></p><p>Four items were collected and checked this month (invented for the example): (a) a study says a solar tunnel dryer dries dates 30% faster than open-air drying; (b) the industrial gas price will rise next year; (c) a competitor in Tolga switched to solar drying; (d) a supplier offers solar dryers on lease.</p></div><ol class="vt-steps"><li><b>Links.</b> (b) + (c): our gas bill rises while the competitor's does not, so its drying cost will drop below ours.</li><li><b>Hypothesis.</b> "If we stay on gas, within two years our cost per tonne will be higher than the competitor's."</li><li><b>Scenarios.</b> A: keep gas and accept higher costs. B: lease one solar dryer for one season and measure. C: buy a full solar line now.</li><li><b>Proposal.</b> Scenario B: low risk thanks to (d), real data from our own site, and a decision on C after one season.</li></ol><p>Notice what changed: the manager no longer gets four articles, but one proposal with its reasons. That is the added value.</p>
+  </div>
+</section>
+
+<section class="sec" id="s11">
+  <div class="sec-h"><span class="num">11</span><h2>Tools for handling documents <span class="fr">(Outils d'analyse de données et de gestion des documents)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>Analysis needs order. The course names three families of tools to keep what you collected tidy, annotated and shareable. All three have a <b>browser extension</b>, so you can save something with one click while reading.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">reference</b> <span class="fr">(référence)</span></span><span class="mean">the details needed to find a document again: author, title, date, link.</span></li><li><span class="term"><b class="en">reference manager</b> <span class="fr">(outil de gestion bibliographique)</span></span><span class="mean">software that stores references and their PDFs, and writes bibliographies for you. Zotero, Mendeley, EndNote.</span></li><li><span class="term"><b class="en">annotate</b> <span class="fr">(annoter)</span></span><span class="mean">add your own notes, highlights or comments onto a document.</span></li><li><span class="term"><b class="en">social bookmarking</b> <span class="fr">(social bookmarking)</span></span><span class="mean">saving web pages (bookmarks) online, with notes and tags, and sharing them with others. Diigo, Pearltrees.</span></li><li><span class="term"><b class="en">tag</b> <span class="fr">(tag, étiquette)</span></span><span class="mean">a short label you attach to an item so you can find all items on one theme.</span><span class="eg">#tunnel-dryer</span></li><li><span class="term"><b class="en">browser extension</b> <span class="fr">(extension de navigateur)</span></span><span class="mean">a small add-on to Chrome or Firefox that adds a button, here "save this page".</span></li><li><span class="term"><b class="en">collaborative work</b> <span class="fr">(travail collaboratif)</span></span><span class="mean">several people working on the same shared folders at the same time.</span></li></ul>
+  </div>
+  <figure class="fig"><svg class="vt" viewBox="0 0 560 116" role="img" aria-label="Three tool families: reference managers, social bookmarking, note tools, with examples" style="--minw:500px"><rect x="8" y="10" width="172" height="96" rx="8" class="c4"/><text x="94" y="39.5" class="t dk mid">Reference managers</text><text x="94" y="54.5" class="t dk mid"><tspan class="sm">gestion bibliographique</tspan></text><text x="94" y="69.5" class="t dk mid"><tspan class="sm">keep references, annotate</tspan></text><text x="94" y="84.5" class="t dk mid">Zotero · Mendeley · EndNote</text><rect x="192" y="10" width="172" height="96" rx="8" class="c1"/><text x="278" y="39.5" class="t dk mid">Social bookmarking</text><text x="278" y="54.5" class="t dk mid"><tspan class="sm">social bookmarking</tspan></text><text x="278" y="69.5" class="t dk mid"><tspan class="sm">capture web pages, annotate</tspan></text><text x="278" y="84.5" class="t dk mid">Diigo · Delicious · Pearltrees</text><rect x="376" y="10" width="172" height="96" rx="8" class="c3"/><text x="462" y="39.5" class="t dk mid">Note tools</text><text x="462" y="54.5" class="t dk mid"><tspan class="sm">gestion des notes</tspan></text><text x="462" y="69.5" class="t dk mid"><tspan class="sm">make notes and records</tspan></text><text x="462" y="84.5" class="t dk mid">Evernote · Google Keep</text></svg><figcaption>Three families from the course, with their examples.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<div class="vt-ex"><b>The example, in full</b><p><b>SahraDry</b> is a small company in Biskra (12 employees) that dries dates for export. Its dryers run on gas, and the gas bill keeps rising. The manager wants to know: <i>could solar dryers replace gas?</i></p><p>The engineer must keep track of scientific papers, web pages from makers, and her own notes.</p></div><div class="scroll"><table class="t"><thead><tr><th>Need</th><th>Tool family</th><th>Why this one (features from the course)</th></tr></thead><tbody><tr><td>Keep the 15 papers on solar drying, with PDFs, and cite them in the Word report</td><td>reference manager (Zotero)</td><td>built into Word, groups, notes, tags, PDFs attached, browser extension. Web pages must be added by hand.</td></tr><tr><td>Save makers' pages and highlight prices and specs</td><td>social bookmarking (Diigo)</td><td>screenshot of the page, highlight, notes, tags, easy for websites, shared groups.</td></tr><tr><td>Write notes after each supplier call, shared with the assistant</td><td>note tool (Evernote or Google Keep)</td><td>folders, tags, groups, easy collaboration, browser extension.</td></tr></tbody></table></div>
+  </div>
+</section>
+
+<section class="sec" id="s12">
+  <div class="sec-h"><span class="num">12</span><h2>Step 4: share the results <span class="fr">(Diffusion de l'information)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>The work only pays off if the right people get it. Diffusion means sending the results, <b>regularly</b>, in the <b>form that suits each reader</b>.</p><p>Three questions decide it: <b>who</b> must be told (their profile), <b>how</b> (paper, email, intranet, portal), and <b>when</b> (how often). And it must be <b>selective</b>: each person gets only what concerns them. Sending everything to everyone drowns people, and the important item gets lost.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">user profile</b> <span class="fr">(profil d'utilisateur)</span></span><span class="mean">what a reader needs to know and in what form, given their job.</span></li><li><span class="term"><b class="en">frequency</b> <span class="fr">(fréquence)</span></span><span class="mean">how often results are sent: at once, weekly, monthly...</span></li><li><span class="term"><b class="en">intranet</b> <span class="fr">(intranet)</span></span><span class="mean">a private website only the company's staff can open.</span></li><li><span class="term"><b class="en">monitoring portal</b> <span class="fr">(portail de veille)</span></span><span class="mean">a website (often on the intranet) where all monitoring results are published and searchable.</span></li><li><span class="term"><b class="en">email push</b> <span class="fr">(e-mail « push »)</span></span><span class="mean">results sent straight into people's inboxes, without them asking each time.</span></li><li><span class="term"><b class="en">selective diffusion</b> <span class="fr">(diffusion sélective de l'information (DSI))</span></span><span class="mean">sending each person only the items that match their profile.</span></li></ul>
+  </div>
+  <figure class="fig"><svg class="vt" viewBox="0 0 560 122" role="img" aria-label="Three questions: who, how, when, answered by user profiles, medium and format, and frequency" style="--minw:500px"><rect x="10" y="10" width="170" height="44" rx="8" class="c4"/><text x="95" y="28.5" class="tb dk mid">Who?</text><text x="95" y="43.5" class="tb dk mid"><tspan class="sm">qui informer ?</tspan></text><rect x="10" y="68" width="170" height="44" rx="8" class="pane"/><text x="95" y="86.5" class="t mid">user profiles</text><text x="95" y="101.5" class="t mid"><tspan class="sm">profils d'utilisateurs</tspan></text><line x1="95" y1="55" x2="95" y2="66" class="ln"/><rect x="194" y="10" width="170" height="44" rx="8" class="c1"/><text x="279" y="28.5" class="tb dk mid">How?</text><text x="279" y="43.5" class="tb dk mid"><tspan class="sm">comment ?</tspan></text><rect x="194" y="68" width="170" height="44" rx="8" class="pane"/><text x="279" y="86.5" class="t mid">medium / format</text><text x="279" y="101.5" class="t mid"><tspan class="sm">support, format</tspan></text><line x1="279" y1="55" x2="279" y2="66" class="ln"/><rect x="378" y="10" width="170" height="44" rx="8" class="c3"/><text x="463" y="28.5" class="tb dk mid">When?</text><text x="463" y="43.5" class="tb dk mid"><tspan class="sm">quand ?</tspan></text><rect x="378" y="68" width="170" height="44" rx="8" class="pane"/><text x="463" y="86.5" class="t mid">frequency</text><text x="463" y="101.5" class="t mid"><tspan class="sm">fréquence</tspan></text><line x1="463" y1="55" x2="463" y2="66" class="ln"/></svg><figcaption>The three questions of diffusion and what answers each. Formats in the course: paper, digital, email push, intranet, monitoring portal; software can generate bulletins and portals.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<div class="vt-ex"><b>The example, in full</b><p><b>SahraDry</b> is a small company in Biskra (12 employees) that dries dates for export. Its dryers run on gas, and the gas bill keeps rising. The manager wants to know: <i>could solar dryers replace gas?</i></p><p>This month's checked items (invented): a study on a faster solar tunnel dryer; a rise in the industrial gas price; a competitor in Tolga switching to solar; a new EU hygiene rule for dried fruit; a supplier leasing solar dryers; a blog post on home solar panels.</p></div><div class="scroll"><table class="t"><thead><tr><th>Who (profile)</th><th>Topics wanted</th><th>How and when</th></tr></thead><tbody><tr><td>Manager</td><td>cost, market, rule</td><td>1-page bulletin, monthly</td></tr><tr><td>Engineer</td><td>tech, rule</td><td>email alert, at once</td></tr><tr><td>Sales lead</td><td>market, rule</td><td>sector profile, quarterly</td></tr></tbody></table></div><p>Each item is sent only to the people whose topics it touches. Watch the routing:</p>
+  <figure class="fig live" id="lf4">
+    <div class="live-grid">
+      <svg class="vt" id="lf4-svg" viewBox="0 0 400 290" role="img" aria-label="Six items on the left are routed one by one to three people on the right according to their topics"></svg>
+      <div class="live-side" data-no-save>
+        <div class="live-val"><span class="tag">Step</span><b id="lf4-val">0 / 0</b></div>
+        <div class="actions"><button class="b chk" id="lf4-play" type="button">Play</button><button class="b" id="lf4-step" type="button">Step</button><button class="b" id="lf4-reset" type="button">Reset</button></div>
+        <label class="tag" for="lf4-range">Drag to any item</label>
+        <input id="lf4-range" type="range" min="0" max="0" step="1" value="0">
+        <div class="live-status" id="lf4-status" aria-live="polite"></div>
+        <div class="scroll"><table class="t"><thead><tr><th>Person</th><th>Topics</th><th>How</th><th>Got</th></tr></thead><tbody id="lf4-rows"></tbody></table></div>
+      </div>
+    </div>
+    <figcaption><p><b>What to watch:</b> each item draws arrows only to the people whose topics it matches. The blog post on home panels goes nowhere. <b>Why it works:</b> matching items to profiles keeps every inbox short and relevant, which is what the course means by selective diffusion: no overload, no loss of meaning.</p></figcaption>
+  </figure>
+  <script>
+  (function(){
+    var $=function(id){return document.getElementById("lf4-"+id);};
+    var IT=[{"short": "Faster solar tunnel dryer", "title": "a study says a solar tunnel dryer dries dates 30% faster", "tags": ["tech"]}, {"short": "Gas price to rise", "title": "the industrial gas price will rise next year", "tags": ["cost"]}, {"short": "Rival in Tolga goes solar", "title": "a competitor in Tolga switched to solar drying", "tags": ["market", "tech"]}, {"short": "New EU hygiene rule", "title": "a new EU hygiene rule for dried fruit imports", "tags": ["rule"]}, {"short": "Solar dryers on lease", "title": "a supplier now leases solar dryers", "tags": ["cost", "tech"]}, {"short": "Home solar panels blog", "title": "a blog post on solar panels for homes", "tags": []}];
+    var P=[{"name": "Manager", "wants": ["cost", "market", "rule"], "how": "1-page bulletin, monthly"}, {"name": "Engineer", "wants": ["tech", "rule"], "how": "email alert, at once"}, {"name": "Sales lead", "wants": ["market", "rule"], "how": "sector profile, quarterly"}];
+
+    function to(it){return P.map(function(p,k){return it.tags.some(function(t){return p.wants.indexOf(t)>=0;})?k:-1;}).filter(function(k){return k>=0;});}
+    var STEPS=[{text:"Start: "+IT.length+" checked items this month, 3 people with different profiles. Nothing sent yet."}];
+    IT.forEach(function(it,k){
+      var d=to(it),names=d.map(function(j){return P[j].name;});
+      STEPS.push({text:"Item "+(k+1)+" ("+(it.tags.length?it.tags.join(", "):"no matching topic")+"): "+it.title+". "+(d.length?"Goes to "+names.join(" and ")+".":"Matches nobody's profile: <b>not sent</b>, kept in the archive.")});
+    });
+    var cnt=P.map(function(p,j){return IT.filter(function(it){return to(it).indexOf(j)>=0;}).length;});
+    var last=STEPS[STEPS.length-1];last.end=true;
+    last.text+=" <b>Result:</b> "+P.map(function(p,j){return p.name+" "+cnt[j]+" of "+IT.length;}).join(", ")+". Nobody gets everything: that is selective diffusion.";
+    function render(n){
+      var h=['<defs><marker id="lf4-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker></defs>'];
+      IT.forEach(function(it,k){
+        var y=10+k*44,on=k<n,cur=k===n-1;
+        h.push('<rect x="4" y="'+y+'" width="176" height="36" rx="6" class="'+(on?'pane':'box')+(cur?' now':'')+'"/>');
+        h.push('<text x="12" y="'+(y+15)+'" class="t sm">'+(k+1)+'. '+it.short+'</text>');
+        h.push('<text x="12" y="'+(y+29)+'" class="tm sm">'+(it.tags.join(" · ")||"—")+'</text>');
+        if(on){var d=to(it);d.forEach(function(j){var py=30+j*92;
+          h.push('<line x1="181" y1="'+(y+18)+'" x2="262" y2="'+(py+24)+'" class="'+(cur?'ar':'ln')+'" marker-end="url(#lf4-ah)"/>');});
+          if(!d.length)h.push('<text x="190" y="'+(y+22)+'" class="tm sm">archive</text>');}
+      });
+      P.forEach(function(p,j){
+        var y=30+j*92,got=IT.slice(0,n).filter(function(it){return to(it).indexOf(j)>=0;}).length;
+        h.push('<rect x="264" y="'+y+'" width="132" height="64" rx="8" class="c'+(j+2)+'"/>');
+        h.push('<text x="330" y="'+(y+18)+'" class="tb dk mid">'+p.name+'</text>');
+        h.push('<text x="330" y="'+(y+33)+'" class="t dk mid sm">'+p.how+'</text>');
+        h.push('<text x="330" y="'+(y+53)+'" class="tb dk mid">'+got+' item'+(got===1?'':'s')+'</text>');
+      });
+      $("svg").innerHTML=h.join("");
+      $("rows").innerHTML=P.map(function(p,j){return '<tr><td>'+p.name+'</td><td>'+p.wants.join(", ")+'</td><td>'+p.how+'</td><td>'+IT.slice(0,n).filter(function(it){return to(it).indexOf(j)>=0;}).length+'</td></tr>';}).join("");
+    }
+    var i=0,timer=null,reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+    function draw(){
+      var s=STEPS[i];
+      render(i);
+      $("val").textContent=i+" / "+(STEPS.length-1);
+      $("status").className="live-status"+(s.end?" ok":"");
+      $("status").innerHTML=(s.end?"<b>✓ Done.</b> ":"")+s.text;
+      $("range").value=i;
+    }
+    function stop(){clearInterval(timer);timer=null;$("play").textContent="Play";}
+    function go(n){i=Math.max(0,Math.min(STEPS.length-1,n));draw();if(i===STEPS.length-1)stop();}
+    $("play").addEventListener("click",function(){
+      if(timer){stop();return;}
+      if(i===STEPS.length-1)go(0);
+      if(reduced){go(STEPS.length-1);return;}
+      $("play").textContent="Pause";timer=setInterval(function(){go(i+1);},1300);
+    });
+    $("step").addEventListener("click",function(){stop();go(i+1);});
+    $("reset").addEventListener("click",function(){stop();go(0);});
+    $("range").max=STEPS.length-1;
+    $("range").addEventListener("input",function(){stop();go(+this.value);});
+    draw();
+  })();
+  </script>
+  </div>
+</section>
+
+<section class="sec" id="s13">
+  <div class="sec-h"><span class="num">13</span><h2>What monitoring delivers, and tools to share it <span class="fr">(Produits, livrables et outils de partage)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>The results of monitoring take the shape of <b>products</b> (also called deliverables): a newsletter, a file on one theme, a profile of a sector, figures, alerts... Each suits a different reader and rhythm.</p><p>Many free web tools help share them: notes, bibliographies, slides, idea maps, curation pages, dashboards, blogs.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">deliverable</b> <span class="fr">(livrable)</span></span><span class="mean">a finished product handed to a reader.</span></li><li><span class="term"><b class="en">newsletter, monitoring bulletin</b> <span class="fr">(bulletin de veille)</span></span><span class="mean">a short regular digest of the latest news on a topic.</span></li><li><span class="term"><b class="en">thematic dossier</b> <span class="fr">(dossier thématique)</span></span><span class="mean">a full file on one subject, with analysis.</span></li><li><span class="term"><b class="en">sector profile</b> <span class="fr">(profil sectoriel)</span></span><span class="mean">a portrait of an industry: main firms, figures, trends.</span></li><li><span class="term"><b class="en">curation</b> <span class="fr">(curation)</span></span><span class="mean">picking the best items on a topic and republishing them with a short comment.</span><span class="eg">Scoop.it</span></li><li><span class="term"><b class="en">dashboard</b> <span class="fr">(tableau de bord)</span></span><span class="mean">one screen that gathers several feeds or indicators.</span><span class="eg">Netvibes</span></li><li><span class="term"><b class="en">concept map</b> <span class="fr">(carte conceptuelle)</span></span><span class="mean">a diagram of ideas connected by arrows.</span><span class="eg">Mindmeister</span></li></ul>
+  </div>
+  <figure class="fig"><svg class="vt" viewBox="0 0 560 112" role="img" aria-label="Seven monitoring products: newsletter, thematic dossier, sector profile, statistics, selective diffusion, alert service, personalised watch" style="--minw:500px"><rect x="8" y="10" width="128" height="40" rx="8" class="c1"/><text x="72" y="34" class="t dk sm mid">Newsletter / bulletin</text><rect x="146" y="10" width="128" height="40" rx="8" class="c2"/><text x="210" y="34" class="t dk sm mid">Thematic dossier</text><rect x="284" y="10" width="128" height="40" rx="8" class="c3"/><text x="348" y="34" class="t dk sm mid">Sector profile</text><rect x="422" y="10" width="128" height="40" rx="8" class="c4"/><text x="486" y="34" class="t dk sm mid">Statistics</text><rect x="8" y="60" width="128" height="40" rx="8" class="c1"/><text x="72" y="84" class="t dk sm mid">Selective diffusion</text><rect x="146" y="60" width="128" height="40" rx="8" class="c2"/><text x="210" y="84" class="t dk sm mid">Alert service</text><rect x="284" y="60" width="128" height="40" rx="8" class="c3"/><text x="348" y="84" class="t dk sm mid">Personalised watch</text></svg><figcaption>The seven products listed in the course.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<div class="vt-ex"><b>The example, in full</b><p><b>SahraDry</b> is a small company in Biskra (12 employees) that dries dates for export. Its dryers run on gas, and the gas bill keeps rising. The manager wants to know: <i>could solar dryers replace gas?</i></p><p>SahraDry's three readers are the manager, the production engineer and the sales lead.</p></div><div class="scroll"><table class="t"><thead><tr><th>Reader</th><th>Product</th><th>Sharing tool (from the course)</th></tr></thead><tbody><tr><td>Manager</td><td>monthly bulletin, one page; a thematic dossier "solar drying" once, for the decision</td><td>reading notes in Google Drive; slides on Prezi for the board</td></tr><tr><td>Engineer</td><td>alert service on technical news</td><td>shared Zotero bibliography of the papers</td></tr><tr><td>Sales lead</td><td>sector profile of date exporters, updated each quarter</td><td>a dashboard (Netvibes) with the market feeds</td></tr></tbody></table></div><div class="scroll"><table class="t"><thead><tr><th>Use</th><th>Examples in the course</th></tr></thead><tbody><tr><td>Reading notes</td><td>Evernote, Google Drive</td></tr><tr><td>Online bibliographies</td><td>Zotero</td></tr><tr><td>Presentations</td><td>Slideshare, Prezi</td></tr><tr><td>Concept maps</td><td>Mindmeister</td></tr><tr><td>Curation (republishing)</td><td>Scoop.it</td></tr><tr><td>Dashboard</td><td>Netvibes, paper.li</td></tr><tr><td>Blog, website</td><td>WordPress, Tumblr, Weebly</td></tr></tbody></table></div>
+  </div>
+</section>
+
+<section class="sec" id="s14">
+  <div class="sec-h"><span class="num">14</span><h2>A panorama of monitoring tools <span class="fr">(Panorama des outils de la veille)</span></h2><a class="back" href="#top">&uarr; contents</a></div>
+  <div class="intro">
+    <div class="plain"><span class="tag">In plain words</span><p>There are a great many monitoring tools. The course sorts them in two ways.</p><p>By age: <b>classic tools</b> for searching the internet (search engines, directories, meta-search engines) and <b>newer tools</b> (monitoring agents, analysis and formatting tools, full monitoring software suites). By coverage: you can use <b>a different tool for each step</b>, or <b>one suite that covers all four steps</b>.</p></div>
+    <ul class="defs"><li><span class="term"><b class="en">search engine</b> <span class="fr">(moteur de recherche)</span></span><span class="mean">a site that searches the web for your words.</span><span class="eg">Google</span></li><li><span class="term"><b class="en">directory</b> <span class="fr">(annuaire)</span></span><span class="mean">a list of websites sorted by subject by people.</span></li><li><span class="term"><b class="en">meta-search engine</b> <span class="fr">(méta-moteur)</span></span><span class="mean">a tool that sends your search to several search engines at once and merges their results.</span></li><li><span class="term"><b class="en">monitoring agent</b> <span class="fr">(agent de surveillance)</span></span><span class="mean">a program that watches chosen sources and reports changes.</span></li><li><span class="term"><b class="en">software suite, package</b> <span class="fr">(progiciel)</span></span><span class="mean">ready-made professional software that does a whole job, here every step of monitoring.</span></li><li><span class="term"><b class="en">web clipping</b> <span class="fr">(web clipping)</span></span><span class="mean">cutting out and saving a piece of a web page (text, image) to keep it.</span></li><li><span class="term"><b class="en">streaming</b> <span class="fr">(streaming)</span></span><span class="mean">sending video or sound live over the internet, watched as it plays.</span></li></ul>
+  </div>
+  <figure class="fig"><svg class="vt" viewBox="0 0 560 166" role="img" aria-label="Left: four steps each with its own tool. Right: four steps all served by one monitoring suite" style="--minw:500px"><defs><marker id="f14-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hd"/></marker></defs><rect x="6" y="8" width="268" height="150" rx="10" class="pane"/><rect x="286" y="8" width="268" height="150" rx="10" class="pane"/><text x="140" y="28" class="tb mid">one tool per step</text><text x="420" y="28" class="tb mid">one suite for all steps</text><rect x="16" y="50" width="56" height="32" rx="8" class="c4"/><text x="44" y="70" class="t dk sm mid">Need</text><rect x="16" y="100" width="56" height="32" rx="8" class="box"/><text x="44" y="120" class="tm sm mid">tool A</text><line x1="44" y1="83" x2="44" y2="98" class="ln"/><rect x="296" y="50" width="56" height="32" rx="8" class="c4"/><text x="324" y="70" class="t dk sm mid">Need</text><rect x="80" y="50" width="56" height="32" rx="8" class="c1"/><text x="108" y="70" class="t dk sm mid">Collect</text><rect x="80" y="100" width="56" height="32" rx="8" class="box"/><text x="108" y="120" class="tm sm mid">tool B</text><line x1="108" y1="83" x2="108" y2="98" class="ln"/><rect x="360" y="50" width="56" height="32" rx="8" class="c1"/><text x="388" y="70" class="t dk sm mid">Collect</text><rect x="144" y="50" width="56" height="32" rx="8" class="c3"/><text x="172" y="70" class="t dk sm mid">Analyse</text><rect x="144" y="100" width="56" height="32" rx="8" class="box"/><text x="172" y="120" class="tm sm mid">tool C</text><line x1="172" y1="83" x2="172" y2="98" class="ln"/><rect x="424" y="50" width="56" height="32" rx="8" class="c3"/><text x="452" y="70" class="t dk sm mid">Analyse</text><rect x="208" y="50" width="56" height="32" rx="8" class="c2"/><text x="236" y="70" class="t dk sm mid">Share</text><rect x="208" y="100" width="56" height="32" rx="8" class="box"/><text x="236" y="120" class="tm sm mid">tool D</text><line x1="236" y1="83" x2="236" y2="98" class="ln"/><rect x="488" y="50" width="56" height="32" rx="8" class="c2"/><text x="516" y="70" class="t dk sm mid">Share</text><rect x="296" y="100" width="248" height="32" rx="8" class="soft"/><text x="420" y="120" class="t sm mid">one monitoring suite (progiciel de veille)</text><line x1="324" y1="83" x2="324" y2="98" class="ln"/><line x1="388" y1="83" x2="388" y2="98" class="ln"/><line x1="452" y1="83" x2="452" y2="98" class="ln"/><line x1="516" y1="83" x2="516" y2="98" class="ln"/></svg><figcaption>The two set-ups from the course. Separate tools are often free and flexible; one suite keeps everything in one place but usually costs money.</figcaption></figure>
+  <div class="calc"><span class="tag">Worked example</span>
+<div class="vt-ex"><b>The example, in full</b><p><b>SahraDry</b> is a small company in Biskra (12 employees) that dries dates for export. Its dryers run on gas, and the gas bill keeps rising. The manager wants to know: <i>could solar dryers replace gas?</i></p><p>SahraDry has no budget for a paid monitoring suite, so it picks one free tool per step.</p></div><div class="scroll"><table class="t"><thead><tr><th>Tool (course's table)</th><th>What it does</th><th>Step it serves</th></tr></thead><tbody><tr><td>Snipd</td><td>web clipping: save any content found on the web</td><td>collect</td></tr><tr><td>Evernote, Zoho Notebook, Memonic</td><td>annotation tools; store files online and share them</td><td>collect, analyse</td></tr><tr><td>HTTrack</td><td>copy ("vacuum") a whole website to your disk</td><td>collect</td></tr><tr><td>Scrapbook</td><td>Firefox extension to collect web pages</td><td>collect</td></tr><tr><td>Scoop.it</td><td>make your own online journal (curation)</td><td>share</td></tr><tr><td>Ustream</td><td>stream an event live on video by webcam</td><td>share</td></tr><tr><td>Textalyser</td><td>pull the keywords out of a text, count word occurrences, measure text complexity</td><td>analyse</td></tr><tr><td>Shrib</td><td>take notes online and get a link to them</td><td>collect, share</td></tr></tbody></table></div><ul class="ln"><li><b>Need:</b> a shared note (Evernote) holding the question, keywords, scope and plan.</li><li><b>Collect:</b> a keyword alert (push) + HTTrack to copy the research centre's report site + Diigo for makers' pages.</li><li><b>Analyse:</b> Zotero for the papers, Textalyser to spot the frequent terms in the 15 abstracts.</li><li><b>Share:</b> a monthly one-page bulletin by email to the manager, alerts to the engineer, a dashboard for sales.</li></ul>
+  </div>
+</section>
+<section class="sec" id="notes">
+  <div class="note errata"><span class="tag">Notes on the original course</span>
+    <ul><li>Slides 8 to 10: "Indentification" should read "Identification". Slide 10: "Il important" is missing "est". Slide 3: "être informer" should be "être informé".</li><li>Slides 16 and 17 are the same slide twice.</li><li>Quiz, slide 28: the last question is numbered 6 again; it is question 8.</li><li>Slide 36 describes Scoop.it as "open source, to cut out parts of the screen". Slides 24 and 35 (and Scoop.it itself) describe a curation tool for publishing a personal journal; the slide 36 line looks copied from another row.</li><li>Slide 36 gives Evernote a different description ("store files online and share them") from slide 35 ("annotation tool"). Both are true; this lesson lists both.</li><li>Slide 24: "tumbl.com" should be tumblr.com.</li><li>Several tools in the course are old: Delicious closed in 2017, and the Scrapbook extension stopped working with Firefox 57 (2017). Check a tool still exists before relying on it.</li><li>SahraDry, its staff and all its items are invented for the examples; they are not from the course.</li></ul>
+  </div>
+</section>
+
+<footer class="foot">Based on Mme AZZOUZ Mahdia, <i>Module Veille Technologique</i>, USTHB, 1st year Master Big Data Analytics, "Processus de veille" (revised October 2026). Every animation computes its states from the example data in its script; totals checked by <code>verify.py</code>.</footer>
+</div>
+
+<script>
+/* study-hub:progress — practice pages: counts ticked .done boxes */
+(function(){
+  var boxes=document.querySelectorAll('.done input'), txt=document.getElementById('prog-txt'), bar=document.getElementById('prog-bar');
+  if(!boxes.length||!txt) return;
+  function upd(){var n=0;boxes.forEach(function(b){if(b.checked)n++;});txt.textContent=n+' / '+boxes.length+' done';bar.style.width=(100*n/boxes.length)+'%';}
+  boxes.forEach(function(b){b.addEventListener('change',upd);});
+  upd();
+})();
+</script>
+</body>
+</html>
